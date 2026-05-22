@@ -13,7 +13,7 @@ The PolyKybd Split72 can be assembled in a few different ways depending on how m
 
 A kit containing all parts and pre-assembled PCBs is planned via CrowdSupply. Sign up to be notified when it becomes available:
 
-[crowdsupply.com/polykybd/polykybd](https://crowdsupply.com/polykybd/polykybd)
+[crowdsupply.com/polykybd/polykybd](https://www.crowdsupply.com/polykybd/polykybd)
 
 The kit includes the PCBs with all SMD components already soldered, so you only need to assemble the mechanical parts.
 
