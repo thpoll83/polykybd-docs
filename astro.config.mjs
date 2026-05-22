@@ -14,6 +14,7 @@ export default defineConfig({
       // },
       social: [
         { icon: 'github', label: 'GitHub', href: 'https://github.com/thpoll83/PolyKybd' },
+        { icon: 'discord', label: 'Discord', href: 'https://discord.gg/gW8JescH7M' },
       ],
       sidebar: [
         {
