@@ -35,4 +35,4 @@ See [Multi-Machine Setup](/polykybd-docs/software/multi-machine/) for details.
 ## Repositories
 
 - Host software: [github.com/thpoll83/PolyKybdHost](https://github.com/thpoll83/PolyKybdHost)
-- Firmware: [github.com/thpoll83/qmk_firmware](https://github.com/thpoll83/qmk_firmware) — `PolyKeyboard` branch
+- Firmware: [github.com/thpoll83/qmk_firmware](https://github.com/thpoll83/qmk_firmware) — `PolyKybd` branch

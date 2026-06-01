@@ -11,7 +11,7 @@ PolyKybd is fully open. Contributions are welcome across all four repositories.
 |---|---|
 | Documentation | [thpoll83/polykybd-docs](https://github.com/thpoll83/polykybd-docs) |
 | Hardware (PCB, case, STLs) | [thpoll83/PolyKybd](https://github.com/thpoll83/PolyKybd) |
-| QMK firmware | [thpoll83/qmk_firmware](https://github.com/thpoll83/qmk_firmware) — branch `PolyKeyboard` |
+| QMK firmware | [thpoll83/qmk_firmware](https://github.com/thpoll83/qmk_firmware) — branch `PolyKybd` |
 | Host software | [thpoll83/PolyKybdHost](https://github.com/thpoll83/PolyKybdHost) |
 | Display rendering | [thpoll83/adafruit-gfx-library](https://github.com/thpoll83/adafruit-gfx-library) |
 

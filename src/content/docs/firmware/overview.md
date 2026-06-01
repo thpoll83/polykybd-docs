@@ -15,9 +15,9 @@ The PolyKybd runs [QMK firmware](https://qmk.fm/) — the most widely used open-
 
 ## The PolyKybd firmware repo
 
-The firmware lives in a fork of QMK with PolyKybd-specific additions on the `PolyKeyboard` branch:
+The firmware lives in a fork of QMK with PolyKybd-specific additions on the `PolyKybd` branch:
 
-[github.com/thpoll83/qmk_firmware — branch: PolyKeyboard](https://github.com/thpoll83/qmk_firmware/tree/PolyKeyboard)
+[github.com/thpoll83/qmk_firmware — branch: PolyKybd](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd)
 
 The keyboard-specific files are at:
 

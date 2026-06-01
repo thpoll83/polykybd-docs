@@ -7,7 +7,7 @@ import { Aside } from '@astrojs/starlight/components';
 
 ## Repository structure
 
-The PolyKybd firmware lives on the `PolyKeyboard` branch of the QMK fork: [github.com/thpoll83/qmk_firmware](https://github.com/thpoll83/qmk_firmware/tree/PolyKeyboard)
+The PolyKybd firmware lives on the `PolyKybd` branch of the QMK fork: [github.com/thpoll83/qmk_firmware](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd)
 
 ```
 keyboards/handwired/polykybd/
@@ -28,7 +28,7 @@ keyboards/handwired/polykybd/
 # Clone and switch to the PolyKybd branch
 git clone https://github.com/thpoll83/qmk_firmware.git
 cd qmk_firmware
-git checkout PolyKeyboard
+git checkout PolyKybd
 git submodule update --init --recursive
 
 # Install QMK CLI if not already installed

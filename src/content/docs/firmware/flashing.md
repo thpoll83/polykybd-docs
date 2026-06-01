@@ -28,7 +28,7 @@ If you just want to use the default keymap, download the latest `.uf2` file from
     1. Install [QMK MSYS](https://msys.qmk.fm/) — it bundles all required build tools
     2. Open QMK MSYS and run:
        ```sh
-       qmk setup thpoll83/qmk_firmware -b PolyKeyboard
+       qmk setup thpoll83/qmk_firmware -b PolyKybd
        qmk compile -kb handwired/polykybd -km default
        ```
     3. The built `.uf2` file will be in the `qmk_firmware` directory
@@ -39,7 +39,7 @@ If you just want to use the default keymap, download the latest `.uf2` file from
     1. Install QMK CLI:
        ```sh
        brew install qmk/qmk/qmk
-       qmk setup thpoll83/qmk_firmware -b PolyKeyboard
+       qmk setup thpoll83/qmk_firmware -b PolyKybd
        ```
     2. Build:
        ```sh
@@ -52,7 +52,7 @@ If you just want to use the default keymap, download the latest `.uf2` file from
     1. Install QMK CLI:
        ```sh
        python3 -m pip install --user qmk
-       qmk setup thpoll83/qmk_firmware -b PolyKeyboard
+       qmk setup thpoll83/qmk_firmware -b PolyKybd
        ```
     2. Build:
        ```sh
