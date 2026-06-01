@@ -17,7 +17,7 @@ The default keymap is defined in:
 keyboards/handwired/polykybd/keymaps/default/keymap.c
 ```
 
-in the [PolyKybd firmware repo](https://github.com/thpoll83/qmk_firmware/tree/PolyKeyboard).
+in the [PolyKybd firmware repo](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd).
 
 ## Customizing with PolyKybdHost
 
