@@ -1,11 +1,73 @@
+/* PolyKybd docs — light restyle over stock Starlight.
+   Goal: a crisper, more technical feel without leaving the Starlight look. */
+
 :root {
-  --sl-color-accent-low: #1a1f3a;
-  --sl-color-accent: #4a6cf7;
-  --sl-color-accent-high: #a5b4fc;
+  /* Accent: a crisp azure that reads as "technical / hardware". */
+  --sl-color-accent-low: #102a43;
+  --sl-color-accent: #2f7bf6;
+  --sl-color-accent-high: #9ec5ff;
+
+  /* Slightly cooler, higher-contrast grays for a hardware-doc feel. */
+  --sl-color-gray-1: #e8edf4;
+  --sl-color-gray-2: #b9c3d0;
+  --sl-color-gray-3: #8593a6;
+  --sl-color-gray-4: #54616f;
+  --sl-color-gray-5: #353f4d;
+  --sl-color-gray-6: #232a35;
+  --sl-color-black: #0e131c;
+
+  /* Monospace everywhere code appears — tabular, technical. */
+  --sl-font-mono: 'JetBrains Mono', 'SFMono-Regular', ui-monospace, 'Cascadia Code',
+    'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
 }
 
 :root[data-theme='light'] {
-  --sl-color-accent-low: #dde4ff;
-  --sl-color-accent: #2d4dd4;
-  --sl-color-accent-high: #1e3ab8;
+  --sl-color-accent-low: #dbe8ff;
+  --sl-color-accent: #1f5fd6;
+  --sl-color-accent-high: #11337a;
+}
+
+/* Tighter, more deliberate headings. */
+.sl-markdown-content h1,
+.sl-markdown-content h2,
+.sl-markdown-content h3,
+.content-panel h1 {
+  letter-spacing: -0.015em;
+}
+
+/* A thin accent rule under section headings — subtle "spec sheet" cue. */
+.sl-markdown-content h2 {
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--sl-color-gray-5);
+}
+
+/* Inline code: monospace + a faint accent tint so identifiers stand out. */
+.sl-markdown-content :not(pre) > code {
+  font-size: 0.875em;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.3rem;
+  background-color: var(--sl-color-gray-6);
+}
+
+/* Crisper tables (lots of spec tables in these docs). */
+.sl-markdown-content table {
+  font-size: 0.95em;
+}
+.sl-markdown-content th {
+  text-transform: uppercase;
+  font-size: 0.78em;
+  letter-spacing: 0.04em;
+  color: var(--sl-color-white);
+}
+
+/* Hero: technical glow behind the splash logo. */
+.hero > img,
+.hero .hero-html svg {
+  filter: drop-shadow(0 0 28px rgba(47, 123, 246, 0.35));
+}
+
+/* Site title weight — reads as a wordmark next to the logo glyph. */
+.site-title {
+  font-weight: 650;
+  letter-spacing: -0.01em;
 }

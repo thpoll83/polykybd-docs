@@ -13,8 +13,8 @@ This page lists every part needed for a complete PolyKybd Split72 build.
 
 | Part | Quantity | Notes |
 |---|---|---|
-| Left PCB (assembled, 4-layer, 1.6mm) | 1 | See [PCB ordering](/polykybd-docs/assembly/pcb/) |
-| Right PCB (assembled, 4-layer, 1.6mm) | 1 | See [PCB ordering](/polykybd-docs/assembly/pcb/) |
+| Left PCB (assembled, 4-layer, 1.6mm) | 1 | See [PCB ordering](/assembly/pcb/) |
+| Right PCB (assembled, 4-layer, 1.6mm) | 1 | See [PCB ordering](/assembly/pcb/) |
 
 ### Mechanical
 
@@ -40,7 +40,7 @@ If a resin case is slightly warped, use a hair dryer to soften it, then press it
 
 | Part | Quantity | Notes |
 |---|---|---|
-| MX-compatible key switches | 72 | See [Compatible Switches](/polykybd-docs/assembly/compatible-switches/) |
+| MX-compatible key switches | 72 | See [Compatible Switches](/assembly/compatible-switches/) |
 | 3D-printed key stems (1U) | 58 | SLA print recommended |
 | 3D-printed key stems (1.25U) | 14 | SLA print recommended |
 | Transparent relegendable keycap covers (1U) | 58 | e.g. AliExpress relegendable keycaps |
@@ -52,7 +52,7 @@ Key stem profiles available: **Flat** (R3), **Stepped** (R2), or **Curved** (R1â
 
 | Part | Quantity | Notes |
 |---|---|---|
-| 0.42" OLED displays with FPC | 72 | Must be 14-pin; see [Displays & FPC Extension](/polykybd-docs/assembly/displays/) |
+| 0.42" OLED displays with FPC | 72 | Must be 14-pin; see [Displays & FPC Extension](/assembly/displays/) |
 | 0.96" status displays (FPW096W001Z0) | 2 | Optional; ~40mm FPC cable |
 | Status display holder | 2 | STL: `parts/display_holder_r1.stl` |
 | Dummy display holder (if no status display) | 2 | STL: `parts/display_holder_dummy_r1.stl` |

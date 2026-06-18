@@ -5,22 +5,38 @@ description: Setting up the QMK development environment for PolyKybd firmware.
 
 import { Aside } from '@astrojs/starlight/components';
 
+The PolyKybd firmware is a heavily customised QMK build that runs on the keyboard's **Raspberry Pi RP2040**. Two hardware variants share a single firmware codebase: **`split72`** (72-key, RGB matrix, Cirque trackpad, 128×64 status OLED) and **`split42`** (42-key CRKBD footprint, no RGB/trackpad, 128×32 status OLED).
+
 ## Repository structure
 
-The PolyKybd firmware lives on the `PolyKybd` branch of the QMK fork: [github.com/thpoll83/qmk_firmware](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd)
+The firmware lives on the `PolyKybd` branch of the QMK fork: [github.com/thpoll83/qmk_firmware](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd), under `keyboards/handwired/polykybd/`.
 
 ```
 keyboards/handwired/polykybd/
-├── config.h          — pin assignments, display count, feature flags
-├── halconf.h         — HAL configuration (RP2040)
-├── mcuconf.h         — MCU configuration
-├── polykybd.c        — keyboard-level code, display init and update loop
-├── polykybd.h        — keyboard API, matrix layout
-├── rules.mk          — build flags, enabled QMK features
-└── keymaps/
-    └── default/
-        └── keymap.c  — the default keymap
+├── config.h            — pin assignments, PROTOCOL_VERSION, feature flags
+├── halconf.h           — HAL configuration (RP2040)
+├── mcuconf.h           — MCU configuration
+├── rules.mk            — build flags, enabled QMK features
+├── poly_keymap.c       — shared keymap logic for BOTH variants:
+│                          rendering, HID/overlay handling, language
+│                          selection, idle/suspend, split-sync glue,
+│                          firmware-update state machine, QMK callbacks
+├── hid_com.c           — raw_hid_receive(): HID command dispatcher
+│                          (21 command IDs, 0x01–0x15)
+├── fill_overlay.c      — receives overlay segments, RLE decompress
+├── split_sync.c        — CRC32-validated split-half synchronisation
+├── state.c             — shared state structs (EEPROM-persisted)
+├── multicore_exec.c    — offloads RLE decompression to RP2040 core1
+├── base/
+│   ├── overlay.c       — overlay memory (90 slots × 9 variants × 360 B)
+│   └── disp_array.c    — per-keycap OLED driver
+├── lang/
+│   └── lang_lut.c      — language lookup table (code-generated via cog)
+├── split72/            — variant: keymaps/, header, layout data
+└── split42/            — variant: keymaps/, header, layout data
 ```
+
+All behaviour lives in the keyboard-level `poly_keymap.c` (compiled for both variants via `rules.mk`). Each variant's `<variant>/keymaps/default/keymap.c` is **data only** — `keymaps[]`, `encoder_map[]`, and (on RGB variants) `g_led_config`. A feature added to `poly_keymap.c` lands on both keyboards at once, so they can't drift apart. The legacy `polykybd.c` / `polykybd.h` still exist, but the bulk of the logic now lives in `poly_keymap.c`.
 
 ## Setting up the dev environment
 
@@ -29,36 +45,64 @@ keyboards/handwired/polykybd/
 git clone https://github.com/thpoll83/qmk_firmware.git
 cd qmk_firmware
 git checkout PolyKybd
-git submodule update --init --recursive
 
-# Install QMK CLI if not already installed
+# Pull in the git submodules (empty in a fresh clone)
+make git-submodule
+
+# Install the ARM toolchain (this is what `qmk setup` installs on Debian/Ubuntu)
+sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi
+
+# Install the QMK CLI (the pip package is just the bootstrapper;
+# the full CLI lives in this repo's lib/python)
 pip install qmk
+pip install -r requirements.txt
 
-# Set the QMK home to this clone
+# Point QMK at this clone
 qmk config user.qmk_home=$(pwd)
 ```
 
+<Aside type="note">
+There is no `bin/qmk` in this fork — the full CLI lives in `lib/python`, which `qmk config user.qmk_home=<repo>` (or `export QMK_HOME=<repo>`) makes discoverable. The PyPI `qmk` package does **not** bundle the ARM compiler; install `gcc-arm-none-eabi` separately as shown above.
+</Aside>
+
 ## Building
 
+Build a specific variant — `split72` or `split42`:
+
 ```sh
-qmk compile -kb handwired/polykybd -km default
+qmk compile -kb handwired/polykybd/split72 -km default
+# or equivalently:
+make handwired/polykybd/split72:default
 ```
 
-The output `.uf2` file can be flashed directly. See [Flashing the Firmware](/polykybd-docs/firmware/flashing/).
+The output `.uf2` lands in the repo root and `.build/`. The `.uf2` is used for manual bootloader-drive recovery — see [Flashing the Firmware](/firmware/flashing/).
+
+### Producing a `.bin` for HID flashing
+
+The deliverable for in-place flashing over HID (via PolyKybdHost's firmware updater) is the raw RP2040 **`.bin`**, not the `.uf2`. Convert the build's ELF:
+
+```sh
+arm-none-eabi-objcopy -O binary .build/handwired_polykybd_split72_default.elf \
+    .build/handwired_polykybd_split72_default.bin
+```
+
+PolyKybdHost flashes this raw image over the HID firmware-update protocol; the `.uf2` is only needed if you have to recover through the RP2040 bootloader drive.
 
 ## Adding a new keymap
 
 ```sh
-qmk new-keymap -kb handwired/polykybd -km my_keymap
-# Edit keyboards/handwired/polykybd/keymaps/my_keymap/keymap.c
-qmk compile -kb handwired/polykybd -km my_keymap
+qmk new-keymap -kb handwired/polykybd/split72 -km my_keymap
+# Edit keyboards/handwired/polykybd/split72/keymaps/my_keymap/keymap.c
+qmk compile -kb handwired/polykybd/split72 -km my_keymap
 ```
+
+Keep keymap files **data only** — behaviour belongs in the shared `poly_keymap.c` so both variants stay in sync.
 
 ## Display rendering
 
-The per-key OLED displays are driven via the custom Adafruit GFX fork. The display update loop runs in `polykybd.c`. Each key display is a 72×40 pixel canvas.
+The per-key OLED displays (72×40 px monochrome) are driven via a custom Adafruit GFX fork. The rendering and overlay logic lives in `poly_keymap.c` / `base/disp_array.c`.
 
-See [Display Graphics](/polykybd-docs/development/display-graphics/) for details on how to add custom icons or animations.
+See [Display Graphics & Fonts](/development/display-graphics/) for the rendering pipeline and the font-generation workflow.
 
 ## QMK documentation
 
@@ -71,5 +115,5 @@ All standard QMK features are available. Refer to the [official docs](https://do
 - [Unicode](https://docs.qmk.fm/feature_unicode)
 
 <Aside type="tip">
-When working on display-related code, use `--debug 2` with PolyKybdHost to see the raw HID traffic and verify the firmware is sending the expected display commands.
+When working on display-related code, use `--debug 2` with PolyKybdHost to see the raw HID traffic and verify the firmware is sending the expected display commands. See the [HID Protocol Reference](/reference/hid-protocol/) for the command format.
 </Aside>

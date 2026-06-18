@@ -37,7 +37,7 @@ A full build video is available on YouTube:
 
 ## What you will need
 
-Before starting, gather all required parts. See the full [Parts List](/polykybd-docs/assembly/parts-list/) for details.
+Before starting, gather all required parts. See the full [Parts List](/assembly/parts-list/) for details.
 
 At a high level you need:
 
@@ -55,10 +55,10 @@ At a high level you need:
 ## Next steps
 
 <Steps>
-1. Read the full [Parts List](/polykybd-docs/assembly/parts-list/)
-2. Order your [PCBs](/polykybd-docs/assembly/pcb/) or wait for the kit
-3. Print or order your [Case & Spacer](/polykybd-docs/assembly/case/)
-4. Prepare your [Displays](/polykybd-docs/assembly/displays/)
-5. Choose [Compatible Switches](/polykybd-docs/assembly/compatible-switches/)
-6. Follow the [Step-by-Step Build Guide](/polykybd-docs/assembly/step-by-step/)
+1. Read the full [Parts List](/assembly/parts-list/)
+2. Order your [PCBs](/assembly/pcb/) or wait for the kit
+3. Print or order your [Case & Spacer](/assembly/case/)
+4. Prepare your [Displays](/assembly/displays/)
+5. Choose [Compatible Switches](/assembly/compatible-switches/)
+6. Follow the [Step-by-Step Build Guide](/assembly/step-by-step/)
 </Steps>

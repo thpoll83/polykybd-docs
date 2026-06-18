@@ -27,9 +27,9 @@ The dynamic keymap stored in the keyboard persists across power cycles. However,
 ## Limitations
 
 - The editor cannot add new layers beyond those defined in the firmware
-- Macro and tap-dance assignments require firmware changes (see [Firmware Development](/polykybd-docs/development/firmware/))
+- Macro and tap-dance assignments require firmware changes (see [Firmware Development](/development/firmware/))
 - Some advanced QMK features (like layer-tap) may not be available from the keycode browser UI but can be entered as raw keycodes
 
 <Aside type="tip">
-To make permanent changes that survive firmware reflashing, edit `keymap.c` directly. See [Keymaps & Layers](/polykybd-docs/firmware/keymaps/) for instructions.
+To make permanent changes that survive firmware reflashing, edit `keymap.c` directly. See [Keymaps & Layers](/firmware/keymaps/) for instructions.
 </Aside>
