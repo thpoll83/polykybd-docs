@@ -1,10 +1,13 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import mermaid from 'astro-mermaid';
 
 export default defineConfig({
   site: 'https://www.polykybd.org',
   base: '/',
   integrations: [
+    // Renders ```mermaid code blocks; must come before Starlight.
+    mermaid({ theme: 'neutral', autoTheme: true }),
     starlight({
       title: 'PolyKybd',
       description: 'Documentation for PolyKybd — a split ergonomic keyboard where every key has its own OLED display.',

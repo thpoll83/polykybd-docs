@@ -7,6 +7,8 @@ import { Aside, Steps } from '@astrojs/starlight/components';
 
 Each of the 72 keys has a 0.42" OLED display connected to the PCB via a short FPC (flex printed circuit) cable. The displays ship with cables that are too short to reach the PCB sockets, so you need to extend them — or use displays from the kit which already have the correct cable length.
 
+![0.42" OLED displays with FPC cables](../../../assets/assembly/displays.png)
+
 ## The easy way: kit displays
 
 Displays from the official kit have the matching cable length and pin count. Skip the FPC extension section below if you are using kit parts.
@@ -30,27 +32,15 @@ You also need a 14-pin or 16-pin FPC extension cable with contacts on the same s
 
 ## Extending the FPC cable
 
-This process joins the display's short FPC tail to a longer extension cable using low-temperature solder and a heat gun.
+If you source displays yourself rather than using kit parts, their stock FPC tails are too short to reach the PCB sockets and must be extended — a fiddly process of soldering each short FPC strip to a longer extension cable with low-temperature solder and a heat gun. **Kit displays already have the correct cable length, so they skip this step entirely.**
 
 <Aside type="caution">
-Not every display survives this process. Order **at least 10% more** than you need.
+Not every display survives the extension process. If you do it yourself, order **at least 10% more** displays than you need.
 </Aside>
 
-<Steps>
-1. **Apply low-temperature solder (138°C)** to the FPC pins on both the display and the extension cable using a soldering iron.
+The full illustrated step-by-step (solder temperatures, alignment, heat-gun settings and photos) lives in the hardware repository — follow it there if you need it:
 
-2. Apply flux to one side only, then align the two FPC strips straight. Do not overlap the pins 100% — leave a small gap at the end so excess solder has room to escape.
-
-3. Use a heat gun at ~160°C and heat both sides for a few seconds until the solder becomes liquid again.
-
-4. Press the pins together with tweezers while the solder is still liquid. You will see a small amount of solder squeeze out at the non-overlapping end — this confirms all pins are properly connected.
-
-5. Let it cool and inspect. Each pin should be individually separated with no bridges.
-</Steps>
-
-<Aside type="tip">
-If you use a 16-pin extension cable, cut 2 pins from one end so it fits the 14-pin FPC socket, while keeping the 16 pins aligned with the display for easier soldering.
-</Aside>
+[FPC extension procedure on GitHub →](https://github.com/thpoll83/PolyKybd#displays)
 
 ## Status displays (optional)
 

@@ -9,26 +9,14 @@ PolyKybd is not a single program — it is a small stack of open-source projects
 
 ## The big picture
 
-```
-                 ┌─────────────────────────────────────────┐
-   Your apps     │  PolyKybdHost  (Python, daemon + tray)   │
-   (active   ──▶ │  • tracks the active window              │
-    window)      │  • renders per-app key overlays          │
-                 │  • exposes a polyctl CLI + control socket │
-                 └───────────────────┬─────────────────────-┘
-                                     │ USB HID (64-byte reports)
-                                     ▼
-                 ┌─────────────────────────────────────────┐
-                 │  QMK firmware  (RP2040, branch PolyKybd) │
-   Master half   │  • draws each key's 72×40 OLED            │
-   (USB)         │  • decompresses overlays (core1)         │
-                 └───────────────────┬─────────────────────-┘
-                                     │ full-duplex serial (CRC32)
-                                     ▼
-                 ┌─────────────────────────────────────────┐
-   Slave half    │  QMK firmware (same image, slave role)   │
-                 │  • mirrors state + overlays to its keys   │
-                 └─────────────────────────────────────────-┘
+```mermaid
+flowchart TB
+    apps["Your apps<br/>(active window)"] --> host
+    host["<b>PolyKybdHost</b> — Python, daemon + tray<br/>• tracks the active window<br/>• renders per-app key overlays<br/>• exposes a polyctl CLI + control socket"]
+    host -- "USB HID (64-byte reports)" --> master
+    master["<b>QMK firmware</b> — RP2040, branch PolyKybd<br/>Master half (USB)<br/>• draws each key's 72×40 OLED<br/>• decompresses overlays (core1)"]
+    master -- "full-duplex serial (CRC32)" --> slave
+    slave["<b>QMK firmware</b> — same image, slave role<br/>Slave half<br/>• mirrors state + overlays to its keys"]
 ```
 
 The two keyboard halves run the **same firmware image**; which half is master is decided at runtime (the half with USB power). They stay in sync over a CRC32-validated full-duplex serial link.

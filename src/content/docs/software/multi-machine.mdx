@@ -9,12 +9,12 @@ PolyKybdHost supports a forwarder mode that lets a single PolyKybd serve multipl
 
 ## How it works
 
-```
-[Remote machine] ──TCP──> [Keyboard machine] ──USB──> [PolyKybd]
-  PolyForwarder                PolyHost
-  watches active               owns HID device,
-  window, sends                updates displays
-  window info
+```mermaid
+flowchart LR
+    remote["<b>Remote machine</b><br/>PolyForwarder<br/>watches active window,<br/>sends window info"]
+    keyboard["<b>Keyboard machine</b><br/>PolyHost<br/>owns HID device,<br/>updates displays"]
+    kbd(["PolyKybd"])
+    remote -- TCP --> keyboard -- USB --> kbd
 ```
 
 - **Keyboard machine**: running PolyKybdHost in normal mode, physically connected to the keyboard
