@@ -2,7 +2,7 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
 export default defineConfig({
-  site: 'https://polykybd.org',
+  site: 'https://www.polykybd.org',
   base: '/',
   integrations: [
     starlight({
