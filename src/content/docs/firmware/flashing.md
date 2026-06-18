@@ -1,79 +1,108 @@
 ---
 title: Flashing the Firmware
-description: How to flash QMK firmware onto the PolyKybd using UF2 bootloader mode.
+description: Flash PolyKybd firmware over HID from PolyKybdHost, or via the UF2 bootloader drive as a fallback.
 ---
 
 import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
-## Entering bootloader mode
+There are two ways to flash PolyKybd firmware. The **recommended** way is over HID directly from
+PolyKybdHost — no buttons, no bootloader drive. The **UF2 bootloader drive** method is kept as a
+recovery fallback.
 
-The RP2040 on the PolyKybd uses UF2 bootloader mode:
+## Recommended: flash over HID from PolyKybdHost
 
-<Steps>
-1. Hold down the **BOOT button** on the PCB
-2. While holding the button, connect the **USB-C cable** to the left half
-3. Release the button
-4. The keyboard will mount as a USB drive called `RPI-RP2`
-</Steps>
+PolyKybdHost includes a firmware updater (`polyhost/device/hid_fw_up.py`) that pushes a firmware
+image to the keyboard over the normal HID connection. No BOOT button is needed, and — importantly —
+it works **even across protocol-version mismatches**, so a keyboard running incompatible firmware can
+still be updated.
 
-## Flashing a pre-built firmware
-
-If you just want to use the default keymap, download the latest `.uf2` file from the [firmware repo releases](https://github.com/thpoll83/qmk_firmware/releases) and copy it to the `RPI-RP2` drive. The drive will unmount automatically when flashing is complete.
-
-## Building from source
+The deliverable for HID flashing is a raw **`.bin`** image (not the `.uf2`).
 
 <Tabs>
-  <TabItem label="Windows">
+  <TabItem label="From the tray app">
     <Steps>
-    1. Install [QMK MSYS](https://msys.qmk.fm/) — it bundles all required build tools
-    2. Open QMK MSYS and run:
-       ```sh
-       qmk setup thpoll83/qmk_firmware -b PolyKybd
-       qmk compile -kb handwired/polykybd -km default
-       ```
-    3. The built `.uf2` file will be in the `qmk_firmware` directory
+    1. Open **PolyKybdHost** (system-tray icon).
+    2. Use the **firmware update** action — either the **release-update** flow (which fetches a
+       published keyboard-firmware release) or **Flash firmware .bin…** to pick a local `.bin`.
+    3. Confirm and let it transfer. Progress is shown as it streams the image to the keyboard.
+    4. Apply the update when prompted — the keyboard reboots into the new firmware.
     </Steps>
   </TabItem>
-  <TabItem label="macOS">
-    <Steps>
-    1. Install QMK CLI:
-       ```sh
-       brew install qmk/qmk/qmk
-       qmk setup thpoll83/qmk_firmware -b PolyKybd
-       ```
-    2. Build:
-       ```sh
-       qmk compile -kb handwired/polykybd -km default
-       ```
-    </Steps>
-  </TabItem>
-  <TabItem label="Linux">
-    <Steps>
-    1. Install QMK CLI:
-       ```sh
-       python3 -m pip install --user qmk
-       qmk setup thpoll83/qmk_firmware -b PolyKybd
-       ```
-    2. Build:
-       ```sh
-       qmk compile -kb handwired/polykybd -km default
-       ```
-    </Steps>
+  <TabItem label="From the command line">
+    The `polyctl` console tool can flash without the GUI:
+
+    ```sh
+    polyctl fw flash path/to/firmware.bin --apply
+    ```
+
+    `fw flash` streams progress to the terminal. Without `--apply` it stages the image; with
+    `--apply` it stages and then applies (reboots into) the new firmware.
+
+    You can also check the running version first:
+
+    ```sh
+    polyctl fw version
+    ```
   </TabItem>
 </Tabs>
 
-<Aside>
-You only need to connect one half during flashing. Repeat the process for the second half if needed (some firmware versions embed both halves in a single `.uf2`).
+<Aside type="tip">
+The HID flash path is gated on the device being *present* (answering identity queries), **not** on
+protocol compatibility — so this is the way to recover a keyboard that's on a mismatched protocol
+version.
 </Aside>
+
+## Fallback: UF2 bootloader drive
+
+Use this if the keyboard can't be reached over HID (e.g. a bad image left it unresponsive). It flashes
+the **`.uf2`** build, not the `.bin`.
+
+### Entering bootloader mode
+
+<Steps>
+1. Hold down the **BOOT button** on the PCB.
+2. While holding it, connect the **USB-C cable** to the half you're flashing.
+3. Release the button.
+4. The keyboard mounts as a USB drive called `RPI-RP2`.
+</Steps>
+
+### Copying the firmware
+
+Download the latest **`.uf2`** from the [firmware repo releases](https://github.com/thpoll83/qmk_firmware/releases)
+(or build your own — see below) and copy it onto the `RPI-RP2` drive. The drive unmounts automatically
+when flashing completes.
+
+<Aside>
+You only need to connect one half at a time. Repeat the process for the second half if needed.
+</Aside>
+
+## Building from source
+
+To build your own firmware image, see [Firmware Development](/development/firmware/) for
+the full toolchain setup and build commands. In short:
+
+```sh
+qmk compile -kb handwired/polykybd/split72 -km default   # or /split42
+```
+
+The build produces a `.uf2` (for the bootloader drive). For HID flashing, convert the ELF to a raw
+`.bin`:
+
+```sh
+arm-none-eabi-objcopy -O binary .build/<target>.elf .build/<target>.bin
+```
 
 ## Verifying the flash
 
-After the drive unmounts:
+After the update applies and the keyboard reboots:
 
-1. Disconnect and reconnect the USB-C cable (or connect both halves first)
-2. After 1–2 seconds, all 72 per-key displays should show characters
-3. Press keys to confirm they respond
+<Steps>
+1. Wait 1–2 seconds for the firmware to boot.
+2. All per-key displays should show characters.
+3. Press keys to confirm they respond, and check that both halves are active.
+</Steps>
 
 <Aside type="caution">
-If displays remain blank after multiple attempts, check the FPC cable connections — see the [Step-by-Step Build Guide](/polykybd-docs/assembly/step-by-step/).
+If displays stay blank after multiple attempts, check the FPC cable connections — see the
+[Step-by-Step Build Guide](/assembly/step-by-step/).
 </Aside>

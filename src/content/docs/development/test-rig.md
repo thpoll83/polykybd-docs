@@ -1,0 +1,43 @@
+---
+title: Test Rig & CI
+description: The Raspberry Pi hardware-in-the-loop station that flashes and tests PolyKybd firmware, and acts as a self-hosted CI runner.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**polykybd-ctnd** is a Raspberry Pi 4 hardware-in-the-loop (HIL) test and deploy station for the PolyKybd keyboard. It lets firmware changes be built in the cloud and then verified against **real hardware** automatically, with no physical button presses or replugging.
+
+- Repository: [github.com/thpoll83/polykybd-ctnd](https://github.com/thpoll83/polykybd-ctnd)
+
+## What it does
+
+The station:
+
+1. **Flashes QMK firmware to both keyboard halves over USB** — fully automated via GPIO-controlled BOOTSEL/RUN lines (a transistor low-side switch on each half's reset pads) plus per-port USB power switching, so no physical access to a bootloader button is needed.
+2. **Reads QMK's HID console debug output** from the connected keyboard.
+3. **Sends Raw HID commands** using the same protocol as PolyKybdHost (see the [HID Protocol Reference](/reference/hid-protocol/)), and asserts the responses.
+4. **Serves a touch-friendly web UI** on a 7" capacitive display (Flask + WebSocket), streaming logs and status in real time and exposing flash/test/update/runner controls.
+5. **Acts as a GitHub Actions self-hosted runner** (`runs-on: [self-hosted, polykybd-ctnd]`), so CI jobs in `qmk_firmware` can build firmware in the cloud and then run HIL tests on the real keyboard.
+
+## How CI uses it
+
+A workflow in `qmk_firmware` builds the firmware on cloud runners, then hands the resulting images to the station, which flashes both halves and runs the HIL test suite over Raw HID — identity/fresh-boot, language get/list (including the packed list), default layer, ACK/NACK error paths, overlay round-trips, and liveness checks. Each test reports as its own line in the job's Step Summary, with pass/fail/skip/xfail markers and an annotation per failure.
+
+Tests can carry gate markers (e.g. `min_protocol`, `min_fw`, `xfail`) so a check that depends on firmware not yet deployed is **skipped or tolerated** rather than failing the run, and un-skips itself automatically once a firmware that satisfies it is flashed.
+
+## Forcing master / slave on the rig
+
+On a normal keyboard the USB half becomes the master based on the VBUS pin. On the rig **both** halves are cabled to the Pi, so both would read VBUS high and both detect as master. The HIL build resolves this at **compile time, per side**:
+
+- `-e POLYKYBD_HIL=left` builds the **master** image (left half).
+- `-e POLYKYBD_HIL=right` builds the **slave** image (right half) — it calls `usb_disconnect()` so it does not enumerate as a second keyboard.
+
+The role is fixed at build time and is **not** read from EE_HANDS. The rig must flash the `*_hil_left` image to the left half and the `*_hil_right` image to the right half; flashing a single master image to both sides makes both enumerate as master (a real bug the HIL suite catches).
+
+<Aside type="note">
+This is dev-infrastructure for maintainers — you do not need the rig to build or flash firmware yourself. Normal user firmware never defines `POLYKYBD_HIL` and keeps standard VBUS-based master detection. See the [polykybd-ctnd repository](https://github.com/thpoll83/polykybd-ctnd) for setup and operation.
+</Aside>
+
+## Self-deploying
+
+The rig keeps itself current: a systemd timer fetches the tracked branch every few minutes and, when it gains commits **and the rig is idle**, fast-forwards, reinstalls dependencies if needed, and restarts the station — never interrupting an in-progress flash or test run. An **UPDATE** badge in the touch UI can also trigger this on demand.

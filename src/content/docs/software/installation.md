@@ -97,14 +97,23 @@ Always run PolyKybdHost from the virtual environment (`source .venv/bin/activate
 
 ## Startup options
 
+A plain `python -m polyhost` launch starts the **tray GUI** and brings up the background **daemon** that owns the keyboard (spawning it if one isn't already running). The other flags select different startup modes:
+
 ```sh
-python -m polyhost                  # standard
+python -m polyhost                  # GUI + daemon (default)
+python -m polyhost --no-daemon      # legacy in-process startup (development)
+python -m polyhost --connect        # run the GUI as a client of a running daemon
+python -m polyhost --headless       # run only the daemon, no GUI
 python -m polyhost --debug 1        # basic debug logging
 python -m polyhost --debug 2        # verbose debug logging
 python -m polyhost --host <IP>      # forwarder mode (remote machine)
 python -m polyhost --portable       # skip autostart registration
 ```
 
+<Aside>
+The daemon/client split is explained in [Architecture & Daemon Mode](/software/architecture/). Use `--no-daemon` while developing so your code edits run in the same process as the GUI. The `polyctl` command-line tool drives a running daemon — see [Command Line](/software/cli/).
+</Aside>
+
 ## Autostart
 
-PolyKybdHost can register itself to launch at login. Run it once normally — on first launch it will offer to add itself to your OS startup entries. Use `--portable` to skip this.
+PolyKybdHost can register itself to launch at login. Run it once normally — on first launch it will offer to add itself to your OS startup entries (a non-elevated scheduled task on Windows, a `.desktop` entry on Linux, a `launchd` plist on macOS). Use `--portable` to skip this and remove any existing entry.

@@ -7,32 +7,48 @@ import { Aside } from '@astrojs/starlight/components';
 
 ## What are layers?
 
-Layers work like the Shift key but for your entire layout. You can define multiple complete keymaps and switch between them with a dedicated key. PolyKybd's per-key displays make layers instantly visible — every key shows its current function on the active layer.
+Layers work like the Shift key but for your entire layout. You can define multiple complete keymaps
+and switch between them with a dedicated key. PolyKybd's per-key displays make layers instantly
+visible — every key shows its current function on the active layer.
 
-## The default keymap
+PolyKybd uses QMK's **dynamic keymap** (VIA-compatible) with **9 layers**, so remaps can be written
+to the keyboard at runtime without recompiling.
 
-The default keymap is defined in:
+## Where the keymap lives
+
+The shared keymap *logic* (rendering, HID handling, language selection, and the QMK callbacks) is in:
 
 ```
-keyboards/handwired/polykybd/keymaps/default/keymap.c
+keyboards/handwired/polykybd/poly_keymap.c
 ```
 
-in the [PolyKybd firmware repo](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd).
+Each variant's default keymap *data* — the `keymaps[]` array and `encoder_map[]` — is in its own
+variant directory:
+
+```
+keyboards/handwired/polykybd/split72/keymaps/default/keymap.c
+keyboards/handwired/polykybd/split42/keymaps/default/keymap.c
+```
+
+Both live in the [PolyKybd firmware repo](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd).
+See [Keyboard Variants](/firmware/variants/) for why the logic is shared.
 
 ## Customizing with PolyKybdHost
 
-The easiest way to remap keys is through the PolyKybdHost keymap editor, which writes changes directly to the keyboard without needing to recompile firmware:
+The easiest way to remap keys is through the PolyKybdHost keymap editor, which writes changes
+directly to the keyboard's dynamic keymap without needing to recompile firmware:
 
 1. Open PolyKybdHost (system tray icon → Layout Editor)
 2. Click any key to select it
 3. Choose the new keycode from the browser
 4. The change is written immediately to the keyboard
 
-See [Keymap Editor](/polykybd-docs/software/keymap-editor/) for details.
+See [Keymap Editor](/software/keymap-editor/) for details.
 
 ## Customizing in QMK source
 
-For deeper changes (new layers, macros, tap-dance), edit `keymap.c` directly:
+For deeper changes (new layers, macros, tap-dance), edit the variant's `keymap.c` directly. The
+`keymaps[]` array is data only:
 
 ```c
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -45,14 +61,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 ```
 
-Then rebuild and flash the firmware.
+Then rebuild and flash the firmware (target `handwired/polykybd/split72` or `/split42`).
 
-QMK's full keycode reference is at [docs.qmk.fm/keycodes](https://docs.qmk.fm/keycodes). Everything documented there works on PolyKybd.
+QMK's full keycode reference is at [docs.qmk.fm/keycodes](https://docs.qmk.fm/keycodes). Everything
+documented there works on PolyKybd.
 
 ## Layer indicator on the status display
 
-The 0.96" status displays (if installed) show the current active layer, along with other status information like the unicode input mode and host OS selection.
+The status OLED shows the current active layer, along with other status information like the unicode
+input mode and host OS selection.
 
 <Aside type="tip">
-Adding a new keymap without modifying the default is the safest way to experiment. Use `qmk new-keymap -kb handwired/polykybd -km my_keymap` to get started.
+Adding a new keymap without modifying the default is the safest way to experiment. Use
+`qmk new-keymap -kb handwired/polykybd/split72 -km my_keymap` (or `/split42`) to get started.
 </Aside>

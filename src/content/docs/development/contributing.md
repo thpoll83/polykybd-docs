@@ -3,7 +3,7 @@ title: Contributing
 description: How to contribute to the PolyKybd documentation, firmware, hardware, and host software.
 ---
 
-PolyKybd is fully open. Contributions are welcome across all four repositories.
+PolyKybd is fully open. Contributions are welcome across all repositories.
 
 ## Where to contribute
 
@@ -14,6 +14,7 @@ PolyKybd is fully open. Contributions are welcome across all four repositories.
 | QMK firmware | [thpoll83/qmk_firmware](https://github.com/thpoll83/qmk_firmware) — branch `PolyKybd` |
 | Host software | [thpoll83/PolyKybdHost](https://github.com/thpoll83/PolyKybdHost) |
 | Display rendering | [thpoll83/adafruit-gfx-library](https://github.com/thpoll83/adafruit-gfx-library) |
+| Test rig / CI | [thpoll83/polykybd-ctnd](https://github.com/thpoll83/polykybd-ctnd) — the [HIL test & deploy station](/development/test-rig/) |
 
 ## Contributing to the docs
 
@@ -36,7 +37,7 @@ The documentation is licensed under **CC BY 4.0**. By contributing, you agree th
 
 ## Contributing to the firmware
 
-See [Firmware Development](/polykybd-docs/development/firmware/) for setup instructions. For significant changes, open an issue first to discuss the approach.
+See [Firmware Development](/development/firmware/) for setup instructions. For significant changes, open an issue first to discuss the approach.
 
 ## Reporting issues
 

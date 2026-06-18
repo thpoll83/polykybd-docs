@@ -39,9 +39,17 @@ When focus changes on a remote machine, it sends the window title and app info o
    python -m polyhost --host-file /path/to/host.txt
    ```
 
+By default the forwarder uses the legacy plaintext TCP relay on **port 50162**. Make sure the keyboard machine's firewall allows inbound TCP on that port.
+
 <Aside>
-Make sure the keyboard machine's firewall allows inbound TCP connections on the PolyKybdHost port. Check the Settings dialog or logs for the port number in use.
+Check the Settings dialog or logs for the port number in use if you have changed it from the default.
 </Aside>
+
+## Advanced: secured window-report RPC
+
+For setups where you'd rather not expose the device-control surface over the network, there is an opt-in, authenticated **`window.report` RPC** path on **port 50163**. It is a *separate* listener from the default plaintext relay: it serves only window reports — it carries no device-control, firmware-flash, or bootloader access — and is gated by its own authentication key.
+
+It is **off by default**. Enable it on the keyboard machine (via the `window_report_network_enabled` setting) and have the forwarder push to it with `--report-rpc`. The plaintext relay on port 50162 remains the default unless you switch.
 
 ## Use case
 

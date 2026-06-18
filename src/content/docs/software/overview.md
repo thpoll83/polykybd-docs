@@ -13,7 +13,16 @@ Without PolyKybdHost, the keyboard works as a standard QMK keyboard — all keys
 - Pushes keymap and display updates to the keyboard over USB HID
 - Manages language/unicode mode and display brightness
 - Provides a keymap editor for remapping keys without recompiling firmware
+- Flashes new firmware to the keyboard over HID
 - Supports multi-machine setups — one keyboard, multiple computers
+
+## Daemon and client model
+
+As of the latest version, PolyKybdHost runs as two cooperating parts. The **operational core** — which owns the HID device, tracks the active window, and handles reconnects — runs in a background **daemon** process. The familiar **tray GUI** attaches to that daemon as a **client** over a local control socket; if no daemon is running, launching the GUI spawns one automatically.
+
+This means the GUI can come and go (quit it, restart it, run it on demand) without ever dropping the keyboard connection or losing reconnect state — the daemon keeps the device alive. A small stdlib-only command-line tool, [`polyctl`](/software/cli/), talks to the same daemon, so you can script the keyboard or drive it without any GUI at all.
+
+For development you can opt out with `--no-daemon` (everything runs in-process). See [Architecture & Daemon Mode](/software/architecture/) for the full picture.
 
 ## Operating modes
 
@@ -21,7 +30,7 @@ Without PolyKybdHost, the keyboard works as a standard QMK keyboard — all keys
 
 **Forwarder mode:** PolyKybdHost can also run on a remote machine that has no keyboard attached. In this configuration, a `PolyForwarder` instance watches the active window on the remote machine and relays the window title and app info over TCP to the normal-mode instance on the keyboard machine. This lets a single keyboard serve multiple computers — the displays always reflect what is focused on whichever machine the user is currently working at.
 
-See [Multi-Machine Setup](/polykybd-docs/software/multi-machine/) for details.
+See [Multi-Machine Setup](/software/multi-machine/) for details.
 
 ## System requirements
 

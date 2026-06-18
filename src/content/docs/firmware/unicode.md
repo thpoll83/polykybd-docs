@@ -1,15 +1,44 @@
 ---
-title: Unicode & Language Input
-description: How to configure OS unicode input modes for the PolyKybd.
+title: Languages & Unicode Input
+description: Switch keyboard-language layouts from the language layer, and configure OS unicode input modes.
 ---
 
 import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
-PolyKybd supports unicode input for emoji, accented characters (Æ, Ç, È, …), and any other Unicode codepoint. Because each OS handles unicode input differently, you must first tell the keyboard which mode to use.
+PolyKybd does two related things with languages: it can **switch its on-screen keyboard layout**
+between ~156 languages, and it can **type Unicode characters** (emoji, accented letters) on any OS.
 
-## Selecting your OS input mode
+## The language layer
 
-Press the Language/Globe key [ 🌐 ] on your PolyKybd. This opens the OS selection. Choose the entry matching your operating system and preferred input method:
+PolyKybd ships with around **156 keyboard-language layouts**. Press the **Language/Globe** key
+[ 🌐 ] to open the language picker. On this layer each key shows a **country flag** and its
+**`xx-YY` language code** (for example `de-DE`, `fr-FR`, `es-MX`), with a frame drawn around the
+currently selected language.
+
+Pick a language and PolyKybd does two things at once:
+
+- **Switches the keycap legends** so every key shows the characters for that layout.
+- **Tells the host OS to switch input language**, so what you type matches what the keys show.
+
+Your selection persists across reboots. Because the language list is shared by both hardware
+variants, [split72 and split42](/firmware/variants/) support the same set of languages.
+
+<Aside type="tip">
+The layouts cover everything from US/UK/DE/FR/ES variants to minority and regional locales. Some are
+folds (same physical layout, different OS locale), others are full distinct layouts with their own
+AltGr legends.
+</Aside>
+
+## Unicode input
+
+PolyKybd also supports Unicode input for emoji, accented characters (Æ, Ç, È, …), and any other
+Unicode codepoint. Because each OS handles Unicode input differently, you must first tell the
+keyboard which mode to use.
+
+### Selecting your OS input mode
+
+Press the Language/Globe key [ 🌐 ] to reach the OS selection. Choose the entry matching your
+operating system and preferred input method:
 
 | Key label | Use on |
 |---|---|
@@ -22,7 +51,7 @@ Press the Language/Globe key [ 🌐 ] on your PolyKybd. This opens the OS select
 
 Your selection is saved to the keyboard and persists across reboots.
 
-## Per-OS setup
+### Per-OS setup
 
 <Tabs>
   <TabItem label="macOS">
@@ -35,12 +64,14 @@ Your selection is saved to the keyboard and persists across reboots.
     Then press **Mac** on the PolyKybd language selector.
   </TabItem>
   <TabItem label="Linux">
-    IBus must be installed and running as your input method framework. Most major desktop environments (GNOME, KDE) support this.
+    IBus must be installed and running as your input method framework. Most major desktop
+    environments (GNOME, KDE) support this.
 
     Press **Lnx** on the PolyKybd language selector.
   </TabItem>
   <TabItem label="Windows (basic)">
-    Windows supports unicode input up to code point U+FFFF (this excludes emoji). First enable hex numpad input:
+    Windows supports unicode input up to code point U+FFFF (this excludes emoji). First enable hex
+    numpad input:
 
     ```bat
     reg add "HKCU\Control Panel\Input Method" -v EnableHexNumpad -t REG_SZ -d 1
@@ -51,7 +82,8 @@ Your selection is saved to the keyboard and persists across reboots.
     Then press **Win** on the PolyKybd language selector.
 
     <Aside>
-    This method does not support emoji or characters above U+FFFF. For full unicode support on Windows, use WinCompose instead.
+    This method does not support emoji or characters above U+FFFF. For full unicode support on
+    Windows, use WinCompose instead.
     </Aside>
   </TabItem>
   <TabItem label="Windows (WinCompose)">
@@ -63,8 +95,11 @@ Your selection is saved to the keyboard and persists across reboots.
   </TabItem>
 </Tabs>
 
-## Typing unicode characters
+### Typing unicode characters
 
-Once your OS mode is set, press any key that has a unicode character assigned in the keymap (such as an emoji or accented character). The keyboard sends the appropriate input sequence for your OS automatically.
+Once your OS mode is set, press any key that has a unicode character assigned in the keymap (such as
+an emoji or accented character). The keyboard sends the appropriate input sequence for your OS
+automatically.
 
-Unicode character assignments are configured in the QMK keymap source. See [Keymaps & Layers](/polykybd-docs/firmware/keymaps/) for how to modify them.
+Unicode character assignments are configured in the QMK keymap source. See
+[Keymaps & Layers](/firmware/keymaps/) for how to modify them.

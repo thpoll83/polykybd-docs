@@ -88,5 +88,5 @@ These switches have obstructions that cannot be cleared without damaging the swi
 | Gateron G Pro 3.0 | Smaller LED slit opening |
 
 <Aside type="tip">
-If you have tested a switch not listed here, please [contribute](/polykybd-docs/development/contributing/) your findings to this page.
+If you have tested a switch not listed here, please [contribute](/development/contributing/) your findings to this page.
 </Aside>

@@ -92,7 +92,7 @@ A build video is also available: [Watch on YouTube](https://www.youtube.com/@pol
 
 15. **Flash the firmware**
 
-    See [Flashing the Firmware](/polykybd-docs/firmware/flashing/) for the full procedure.
+    See [Flashing the Firmware](/firmware/flashing/) for the full procedure.
 
 16. **Connect both halves**
 
@@ -104,5 +104,5 @@ A build video is also available: [Watch on YouTube](https://www.youtube.com/@pol
 
 18. **Install PolyKybdHost**
 
-    See [Installation](/polykybd-docs/software/installation/) to install the host software and bring the per-key displays to life.
+    See [Installation](/software/installation/) to install the host software and bring the per-key displays to life.
 </Steps>

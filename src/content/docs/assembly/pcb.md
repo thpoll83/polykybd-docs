@@ -47,4 +47,4 @@ The full KiCad 7 projects are in the repo if you want to make your own modificat
 - `poly_kybd/poly_kb_wave_right2_plate.kicad_pro` — Right plate
 - `poly_kybd/poly_kb_wave_left2_plate.kicad_pro` — Left plate
 
-See [Hardware & PCB Modification](/polykybd-docs/development/hardware/) for more on working with the KiCad sources.
+See [Hardware & PCB Modification](/development/hardware/) for more on working with the KiCad sources.

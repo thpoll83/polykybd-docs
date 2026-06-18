@@ -1,19 +1,24 @@
 ---
-title: What is PolyKybd?
+title: PolyKybd
 description: A split ergonomic keyboard where every key has its own tiny OLED display.
 template: splash
 hero:
-  tagline: A split ergonomic keyboard where every key has its own tiny OLED display.
+  tagline: A split ergonomic keyboard where every key has its own tiny OLED display — driven live by host software that follows your active window.
   image:
-    file: ../../assets/houston.webp
+    file: ../../assets/polykybd-logo.svg
   actions:
     - text: Start Building
-      link: /polykybd-docs/assembly/overview/
+      link: /assembly/overview/
       icon: right-arrow
       variant: primary
+    - text: How it fits together
+      link: /introduction/architecture/
+      icon: open-book
+      variant: minimal
     - text: Get a Kit
       link: https://www.crowdsupply.com/polykybd/polykybd
       icon: external
+      variant: minimal
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
@@ -22,37 +27,41 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 
 <CardGrid>
   <Card title="72 per-key displays" icon="laptop">
-    Every single key has a 0.42" OLED screen showing its current function — no more guessing what your layers do.
+    Every key has its own 72×40 px OLED showing its current function — layers, languages and app overlays are visible at a glance, no guessing.
   </Card>
   <Card title="Fully split ergonomic" icon="puzzle">
-    Two halves connected by a USB-C cable, letting you position each hand exactly where it feels natural.
+    Two halves linked over a full-duplex serial cable, so each hand sits exactly where it feels natural. Available as **Split72** and the smaller **Split42**.
   </Card>
   <Card title="Context-aware overlays" icon="setting">
-    The host software tracks your active window and updates every key label automatically when you switch apps.
+    The host software tracks your active window and re-labels every key automatically when you switch apps.
   </Card>
-  <Card title="Open hardware" icon="open-book">
-    Full KiCad schematics, gerber files, STL case files, and QMK firmware — everything is open.
+  <Card title="Open hardware & firmware" icon="open-book">
+    KiCad schematics, gerbers, STL case files, a QMK firmware fork and the Python host app — every layer is open.
   </Card>
 </CardGrid>
 
 ## The ecosystem
 
-PolyKybd is made up of four open-source components that work together:
+PolyKybd is built from a handful of open-source repositories that work together:
 
 | Component | What it is |
 |---|---|
 | [PolyKybd hardware](https://github.com/thpoll83/PolyKybd) | KiCad PCBs, 3D-printable case and key stems, assembly guide |
-| [QMK firmware](https://github.com/thpoll83/qmk_firmware) | The keyboard firmware running on the RP2040 microcontroller |
-| [PolyKybdHost](https://github.com/thpoll83/PolyKybdHost) | Python host app (Windows / macOS / Linux) that drives the per-key displays |
-| [Adafruit GFX (fork)](https://github.com/thpoll83/adafruit-gfx-library) | Rendering library used by the firmware to draw icons and text on the displays |
+| [QMK firmware](https://github.com/thpoll83/qmk_firmware) | The keyboard firmware (RP2040) — branch `PolyKybd`, variants `split72` & `split42` |
+| [PolyKybdHost](https://github.com/thpoll83/PolyKybdHost) | Python host app (Windows / macOS / Linux) — daemon + tray GUI + `polyctl` CLI |
+| [Adafruit GFX (fork)](https://github.com/thpoll83/adafruit-gfx-library) | Rendering library + `fontconvert` used to draw icons and text on the displays |
+| [PolyKybd CTND](https://github.com/thpoll83/polykybd-ctnd) | Raspberry Pi hardware-in-the-loop test & CI rig (development infrastructure) |
+
+See [Architecture & Ecosystem](/introduction/architecture/) for how these pieces talk to each other.
 
 ## Where to start
 
-- Want to build one? → [Assembly Overview](/polykybd-docs/assembly/overview/)
-- Already have one? → [Install PolyKybdHost](/polykybd-docs/software/installation/)
-- Want to customize? → [Keymaps & Layers](/polykybd-docs/firmware/keymaps/)
-- Want to develop? → [Development](/polykybd-docs/development/firmware/)
+- **Want to build one?** → [Assembly Overview](/assembly/overview/)
+- **Already have one?** → [Install PolyKybdHost](/software/installation/)
+- **Want to customize?** → [Keymaps & Layers](/firmware/keymaps/)
+- **Want to develop?** → [Firmware Development](/development/firmware/)
+- **Want the wire details?** → [HID Protocol Reference](/reference/hid-protocol/)
 
 ## Support the project
 
-PolyKybd is an independent open hardware project. If you find it useful, consider supporting it via [Ko-fi](https://ko-fi.com/polykb).
+PolyKybd is an independent open hardware project. If you find it useful, consider supporting it via [Ko-fi](https://ko-fi.com/polykb) or joining the [Discord](https://discord.gg/gW8JescH7M).
