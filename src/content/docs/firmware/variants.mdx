@@ -18,7 +18,7 @@ the keyboard lands on both at once.
 | Pointing device | Cirque trackpad | No |
 | Status OLED | 128×64 | 128×32 |
 | Per-keycap OLEDs | 72×40 px monochrome | 72×40 px monochrome |
-| Build target | `handwired/polykybd/split72` | `handwired/polykybd/split42` |
+| Build target | `polykybd/split72` | `polykybd/split42` |
 
 <Aside>
 **split42 was renamed from `corne42` in 2026-06.** Same hardware, PID and `LAYOUT_crkbd`; the old
@@ -35,7 +35,7 @@ Each variant's default keymap file is **data only** — it holds the `keymaps[]`
 `encoder_map[]`, and (on RGB variants) the LED config:
 
 ```
-keyboards/handwired/polykybd/
+keyboards/polykybd/
 ├── poly_keymap.c                      ← shared logic, both variants
 ├── split72/
 │   └── keymaps/default/keymap.c       ← split72 data only
@@ -44,7 +44,7 @@ keyboards/handwired/polykybd/
 ```
 
 Variant differences resolve at **compile time**: `polykybd.h` includes the active variant header
-(selected by QMK's `-DKEYBOARD_handwired_polykybd_<variant>`), and `RGB_MATRIX_ENABLE` /
+(selected by QMK's `-DKEYBOARD_polykybd_<variant>`), and `RGB_MATRIX_ENABLE` /
 `POINTING_DEVICE_ENABLE` guard the RGB and trackpad code paths.
 
 <Aside type="tip">
@@ -58,9 +58,9 @@ features. When customising, edit the per-variant `keymap.c` for *data*, and `pol
 The build target selects the variant:
 
 ```sh
-qmk compile -kb handwired/polykybd/split72 -km default
+qmk compile -kb polykybd/split72 -km default
 # or
-qmk compile -kb handwired/polykybd/split42 -km default
+qmk compile -kb polykybd/split42 -km default
 ```
 
 See [Firmware Development](/development/firmware/) for the full toolchain setup.

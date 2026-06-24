@@ -19,15 +19,15 @@ to the keyboard at runtime without recompiling.
 The shared keymap *logic* (rendering, HID handling, language selection, and the QMK callbacks) is in:
 
 ```
-keyboards/handwired/polykybd/poly_keymap.c
+keyboards/polykybd/poly_keymap.c
 ```
 
 Each variant's default keymap *data* — the `keymaps[]` array and `encoder_map[]` — is in its own
 variant directory:
 
 ```
-keyboards/handwired/polykybd/split72/keymaps/default/keymap.c
-keyboards/handwired/polykybd/split42/keymaps/default/keymap.c
+keyboards/polykybd/split72/keymaps/default/keymap.c
+keyboards/polykybd/split42/keymaps/default/keymap.c
 ```
 
 Both live in the [PolyKybd firmware repo](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd).
@@ -61,7 +61,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 ```
 
-Then rebuild and flash the firmware (target `handwired/polykybd/split72` or `/split42`).
+Then rebuild and flash the firmware (target `polykybd/split72` or `/split42`).
 
 QMK's full keycode reference is at [docs.qmk.fm/keycodes](https://docs.qmk.fm/keycodes). Everything
 documented there works on PolyKybd.
@@ -73,5 +73,5 @@ input mode and host OS selection.
 
 <Aside type="tip">
 Adding a new keymap without modifying the default is the safest way to experiment. Use
-`qmk new-keymap -kb handwired/polykybd/split72 -km my_keymap` (or `/split42`) to get started.
+`qmk new-keymap -kb polykybd/split72 -km my_keymap` (or `/split42`) to get started.
 </Aside>
