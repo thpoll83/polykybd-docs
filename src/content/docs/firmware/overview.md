@@ -22,7 +22,7 @@ PolyKybd is a **heavily customised QMK fork** maintained on the `PolyKybd` branc
 The keyboard-specific files live at:
 
 ```
-keyboards/handwired/polykybd/
+keyboards/polykybd/
 ```
 
 The shared keymap logic — display rendering, the HID command handler, language selection,

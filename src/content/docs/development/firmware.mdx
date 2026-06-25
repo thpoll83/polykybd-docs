@@ -9,10 +9,10 @@ The PolyKybd firmware is a heavily customised QMK build that runs on the keyboar
 
 ## Repository structure
 
-The firmware lives on the `PolyKybd` branch of the QMK fork: [github.com/thpoll83/qmk_firmware](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd), under `keyboards/handwired/polykybd/`.
+The firmware lives on the `PolyKybd` branch of the QMK fork: [github.com/thpoll83/qmk_firmware](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd), under `keyboards/polykybd/`.
 
 ```
-keyboards/handwired/polykybd/
+keyboards/polykybd/
 ├── config.h            — pin assignments, PROTOCOL_VERSION, feature flags
 ├── halconf.h           — HAL configuration (RP2040)
 ├── mcuconf.h           — MCU configuration
@@ -70,9 +70,9 @@ There is no `bin/qmk` in this fork — the full CLI lives in `lib/python`, which
 Build a specific variant — `split72` or `split42`:
 
 ```sh
-qmk compile -kb handwired/polykybd/split72 -km default
+qmk compile -kb polykybd/split72 -km default
 # or equivalently:
-make handwired/polykybd/split72:default
+make polykybd/split72:default
 ```
 
 The output `.uf2` lands in the repo root and `.build/`. The `.uf2` is used for manual bootloader-drive recovery — see [Flashing the Firmware](/firmware/flashing/).
@@ -82,8 +82,8 @@ The output `.uf2` lands in the repo root and `.build/`. The `.uf2` is used for m
 The deliverable for in-place flashing over HID (via PolyKybdHost's firmware updater) is the raw RP2040 **`.bin`**, not the `.uf2`. Convert the build's ELF:
 
 ```sh
-arm-none-eabi-objcopy -O binary .build/handwired_polykybd_split72_default.elf \
-    .build/handwired_polykybd_split72_default.bin
+arm-none-eabi-objcopy -O binary .build/polykybd_split72_default.elf \
+    .build/polykybd_split72_default.bin
 ```
 
 PolyKybdHost flashes this raw image over the HID firmware-update protocol; the `.uf2` is only needed if you have to recover through the RP2040 bootloader drive.
@@ -91,9 +91,9 @@ PolyKybdHost flashes this raw image over the HID firmware-update protocol; the `
 ## Adding a new keymap
 
 ```sh
-qmk new-keymap -kb handwired/polykybd/split72 -km my_keymap
-# Edit keyboards/handwired/polykybd/split72/keymaps/my_keymap/keymap.c
-qmk compile -kb handwired/polykybd/split72 -km my_keymap
+qmk new-keymap -kb polykybd/split72 -km my_keymap
+# Edit keyboards/polykybd/split72/keymaps/my_keymap/keymap.c
+qmk compile -kb polykybd/split72 -km my_keymap
 ```
 
 Keep keymap files **data only** — behaviour belongs in the shared `poly_keymap.c` so both variants stay in sync.
