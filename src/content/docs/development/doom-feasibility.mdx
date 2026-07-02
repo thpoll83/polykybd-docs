@@ -115,10 +115,11 @@ Goal stated up front: keep RAM tiny by keeping everything possible in flash. Tha
 
 ```
 0x000000 ─ 0x200000  firmware (2 MB linker cap)     ~0.76 MB used
-                     → engine code ~0.3–0.5 MB fits: image ends ~1.1–1.3 MB ✓
+                     → dev build: engine ~0.3–0.5 MB fits (image ~1.1–1.3 MB) ✓
+                     → ship build: only a ~2–4 KB pack loader (see next section) ✓
 0x200000 ─ 0x400000  fw-update staging              untouched ✓
 0x400000 ─ 0x600000  font-pack slots (2 MB window)  untouched ✓
-0x600000 ─ 0x7FE000  ~1.99 MB FREE                  → DOOM1.WHD lives here ✓
+0x600000 ─ 0x7FE000  ~1.99 MB FREE                  → DoomPack: engine code + DOOM1.WHD ✓
 0x7FE000 ─ 0x800000  EEPROM wear-leveling journal   untouched ✓
 ```
 
@@ -129,6 +130,28 @@ Goal stated up front: keep RAM tiny by keeping everything possible in flash. Tha
 
 Savegames: skip in v1 (EEPROM journal is 8 KB and shared; a dedicated 4 KB flash sector later if anyone insists).
 
+## Keeping the shipping image lean: `#ifdef` vs. an executable flash pack
+
+Linking the engine into the main image costs ~0.3–0.5 MB of the firmware partition. It *fits* (0.76 → ~1.2 MB of 2 MB), but that headroom is the same headroom language/font growth lives on, and it's dead weight in every keyboard that never triggers the egg. Two ways to not pay it:
+
+### Option 1 — `#ifdef POLYKYBD_DOOM`, separate sources
+
+All game code in its own files, compiled only when the flag is set. Zero bytes, zero risk in the default build — but then the easter egg isn't *in* the shipping firmware anymore; it's a special build, which is really the "cartridge" option wearing a moustache. Right answer for **development** (full symbols, normal debugging, one link), wrong answer for shipping a discoverable egg.
+
+### Option 2 — a flash pack that contains executable code (yes, this works)
+
+The question was: *can the pack really contain code — jump to it and it runs?* On the RP2040, **yes, structurally**: the entire 8 MB QSPI flash is XIP-memory-mapped at `0x10000000`, and the Cortex-M0+ executes from any XIP address exactly as it executes the firmware itself (which also lives in that window). The resource region at flash offset `0x600000` **is** executable memory at `0x10600000` — `fontpack.c` already dereferences this region for font data; code is the same bus, plus the 16 KB XIP cache. It is *not* quite "point the PC at it and go" — three conditions make it work, all standard:
+
+1. **Linked for its address.** No position-independent-code contortions (ROPI/RWPI on M0+ GCC is misery) — none are needed, because the slot address is *fixed by the flash map*. The engine links as its own tiny ELF at `0x10600000` with a dedicated linker script. The slot starts with a header: magic (`PlyX`), ABI version, entry-point offset, `.data`/`.bss` layout, expected RAM base, CRC32 — the same shape as a `PlyF` font bundle, one field richer.
+2. **Its RAM has to exist at a known address.** Doom's globals (`.data`/`.bss`) need a home. The firmware pins the borrowed overlay pool at a **fixed linker address** (dedicated section), and the pack's linker script places its RAM there. On entry the loader (or the pack's own init) copies `.data` from flash and zeroes `.bss` — a five-line crt0. The header's *expected RAM base* is verified against the firmware's actual pool address before the jump, so an ABI mismatch refuses loudly instead of corrupting memory.
+3. **Firmware services go through a call table, not symbols.** Firmware symbol addresses move every build, so the pack never links against them. The firmware passes one struct of function pointers — `blit_tile()`, `status_oled()`, `next_ticcmd()`, `millis()`, `log()` — and the pack exposes one entry point: `int doom_main(const doom_api_t *api)`. The jump is a C function-pointer call (entry address with the Thumb bit set). Version field in both directions gates drift.
+
+What this buys: the shipping firmware carries only the **loader + API table + trigger, ~2–4 KB**. Code and WAD travel together as one pack, flashed to **both halves** through the same bridged `fw_staging` flow as a font bundle, CRC-validated at load, version-advertised in `GET_ID` like the v6 bundle block. No pack flashed → the trigger shrugs. A corrupt pack fails CRC/ABI check → the loader declines. And the 2 MB firmware-partition headroom stays untouched for its real job.
+
+Hot-path caveat: XIP execution through the 16 KB cache is fine for the bulk of the engine, but the innermost render loops will want to live in RAM — the pack copies its own hot functions into its arena at init, the same trick as pico-sdk's `__not_in_flash_func`, no firmware involvement.
+
+**Recommendation: both, in sequence.** Develop and validate under `#ifdef POLYKYBD_DOOM` (monolithic image on a dev keyboard — debuggable, no ABI layer in the way). Ship as the executable pack once the API surface between engine and firmware has stopped moving. The `#ifdef` build stays in-tree permanently as the debug harness; the pack is just the same objects re-linked at `0x10600000`.
+
 ## Easter egg vs. custom firmware
 
 Three ways to package it:
@@ -136,9 +159,9 @@ Three ways to package it:
 | | **A. Easter egg in the shipping firmware** (recommended) | B. "Cartridge" firmware | C. Host-streamed demo |
 |---|---|---|---|
 | What it is | Engine linked into normal firmware; hidden trigger; borrows overlay RAM at runtime | Dedicated Doom-only image, temporarily flashed via the existing HID staging+apply, reflash QMK after | PolyKybdHost runs Doom on the PC and streams dithered frames as ROI overlay updates (cmds `0x12`/`0x13`) |
-| Firmware change | Large (the port), but zero *architectural* change — same partitions, same protocols | The port, minus all coexistence constraints (all 264 KB RAM, no QMK) | **None at all** |
+| Firmware change | Large (the port), but zero *architectural* change — same partitions, same protocols. Shipping image grows by only the ~2–4 KB pack loader (engine code ships in the DoomPack, see above) | The port, minus all coexistence constraints (all 264 KB RAM, no QMK) | **None at all** |
 | The "wow" factor | Maximum — *the keyboard* runs Doom, discoverable in the wild | High, but it's visibly a stunt cartridge, and the keyboard stops being a keyboard | Low-medium — the keyboard *displays* Doom (~3–5 fps over the 64 KB/s HID channel, master half only) |
-| Risk to daily use | Main risk: image size + a mode flag; game code is dead weight unless triggered | None to the shipped firmware | None |
+| Risk to daily use | A mode flag + a loader that declines bad packs; no image-size cost in the pack model | None to the shipped firmware | None |
 | Effort | High | High (same port) + host flashing UX | **A weekend** |
 
 **Recommendation: A**, with **C** first as a cheap teaser. C needs no firmware work at all and validates the whole visual concept (viewport mapping, dithering, the window-blind look) before anyone commits to the port. B is what A degrades to only if the engine genuinely cannot coexist with QMK's ~43 KB — the numbers above say it can.
@@ -155,6 +178,7 @@ The easter-egg trigger should be cheap and undiscoverable-by-accident: typing **
 | Lockstep tic sync: `USER_SYNC_DOOM_TIC` transaction, sequence numbers + redundant-tic window, column-range render restriction per half | ~1 week (protocol is small; determinism validation is the real test — run both halves side by side and let them diverge or not) |
 | Overlay-pool handoff + game-mode flag + input swallow + exit/restore path | days |
 | WHD delivery: `doomwad` staging slot + `polyctl doom install` | 1–2 days (machinery exists) |
+| Executable-pack ship path: pack linker script (`0x10600000`), `PlyX` header + CRC/ABI checks, loader + `doom_api_t` call table, pinned RAM section for the pool | ~1 week (after the `#ifdef` build is stable — same objects, re-linked) |
 | HIL/rig: keep-out — assert game mode is unreachable without the trigger; GET_ID stays answerable in game mode | 1 day |
 
 **Honest overall rating: ambitious but genuinely feasible.** Every hard resource constraint checks out with margin on paper; the schedule risk is concentrated in one place (extracting rp2040-doom from its native build), not spread across unknowns.
@@ -162,8 +186,8 @@ The easter-egg trigger should be cheap and undiscoverable-by-accident: typing **
 ## Verdict
 
 - **Can it run Doom?** Yes — across **both halves' keycaps** at native vertical resolution, each half simulating and rendering its own side in input-lockstep (Doom's own netgame model), 10–20 fps estimated with headroom to spare since each RP2040 only renders 160 columns. WASD included by definition.
-- **Custom firmware needed?** No — an easter egg in the shipping image is the right call. The engine fits the 2 MB firmware partition (~1.2 MB free), and game mode *borrows* the 226.8 KB overlay pool at runtime instead of permanently cutting the MRU/overlay feature. Nothing is lost when you're not playing.
-- **"Store as much as possible in flash"** — done by design: compressed WHD WAD in the unused upper 2 MB of the resource region (installed once over HID like a font-pack bundle), engine tables const-in-XIP, RAM reserved for the zone arena and one 64 KB framebuffer.
+- **Custom firmware needed?** No — an easter egg is the right call, and it costs the shipping image almost nothing: the engine ships as an **executable flash pack** (XIP-linked at `0x10600000`, entered through a versioned API table), leaving only a ~2–4 KB loader in the firmware. The `#ifdef POLYKYBD_DOOM` monolithic build exists alongside it as the development/debug harness. Game mode *borrows* the 226.8 KB overlay pool at runtime instead of permanently cutting the MRU/overlay feature — nothing is lost when you're not playing.
+- **"Store as much as possible in flash"** — taken to its logical conclusion: not just the WHD WAD but the **engine code itself** lives in the unused upper 2 MB of the resource region (installed once over HID like a font-pack bundle, to both halves), tables const-in-XIP, RAM reserved for the zone arena and one 64 KB framebuffer.
 - **The split link is not a limit — it's a design input.** Pixels can never cross it (~1–2 fps ceiling), so none do: both halves run identical engines and the link carries ~350 B/s of tic commands, exactly as Doom's multiplayer has done since 1993. The staged fallback if lockstep validation surprises us: master-half-only viewport with static art on the slave, which is also the natural first milestone before the tic sync lands.
 
 Sources: [rp2040-doom (GitHub)](https://github.com/kilograham/rp2040-doom) · [RP2040 Doom write-up](https://kilograham.github.io/rp2040-doom/) · [Speed & RAM chapter](https://kilograham.github.io/rp2040-doom/speed_and_ram.html) · [Hackaday coverage](https://hackaday.com/2022/03/15/doom-comes-to-the-rp2040/)
