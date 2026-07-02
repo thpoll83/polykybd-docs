@@ -119,12 +119,12 @@ Goal stated up front: keep RAM tiny by keeping everything possible in flash. Tha
                      → ship build: only a ~2–4 KB pack loader (see next section) ✓
 0x200000 ─ 0x400000  fw-update staging              untouched ✓
 0x400000 ─ 0x600000  font-pack slots (2 MB window)  untouched ✓
-0x600000 ─ 0x7FE000  ~1.99 MB FREE                  → DoomPack: engine code + DOOM1.WHD ✓
+0x600000 ─ 0x7FE000  2,088,960 B FREE               → DoomPack: engine code + doom1.whx (1,800,344 B) ✓
 0x7FE000 ─ 0x800000  EEPROM wear-leveling journal   untouched ✓
 ```
 
 - **Engine code** compiles into the normal firmware image. rp2040-doom's code is a few hundred KB; the partition has ~1.2 MB free, and the existing link-time guard (`FW_STAGING_OFFSET == flash1 length`) means an overweight build fails loudly at link, never silently.
-- **The WAD** ships in rp2040-doom's WHD format: the 4 MB shareware `DOOM1.WAD` compresses to fit — the *whole game plus code* fits kilograham's 2 MB Pico, so the data portion alone is well under the ~1.99 MB free window.
+- **The WAD** ships in rp2040-doom's compressed format, and the numbers are now exact: the repo bundles a pre-converted **`doom1.whx` of 1,800,344 bytes** (from the 4,196,020-byte shareware `DOOM1.WAD`), and the free window at `0x600000` is 2,088,960 bytes — the game data fits with ~288 KB to spare. Since the *whole* rp2040-doom Pico image (code + WHX) fits 2 MB, its code is ≤ ~296 KB; ours shrinks further by deleting what we don't have hardware for (VGA scanout, the OPL2 music emulator, sound effects, network) — so code + WHX in one pack squeezes into the window with a small margin, and if it ever doesn't, the engine falls back into the firmware partition's ~1.2 MB and only the WHX stays in the resource region.
 - **Delivery over HID, no bootloader trip:** the font-pack machinery (`fw_staging` FONTPACK target, `BEGIN/CHUNK/COMMIT` cmds `0x50`–`0x52`) is a general "stream a blob into a resource-region slot" pipeline. A `doomwad` pseudo-slot at `0x200000` relative offset (i.e. flash `0x600000`) reuses it wholesale — `polyctl doom install DOOM1.WHD`. The WAD only needs to reach the **master** (the game runs there), so the slave-bridge half of the flow can be skipped. Like the font pack, the WAD survives firmware updates (different region) — install once.
 - No WAD flashed → the trigger does nothing (or shows a one-keycap "NO WAD" gag). Same graceful-degradation pattern as the `fantasy` font bundle.
 
@@ -167,6 +167,81 @@ Three ways to package it:
 **Recommendation: A**, with **C** first as a cheap teaser. C needs no firmware work at all and validates the whole visual concept (viewport mapping, dithering, the window-blind look) before anyone commits to the port. B is what A degrades to only if the engine genuinely cannot coexist with QMK's ~43 KB — the numbers above say it can.
 
 The easter-egg trigger should be cheap and undiscoverable-by-accident: typing **`IDDQD`** with the language layer held, or holding both encoders through a boot splash. Entering game mode: swallow all key events in `process_record_*` (feed them to Doom's `D_PostEvent` instead of the OS — the host must see *no* keystrokes while fragging), freeze overlay/HID overlay commands (NACK or defer), park the RGB matrix (or repurpose it: red flash on damage, white on pickup — the only "sound" we have), status OLED becomes the HUD. Exit: any long-press of a dedicated key → restore pool, refresh displays, resume normal service.
+
+## Implementation prerequisites: setting up the cloud container
+
+Audited 2026-07-02 in a live Claude Code on the web session. The container's *tooling* needs nothing exotic — the blockers are all **network policy**. Three source inputs were unreachable under the restricted policy: the QMK submodules (via `codeload.github.com`), the `kilograham/rp2040-doom` source, and a shareware `DOOM1.WAD`.
+
+### Step 1 — environment network access (the one setting that matters)
+
+In [claude.ai/code](https://claude.ai/code): click the **cloud icon showing the environment name** → in the selector, hover the environment → click the **settings icon** on the right → set the **Network access** selector to **Trusted**. (There is no separate Environments page.)
+
+**Trusted** is sufficient — no Custom domains needed: its default allowlist includes `github.com`, `api.github.com`, `codeload.github.com`, `raw.githubusercontent.com` and `objects.githubusercontent.com` ([documented list](https://code.claude.com/docs/en/claude-code-on-the-web#default-allowed-domains)), which covers the QMK submodule tarballs, the rp2040-doom source, and the WAD (fetched from a GitHub mirror via `raw.githubusercontent.com` — verified working even under the restricted policy).
+
+Two behaviours to expect: the change applies to **new sessions only** (a running container keeps its policy), and editing allowed network hosts **invalidates the environment cache**, so the first new session re-runs the setup script.
+
+### Step 2 — environment setup script (cached, runs once)
+
+Paste this into the environment's **Setup script** field. Its output is snapshotted into the environment cache, so every later session starts with the toolchain and submodules already on disk:
+
+```bash
+# ARM toolchain for the firmware build
+sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi
+
+# QMK submodules at their pinned SHAs, via the codeload tarball endpoint
+# (git clone of qmk/* is not served by the session git proxy — tarballs are the
+# documented path; adjust the cd if qmk_firmware sits elsewhere in the layout)
+cd qmk_firmware
+git submodule status | while read -r line; do
+  sha=$(echo "$line" | awk '{print $1}' | sed 's/^[-+]//'); path=$(echo "$line" | awk '{print $2}')
+  case "$(basename "$path")" in
+    chibios) repo=ChibiOS;; chibios-contrib) repo=ChibiOS-Contrib;;
+    lufa) repo=lufa;; printf) repo=printf;; pico-sdk) repo=pico-sdk;; *) continue;;
+  esac
+  mkdir -p "$path"
+  curl -sSL "https://codeload.github.com/qmk/$repo/tar.gz/$sha" | tar xz -C "$path" --strip-components=1
+done
+
+# rp2040-doom source (the engine to port) — rp2040 is its main branch
+mkdir -p ../rp2040-doom
+curl -sSL "https://codeload.github.com/kilograham/rp2040-doom/tar.gz/refs/heads/rp2040" \
+  | tar xz -C ../rp2040-doom --strip-components=1
+
+# Shareware DOOM1.WAD v1.9 from a GitHub mirror (works even under the
+# restricted policy — raw.githubusercontent.com is allowed there too).
+# Verified 2026-07-02: 4,196,020 bytes, the canonical 1.9 shareware IWAD.
+# NOTE: the pre-converted doom1.whx (1,800,344 B) already ships at the
+# rp2040-doom repo root — the raw WAD is only needed to re-run whd_gen.
+curl -sSL -o ../rp2040-doom/doom1.wad \
+  "https://raw.githubusercontent.com/Akbar30Bill/DOOM_wads/master/doom1.wad"
+echo "1d7d43be501e67d927e415e0b8f3e29c3bf33075e859721816f652a526cac771  ../rp2040-doom/doom1.wad" \
+  | sha256sum -c
+```
+
+### Step 3 — first-session verification checklist
+
+Run these before starting any porting work; each should succeed in under a minute:
+
+```bash
+# 1. Toolchain present
+arm-none-eabi-gcc --version                    # expect 13.x
+
+# 2. Submodules populated (all five non-empty)
+ls qmk_firmware/lib/chibios/os qmk_firmware/lib/pico-sdk/src
+
+# 3. Firmware builds end-to-end
+pip install qmk && export QMK_HOME=$PWD/qmk_firmware
+qmk compile -kb polykybd/split72 -km default   # expect a .uf2, exit 0
+
+# 4. Engine source + game data present and intact
+ls rp2040-doom/src/doom rp2040-doom/src/whd_gen        # engine + converter tool
+stat -c %s rp2040-doom/doom1.whx                        # expect 1800344 (bundled)
+echo "1d7d43be501e67d927e415e0b8f3e29c3bf33075e859721816f652a526cac771  rp2040-doom/doom1.wad" | sha256sum -c
+# (DOOM1.WAD v1.9 shareware: 4,196,020 bytes,
+#  md5 f0cefca49926d00903cf57551d901abe — matches doomwiki.org/wiki/DOOM1.WAD)
+```
+
+The build in step 3 is the gate: once it passes, everything the porting work needs is in the container. What the container can *never* do: put pixels on real keycaps — first-light needs the physical keyboard (the HIL rig verifies protocol liveness, not the picture).
 
 ## What it costs (effort estimate)
 
