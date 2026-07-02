@@ -8,7 +8,7 @@ import { Aside } from '@astrojs/starlight/components';
 People keep asking. This page answers the question properly: **yes, the PolyKybd split72 can run Doom** — actually run it on the keyboard's own RP2040, rendered across the per-keycap OLEDs — and it can be done as a **hidden easter egg inside the normal firmware**, without shipping a separate "Doom edition" and without permanently sacrificing any feature. The trick is that the two scarce resources are already lying around: the **226 KB overlay RAM pool** can be borrowed while the game runs, and the flash map has **~2 MB of unused resource flash** for a compressed shareware WAD.
 
 <Aside type="tip" title="TL;DR verdict">
-**Feasible as an easter egg.** Game runs on the RP2040, viewport on the master half's keycaps (5 keycap rows × 40 px = **exactly Doom's native 200-pixel vertical resolution**), input is, well, a keyboard. RAM comes from borrowing the overlay pool at runtime (no permanent cut), the WAD lives in the free upper 2 MB of resource flash, and the engine code fits the 2 MB firmware partition with room to spare. The one thing physics rules out: animating the **slave half's** displays — the 230,400-baud split UART moves at most ~2 fps of half-keyboard pixels, so the slave shows static art/HUD instead.
+**Feasible as an easter egg.** Game runs on the keyboard itself, viewport on the keycaps (5 keycap rows × 40 px = **exactly Doom's native 200-pixel vertical resolution**), input is, well, a keyboard. RAM comes from borrowing the overlay pool at runtime (no permanent cut), the WAD lives in the free upper 2 MB of resource flash, and the engine code fits the 2 MB firmware partition with room to spare. The split UART can never move pixels fast enough to animate the other half — so it doesn't: **both halves run their own copy of the engine in input-lockstep** (Doom's own multiplayer model), and the link carries only ~350 B/s of tic commands. Full 10-keycap-wide wall of Doom, each RP2040 rendering its own side.
 </Aside>
 
 ## Prior art: Doom already runs on this exact chip
@@ -43,7 +43,7 @@ The 270 MHz overclock exists to hit 60 fps *while racing the VGA beam*. We need 
 
 ### Geometry: the keycaps are accidentally Doom-shaped
 
-Doom renders 320×200. A keycap column is 72 px wide and a keycap row is 40 px tall, so **five keycap rows stack to exactly 200 px** — Doom's native vertical resolution, 1:1, no scaling. Each split72 half has 36 displays in 5 rows; a 5-wide × 5-row block of the master half forms a 360×200 canvas that a centred 320×200 frame drops into with 20 px side margins. Each keycap displays its 72×40 crop of the frame.
+Doom renders 320×200. A keycap column is 72 px wide and a keycap row is 40 px tall, so **five keycap rows stack to exactly 200 px** — Doom's native vertical resolution, 1:1, no scaling. Each split72 half has 36 displays in 5 rows, so a 5-wide × 5-row block of one half forms a 360×200 canvas that a centred 320×200 frame drops into with 20 px side margins — and the full keyboard is a ~10-keycap-wide × 5-row wall once both halves render (see the lockstep section below). Each keycap displays its 72×40 crop of the frame.
 
 The physical bezels between keycaps mean the image is seen "through a window blind" — segments of the scene with gaps. That's not a bug; that's the entire aesthetic appeal of Doom-on-a-keyboard. (For legibility experiments, Doom's built-in low-detail mode and a smaller `SCREENWIDTH` are tuning knobs; rp2040-doom keeps these paths.)
 
@@ -55,13 +55,35 @@ Dither cost: 64,000 pixels through a 4×4 Bayer ordered-dither + bit-pack is ~5 
 
 Realistic frame-rate estimate: **10–20 fps** on stock 133 MHz with the game on one core and dither+blit on the other. rp2040-doom does 60 fps at 270 MHz *including* VGA scanout, so this is conservative. A runtime overclock in game mode is a stretch goal, not a requirement (USB runs off the separate 48 MHz PLL, but SPI/UART dividers would need recalculating — not worth it for v1).
 
-### The slave half: physics says no
+### The slave half: pixels can never cross the link…
 
 Every keycap on the slave half is reachable only through the split UART. One half-frame is 36 × 360 B = 12,960 B; at 230,400 baud (≈23 KB/s line rate, less after transaction framing + CRC32 + ACKs) that is **~0.7–1 s per frame — about 1 fps**. Even at 460,800 (`SELECT_SOFT_SERIAL_SPEED 0`) it's ~2 fps. RLE helps little: dithered game frames are noise-like, the worst case for RLE.
 
-**Design consequence, not a blocker:** the game viewport lives on the **master** half. The slave half shows content that changes rarely or never — the DOOM logo / episode art on entry, or a large-format HUD (health / ammo / face) updated at ~1 Hz via the existing overlay sync, which is exactly the kind of traffic that link already handles. Input from slave-half keys arrives over the normal split matrix scan at keystroke rates — unaffected.
+So pixels don't cross the link. **Inputs do.**
 
-The 128×64 status OLED (on the master, on its own bus) makes a natural status bar: health, ammo, and the Doomguy face fit a 128×64 mono panel nicely.
+### …so run Doom on both halves in lockstep, and transfer only the input
+
+Each half of a split72 is the *same hardware*: its own RP2040 (two cores), its own 8 MB flash, its own 36 displays on its own 10 MHz SPI bus, its own status OLED. Instead of one half rendering and starving the other through a 23 KB/s straw, **both halves run an identical copy of the engine and simulate the same game in lockstep; the split link carries only tic commands.**
+
+This is not a novel trick that needs inventing — **it is vanilla Doom's own multiplayer architecture.** Doom netgames never exchange game state: every peer runs the full deterministic simulation and peers exchange only each player's `ticcmd_t` (~10 bytes: forward/side move, turn angle, buttons) per 35 Hz tic. Demos work the same way — a recorded input stream replayed through the deterministic engine reproduces the identical game, byte for byte (the RNG is a fixed 256-entry table, no wall-clock anywhere in the simulation). rp2040-doom deliberately preserves demo compatibility, i.e. this determinism survives its optimisations. We're just running a 2-node "netgame" where both nodes happen to be controlled by the same player and bolted into one chassis.
+
+**Protocol.** QMK's split transport already delivers the slave's key matrix to the master every scan, so the master sees all input regardless of which half a key sits on. Per tic, the master builds the consolidated `ticcmd`, then sends `(tic_number, ticcmd)` to the slave over a new split transaction (`USER_SYNC_DOOM_TIC`, alongside the existing 16 user transaction IDs) — CRC32-validated and retried like every other sync. Bandwidth: ~10 B × 35 Hz ≈ **350 B/s**, ~1.5 % of the link. Following Doom's own netcode, each message carries the last 3–4 ticcmds redundantly, so a dropped transaction costs nothing; the slave consumes tics strictly in sequence, and a genuine gap simply stalls its simulation one tic until the retry lands (a 28.6 ms hiccup on one half, self-healing, no desync possible). Game entry/exit and menu state need no special sync — menus are input-driven too, so lockstep covers them; only the "enter game mode" flag itself rides the existing state sync.
+
+**Rendering split.** The combined canvas is now a 10-keycap-wide × 5-row wall. Each half renders **only its own columns** of the shared 320×200 view — and Doom's renderer is column-major (walls and sprites are drawn as vertical column strips), so restricting to a 160-column range is natural; splitting frame rendering by columns across processors is exactly what rp2040-doom already does between the RP2040's two cores. Each half therefore renders *half the pixels of the single-half plan with the same silicon* — the fps estimate improves rather than degrades, and each half still has its second core free for dither + blit. Simulation stays fixed at Doom's 35 Hz tics; each half presents its most recently completed frame, so worst-case the two halves briefly show tic *N* and *N+1* — a 28.6 ms skew across a physical bezel gap, imperceptible.
+
+**The seam caveat.** Spanning both halves puts the physical gap between the two keyboard halves in the middle of the view — right where the weapon sprite and aim point live. Three options, all cheap to try once the blitter exists: accept it (the shotgun splitting across the chassis gap has a certain honesty), bias the 320-px window a couple of keycaps toward one half, or run the seam through a widened view (`SCREENWIDTH` > 320 costs render time linearly — the budget exists at 160 columns/half). Worth deciding on real hardware, not on paper.
+
+**What lockstep requires of the platform** — all of it already true or already-solved:
+
+| Requirement | Status |
+|---|---|
+| Identical binary on both halves | Already the shipping model (one image, role decided at runtime) |
+| WAD present on **both** halves' flash | The `fw_staging` HID flow already bridges font-pack flashes to the slave — the `doomwad` slot reuses that path unchanged |
+| Overlay-pool borrow on the slave too | Symmetric — same pool, same handoff, triggered by the synced game-mode flag |
+| Deterministic simulation | Doom's defining property (demos, netplay); keep simulation strictly tic-driven, rendering local |
+| Reliable in-order tic delivery | CRC32 + retries exist; add sequence numbers + 3-tic redundancy à la Doom netcode |
+
+Each half's own 128×64 status OLED becomes a per-half HUD — health and face on the left, ammo and arms on the right, like an arcade cabinet.
 
 ## Challenge 2 — RAM: borrow the overlay pool, don't cut it
 
@@ -130,6 +152,7 @@ The easter-egg trigger should be cheap and undiscoverable-by-accident: typing **
 | **Tier 0 (teaser):** host-side doomgeneric → dither → ROI-stream to master half; no firmware change | ~1 weekend |
 | Port rp2040-doom's core out of pico-sdk/CMake into the QMK/ChibiOS build (the real work — its runtime tricks, custom linker assumptions, and build system are the bulk of the risk) | weeks, the long pole |
 | Replace its VGA/audio backends with the keycap blitter (window-addressed SSD1306 path + Bayer dither) + status-OLED HUD | days |
+| Lockstep tic sync: `USER_SYNC_DOOM_TIC` transaction, sequence numbers + redundant-tic window, column-range render restriction per half | ~1 week (protocol is small; determinism validation is the real test — run both halves side by side and let them diverge or not) |
 | Overlay-pool handoff + game-mode flag + input swallow + exit/restore path | days |
 | WHD delivery: `doomwad` staging slot + `polyctl doom install` | 1–2 days (machinery exists) |
 | HIL/rig: keep-out — assert game mode is unreachable without the trigger; GET_ID stays answerable in game mode | 1 day |
@@ -138,9 +161,9 @@ The easter-egg trigger should be cheap and undiscoverable-by-accident: typing **
 
 ## Verdict
 
-- **Can it run Doom?** Yes — on the master half's keycaps at native vertical resolution, 10–20 fps estimated, WASD included by definition.
+- **Can it run Doom?** Yes — across **both halves' keycaps** at native vertical resolution, each half simulating and rendering its own side in input-lockstep (Doom's own netgame model), 10–20 fps estimated with headroom to spare since each RP2040 only renders 160 columns. WASD included by definition.
 - **Custom firmware needed?** No — an easter egg in the shipping image is the right call. The engine fits the 2 MB firmware partition (~1.2 MB free), and game mode *borrows* the 226.8 KB overlay pool at runtime instead of permanently cutting the MRU/overlay feature. Nothing is lost when you're not playing.
 - **"Store as much as possible in flash"** — done by design: compressed WHD WAD in the unused upper 2 MB of the resource region (installed once over HID like a font-pack bundle), engine tables const-in-XIP, RAM reserved for the zone arena and one 64 KB framebuffer.
-- **Hard limit to accept:** the slave half is scenery, not screen — the split UART tops out around 1–2 fps of full-half pixels. Give it the episode art and the big HUD and nobody will ever complain.
+- **The split link is not a limit — it's a design input.** Pixels can never cross it (~1–2 fps ceiling), so none do: both halves run identical engines and the link carries ~350 B/s of tic commands, exactly as Doom's multiplayer has done since 1993. The staged fallback if lockstep validation surprises us: master-half-only viewport with static art on the slave, which is also the natural first milestone before the tic sync lands.
 
 Sources: [rp2040-doom (GitHub)](https://github.com/kilograham/rp2040-doom) · [RP2040 Doom write-up](https://kilograham.github.io/rp2040-doom/) · [Speed & RAM chapter](https://kilograham.github.io/rp2040-doom/speed_and_ram.html) · [Hackaday coverage](https://hackaday.com/2022/03/15/doom-comes-to-the-rp2040/)
