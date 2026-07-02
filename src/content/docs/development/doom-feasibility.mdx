@@ -1,0 +1,146 @@
+---
+title: "Can It Run Doom? — Feasibility Study"
+description: Feasibility study for running Doom across the PolyKybd per-keycap OLED displays — RAM, flash, display bandwidth, and the easter-egg question.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+People keep asking. This page answers the question properly: **yes, the PolyKybd split72 can run Doom** — actually run it on the keyboard's own RP2040, rendered across the per-keycap OLEDs — and it can be done as a **hidden easter egg inside the normal firmware**, without shipping a separate "Doom edition" and without permanently sacrificing any feature. The trick is that the two scarce resources are already lying around: the **226 KB overlay RAM pool** can be borrowed while the game runs, and the flash map has **~2 MB of unused resource flash** for a compressed shareware WAD.
+
+<Aside type="tip" title="TL;DR verdict">
+**Feasible as an easter egg.** Game runs on the RP2040, viewport on the master half's keycaps (5 keycap rows × 40 px = **exactly Doom's native 200-pixel vertical resolution**), input is, well, a keyboard. RAM comes from borrowing the overlay pool at runtime (no permanent cut), the WAD lives in the free upper 2 MB of resource flash, and the engine code fits the 2 MB firmware partition with room to spare. The one thing physics rules out: animating the **slave half's** displays — the 230,400-baud split UART moves at most ~2 fps of half-keyboard pixels, so the slave shows static art/HUD instead.
+</Aside>
+
+## Prior art: Doom already runs on this exact chip
+
+The heavy lifting has been done. [kilograham's rp2040-doom](https://github.com/kilograham/rp2040-doom) is a fully-featured Doom port for the RP2040 that fits the **entire shareware game — code and data — in 2 MB of flash and 264 KB of RAM**, rendering 320×200 at 60 fps to VGA with a 270 MHz overclock ([project write-up](https://kilograham.github.io/rp2040-doom/)). Two facts from its [RAM budget](https://kilograham.github.io/rp2040-doom/speed_and_ram.html) matter enormously for us:
+
+- **~180 KB of its 264 KB RAM budget is display-related** (VGA scanout, beam-racing scanline machinery). The PolyKybd doesn't drive VGA — our "display" is a 1-bit tiled canvas — so that entire cost is replaced by a 64 KB 8-bit framebuffer plus a dither pass.
+- The **game itself is small**: the Doom zone memory that started at ~700 KB in Chocolate Doom was squeezed to **~45 KB**, and the combined heap is ~58 KB. The engine, minus display, lives comfortably under 150 KB.
+
+The 270 MHz overclock exists to hit 60 fps *while racing the VGA beam*. We need neither: a keycap-matrix Doom at 10–20 fps on the stock 133 MHz clock (with both cores — core1 is idle during a game) is a realistic target. rp2040-doom is GPL-2, same as QMK — licence-compatible.
+
+## Hardware inventory (what we have to work with)
+
+| Resource | Value | Source |
+|---|---|---|
+| CPU | RP2040, 2× Cortex-M0+ @ 133 MHz (`USE_CORE1` already enabled) | `config.h` |
+| SRAM | 264 KB total | RP2040 |
+| — of which overlay pool | **226,800 B** — `overlays[630][360]` (90 slots × 7 variants × 360 B) | `base/overlay.c`, `config.h` |
+| — everything else (QMK + ChibiOS + USB + stacks) | ≤ ~43 KB (it all fits in 264 KB today) | arithmetic |
+| Flash | 8 MB QSPI, partitioned | `base/fw_staging.h` |
+| — firmware partition | 2 MB, ~0.76 MB used → **~1.2 MB free** | linker `flash1` |
+| — staging partition | 2 MB (0x200000–0x400000) | `fw_staging.h` |
+| — resource region | 4 MB (0x400000–0x800000): first 2 MB = font-pack slots, **upper 2 MB unused** (minus the 8 KB EEPROM journal at the very top) | `fontpack_layout.h`, wear-leveling config |
+| Keycap displays | 72× SSD1306-class, 72×40 px visible (128×64 controller), 1-bit | `base/disp_array.c` |
+| Display bus (per half) | Shared 10 MHz SPI + 5 shift registers for chip-select (36 displays per half) | `split72/config.h`, `base/shift_reg.c` |
+| Split link | Full-duplex PIO UART, **230,400 baud** | `halconf.h`, `serial_usart.h` |
+| Status OLED | 128×64 (master half) — free for a HUD | `split72/status_oled.c` |
+| Input | 72 keys. It's a keyboard. | — |
+| Sound | None. RGB matrix (72 LEDs) as damage-flash/muzzle-flash substitute | — |
+
+## Challenge 1 — the display: 72 tiny windows, one wall
+
+### Geometry: the keycaps are accidentally Doom-shaped
+
+Doom renders 320×200. A keycap column is 72 px wide and a keycap row is 40 px tall, so **five keycap rows stack to exactly 200 px** — Doom's native vertical resolution, 1:1, no scaling. Each split72 half has 36 displays in 5 rows; a 5-wide × 5-row block of the master half forms a 360×200 canvas that a centred 320×200 frame drops into with 20 px side margins. Each keycap displays its 72×40 crop of the frame.
+
+The physical bezels between keycaps mean the image is seen "through a window blind" — segments of the scene with gaps. That's not a bug; that's the entire aesthetic appeal of Doom-on-a-keyboard. (For legibility experiments, Doom's built-in low-detail mode and a smaller `SCREENWIDTH` are tuning knobs; rp2040-doom keeps these paths.)
+
+### Bandwidth: the master half is fast enough — comfortably
+
+The current `kdisp_send_buffer()` transmits the controller's full 128×64 RAM (1,024 B + command bytes) per keycap: ~0.85 ms at 10 MHz SPI, ×36 keys ≈ 31 ms → a ~30 fps ceiling *with the existing, unoptimised path*. A game-mode blitter that sets the column window to the 72 visible columns and sends only the 5 used pages (360 B + commands ≈ 0.31 ms) updates the **25-key viewport in ~8 ms** — the display bus supports 60+ fps; the renderer, not the bus, sets the frame rate. Shift-register selects are tens of µs, noise.
+
+Dither cost: 64,000 pixels through a 4×4 Bayer ordered-dither + bit-pack is ~5 ms at 133 MHz — pipelinable on the other core. (Floyd–Steinberg, as used offline by `fontconvert`, is too serial/expensive per frame; ordered dither also avoids frame-to-frame crawling.)
+
+Realistic frame-rate estimate: **10–20 fps** on stock 133 MHz with the game on one core and dither+blit on the other. rp2040-doom does 60 fps at 270 MHz *including* VGA scanout, so this is conservative. A runtime overclock in game mode is a stretch goal, not a requirement (USB runs off the separate 48 MHz PLL, but SPI/UART dividers would need recalculating — not worth it for v1).
+
+### The slave half: physics says no
+
+Every keycap on the slave half is reachable only through the split UART. One half-frame is 36 × 360 B = 12,960 B; at 230,400 baud (≈23 KB/s line rate, less after transaction framing + CRC32 + ACKs) that is **~0.7–1 s per frame — about 1 fps**. Even at 460,800 (`SELECT_SOFT_SERIAL_SPEED 0`) it's ~2 fps. RLE helps little: dithered game frames are noise-like, the worst case for RLE.
+
+**Design consequence, not a blocker:** the game viewport lives on the **master** half. The slave half shows content that changes rarely or never — the DOOM logo / episode art on entry, or a large-format HUD (health / ammo / face) updated at ~1 Hz via the existing overlay sync, which is exactly the kind of traffic that link already handles. Input from slave-half keys arrives over the normal split matrix scan at keystroke rates — unaffected.
+
+The 128×64 status OLED (on the master, on its own bus) makes a natural status bar: health, ammo, and the Doomguy face fit a 128×64 mono panel nicely.
+
+## Challenge 2 — RAM: borrow the overlay pool, don't cut it
+
+The user-visible suggestion behind this study was "reduce RAM usage by cutting the MRU overlay buffer." Good instinct, better news: **it doesn't need to be cut — it can be borrowed.**
+
+The overlay pool `overlays[630][360]` (226,800 B, `base/overlay.c`) is the single dominant RAM consumer — ~84 % of the chip. It holds host-pushed keycap images, and it is *entirely reconstructible*: the host re-sends overlays on every app switch, and the firmware already has the machinery to blank and repopulate it (`reset_overlay_buffers()`, `reset_overlay_usage()`, and the host-side resend that follows any reconnect / font-pack wipe).
+
+So the easter egg does a **runtime handoff**: entering game mode stops overlay processing, takes the pool (`get_overlays()` already exposes the raw array) and hands it to the game as its zone-memory arena; leaving game mode memsets it, resets usage/mapping, and nudges the host to resend — a code path that, from the host's perspective, looks like a reconnect. Zero permanent feature loss, zero RAM cost in normal operation.
+
+### Game-mode RAM budget (inside the 226.8 KB pool)
+
+| Consumer | Estimate | Notes |
+|---|---|---|
+| Framebuffer, 320×200 @ 8 bpp indexed | 64,000 B | palette→luma→dither at blit time; no 32-bit buffer ever exists |
+| Doom zone memory + heap | ~60,000 B | rp2040-doom runs levels in ~45 KB zone + ~13 KB heap |
+| Engine static/BSS beyond QMK's | ~40,000 B | level pointers, render state; most lookup tables stay in flash (XIP) |
+| Dither scratch + per-key 1-bpp staging | ~4,000 B | one keycap tile (360 B) + Bayer LUT |
+| **Headroom** | **~59,000 B** | ~26 % margin for the estimate being wrong |
+
+The margin is real: kilograham's *entire* non-display RAM usage is ~85 KB, and we're granting the equivalent components ~100 KB before headroom. If it gets tight, game mode can additionally scavenge the RGB-effect buffers and the 1 KB display scratch buffer.
+
+<Aside type="caution" title="What must keep running">
+QMK's core loop cannot stop: USB keep-alive, matrix scan (that's the game controller!), and the split transport (slave keys) all stay live on core0. The clean split is **core0 = QMK + input + SPI blit, core1 = the game** (core1 currently only does RLE decompression, which is idle in game mode — but note the `cpsid i` workaround at `core1_entry` and the known SIO-FIFO IRQ quirks documented in the firmware's CLAUDE.md before redesigning core1's job dispatch). EEPROM writes must be suppressed during play (flash erase stalls both cores' XIP) — the `fw_staging_fw_up_active()` suppression pattern already exists for exactly this.
+</Aside>
+
+## Challenge 3 — flash: "store as much as possible in flash" — there's room
+
+Goal stated up front: keep RAM tiny by keeping everything possible in flash. That is precisely rp2040-doom's architecture (compressed WAD read via XIP, tables const-in-flash), and the PolyKybd flash map has the space:
+
+```
+0x000000 ─ 0x200000  firmware (2 MB linker cap)     ~0.76 MB used
+                     → engine code ~0.3–0.5 MB fits: image ends ~1.1–1.3 MB ✓
+0x200000 ─ 0x400000  fw-update staging              untouched ✓
+0x400000 ─ 0x600000  font-pack slots (2 MB window)  untouched ✓
+0x600000 ─ 0x7FE000  ~1.99 MB FREE                  → DOOM1.WHD lives here ✓
+0x7FE000 ─ 0x800000  EEPROM wear-leveling journal   untouched ✓
+```
+
+- **Engine code** compiles into the normal firmware image. rp2040-doom's code is a few hundred KB; the partition has ~1.2 MB free, and the existing link-time guard (`FW_STAGING_OFFSET == flash1 length`) means an overweight build fails loudly at link, never silently.
+- **The WAD** ships in rp2040-doom's WHD format: the 4 MB shareware `DOOM1.WAD` compresses to fit — the *whole game plus code* fits kilograham's 2 MB Pico, so the data portion alone is well under the ~1.99 MB free window.
+- **Delivery over HID, no bootloader trip:** the font-pack machinery (`fw_staging` FONTPACK target, `BEGIN/CHUNK/COMMIT` cmds `0x50`–`0x52`) is a general "stream a blob into a resource-region slot" pipeline. A `doomwad` pseudo-slot at `0x200000` relative offset (i.e. flash `0x600000`) reuses it wholesale — `polyctl doom install DOOM1.WHD`. The WAD only needs to reach the **master** (the game runs there), so the slave-bridge half of the flow can be skipped. Like the font pack, the WAD survives firmware updates (different region) — install once.
+- No WAD flashed → the trigger does nothing (or shows a one-keycap "NO WAD" gag). Same graceful-degradation pattern as the `fantasy` font bundle.
+
+Savegames: skip in v1 (EEPROM journal is 8 KB and shared; a dedicated 4 KB flash sector later if anyone insists).
+
+## Easter egg vs. custom firmware
+
+Three ways to package it:
+
+| | **A. Easter egg in the shipping firmware** (recommended) | B. "Cartridge" firmware | C. Host-streamed demo |
+|---|---|---|---|
+| What it is | Engine linked into normal firmware; hidden trigger; borrows overlay RAM at runtime | Dedicated Doom-only image, temporarily flashed via the existing HID staging+apply, reflash QMK after | PolyKybdHost runs Doom on the PC and streams dithered frames as ROI overlay updates (cmds `0x12`/`0x13`) |
+| Firmware change | Large (the port), but zero *architectural* change — same partitions, same protocols | The port, minus all coexistence constraints (all 264 KB RAM, no QMK) | **None at all** |
+| The "wow" factor | Maximum — *the keyboard* runs Doom, discoverable in the wild | High, but it's visibly a stunt cartridge, and the keyboard stops being a keyboard | Low-medium — the keyboard *displays* Doom (~3–5 fps over the 64 KB/s HID channel, master half only) |
+| Risk to daily use | Main risk: image size + a mode flag; game code is dead weight unless triggered | None to the shipped firmware | None |
+| Effort | High | High (same port) + host flashing UX | **A weekend** |
+
+**Recommendation: A**, with **C** first as a cheap teaser. C needs no firmware work at all and validates the whole visual concept (viewport mapping, dithering, the window-blind look) before anyone commits to the port. B is what A degrades to only if the engine genuinely cannot coexist with QMK's ~43 KB — the numbers above say it can.
+
+The easter-egg trigger should be cheap and undiscoverable-by-accident: typing **`IDDQD`** with the language layer held, or holding both encoders through a boot splash. Entering game mode: swallow all key events in `process_record_*` (feed them to Doom's `D_PostEvent` instead of the OS — the host must see *no* keystrokes while fragging), freeze overlay/HID overlay commands (NACK or defer), park the RGB matrix (or repurpose it: red flash on damage, white on pickup — the only "sound" we have), status OLED becomes the HUD. Exit: any long-press of a dedicated key → restore pool, refresh displays, resume normal service.
+
+## What it costs (effort estimate)
+
+| Work item | Size |
+|---|---|
+| **Tier 0 (teaser):** host-side doomgeneric → dither → ROI-stream to master half; no firmware change | ~1 weekend |
+| Port rp2040-doom's core out of pico-sdk/CMake into the QMK/ChibiOS build (the real work — its runtime tricks, custom linker assumptions, and build system are the bulk of the risk) | weeks, the long pole |
+| Replace its VGA/audio backends with the keycap blitter (window-addressed SSD1306 path + Bayer dither) + status-OLED HUD | days |
+| Overlay-pool handoff + game-mode flag + input swallow + exit/restore path | days |
+| WHD delivery: `doomwad` staging slot + `polyctl doom install` | 1–2 days (machinery exists) |
+| HIL/rig: keep-out — assert game mode is unreachable without the trigger; GET_ID stays answerable in game mode | 1 day |
+
+**Honest overall rating: ambitious but genuinely feasible.** Every hard resource constraint checks out with margin on paper; the schedule risk is concentrated in one place (extracting rp2040-doom from its native build), not spread across unknowns.
+
+## Verdict
+
+- **Can it run Doom?** Yes — on the master half's keycaps at native vertical resolution, 10–20 fps estimated, WASD included by definition.
+- **Custom firmware needed?** No — an easter egg in the shipping image is the right call. The engine fits the 2 MB firmware partition (~1.2 MB free), and game mode *borrows* the 226.8 KB overlay pool at runtime instead of permanently cutting the MRU/overlay feature. Nothing is lost when you're not playing.
+- **"Store as much as possible in flash"** — done by design: compressed WHD WAD in the unused upper 2 MB of the resource region (installed once over HID like a font-pack bundle), engine tables const-in-XIP, RAM reserved for the zone arena and one 64 KB framebuffer.
+- **Hard limit to accept:** the slave half is scenery, not screen — the split UART tops out around 1–2 fps of full-half pixels. Give it the episode art and the big HUD and nobody will ever complain.
+
+Sources: [rp2040-doom (GitHub)](https://github.com/kilograham/rp2040-doom) · [RP2040 Doom write-up](https://kilograham.github.io/rp2040-doom/) · [Speed & RAM chapter](https://kilograham.github.io/rp2040-doom/speed_and_ram.html) · [Hackaday coverage](https://hackaday.com/2022/03/15/doom-comes-to-the-rp2040/)

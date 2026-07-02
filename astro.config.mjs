@@ -67,6 +67,7 @@ export default defineConfig({
             { label: 'Display Graphics & Fonts', slug: 'development/display-graphics' },
             { label: 'Hardware & PCB Modification', slug: 'development/hardware' },
             { label: 'Test Rig & CI', slug: 'development/test-rig' },
+            { label: 'Can It Run Doom?', slug: 'development/doom-feasibility' },
             { label: 'Contributing', slug: 'development/contributing' },
           ],
         },
