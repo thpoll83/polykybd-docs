@@ -22,8 +22,8 @@ export default defineConfig({
       title: 'PolyKybd',
       description: 'Documentation for PolyKybd — a split ergonomic keyboard where every key has its own OLED display.',
       logo: {
-        light: './src/assets/polykybd-logo.svg',
-        dark: './src/assets/polykybd-logo-dark.svg',
+        light: './src/assets/polytasten-logo.svg',
+        dark: './src/assets/polytasten-logo-dark.svg',
         replacesTitle: false,
       },
       social: [
