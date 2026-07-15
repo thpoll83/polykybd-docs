@@ -8,7 +8,7 @@ import { Aside } from '@astrojs/starlight/components';
 `polyctl` is a small command-line tool that talks to a **running PolyKybdHost daemon** over its local control socket. It is stdlib-only and never imports Qt, which makes it ideal for headless machines, scripted setups, and quick one-off commands without opening the tray GUI.
 
 <Aside>
-`polyctl` controls an existing daemon — it does not start one. Launch the daemon first with `python -m polyhost` (GUI + daemon) or `python -m polyhost --headless` (no GUI). See [Architecture & Daemon Mode](/software/architecture/).
+`polyctl` controls an existing daemon — it does not start one. Launch the daemon first with `python -m polyhost` (GUI + daemon) or `python -m polyhost --headless` (no GUI). See [Daemon & Client Model](/software/architecture/).
 </Aside>
 
 ## Subcommands
@@ -19,6 +19,9 @@ import { Aside } from '@astrojs/starlight/components';
 | `lang list` / `lang set <code>` | List available languages, or switch the active language |
 | `brightness <value>` | Set display brightness |
 | `idle <…>` | Configure or trigger idle behaviour |
+| `idle-style [pulse\|jitter]` | Get or set the [idle anti-burn-in style](/using/idle/) |
+| `glyph-script [standard\|tengwar\|…]` | Get or set the [glyph-script](/using/glyph-scripts/) legend override |
+| `fontpack status\|sync\|flash <id>\|wipe [id]` | Inspect and manage the [font-pack](/firmware/font-packs/) bundles |
 | `overlay …` | Inspect and manage key overlays |
 | `keymap …` | Read/write the dynamic keymap |
 | `commands` | List the keyboard's available one-off commands |

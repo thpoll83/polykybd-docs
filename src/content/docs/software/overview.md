@@ -22,7 +22,7 @@ As of the latest version, PolyKybdHost runs as two cooperating parts. The **oper
 
 This means the GUI can come and go (quit it, restart it, run it on demand) without ever dropping the keyboard connection or losing reconnect state — the daemon keeps the device alive. A small stdlib-only command-line tool, [`polyctl`](/software/cli/), talks to the same daemon, so you can script the keyboard or drive it without any GUI at all.
 
-For development you can opt out with `--no-daemon` (everything runs in-process). See [Architecture & Daemon Mode](/software/architecture/) for the full picture.
+For development you can opt out with `--no-daemon` (everything runs in-process). See [Daemon & Client Model](/software/architecture/) for the full picture.
 
 ## Operating modes
 
@@ -30,7 +30,7 @@ For development you can opt out with `--no-daemon` (everything runs in-process).
 
 **Forwarder mode:** PolyKybdHost can also run on a remote machine that has no keyboard attached. In this configuration, a `PolyForwarder` instance watches the active window on the remote machine and relays the window title and app info over TCP to the normal-mode instance on the keyboard machine. This lets a single keyboard serve multiple computers — the displays always reflect what is focused on whichever machine the user is currently working at.
 
-See [Multi-Machine Setup](/software/multi-machine/) for details.
+See [Multi-Machine Setup](/using/multi-machine/) for details.
 
 ## System requirements
 

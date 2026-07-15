@@ -1,11 +1,11 @@
 ---
-title: Using PolyKybdHost
-description: How to use the PolyKybdHost tray application, overlays, and brightness settings.
+title: Using the Tray App
+description: How to use the PolyKybdHost tray application — the menu, settings, firmware updates and logs.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
-Once PolyKybdHost is running, it lives in your system tray (Windows) or menu bar (macOS). A small PolyKybd icon indicates it is active and connected. The tray app is a client of the background daemon that owns the keyboard — see [Architecture & Daemon Mode](/software/architecture/).
+Once PolyKybdHost is running, it lives in your system tray (Windows) or menu bar (macOS). A small PolyKybd icon indicates it is active and connected. The tray app is a client of the background daemon that owns the keyboard — see [Daemon & Client Model](/software/architecture/).
 
 ## System tray menu
 
@@ -18,21 +18,19 @@ Right-click the tray icon to access:
 - **Log viewer** — view communication logs for debugging (includes a **Daemon Log** tab when the daemon is running)
 - **Quit** — close the tray app (the daemon keeps running)
 
-## Context-aware overlays
+## What the app drives
 
-The core feature: PolyKybdHost watches which application is currently focused on your screen. When you switch from, say, your browser to your code editor, the keyboard automatically updates every key display to show the relevant shortcuts and labels for the new app. This happens automatically with no action required from you.
+The tray app is the front-end for the keyboard's live features — each has its own page under
+**Using the Keyboard**:
 
-## Adaptive brightness
-
-If you have location access enabled, PolyKybdHost can calculate solar irradiance for your location and automatically adjust display brightness based on time of day — brighter during the day, dimmer in the evening. This is configured in **Settings → Brightness**.
-
-## Unicode and language mode
-
-The unicode input mode (Mac / Linux / Windows / WinCompose) selected on the keyboard is synced to PolyKybdHost. You can also change it from the Settings dialog.
+- [Context-Aware Overlays](/using/overlays/) — the keycaps follow your active window automatically.
+- [Display Brightness](/using/brightness/) — manual, adaptive-daylight (**Settings → Brightness**), or the optional light sensor.
+- [Languages & Unicode Input](/using/languages/) — the OS unicode mode selected on the keyboard is synced here, and settable from the Settings dialog.
+- [Glyph Scripts](/using/glyph-scripts/) — theme the legends from the **Glyph Script** submenu.
 
 ## Firmware updates
 
-You can flash new firmware directly from the tray — choose the **Flash firmware .bin…** action and select a firmware `.bin`. Flashing works over HID and is available even when the keyboard is on a protocol version the rest of PolyKybdHost doesn't fully support, so a mismatched keyboard can always be updated. The same operation is available from the command line with `polyctl fw flash` — see [Command Line](/software/cli/) and [Flashing Firmware](/firmware/flashing/).
+You can flash new firmware directly from the tray — choose the **Flash firmware .bin…** action and select a firmware `.bin`. Flashing works over HID and is available even when the keyboard is on a protocol version the rest of PolyKybdHost doesn't fully support, so a mismatched keyboard can always be updated. The same operation is available from the command line with `polyctl fw flash` — see [Command Line](/software/cli/) and [Flashing Firmware](/setup/flashing/).
 
 ## Debug logging
 
@@ -46,5 +44,5 @@ python -m polyhost --debug 2   # verbose HID traffic logging
 The Log Viewer (tray menu → Log Viewer) shows the same output in a GUI window. When running with the daemon, its activity appears under the **Daemon Log** tab.
 
 <Aside>
-If the keyboard is not detected, check that the udev rule is installed on Linux (see [Installation](/software/installation/)), or that the device is not claimed by another HID consumer.
+If the keyboard is not detected, check that the udev rule is installed on Linux (see [Installation](/setup/installation/)), or that the device is not claimed by another HID consumer.
 </Aside>

@@ -21,6 +21,13 @@ flowchart TB
 
 The two keyboard halves run the **same firmware image**; which half is master is decided at runtime (the half with USB power). They stay in sync over a CRC32-validated full-duplex serial link.
 
+<Aside type="tip">
+Want the deeper version? [System Model & Data Flow](/development/system-model/) expands this
+picture with the full HID command surface, the 8 MB flash map, and diagrams of the key
+runtime processes — boot & split-link establishment, the overlay data path on an app switch,
+display power states, resource flashing, and the core0/core1 offload.
+</Aside>
+
 ## The repositories
 
 <CardGrid>
@@ -47,7 +54,7 @@ A fifth repository, [thpoll83/polykybd-ctnd](https://github.com/thpoll83/polykyb
 | Host ⇄ keyboard | USB HID, 64-byte reports | Command protocol with a versioned `PROTOCOL_VERSION`; see the [HID Protocol Reference](/reference/hid-protocol/) |
 | Master ⇄ slave half | Full-duplex serial (UART/PIO) | CRC32-validated split transactions carry state and overlay data |
 | Firmware ⇄ displays | SPI + shift-register mux | One 72×40 OLED per key, plus a status OLED per half |
-| Host ⇄ host (multi-machine) | TCP | A forwarder relays the active window from a second computer — see [Multi-Machine Setup](/software/multi-machine/) |
+| Host ⇄ host (multi-machine) | TCP | A forwarder relays the active window from a second computer — see [Multi-Machine Setup](/using/multi-machine/) |
 
 ## What works without the host
 

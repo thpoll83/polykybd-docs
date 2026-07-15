@@ -7,6 +7,12 @@ import { Aside } from '@astrojs/starlight/components';
 
 The PolyKybd firmware is a heavily customised QMK build that runs on the keyboard's **Raspberry Pi RP2040**. Two hardware variants share a single firmware codebase: **`split72`** (72-key, RGB matrix, Cirque trackpad, 128×64 status OLED) and **`split42`** (42-key CRKBD footprint, no RGB/trackpad, 128×32 status OLED).
 
+<Aside type="tip">
+New to the codebase? Start with [System Model & Data Flow](/development/system-model/) — it
+maps the host/master/slave topology, the flash layout, and the runtime processes (boot,
+overlays, display power, flashing, multicore) as diagrams before you dig into the source.
+</Aside>
+
 ## Repository structure
 
 The firmware lives on the `PolyKybd` branch of the QMK fork: [github.com/thpoll83/qmk_firmware](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd), under `keyboards/polykybd/`.
@@ -75,7 +81,7 @@ qmk compile -kb polykybd/split72 -km default
 make polykybd/split72:default
 ```
 
-The output `.uf2` lands in the repo root and `.build/`. The `.uf2` is used for manual bootloader-drive recovery — see [Flashing the Firmware](/firmware/flashing/).
+The output `.uf2` lands in the repo root and `.build/`. The `.uf2` is used for manual bootloader-drive recovery — see [Flashing the Firmware](/setup/flashing/).
 
 ### Producing a `.bin` for HID flashing
 

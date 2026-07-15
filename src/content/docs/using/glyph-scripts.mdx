@@ -1,0 +1,55 @@
+---
+title: Glyph Scripts
+description: Swap the keycap letter and digit legends for a fantasy or retro script — Tengwar, runes, Aurebesh, C64, Braille and more.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+A **glyph script** is a purely cosmetic override that redraws the **letter and digit legends**
+on the keycaps in an alternative script, while leaving everything else — app overlays, the
+language layer, OS hints — exactly as it was. It's a fun way to theme the board without
+changing what the keys actually type.
+
+## Available scripts
+
+| Script | Notes |
+|---|---|
+| **Standard** | Normal legends (the default — glyph script off). |
+| **Tengwar** | Elvish-style feanorian script. Caseless. |
+| **Runes** | Elder Futhark runic. |
+| **Aurebesh** | Blocky sci-fi alphabet. |
+| **Standard Galactic** | The "commander" alien alphabet. |
+| **Cirth** | Angerthas-style runes. |
+| **IBM VGA** | CP437 / DOS text-mode look. |
+| **Commodore 64** | The C64 ROM font. |
+| **Amiga** | Workbench / Topaz look. |
+| **APL** | The APL symbol set. |
+| **Braille** | Braille cell patterns. |
+
+<Aside type="note">
+The scripts that have their own numerals (Tengwar, C64, …) also restyle the digit row; the
+others leave numbers as normal. A key whose glyph the chosen script can't draw simply keeps its
+normal legend — so the board never shows a blank key.
+</Aside>
+
+## Selecting a script
+
+- **Tray menu** — right-click the PolyKybdHost tray icon → **Glyph Script** → pick a script
+  (or **Standard** to turn it off). There's also a **Reset glyph script to Standard** button in
+  the Settings dialog.
+- **Command line** — `polyctl glyph-script tengwar` (or `standard`, `runes`, `braille`, …).
+
+Your choice is saved on the keyboard and persists across reboots.
+
+## Requirements
+
+Glyph scripts are drawn from a **`fantasy` font-pack bundle** that PolyKybdHost flashes to the
+keyboard automatically the first time it connects (see [Font Packs & Resources](/firmware/font-packs/)).
+Until that bundle is present the override falls back to the normal Latin legends, so nothing
+breaks if it hasn't been flashed yet.
+
+<Aside type="tip">
+Newer firmware accepts more scripts than an older keyboard may have fonts for — an unknown
+script just renders the normal legend. So the script list can grow without a firmware-protocol
+change; a keyboard that lacks a given font degrades gracefully.
+</Aside>

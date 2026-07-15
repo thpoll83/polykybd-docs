@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8.9 8.9" role="img" aria-label="PolyKybd">
+  <rect x="0.075" y="0.075" width="8.75" height="8.75" rx="0.9" fill="none" stroke="#111827" stroke-width="0.15"/>
+  <rect x="0.825" y="0.825" width="1" height="1" fill="#111827"/>
+  <rect x="2.075" y="0.825" width="1" height="1" fill="#111827"/>
+  <rect x="3.325" y="0.825" width="1" height="1" fill="#111827"/>
+  <rect x="4.575" y="0.825" width="1" height="1" fill="#111827"/>
+  <rect x="5.825" y="0.825" width="1" height="1" fill="#111827"/>
+  <rect x="7.075" y="0.825" width="1" height="1" fill="#111827"/>
+  <rect x="0.825" y="2.075" width="1" height="1" fill="#111827"/>
+  <rect x="4.575" y="2.075" width="1" height="1" fill="#111827"/>
+  <rect x="5.825" y="2.075" width="1" height="1" fill="#111827"/>
+  <rect x="7.075" y="2.075" width="1" height="1" fill="#111827"/>
+  <rect x="0.825" y="3.325" width="1" height="1" fill="#111827"/>
+  <rect x="3.325" y="3.325" width="1" height="1" fill="#111827"/>
+  <rect x="4.575" y="3.325" width="1" height="1" fill="#111827"/>
+  <rect x="5.825" y="3.325" width="1" height="1" fill="#111827"/>
+  <rect x="7.075" y="3.325" width="1" height="1" fill="#111827"/>
+  <rect x="0.825" y="4.575" width="1" height="1" fill="#111827"/>
+  <rect x="2.075" y="4.575" width="1" height="1" fill="#111827"/>
+  <rect x="3.325" y="4.575" width="1" height="1" fill="#111827"/>
+  <rect x="4.575" y="4.575" width="1" height="1" fill="#111827"/>
+  <rect x="7.075" y="4.575" width="1" height="1" fill="#111827"/>
+  <rect x="0.825" y="5.825" width="1" height="1" fill="#111827"/>
+  <rect x="2.075" y="5.825" width="1" height="1" fill="#111827"/>
+  <rect x="3.325" y="5.825" width="1" height="1" fill="#111827"/>
+  <rect x="7.075" y="5.825" width="1" height="1" fill="#111827"/>
+  <rect x="0.825" y="7.075" width="1" height="1" fill="#111827"/>
+  <rect x="2.075" y="7.075" width="1" height="1" fill="#111827"/>
+  <rect x="3.325" y="7.075" width="1" height="1" fill="#111827"/>
+  <rect x="4.575" y="7.075" width="1" height="1" fill="#111827"/>
+  <rect x="5.825" y="7.075" width="1" height="1" fill="#111827"/>
+  <rect x="7.075" y="7.075" width="1" height="1" fill="#111827"/>
+</svg>
