@@ -7,7 +7,7 @@
    percentage keeps it relative to the reader's own default size (accessibility
    zoom still works on top of this). */
 :root {
-  font-size: 85%;
+  font-size: 80%;
 }
 
 :root {
