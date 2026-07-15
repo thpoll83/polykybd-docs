@@ -5,6 +5,16 @@ import mermaid from 'astro-mermaid';
 export default defineConfig({
   site: 'https://www.polykybd.org',
   base: '/',
+  // Redirects for pages that moved when the docs were reorganized into the
+  // Setup / Using the Keyboard sections (keeps old bookmarks working).
+  redirects: {
+    '/software/installation': '/setup/installation/',
+    '/firmware/flashing': '/setup/flashing/',
+    '/firmware/unicode': '/using/languages/',
+    '/firmware/keymaps': '/using/keymaps/',
+    '/software/keymap-editor': '/using/keymap-editor/',
+    '/software/multi-machine': '/using/multi-machine/',
+  },
   integrations: [
     // Renders ```mermaid code blocks; must come before Starlight.
     mermaid({ theme: 'neutral', autoTheme: true }),
@@ -41,21 +51,21 @@ export default defineConfig({
         {
           label: 'Setup',
           items: [
-            { label: 'Install PolyKybdHost', slug: 'software/installation' },
-            { label: 'Flash the Firmware', slug: 'firmware/flashing' },
+            { label: 'Install PolyKybdHost', slug: 'setup/installation' },
+            { label: 'Flash the Firmware', slug: 'setup/flashing' },
           ],
         },
         {
           label: 'Using the Keyboard',
           items: [
-            { label: 'Context-Aware Overlays', slug: 'features/overlays' },
-            { label: 'Languages & Unicode Input', slug: 'firmware/unicode' },
-            { label: 'Glyph Scripts', slug: 'features/glyph-scripts' },
-            { label: 'Display Brightness', slug: 'features/brightness' },
-            { label: 'Idle & Burn-in Protection', slug: 'features/idle' },
-            { label: 'Keymaps & Layers', slug: 'firmware/keymaps' },
-            { label: 'Keymap Editor', slug: 'software/keymap-editor' },
-            { label: 'Multi-Machine Setup', slug: 'software/multi-machine' },
+            { label: 'Context-Aware Overlays', slug: 'using/overlays' },
+            { label: 'Languages & Unicode Input', slug: 'using/languages' },
+            { label: 'Glyph Scripts', slug: 'using/glyph-scripts' },
+            { label: 'Display Brightness', slug: 'using/brightness' },
+            { label: 'Idle & Burn-in Protection', slug: 'using/idle' },
+            { label: 'Keymaps & Layers', slug: 'using/keymaps' },
+            { label: 'Keymap Editor', slug: 'using/keymap-editor' },
+            { label: 'Multi-Machine Setup', slug: 'using/multi-machine' },
           ],
         },
         {

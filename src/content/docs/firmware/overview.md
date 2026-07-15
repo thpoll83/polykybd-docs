@@ -56,8 +56,8 @@ per-version feature history.
 
 - [Keyboard Variants](/firmware/variants/)
 - [Font Packs & Resources](/firmware/font-packs/)
-- [Flashing the Firmware](/firmware/flashing/)
-- [Keymaps & Layers](/firmware/keymaps/)
-- [Languages & Unicode Input](/firmware/unicode/)
+- [Flashing the Firmware](/setup/flashing/)
+- [Keymaps & Layers](/using/keymaps/)
+- [Languages & Unicode Input](/using/languages/)
 - [Firmware Development](/development/firmware/)
 - [QMK official documentation](https://docs.qmk.fm/)

@@ -63,12 +63,12 @@ source commonly uses it.
 |---|---|---|
 | **SET_BRIGHTNESS** | `0x0D` (13) | Keycap OLED contrast; a flags byte selects volatile / host-auto (**v5+**). |
 | **KEYPRESS** | `0x0E` (14) | Host-injected key event. |
-| **IDLE_STATE** | `0x0F` (15) | Start / stop the [idle](/features/idle/) animation. |
+| **IDLE_STATE** | `0x0F` (15) | Start / stop the [idle](/using/idle/) animation. |
 | **SET_UNICODE_MODE** | `0x14` (20) | Select the OS unicode-input mode. |
 | **DISPLAY_OFF** | `0x18` (24) | Blank the keycaps. |
 | **IDLE_STYLE** | `0x1C` (28) | **v4+.** Get/set the idle style (pulse / jitter). |
 | **SET_OS** | `0x1D` (29) | Active host OS → modifier legends. |
-| **GLYPH_SCRIPT** | `0x1E` (30) | **v9+.** Get/set the [glyph-script](/features/glyph-scripts/) override (open-ended index since v10). |
+| **GLYPH_SCRIPT** | `0x1E` (30) | **v9+.** Get/set the [glyph-script](/using/glyph-scripts/) override (open-ended index since v10). |
 | **BOOTLOADER / HANDEDNESS** | `0x17` / `0x19` | Enter bootloader; set which half is which. |
 
 ### Resource-flash transport — BEGIN / CHUNK / COMMIT

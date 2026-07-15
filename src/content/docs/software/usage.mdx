@@ -23,14 +23,14 @@ Right-click the tray icon to access:
 The tray app is the front-end for the keyboard's live features — each has its own page under
 **Using the Keyboard**:
 
-- [Context-Aware Overlays](/features/overlays/) — the keycaps follow your active window automatically.
-- [Display Brightness](/features/brightness/) — manual, adaptive-daylight (**Settings → Brightness**), or the optional light sensor.
-- [Languages & Unicode Input](/firmware/unicode/) — the OS unicode mode selected on the keyboard is synced here, and settable from the Settings dialog.
-- [Glyph Scripts](/features/glyph-scripts/) — theme the legends from the **Glyph Script** submenu.
+- [Context-Aware Overlays](/using/overlays/) — the keycaps follow your active window automatically.
+- [Display Brightness](/using/brightness/) — manual, adaptive-daylight (**Settings → Brightness**), or the optional light sensor.
+- [Languages & Unicode Input](/using/languages/) — the OS unicode mode selected on the keyboard is synced here, and settable from the Settings dialog.
+- [Glyph Scripts](/using/glyph-scripts/) — theme the legends from the **Glyph Script** submenu.
 
 ## Firmware updates
 
-You can flash new firmware directly from the tray — choose the **Flash firmware .bin…** action and select a firmware `.bin`. Flashing works over HID and is available even when the keyboard is on a protocol version the rest of PolyKybdHost doesn't fully support, so a mismatched keyboard can always be updated. The same operation is available from the command line with `polyctl fw flash` — see [Command Line](/software/cli/) and [Flashing Firmware](/firmware/flashing/).
+You can flash new firmware directly from the tray — choose the **Flash firmware .bin…** action and select a firmware `.bin`. Flashing works over HID and is available even when the keyboard is on a protocol version the rest of PolyKybdHost doesn't fully support, so a mismatched keyboard can always be updated. The same operation is available from the command line with `polyctl fw flash` — see [Command Line](/software/cli/) and [Flashing Firmware](/setup/flashing/).
 
 ## Debug logging
 
@@ -44,5 +44,5 @@ python -m polyhost --debug 2   # verbose HID traffic logging
 The Log Viewer (tray menu → Log Viewer) shows the same output in a GUI window. When running with the daemon, its activity appears under the **Daemon Log** tab.
 
 <Aside>
-If the keyboard is not detected, check that the udev rule is installed on Linux (see [Installation](/software/installation/)), or that the device is not claimed by another HID consumer.
+If the keyboard is not detected, check that the udev rule is installed on Linux (see [Installation](/setup/installation/)), or that the device is not claimed by another HID consumer.
 </Aside>

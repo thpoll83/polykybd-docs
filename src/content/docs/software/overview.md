@@ -30,7 +30,7 @@ For development you can opt out with `--no-daemon` (everything runs in-process).
 
 **Forwarder mode:** PolyKybdHost can also run on a remote machine that has no keyboard attached. In this configuration, a `PolyForwarder` instance watches the active window on the remote machine and relays the window title and app info over TCP to the normal-mode instance on the keyboard machine. This lets a single keyboard serve multiple computers — the displays always reflect what is focused on whichever machine the user is currently working at.
 
-See [Multi-Machine Setup](/software/multi-machine/) for details.
+See [Multi-Machine Setup](/using/multi-machine/) for details.
 
 ## System requirements
 
