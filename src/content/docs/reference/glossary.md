@@ -58,3 +58,18 @@ A quick reference for terms used across the PolyKybd documentation, firmware, an
 
 **Split sync**
 : The CRC32-validated UART transactions that synchronise state and overlay data between the two keyboard halves.
+
+**Font pack**
+: The large glyph set (symbols, CJK, emoji, flags, fantasy scripts) stored in the keyboard's external flash rather than compiled into the firmware. Split into independently-versioned **bundles** that PolyKybdHost flashes on connect. See [Font Packs & Resources](/firmware/font-packs/).
+
+**Glyph script**
+: A cosmetic override that redraws the keycap letter/digit legends in an alternative script (Tengwar, runes, Aurebesh, C64, Braille, …) without changing what the keys type. See [Glyph Scripts](/features/glyph-scripts/).
+
+**Idle style**
+: The anti-burn-in animation the keycaps run while idle — **pulse** (per-key breathing) or **jitter** (legends migrate to fresh spots). See [Idle & Burn-in Protection](/features/idle/).
+
+**Protocol version**
+: The `PROTOCOL_VERSION` the firmware reports in its GET_ID string. The host connects only on an exact match, so firmware and host are released in lockstep. See the [HID Protocol Reference](/reference/hid-protocol/).
+
+**LTR-559**
+: The optional ambient-light + proximity sensor (Pimoroni) on the Split72 expansion port. Drives automatic brightness and wakes the displays on approach. See [Display Brightness](/features/brightness/).

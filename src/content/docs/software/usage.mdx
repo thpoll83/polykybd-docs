@@ -1,11 +1,11 @@
 ---
-title: Using PolyKybdHost
-description: How to use the PolyKybdHost tray application, overlays, and brightness settings.
+title: Using the Tray App
+description: How to use the PolyKybdHost tray application — the menu, settings, firmware updates and logs.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
-Once PolyKybdHost is running, it lives in your system tray (Windows) or menu bar (macOS). A small PolyKybd icon indicates it is active and connected. The tray app is a client of the background daemon that owns the keyboard — see [Architecture & Daemon Mode](/software/architecture/).
+Once PolyKybdHost is running, it lives in your system tray (Windows) or menu bar (macOS). A small PolyKybd icon indicates it is active and connected. The tray app is a client of the background daemon that owns the keyboard — see [Daemon & Client Model](/software/architecture/).
 
 ## System tray menu
 
@@ -18,17 +18,15 @@ Right-click the tray icon to access:
 - **Log viewer** — view communication logs for debugging (includes a **Daemon Log** tab when the daemon is running)
 - **Quit** — close the tray app (the daemon keeps running)
 
-## Context-aware overlays
+## What the app drives
 
-The core feature: PolyKybdHost watches which application is currently focused on your screen. When you switch from, say, your browser to your code editor, the keyboard automatically updates every key display to show the relevant shortcuts and labels for the new app. This happens automatically with no action required from you.
+The tray app is the front-end for the keyboard's live features — each has its own page under
+**Using the Keyboard**:
 
-## Adaptive brightness
-
-If you have location access enabled, PolyKybdHost can calculate solar irradiance for your location and automatically adjust display brightness based on time of day — brighter during the day, dimmer in the evening. This is configured in **Settings → Brightness**.
-
-## Unicode and language mode
-
-The unicode input mode (Mac / Linux / Windows / WinCompose) selected on the keyboard is synced to PolyKybdHost. You can also change it from the Settings dialog.
+- [Context-Aware Overlays](/features/overlays/) — the keycaps follow your active window automatically.
+- [Display Brightness](/features/brightness/) — manual, adaptive-daylight (**Settings → Brightness**), or the optional light sensor.
+- [Languages & Unicode Input](/firmware/unicode/) — the OS unicode mode selected on the keyboard is synced here, and settable from the Settings dialog.
+- [Glyph Scripts](/features/glyph-scripts/) — theme the legends from the **Glyph Script** submenu.
 
 ## Firmware updates
 

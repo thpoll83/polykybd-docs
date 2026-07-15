@@ -22,7 +22,7 @@ As of the latest version, PolyKybdHost runs as two cooperating parts. The **oper
 
 This means the GUI can come and go (quit it, restart it, run it on demand) without ever dropping the keyboard connection or losing reconnect state — the daemon keeps the device alive. A small stdlib-only command-line tool, [`polyctl`](/software/cli/), talks to the same daemon, so you can script the keyboard or drive it without any GUI at all.
 
-For development you can opt out with `--no-daemon` (everything runs in-process). See [Architecture & Daemon Mode](/software/architecture/) for the full picture.
+For development you can opt out with `--no-daemon` (everything runs in-process). See [Daemon & Client Model](/software/architecture/) for the full picture.
 
 ## Operating modes
 

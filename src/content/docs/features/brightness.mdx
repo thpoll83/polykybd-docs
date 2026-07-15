@@ -1,0 +1,45 @@
+---
+title: Display Brightness
+description: Set keycap brightness by hand, follow the daylight automatically, or drive it from an optional on-board light sensor.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+The per-key OLEDs can be dimmed and brightened three different ways. Whichever you use, a
+**manual** change always wins until you re-enable automatic mode.
+
+## Manual
+
+- **On the keyboard** — the brightness preset keys step the keycap OLEDs up and down.
+- **In PolyKybdHost** — set a level under **Settings → Brightness**.
+- **Command line** — `polyctl brightness <0–100>`.
+
+A manual set switches automatic mode off, so the board holds exactly the level you picked.
+
+## Adaptive (daylight)
+
+PolyKybdHost can follow the sun: with location access enabled it computes the solar
+irradiance for your position and time of day and drifts the brightness up during the day and
+down in the evening. Enable it under **Settings → Brightness**. It refreshes roughly every ten
+minutes.
+
+## On-board light sensor (optional)
+
+The **Split72** has an expansion port for an optional ambient-light + proximity sensor
+(Pimoroni LTR-559). If one is fitted, the keyboard drives its **own** brightness from the
+measured light level — much faster than the host's daylight estimate (roughly twice a second)
+— and overrides the host's daylight value while automatic mode is on.
+
+The same sensor reads **proximity**: reach toward the keyboard and the displays wake before you
+even press a key.
+
+<Aside type="note">
+The sensor is entirely optional and side-agnostic — it works on whichever half it's soldered
+to, and a keyboard without one simply uses the manual/daylight paths above. It is a Split72-only
+feature (the Split42 has no expansion port).
+</Aside>
+
+<Aside type="tip">
+A manual brightness change (preset keys or an explicit set) always takes over from any automatic
+source until you turn automatic mode back on or reboot — so you're never fighting the sensor.
+</Aside>

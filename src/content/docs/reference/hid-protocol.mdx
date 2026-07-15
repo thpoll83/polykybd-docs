@@ -25,25 +25,62 @@ Responses are prefixed with the command echo plus a status marker:
 - `"P\xNN."` — **ACK** (success), where `NN` is the command ID
 - `"P\xNN!"` — **NACK** (rejected / unsupported / out of bounds)
 
-The dispatcher lives in the firmware's `hid_com.c` (`raw_hid_receive()`), which handles 21 command IDs in the range `0x01`–`0x15`. The `PROTOCOL_VERSION`, reported inside the **GET_ID** identity string, gates which host features are available.
+The main dispatcher lives in the firmware's `hid_com.c` (`raw_hid_receive()`); a separate range
+(`0x50`+) handles the resource-flash transport. The `PROTOCOL_VERSION`, reported inside the
+**GET_ID** identity string, gates which host features are available — and the host connects only
+on an **exact** version match.
 
 ## Command areas
 
-The commands below are the main areas grounded in the firmware and host sources. (Command IDs not listed here exist but are omitted where the exact ID is not documented in the source notes.)
+The commands are grouped below by purpose. IDs are shown in hex, with the decimal form where the
+source commonly uses it.
 
-| Area | Command(s) | Notes |
+### Identity & language
+
+| Command | ID | Notes |
 |---|---|---|
-| **Identity** | `GET_ID` | Returns the identity string, including `PROTOCOL_VERSION` and firmware version. Used for capability detection and liveness checks. |
-| **Language (get / set)** | language get/set | Query and select the active keyboard language. |
-| **Language list (packed)** | `27` (`0x1b`) | **Protocol v2+.** Returns the language list as a count byte plus one 2-byte `(ISO 639-1 index, ISO 3166-1 alpha-2 index)` pair per language. The only language-list command on current firmware. |
-| **Language list (legacy ASCII)** | `0x08` | **Retired.** Returned 4 ASCII chars per language. On current firmware it NACKs (`P\x08!`); the host uses the packed list exclusively. |
-| **Brightness** | brightness set | Sets keycap OLED brightness (also used by preset brightness keys). |
-| **Default layer** | default-layer set | Selects/queries the default layer. |
-| **Overlay upload (segmented)** | `0x0A` | Each keycap overlay (360 bytes) split into 6 × 60-byte segments. |
-| **Overlay upload (RLE)** | `0x10` / `0x11` | RLE-compressed overlay, sent in 1–2 packets; decompressed in firmware (optionally on RP2040 core1). |
-| **Overlay ROI update** | `0x12` / `0x13` | Partial refresh of a region of a keycap's display. |
-| **Overlay mapping** | `21` (`0x15`) | Maps overlay pool slots to displays / usage bits. **Silent since protocol v3** (no per-chunk ACK). |
-| **Enable overlays** | `11` (`0x0B`) | Activates overlays after all mapping chunks are sent; force-syncs overlay state to the slave half. |
+| **GET_ID** | `0x06` | Identity string incl. `PROTOCOL_VERSION` and firmware version, plus (v6+) a per-bundle [font-pack](/firmware/font-packs/) version block after the string's NUL. The connect handshake and liveness check. |
+| **GET_LANG** | `0x07` | Query the active keyboard language. |
+| **CHANGE_LANG** | `0x09` | Select the active language. |
+| **GET_LANG_LIST_PACKED** | `0x1b` (27) | **v2+.** Language list as a count byte plus one 2-byte `(ISO 639-1 index, ISO 3166-1 alpha-2 index)` pair per language. The only language-list command on current firmware. |
+| **GET_LANG_LIST (ASCII)** | `0x08` | **Retired.** Returned 4 ASCII chars per language; now NACKs (`P\x08!`). |
+| **GET_DEFAULT_LAYER** | `0x16` (22) | Read/select the persisted default layer. |
+
+### Overlays — the bulk data path
+
+| Command | ID | Notes |
+|---|---|---|
+| **SEND_OVERLAY** | `0x0A` | Plain overlay: each 360-byte keycap in 6 × 60-byte segments. (v11 packs modifier + segment into one header byte so a 60-byte segment fits the report exactly.) |
+| **START / SEND_COMPRESSED_OVERLAY** | `0x10` / `0x11` | RLE-compressed keycap in 1–2 packets; decompressed in firmware (optionally on RP2040 core1). The common case. |
+| **START / SEND_ROI_OVERLAY** | `0x12` / `0x13` | Partial refresh of a region of a keycap's display. |
+| **SEND_OVERLAY_MAPPING** | `0x15` (21) | Maps overlay pool slots to displays / usage bits. **Silent since v3** (no per-chunk ACK). |
+| **OVERLAY_FLAGS on / off** | `0x0B` / `0x0C` | Enable/disable overlay rendering; enable force-syncs overlay state to the slave. |
+| **SAVE_MRU** | `0x1A` (26) | Persist the most-recently-used overlay cache. |
+
+### Configuration & display
+
+| Command | ID | Notes |
+|---|---|---|
+| **SET_BRIGHTNESS** | `0x0D` (13) | Keycap OLED contrast; a flags byte selects volatile / host-auto (**v5+**). |
+| **KEYPRESS** | `0x0E` (14) | Host-injected key event. |
+| **IDLE_STATE** | `0x0F` (15) | Start / stop the [idle](/features/idle/) animation. |
+| **SET_UNICODE_MODE** | `0x14` (20) | Select the OS unicode-input mode. |
+| **DISPLAY_OFF** | `0x18` (24) | Blank the keycaps. |
+| **IDLE_STYLE** | `0x1C` (28) | **v4+.** Get/set the idle style (pulse / jitter). |
+| **SET_OS** | `0x1D` (29) | Active host OS → modifier legends. |
+| **GLYPH_SCRIPT** | `0x1E` (30) | **v9+.** Get/set the [glyph-script](/features/glyph-scripts/) override (open-ended index since v10). |
+| **BOOTLOADER / HANDEDNESS** | `0x17` / `0x19` | Enter bootloader; set which half is which. |
+
+### Resource-flash transport — BEGIN / CHUNK / COMMIT
+
+| Command | ID | Notes |
+|---|---|---|
+| **FONTPACK_BEGIN** | `0x50` | Erase the target slot; a byte selects the target (font-pack bundle, firmware, resource pack). |
+| **FONTPACK_CHUNK** | `0x51` | Sequential data chunks; deferred sector erase; bridged to the slave. |
+| **FONTPACK_COMMIT** | `0x52` | Verify CRC32 and mark the slot present. |
+
+The same three-command flow, with a different target byte, drives **firmware update**,
+**font-pack bundles**, and other resource packs.
 
 <Aside type="note">
 The bulk overlay commands (`0x0A`, `0x10`/`0x11`, `0x12`/`0x13`, and mapping on v3) are **not** ACK'd per chunk — the host follows a burst with a `GET_ID` liveness check rather than waiting for replies.
@@ -61,10 +98,25 @@ The 9 modifier variants are: bare, Ctrl, Shift, Ctrl+Shift, Alt, Ctrl+Alt, Alt+S
 
 ## Protocol versions
 
-The firmware advertises a `PROTOCOL_VERSION` (in the GET_ID string) that the host reads to decide which commands to use.
+The firmware advertises a `PROTOCOL_VERSION` (in the GET_ID string) that the host reads to decide
+which commands to use. The host connects **only on an exact match** — a mismatch shows
+*"Protocol mismatch, please update"* and refuses to connect, so firmware and host are always
+bumped in lockstep. Selected milestones:
 
-- **v2** — added the **packed language list** (`27` / `0x1b`): a count byte plus one 2-byte ISO index pair per language, replacing the 4-ASCII-char legacy list. The legacy ASCII list (`0x08`) is retired and NACKs on current firmware.
-- **v3** — made the **overlay-mapping** command (`21`) **silent** (no per-chunk ACK), matching the other bulk overlay commands. This is the current protocol version. The previous ACK was informationless and a frequent source of stale replies the host had to drain.
+- **v2** — the **packed language list** (`0x1b`): a count byte plus one 2-byte ISO index pair per language, replacing the 4-ASCII-char legacy list. The legacy list (`0x08`) is retired and NACKs.
+- **v3** — the **overlay-mapping** command (`0x15`) made **silent** (no per-chunk ACK), matching the other bulk overlay commands and removing a frequent source of stale replies.
+- **v4** — **IDLE_STYLE** (`0x1c`): choose the idle anti-burn-in style (pulse / jitter).
+- **v5** — a **brightness flags** byte on `SET_BRIGHTNESS` (`0x0d`): volatile vs host-auto.
+- **v6** — a **per-bundle font-pack version block** appended to the GET_ID reply, so the host flashes only the bundles a keyboard is missing or behind on.
+- **v9** — **GLYPH_SCRIPT** (`0x1e`): override the letter/digit legends with an alternative script.
+- **v10** — the glyph script became an **open-ended index** (an unknown script renders the normal legend), so new scripts ship without a protocol bump.
+- **v11** — the **plain overlay upload** (`0x0a`) packs modifier + segment into one header byte, so a full 60-byte segment fits a 64-byte report exactly.
+
+<Aside type="note">
+Not every version number above is a separate feature listed here — the list highlights the
+milestones that changed the command surface. Because the connect gate is exact-match, the host
+and firmware are released together at the same `PROTOCOL_VERSION`.
+</Aside>
 
 <Aside type="tip">
 Run PolyKybdHost with `--debug 2` to log the raw HID traffic — the cleanest way to see these commands and their ACK/NACK responses on the wire.

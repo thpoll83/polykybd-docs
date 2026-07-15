@@ -39,32 +39,47 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Firmware',
+          label: 'Setup',
           items: [
-            { label: 'Overview', slug: 'firmware/overview' },
-            { label: 'Keyboard Variants', slug: 'firmware/variants' },
-            { label: 'Flashing the Firmware', slug: 'firmware/flashing' },
-            { label: 'Keymaps & Layers', slug: 'firmware/keymaps' },
+            { label: 'Install PolyKybdHost', slug: 'software/installation' },
+            { label: 'Flash the Firmware', slug: 'firmware/flashing' },
+          ],
+        },
+        {
+          label: 'Using the Keyboard',
+          items: [
+            { label: 'Context-Aware Overlays', slug: 'features/overlays' },
             { label: 'Languages & Unicode Input', slug: 'firmware/unicode' },
+            { label: 'Glyph Scripts', slug: 'features/glyph-scripts' },
+            { label: 'Display Brightness', slug: 'features/brightness' },
+            { label: 'Idle & Burn-in Protection', slug: 'features/idle' },
+            { label: 'Keymaps & Layers', slug: 'firmware/keymaps' },
+            { label: 'Keymap Editor', slug: 'software/keymap-editor' },
+            { label: 'Multi-Machine Setup', slug: 'software/multi-machine' },
           ],
         },
         {
           label: 'Host Software',
           items: [
             { label: 'What is PolyKybdHost?', slug: 'software/overview' },
-            { label: 'Installation', slug: 'software/installation' },
-            { label: 'Architecture & Daemon Mode', slug: 'software/architecture' },
-            { label: 'Using PolyKybdHost', slug: 'software/usage' },
+            { label: 'Using the Tray App', slug: 'software/usage' },
+            { label: 'Daemon & Client Model', slug: 'software/architecture' },
             { label: 'Command Line (polyctl)', slug: 'software/cli' },
-            { label: 'Keymap Editor', slug: 'software/keymap-editor' },
-            { label: 'Multi-Machine Setup', slug: 'software/multi-machine' },
+          ],
+        },
+        {
+          label: 'Firmware',
+          items: [
+            { label: 'Overview', slug: 'firmware/overview' },
+            { label: 'Keyboard Variants', slug: 'firmware/variants' },
+            { label: 'Font Packs & Resources', slug: 'firmware/font-packs' },
           ],
         },
         {
           label: 'Development',
           items: [
-            { label: 'Firmware Development', slug: 'development/firmware' },
             { label: 'System Model & Data Flow', slug: 'development/system-model' },
+            { label: 'Firmware Development', slug: 'development/firmware' },
             { label: 'Display Graphics & Fonts', slug: 'development/display-graphics' },
             { label: 'Hardware & PCB Modification', slug: 'development/hardware' },
             { label: 'Test Rig & CI', slug: 'development/test-rig' },

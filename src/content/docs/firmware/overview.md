@@ -36,7 +36,8 @@ PolyKybd is **custom hardware**, not a stock board:
 - **Flash**: **8 MB external QSPI flash** (not the stock 2 MB), partitioned into:
   - **0–2 MB** — the running firmware
   - **2–4 MB** — firmware-update staging
-  - **4–8 MB** — resource / overlay (keycap image) data
+  - **4–6 MB** — the [font pack](/firmware/font-packs/) (independently-versioned glyph bundles)
+  - **6–8 MB** — additional resource packs
 - **Displays**: up to **72 per-keycap OLEDs** (72×40 px monochrome, SPI-driven) plus a status OLED.
 - **Split**: a left + right half connected over UART, with CRC32-validated state and overlay sync.
 
@@ -47,11 +48,14 @@ There are two hardware variants, **split72** and **split42**, sharing one firmwa
 The firmware talks to the host application ([PolyKybdHost](/software/overview/)) over a
 custom **64-byte raw HID report protocol**. Each report is `[report id, command id, payload…]`, and
 responses are prefixed `P\xNN.` (ACK) or `P\xNN!` (NACK). A `PROTOCOL_VERSION` reported in the
-device's identity string gates host features — the firmware is currently at **PROTOCOL_VERSION 3**.
+device's identity string gates host features, and the host connects only on an **exact** version
+match. See the [HID Protocol Reference](/reference/hid-protocol/) for the command surface and the
+per-version feature history.
 
 ## Further reading
 
 - [Keyboard Variants](/firmware/variants/)
+- [Font Packs & Resources](/firmware/font-packs/)
 - [Flashing the Firmware](/firmware/flashing/)
 - [Keymaps & Layers](/firmware/keymaps/)
 - [Languages & Unicode Input](/firmware/unicode/)

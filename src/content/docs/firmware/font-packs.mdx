@@ -1,0 +1,53 @@
+---
+title: Font Packs & Resources
+description: How PolyKybd stores the large glyph set that draws symbols, CJK, emoji, flags and fantasy scripts — and why the keyboard sometimes flashes fonts on connect.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+PolyKybd can draw an enormous range of glyphs on its keycaps — Latin of course, but also
+symbols, CJK, emoji, country flags and the [glyph scripts](/features/glyph-scripts/). That
+glyph set is far too big to compile into the firmware image, so it's split in two.
+
+## Resident fonts vs the font pack
+
+- **Resident fonts** are compiled into the firmware. They cover ASCII text and the essential
+  UI chrome, so the keyboard always renders basic legends **even with no font pack flashed**.
+- **The font pack** lives in the keyboard's **external QSPI flash** (the 4–6 MB resource
+  region) and holds everything else. It's flashed separately from the firmware and survives a
+  firmware update.
+
+The pack isn't one big blob — it's a set of independently-versioned **bundles**
+(symbols, Middle-Eastern, syllabic, Asian, flags, emoji, and the `fantasy` script bundle).
+
+## Flashed automatically on connect
+
+You normally never manage the pack by hand. When PolyKybdHost connects, the keyboard reports
+the version of each bundle it holds, and the host **flashes only the bundles that are missing or
+out of date**. That's what the *"Updating fonts — do not unplug"* screen is: a font-pack bundle
+being written. It's quick, and it only happens when something is actually stale.
+
+<Aside type="tip">
+Because bundles are versioned, adding a new language flag or a new glyph script only reships the
+one bundle that changed — the rest are left untouched.
+</Aside>
+
+## Managing it by hand
+
+For troubleshooting you can drive the pack from the CLI:
+
+```sh
+polyctl fontpack status        # show device-vs-shipped versions per bundle
+polyctl fontpack sync          # flash every stale bundle
+polyctl fontpack flash <id>    # force-flash one bundle
+polyctl fontpack wipe [id]     # empty one bundle (or all)
+```
+
+Wiping a bundle is harmless — the host re-flashes it on the next connect.
+
+<Aside type="note">
+Where the pack sits in the 8 MB flash map, and how the resident + pack fonts are merged at
+boot, is covered in [System Model & Data Flow](/development/system-model/#where-resources-live--the-8-mb-flash).
+Generating the fonts themselves is a development task — see
+[Display Graphics & Fonts](/development/display-graphics/).
+</Aside>
