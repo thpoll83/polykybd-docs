@@ -64,6 +64,7 @@ export default defineConfig({
           label: 'Development',
           items: [
             { label: 'Firmware Development', slug: 'development/firmware' },
+            { label: 'System Model & Data Flow', slug: 'development/system-model' },
             { label: 'Display Graphics & Fonts', slug: 'development/display-graphics' },
             { label: 'Hardware & PCB Modification', slug: 'development/hardware' },
             { label: 'Test Rig & CI', slug: 'development/test-rig' },
