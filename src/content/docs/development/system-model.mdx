@@ -5,7 +5,7 @@ description: A visual mental model of PolyKybd — how the host and the two halv
 
 import { Aside } from '@astrojs/starlight/components';
 
-PolyKybd has a lot of moving parts: a host application, two keyboard halves that
+PolyKybd has a lot of moving parts: a host application (**PolyKybdHost**), two keyboard halves that
 run the **same** firmware image in different roles, a custom HID protocol, and 8 MB
 of external flash carved into regions. This page is a single mental model of how it
 all fits together — the topology, the command surface, where resources live, and the
@@ -13,7 +13,7 @@ handful of runtime processes worth understanding before you change any of them.
 
 ## Topology — who talks to whom
 
-Three actors, two links. The host only ever speaks to the **master** (the USB half).
+Three actors, two links. **PolyKybdHost** only ever speaks to the **master** (the USB half).
 The master owns the HID device and is the only one that relays to the **slave** over
 the split serial link. Both halves run the identical firmware — including a second
 core (`core1`) used to offload RLE decompression — and differ only in role, decided
@@ -21,7 +21,7 @@ at runtime from which half has USB.
 
 ```mermaid
 flowchart LR
-  subgraph HOST["Host — PolyKybdHost (Python)"]
+  subgraph HOST["PolyKybdHost — Python host software"]
     PC["<b>PolyCore</b><br/>• tracks the active window<br/>• renders per-app key overlays<br/>• control socket + polyctl CLI"]
   end
   subgraph MASTER["Master half — USB role"]
@@ -43,7 +43,7 @@ flowchart LR
 ```
 
 <Aside type="note">
-The slave has **no idea the host exists**. Everything it displays was relayed by the
+The slave has **no idea PolyKybdHost exists**. Everything it displays was relayed by the
 master over the split link. Each half keeps its **own** copy of the overlay images in
 RAM, which is why an image change has to be sent to both halves.
 </Aside>
@@ -159,14 +159,14 @@ keyboard immediately after power-on can.
 
 ### Overlay data path — an app switch
 
-When the active window changes, the host sends the new keycap images. The master
+When the active window changes, PolyKybdHost sends the new keycap images. The master
 decompresses them (on `core1`) into its overlay RAM, then relays each keycap to the
 slave over the split link so both halves show the same thing.
 
 ```mermaid
 sequenceDiagram
   autonumber
-  participant H as Host
+  participant H as PolyKybdHost
   participant M0 as Master core0
   participant M1 as Master core1
   participant S as Slave
@@ -221,7 +221,7 @@ reboots both halves in lockstep.
 ```mermaid
 sequenceDiagram
   autonumber
-  participant H as Host
+  participant H as PolyKybdHost
   participant M as Master
   participant S as Slave
   H->>M: BEGIN (target, size, CRC)
