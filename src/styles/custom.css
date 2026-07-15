@@ -1,6 +1,15 @@
 /* PolyKybd docs — light restyle over stock Starlight.
    Goal: a crisper, more technical feel without leaving the Starlight look. */
 
+/* Denser default scale: the docs read better a touch smaller, as if the
+   browser were at ~80% zoom. Starlight sizes type, spacing and layout widths
+   in rem, so scaling the root font-size scales the whole UI together. Using a
+   percentage keeps it relative to the reader's own default size (accessibility
+   zoom still works on top of this). */
+:root {
+  font-size: 85%;
+}
+
 :root {
   /* Accent: a crisp azure that reads as "technical / hardware". */
   --sl-color-accent-low: #102a43;
