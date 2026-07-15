@@ -7,6 +7,12 @@ import { Aside } from '@astrojs/starlight/components';
 
 PolyKybdHost talks to the firmware over a custom **raw HID** report protocol. The same protocol is used by the [HIL test rig](/development/test-rig/) to exercise the firmware in CI.
 
+<Aside type="tip">
+For a bird's-eye grouping of these commands by purpose (overlays, identity & language,
+configuration, resource flashing) and how they fit the wider system, see the
+[System Model & Data Flow](/development/system-model/#the-hid-command-surface) page.
+</Aside>
+
 ## Report format
 
 - **64-byte** raw HID reports.

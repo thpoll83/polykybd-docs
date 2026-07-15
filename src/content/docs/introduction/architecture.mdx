@@ -21,6 +21,13 @@ flowchart TB
 
 The two keyboard halves run the **same firmware image**; which half is master is decided at runtime (the half with USB power). They stay in sync over a CRC32-validated full-duplex serial link.
 
+<Aside type="tip">
+Want the deeper version? [System Model & Data Flow](/development/system-model/) expands this
+picture with the full HID command surface, the 8 MB flash map, and diagrams of the key
+runtime processes — boot & split-link establishment, the overlay data path on an app switch,
+display power states, resource flashing, and the core0/core1 offload.
+</Aside>
+
 ## The repositories
 
 <CardGrid>
