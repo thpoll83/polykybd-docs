@@ -7,6 +7,8 @@ import { Aside } from '@astrojs/starlight/components';
 
 The Layout Editor in PolyKybdHost lets you remap any key on any layer directly, without recompiling or reflashing firmware. Changes take effect immediately and are stored in the keyboard's flash memory.
 
+![The PolyKybdHost Layout Editor — the split72 key grid with layer tabs across the top and a keycode picker below](../../../assets/howto/layout-editor.png)
+
 ## Opening the editor
 
 Right-click the PolyKybdHost tray icon → **Layout Editor**.
@@ -22,7 +24,7 @@ Right-click the PolyKybdHost tray icon → **Layout Editor**.
 
 PolyKybdHost uses the QMK `ID_DYNAMIC_KEYMAP_SET_KEYCODE` protocol to write individual key assignments directly to the keyboard. It does not write a full layer — only the changed key is updated, making it instant.
 
-The dynamic keymap stored in the keyboard persists across power cycles. However, if you later reflash the firmware with a new compiled keymap, the dynamic keymap may be reset to the firmware defaults.
+The dynamic keymap stored in the keyboard persists across power cycles **and across a normal firmware reflash** — it lives in the keyboard's EEPROM, a separate flash region from the firmware image. It only reverts to the compiled defaults if a firmware update changes the on-keyboard EEPROM layout, or you explicitly clear the EEPROM. To make a remap the *shipped* default, edit the firmware source — see [Edit the Keymap](/howto/edit-keymap/).
 
 ## Limitations
 

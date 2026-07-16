@@ -10,8 +10,8 @@ and how deep it goes:
 
 | Route | Best for | Recompile? | Survives a reflash? |
 |---|---|---|---|
-| **1. PolyKybdHost Layout Editor** | Remapping individual keys, quickly | No | No — reset to firmware defaults on reflash |
-| **2. QMK firmware source** | Permanent keymaps, layers, macros — and behaviour beyond the keymap | Yes | Yes |
+| **1. PolyKybdHost Layout Editor** | Remapping individual keys, quickly | No | Yes — kept in the keyboard's EEPROM\* |
+| **2. QMK firmware source** | Permanent keymaps, layers, macros — and behaviour beyond the keymap | Yes | Yes — it *is* the compiled default |
 
 Background on layers and the dynamic keymap is on [Keymaps & Layers](/using/keymaps/).
 
@@ -33,15 +33,20 @@ key at a time (`ID_DYNAMIC_KEYMAP_SET_KEYCODE`) and the change persists across p
 Full walkthrough and limitations: [Keymap Editor](/using/keymap-editor/).
 
 <Aside type="note">
-The runtime dynamic keymap is **reset to the compiled defaults if you later reflash firmware**. For
-a change that survives reflashing, use route 2.
+\* The Layout Editor writes to the keyboard's **EEPROM**, which lives in a separate flash region
+from the firmware image — so your remaps persist across power cycles **and** survive a normal
+firmware reflash. The only time they revert to the compiled defaults is when a firmware update
+changes the on-keyboard EEPROM layout, or you explicitly clear the EEPROM. Reach for route 2 when
+you want the change to *be* the firmware default, or when you need behaviour beyond remapping single
+keys (new layers, macros, encoder logic).
 </Aside>
 
 ## Route 2 — QMK firmware source
 
 Editing the firmware directly is the most powerful route: it does **much more than remap keys** —
-new layers, macros, tap-dance, encoder behaviour, and any custom QMK logic. It's also the only way
-to make a change that survives a reflash.
+new layers, macros, tap-dance, encoder behaviour, and any custom QMK logic. It's also the way to
+make your change the compiled default that *ships* with the firmware (rather than living only in the
+keyboard's EEPROM), so it's there on a fresh board and is what you share or upstream.
 
 The keymap *data* — the `keymaps[]` array, `g_led_config`, and `encoder_map[]` — lives per-variant:
 
