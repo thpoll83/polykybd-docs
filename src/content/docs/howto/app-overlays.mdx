@@ -29,9 +29,14 @@ a different modifier variant** of that key:
 | `*.combo.mods.png` (combo) | Ctrl+Shift | Ctrl+Alt | Alt+Shift | GUI *(dropped)* |
 | `*.png` (plain) | — | — | — | grayscale → no modifier only |
 
-So one RGBA image holds four layers of the same keyboard at once. Encode as **straight
+So one RGBA image holds four layers of the same keyboard at once — you can see it in GIMP's
+**Channels** panel, each of Red / Green / Blue / Alpha carrying the icons for a different modifier:
+
+![GIMP editing an overlay: icons placed in the keycap grid on the left, the Red/Green/Blue/Alpha channels on the right each holding a different modifier's icons](../../../assets/overlays/overlay-gimp-channels.png)
+
+**White pixels are drawn (lit) on the OLED; everything else is ignored.** Encode as **straight
 (non-premultiplied) RGBA** — a transparent pixel must still carry its R/G/B bytes, because those
-channels are the Ctrl/Alt/Shift variants, independent of alpha.
+channels are the Ctrl/Alt/Shift variants, independent of alpha (see the export step below).
 
 A few hard limits baked into the firmware — don't fight them:
 
@@ -70,6 +75,21 @@ A few hard limits baked into the firmware — don't fight them:
    720×360 RGBA. Add a `<app>_template.combo.mods.png` only if you drew combo (Ctrl+Shift / Ctrl+Alt
    / Alt+Shift) layers. If you only need plain, unmodified icons, a single grayscale
    `<app>_template.png` is enough.
+
+   <Aside type="caution">
+   In GIMP's *Export Image as PNG* dialog, set the format to **8bpc RGBA** and **tick "Save color
+   values from transparent pixels"** — otherwise GIMP throws away the R/G/B bytes under transparent
+   pixels and your Ctrl/Alt/Shift channels come out blank.
+
+   ![GIMP's Export Image as PNG dialog with "Save color values from transparent pixels" ticked and 8bpc RGBA selected](../../../assets/overlays/overlay-gimp-export.png)
+   </Aside>
+
+   <Aside type="tip">
+   Working channel-by-channel is easiest with GIMP's **`decompose`** (split an image into its R/G/B/A
+   channels to draw each modifier separately) and **`compose`** (merge them back into one image
+   before export). `compose` fails if any extra channel is left over, so keep it to R/G/B/A. The
+   shipped `.xcf` files in `polyhost/res/overlays/src/` are the reference.
+   </Aside>
 
 5. **Tell the host which app it's for.** Add an entry to `polyhost/res/overlay-mapping.poly.yaml`,
    keyed on the app's **window class / process name** (comma-separate aliases), pointing `overlay:`

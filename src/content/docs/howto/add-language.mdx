@@ -57,10 +57,12 @@ Python environment with `openpyxl cogapp pyyaml fonttools pillow`. You only need
 
 3. **Add the per-key column.** The language layouts live in a real spreadsheet,
    `lang/lang_lut.xlsx` — open it in LibreOffice Calc (or Excel) to see how the existing
-   languages are laid out, one column per language, one row per key. You add your language as a
-   new column of per-key codepoints, either by hand for a small clone/override or by extending
-   one of the `lang/_gen_*_cols.py` helper scripts (model it on the existing ones) that emit the
-   column and patch the sheet for you.
+   languages are laid out, one colour-coded column group per language, one row per key. You add
+   your language as a new column of per-key codepoints, either by hand for a small clone/override
+   or by extending one of the `lang/_gen_*_cols.py` helper scripts (model it on the existing ones)
+   that emit the column and patch the sheet for you.
+
+   ![lang_lut.xlsx open in LibreOffice Calc — colour-coded column groups, one per language, with a row per physical key](../../../assets/howto/lang-lut-spreadsheet.png)
 
    <Aside type="caution">
    Don't just *Save As* over `lang_lut.xlsx` from openpyxl — it drops the cached formula values
