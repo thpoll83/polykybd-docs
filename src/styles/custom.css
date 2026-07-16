@@ -80,3 +80,39 @@
   font-weight: 650;
   letter-spacing: -0.01em;
 }
+
+/* ---------------------------------------------------------------------------
+   Reclaim the "On this page" table-of-contents column for the content.
+   The ToC components are overridden to render nothing (see the `components`
+   block in astro.config.mjs); this collapses the now-empty right column and
+   widens the content measure so the reclaimed space actually reaches the
+   content. These docs lean on wide LR flowcharts and sequence diagrams that
+   use the horizontal space far better than a ToC does.
+   --------------------------------------------------------------------------- */
+
+/* Collapse the empty right column (belt-and-braces: the ToC stub already emits
+   nothing, this removes the reserved grid track so the main pane fills it). */
+.right-sidebar-container {
+  display: none !important;
+}
+
+:root {
+  /* Wider content measure now that the ToC no longer competes for the row.
+     Still bounded so prose lines stay readable; diagrams get the rest below. */
+  --sl-content-width: 56rem;
+}
+
+/* Let Mermaid diagrams grow into the reclaimed width instead of sitting at
+   their natural pixel size: scale up to the full content column, stay centered,
+   height follows the SVG's intrinsic aspect ratio. */
+.sl-markdown-content .mermaid {
+  text-align: center;
+  margin-inline: auto;
+}
+.sl-markdown-content .mermaid svg {
+  width: 100%;
+  height: auto;
+  /* Override Mermaid's inline max-width (the diagram's natural size) so it can
+     use the whole column rather than capping at its rendered pixel width. */
+  max-width: 100% !important;
+}

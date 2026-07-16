@@ -26,6 +26,15 @@ export default defineConfig({
         dark: './src/assets/polytasten-logo-dark.svg',
         replacesTitle: false,
       },
+      // Drop the "On this page" table of contents (desktop right sidebar and
+      // the mobile "On this page" bar) so the content — especially the wide
+      // flowchart / sequence diagrams — gets the full page width. Both point at
+      // a stub that renders nothing; the freed column is collapsed and the
+      // content measure widened in src/styles/custom.css.
+      components: {
+        TableOfContents: './src/components/EmptyToc.astro',
+        MobileTableOfContents: './src/components/EmptyToc.astro',
+      },
       social: [
         { icon: 'github', label: 'GitHub', href: 'https://github.com/thpoll83/PolyKybd' },
         { icon: 'discord', label: 'Discord', href: 'https://discord.gg/gW8JescH7M' },
