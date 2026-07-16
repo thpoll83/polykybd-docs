@@ -111,6 +111,7 @@ export default defineConfig({
             { label: 'Add a Glyph Script', slug: 'howto/add-glyph-script' },
             { label: 'Create App Overlays', slug: 'howto/app-overlays' },
             { label: 'Build & Flash from Source', slug: 'howto/build-and-flash' },
+            { label: 'Edit the Keymap', slug: 'howto/edit-keymap' },
           ],
         },
         {
