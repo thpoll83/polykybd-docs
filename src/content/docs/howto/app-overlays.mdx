@@ -1,0 +1,104 @@
+---
+title: Create App Overlays
+description: Step-by-step guide to building keycap shortcut-icon overlays for an application.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+PolyKybd can draw a **shortcut icon on each keycap OLED** for whichever app is focused — see
+[Context-Aware Overlays](/using/overlays/) for the user-facing side. This HowTo builds a new
+overlay set for an application.
+
+The mechanical work — cell placement, modifier channels, scaling, the 1-bit threshold, preview
+sheets and the mapping stanza — is automated by `scripts/generate_app_overlays.py` in
+[PolyKybdHost](https://github.com/thpoll83/PolyKybdHost). Your job is the *research, sourcing and
+reproducibility* half that feeds it.
+
+<Aside type="tip">
+There is a `generate-app-overlays` agent skill that runs this whole flow. This page is the
+human-readable version; the authoritative format spec is
+`polyhost/res/overlay_specification.md` in the host repo.
+</Aside>
+
+## How overlays are packed
+
+The host loads one or two PNGs per app from `polyhost/res/overlay-mapping.poly.yaml`. Each PNG is
+a **720×360 image = a 10×9 grid of 72×40 keycap cells**, and **each colour channel of a cell is a
+different modifier variant** of that key:
+
+| File | Red | Green | Blue | Alpha |
+|---|---|---|---|---|
+| `*.mods.png` (primary) | Ctrl | Alt | Shift | no modifier |
+| `*.combo.mods.png` (combo) | Ctrl+Shift | Ctrl+Alt | Alt+Shift | GUI *(dropped)* |
+
+Hard limits baked into the firmware — don't fight them:
+
+- **Ctrl+Alt+Shift is not representable**, and **GUI/Win-key overlays are dropped** — skip those
+  shortcuts (the generator warns and drops them automatically).
+- Cells are **72×40, 1-bit monochrome** — pick simple, high-contrast icons.
+- Only the **90 mapped keys** carry a cell (`A`–`Z`, `0`–`9`, `F1`–`F12`, punctuation, the nav
+  cluster). Keypad and media keys have none.
+- Icons sit in the **bottom-right** of the cell by default so they never cover the firmware-drawn
+  key letter in the top-left. Keep that.
+
+## Keep it reproducible
+
+Use a **per-app folder** so sources and provenance stay scoped. The contract is that anyone can
+re-run the generator on `bindings.yaml` and get byte-identical overlays:
+
+```
+polyhost/res/overlay_sources/<app>/
+  bindings.yaml      # shortcuts + per-icon transforms + provenance (single source of truth)
+  icons/             # every source icon, committed
+  SOURCES.md         # where each icon/shortcut came from + license (required)
+```
+
+## Steps
+
+<Steps>
+
+1. **Research the shortcuts authoritatively.** Prefer machine-readable sources: the app's own
+   config (Notepad++ `shortcuts.xml`, VS Code `keybindings.json`, JetBrains keymaps), then the
+   official documented shortcut reference, then the source repo. Do a **coverage pass** — enumerate
+   the whole Ctrl row and notable Shift/Alt/F-key shortcuts up front rather than dripping them in.
+   Map each modifier set to a representable channel and drop Ctrl+Alt+Shift and Win/GUI.
+
+   <Aside type="caution">
+   Mind app-specific quirks — don't assume the obvious meaning. Outlook `Ctrl+F` is *Forward*, not
+   Find; Excel `Ctrl+-` deletes cells. If a key has no default in that app, flag it rather than
+   inventing one.
+   </Aside>
+
+2. **Source one icon per action.** Prefer the app's **own icon set** from its source repo (those
+   are the icons users actually see), then fill gaps with a freely-licensed package — Microsoft
+   **Fluent UI System Icons** (MIT) is the house style used across the existing overlays. Commit
+   every source icon under `icons/` and record its URL and license in `SOURCES.md`.
+
+3. **Write `bindings.yaml`.** List each shortcut (action + key + modifiers) and any per-icon
+   transforms (`threshold`, `invert`, `fit`, `region`, `anchor`). Optionally set `program_icon:` to
+   draw the app's logo into one cell (default `ESC`) across every layer, so the user can see which
+   overlay set is loaded.
+
+4. **Generate the overlays:**
+
+   ```sh
+   pip install "Pillow>=10" numpy PyYAML
+   python scripts/generate_app_overlays.py polyhost/res/overlay_sources/<app>/bindings.yaml
+   ```
+
+   This writes the packed `*.mods.png` / `*.combo.mods.png`, preview contact sheets, and the
+   `overlay-mapping.poly.yaml` entry.
+
+5. **Review the previews.** Check the generated contact sheets — icons should read clearly at
+   72×40 and not collide with the key letter. Adjust `threshold`/`region`/`anchor` in
+   `bindings.yaml` and regenerate until they look right.
+
+6. **Wire and test.** Confirm the app's mapping stanza in `overlay-mapping.poly.yaml`, then focus
+   the app with the keyboard connected — the overlays load automatically. Use `--debug 2` on
+   PolyKybdHost to watch the overlay HID traffic if a key doesn't show.
+
+</Steps>
+
+See [Contributing](/development/contributing/) for how to open the pull request, and
+[Display Graphics & Fonts](/development/display-graphics/) for how overlays are rendered on the
+device.
