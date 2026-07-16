@@ -1,0 +1,100 @@
+---
+title: Build & Flash from Source
+description: Set up the QMK toolchain, compile the PolyKybd firmware, and flash your own build.
+---
+
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+This HowTo builds the PolyKybd firmware from source and flashes your own image. If you just want
+to install an official release, see [Flash the Firmware](/setup/flashing/) instead — you don't need
+a toolchain for that.
+
+The firmware is a customised QMK build on the [qmk_firmware fork](https://github.com/thpoll83/qmk_firmware)
+(branch `PolyKybd`); the PolyKybd sources live under `keyboards/polykybd/`. Two variants share one
+codebase — **`split72`** and **`split42`** (see [Keyboard Variants](/firmware/variants/)).
+
+## Steps
+
+<Steps>
+
+1. **Install the ARM toolchain.** This is the compiler `qmk setup` installs on Debian/Ubuntu:
+
+   ```sh
+   sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi
+   ```
+
+2. **Install the QMK CLI** (a venv avoids system-pip quirks) and point it at the fork:
+
+   ```sh
+   pip install qmk
+   export QMK_HOME=/path/to/qmk_firmware        # or: qmk config user.qmk_home=<repo>
+   pip install -r $QMK_HOME/requirements.txt
+   ```
+
+   <Aside type="note">
+   The PyPI `qmk` package is only the bootstrapper. The full CLI for this fork lives in
+   `lib/python` inside the repo — that's why `QMK_HOME` matters.
+   </Aside>
+
+3. **Fetch the submodules.** A fresh clone has empty submodules; the minimum for a build is
+   ChibiOS, ChibiOS-Contrib, pico-sdk, printf and lufa:
+
+   ```sh
+   make git-submodule
+   ```
+
+4. **Compile the variant you want:**
+
+   ```sh
+   qmk compile -kb polykybd/split72 -km default
+   # or
+   qmk compile -kb polykybd/split42 -km default
+   ```
+
+   The `.uf2` lands in the repo root and `.build/`.
+
+   <Aside type="tip">
+   The firmware runs in a **2 MB flash partition**. A build that exceeds it fails to *link*
+   rather than silently overflowing — that's intentional. A default build currently uses under
+   1 MB.
+   </Aside>
+
+5. **Produce the `.bin` for HID flashing.** PolyKybdHost's firmware updater takes the raw RP2040
+   image, not the `.uf2`:
+
+   ```sh
+   arm-none-eabi-objcopy -O binary .build/polykybd_split72_default.elf split72.bin
+   ```
+
+6. **Flash your build.** Two paths:
+
+   <Tabs>
+     <TabItem label="Over HID (recommended)">
+       Flash the `.bin` through PolyKybdHost without touching the bootloader — the keyboard keeps
+       running, both halves update, and it survives a protocol mismatch:
+
+       ```sh
+       polyctl fw flash split72.bin --apply
+       ```
+
+       Or use the tray menu's firmware-update entry. See the
+       [Command Line](/software/cli/) reference.
+     </TabItem>
+     <TabItem label="Bootloader / UF2">
+       For recovery, copy the `.uf2` to the RP2040 mass-storage drive after entering the
+       bootloader (BOOTSEL). This is the manual fallback — see [Flash the Firmware](/setup/flashing/).
+     </TabItem>
+   </Tabs>
+
+</Steps>
+
+<Aside type="caution">
+The `.bin` is the deliverable for HID flashing; the `.uf2` is only for manual bootloader-drive
+recovery. Don't hand the `.uf2` to `polyctl fw flash`.
+</Aside>
+
+## Next steps
+
+- [Firmware Development](/development/firmware/) — repository layout and the development environment.
+- [Test Rig & CI](/development/test-rig/) — how builds are verified on real hardware.
+- [Contributing](/development/contributing/) — opening a pull request.

@@ -105,6 +105,15 @@ export default defineConfig({
           ],
         },
         {
+          label: 'HowTo',
+          items: [
+            { label: 'Add a Keyboard Language', slug: 'howto/add-language' },
+            { label: 'Add a Glyph Script', slug: 'howto/add-glyph-script' },
+            { label: 'Create App Overlays', slug: 'howto/app-overlays' },
+            { label: 'Build & Flash from Source', slug: 'howto/build-and-flash' },
+          ],
+        },
+        {
           label: 'Reference',
           items: [
             { label: 'HID Protocol', slug: 'reference/hid-protocol' },

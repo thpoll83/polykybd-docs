@@ -1,0 +1,75 @@
+---
+title: Add a Glyph Script
+description: Step-by-step guide to adding a new fantasy or retro glyph script to the PolyKybd keycaps.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+A **glyph script** restyles the keycap letter and digit legends in an alternative script —
+Tengwar, runes, Braille and friends (see [Glyph Scripts](/using/glyph-scripts/) for the
+user-facing side). This HowTo adds a new one.
+
+The best part: since firmware **protocol v10** the glyph-script index is **open-ended**. The
+firmware accepts any script byte and simply draws the normal legend for one it doesn't know, so
+**adding a script does not bump the protocol** — you add an enum value, a codepoint block, a font,
+and a host label. A keyboard that lacks the new font degrades gracefully to Latin.
+
+<Aside type="note">
+This is a **cosmetic legend override** only. Overlays, the language layer and OS hints are drawn
+on separate paths and are untouched — a glyph script never changes what a key types.
+</Aside>
+
+All firmware paths are relative to `keyboards/polykybd/` in the
+[qmk_firmware fork](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd); the glyphs ship in
+the **`fantasy`** font-pack bundle (see [Font Packs & Resources](/firmware/font-packs/)).
+
+## How it works
+
+Each script's letters and digits are rendered into a **dense private codepoint block** (0x40
+apart: Tengwar `0xE800`, Runes `0xE840`, …). A table in `poly_keymap.c` (`glyph_script_blocks[]`,
+indexed by the `poly_glyph_script` enum) maps a script to its block base; letters `a..z` land at
+`base+0..25`, and scripts with their own numerals put digits at `base+26..35`. The render hook in
+`render_key()` swaps the legend for the block glyph when a script is active.
+
+## Steps
+
+<Steps>
+
+1. **Pick a license-clean font.** The glyph *shapes* must be embeddable and redistributable
+   (OFL, Apache, CC0, permissive). Keep user-facing script names generic where a script is a
+   trademark, even though the fonts themselves are fine to embed. Add the source to the font
+   downloader (`fonts/dl-fonts.sh`).
+
+2. **Add the enum value.** Append to `enum poly_glyph_script` in `state.h` — it is **append-only**
+   and byte-identical to the host's `GlyphScript` enum. Add a matching row to
+   `glyph_script_blocks[]` in `poly_keymap.c` with the next free 0x40-spaced block base.
+
+3. **Generate the font into its block.** Add a `fonts.yaml` entry that emits the font at the new
+   PUA block using fontconvert's sequence remap, so `a..z` (and digits, if the script has them)
+   land at `base+0..`. Regenerate the headers, then rebuild the `fantasy` bundle and bump its
+   `content_version` so the host re-flashes it on connect.
+
+4. **Wire the host.** In [PolyKybdHost](https://github.com/thpoll83/PolyKybdHost): add the same
+   value to the `GlyphScript` enum (`command_ids.py`) and a label to `GLYPH_SCRIPT_LABELS`
+   (`host.py`). That automatically adds it to the tray **Glyph Script** submenu and the
+   `polyctl glyph-script <name>` choices — see the [Command Line](/software/cli/) page.
+
+5. **Reship the bundle.** Copy the regenerated `fantasy.plyf` into
+   `polyhost/res/fontpack/` and update `bundles.json` with the new size, hash and version. (The
+   `reship-fontpack-bundle` skill automates this; no `fontconvert` needed if the headers are
+   already committed.)
+
+6. **Build and test.** Compile the firmware and select the new script from the tray menu or
+   `polyctl`. With the `fantasy` bundle flashed the legends switch; without it, they stay Latin.
+   The test rig has a `min_protocol`-gated round-trip test you can extend.
+
+</Steps>
+
+<Aside type="tip">
+Because the index is open-ended, you do **not** bump `PROTOCOL_VERSION` or the host `__protocol__`
+for a new script — that would needlessly reject every current keyboard at the connect gate. The
+protocol only changed once (v9→v10) to establish the open-ended contract; adding faces stays inside it.
+</Aside>
+
+See [Contributing](/development/contributing/) for how to open the pull requests, and the
+[HID Protocol Reference](/reference/hid-protocol/) for the `GLYPH_SCRIPT` command.

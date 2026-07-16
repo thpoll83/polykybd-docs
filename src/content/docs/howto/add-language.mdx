@@ -1,0 +1,121 @@
+---
+title: Add a Keyboard Language
+description: Step-by-step guide to adding a new xx-YY keyboard-language layout to the PolyKybd firmware.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+This HowTo walks through adding a new **keyboard-language layout** — a new `xx-YY` entry
+in the on-screen language picker (see [Languages & Unicode Input](/using/languages/) for
+the user-facing side).
+
+The key idea: **PolyKybd only relabels the keycaps; the host OS generates the characters.**
+So a layout is really three things — a per-key codepoint map drawn on the OLEDs, a font that
+can render those codepoints, and a host hint that switches the OS input source. The firmware
+never composes characters and needs no input-method engine.
+
+<Aside type="tip">
+There is an `add-polykybd-language` agent skill that automates this whole flow. This page is
+the human-readable version of that playbook; the authoritative deep-dive lives in the firmware
+repo at `keyboards/polykybd/lang/FUTURE_LANGUAGES.md`.
+</Aside>
+
+All paths below are relative to `keyboards/polykybd/` in the
+[qmk_firmware fork](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd) (branch `PolyKybd`),
+except the host files, which live in
+[PolyKybdHost](https://github.com/thpoll83/PolyKybdHost).
+
+## Before you start
+
+Set up the firmware toolchain (see [Build & Flash from Source](/howto/build-and-flash/)) and a
+Python environment with `openpyxl cogapp pyyaml fonttools pillow`. You only need the pinned
+`fontconvert` build if the language introduces a **new font or flag** (see
+[Display Graphics & Fonts](/development/display-graphics/)).
+
+## Steps
+
+<Steps>
+
+1. **Classify the layout.** This decides how much work it is:
+
+   | Kind | When | Work |
+   |---|---|---|
+   | **Fold** | The OS layout is plain US-QWERTY (e.g. Indonesian) | No key column — falls back to en-US; just a host fold `xx=us` |
+   | **Clone** | A distinct layout identical to one already present | Copy the source column; inherits its AltGr legends |
+   | **Clone + override** | A base layout plus a few extra AltGr letters (Welsh, Irish) | Clone, then override the handful of keys |
+   | **New mapping** | A genuinely different keymap or new script (Sami, Pashto) | Transcribe from xkb; maybe a new font |
+
+   Rule of thumb: **identical keymap → fold; different keymap → its own column.**
+
+2. **Get the layout data from an authoritative source.** xkb is ground truth
+   (`/usr/share/X11/xkb/symbols/<file>`). Its level-3 (AltGr) legends match Linux **and**
+   Windows exactly; macOS Option diverges, and the firmware carries one legend set, so treat
+   AltGr as Linux/Windows-canonical. The HID protocol carries a **fixed 2+2-char code**, so an
+   ISO-639-2/3 language needs a 2-char **pseudo-code** stored verbatim (Hawaiian `hw`,
+   Sorani `ku-IQ`).
+
+3. **Add the per-key column.** Language layouts are code-generated from the spreadsheet
+   `lang/lang_lut.xlsx`. Add or extend a column generator (model it on the existing
+   `lang/_gen_*_cols.py` scripts) that emits the per-key codepoints, then patch the spreadsheet
+   with the provided helper scripts.
+
+   <Aside type="caution">
+   Never re-save `lang_lut.xlsx` with openpyxl — it drops the cached formula values that the
+   code generator reads, corrupting every existing language. Always patch surgically and
+   regenerate from a clean committed base.
+   </Aside>
+
+4. **Handle fonts, if needed.** Latin-1, Latin Extended-A/B are already present, so most
+   European languages need **zero** new font work. A new script (Cherokee, Ethiopic) needs a
+   Noto source font added to the font pipeline and a new category — see
+   [Display Graphics & Fonts](/development/display-graphics/) and the
+   [Font Packs](/firmware/font-packs/) page.
+
+5. **Regenerate the code-generated files.** The spreadsheet feeds several files through `cog`.
+   Run them all (or the language ends up half-wired and "not selectable"):
+
+   ```sh
+   cd keyboards/polykybd
+   bash lang/run_cog.sh     # re-cogs lang_lut, named glyphs, keycode helper, hid_com, poly_keymap
+   ```
+
+6. **Rebuild the region tables and flags.** Regenerate the region-tab tables (which submenu the
+   language appears under) and the country-flag glyph:
+
+   ```sh
+   bash fonts/gen-lang-fonts.sh    # appends the new flag to flag_fonts.h
+   ```
+
+7. **Wire the host.** In PolyKybdHost, the country→region map
+   (`polyhost/services/lang_regions.py`) already covers every standard ISO country, so most
+   languages need no edit. Add a fold entry only for a country with no native xkb layout. A new
+   **pseudo-code** (non-ISO-639-1 language) must be appended to the frozen index table
+   `iso_lang_country.py` — which is **byte-identical across three repos** (firmware, host, test
+   rig), so copy it to all three and verify with `cmp`.
+
+8. **Verify the keycaps without hardware.** Use the preview tool — it reproduces the firmware
+   draw exactly, including the baseline shift, and flags clipped glyphs and overlaps:
+
+   ```sh
+   cd PolyKybdHost/tools
+   python oled_preview.py --lang xx-YY                 # contact sheet of all keys
+   python oled_preview.py --lang xx-YY --key KC_Q --overshoot 8 --cell-scale 8   # measure clipping
+   python oled_preview.py --lang xx-YY --channels      # base/Shift/AltGr overlap check
+   ```
+
+9. **Build and commit.** Compile both variants (`split72` and `split42` share one keymap, so a
+   language lands on both at once) and commit the firmware, host, and test-rig changes on their
+   respective branches. Document the addition in `lang/FUTURE_LANGUAGES.md`.
+
+</Steps>
+
+## Common pitfalls
+
+- A key with a `NULL` base legend falls back to en-US **entirely** for that key — its Shift/AltGr
+  preview is never shown. Any key carrying a preview must also set a base.
+- AltGr descenders (ŷ ą ę, µ, ¶) can clip the bottom of the 40 px panel. Prefer a per-glyph
+  nudge over lowering a whole category. Always measure with `oled_preview --overshoot`.
+- Re-cog **all** the generated files, and keep the frozen `iso_lang_country.py` identical in all
+  three repos.
+
+See [Contributing](/development/contributing/) for how to open the pull requests.
