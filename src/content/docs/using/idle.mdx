@@ -4,6 +4,7 @@ description: How PolyKybd keeps its 72 OLEDs from burning in when you step away 
 ---
 
 import { Aside } from '@astrojs/starlight/components';
+import SupportedSince from '../../../components/SupportedSince.astro';
 
 OLED pixels that show the same legend for hours can burn in. To prevent that, PolyKybd moves
 through a few states while you're away and wakes instantly the moment you come back.
@@ -30,6 +31,8 @@ you can glance down and resume typing. Both keep the legend legible — a full "
 animation was deliberately not used, because it hides the key labels.
 
 ## Choosing a style
+
+<SupportedSince protocol={4} note="selectable idle style" />
 
 - **Command line** — `polyctl idle-style pulse` or `polyctl idle-style jitter`.
 

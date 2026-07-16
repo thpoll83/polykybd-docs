@@ -1,0 +1,112 @@
+---
+/**
+ * AiSkill — a consistent "you can let an AI assistant do this for you" callout.
+ *
+ * The whole point is *recognisability*: it always renders the same sparkle mark
+ * and "AI Assist" label, so wherever it appears across the docs a reader learns
+ * to spot it as "there's an agent skill that automates this section". Put it at
+ * the BOTTOM of a section — the human steps come first, this is the shortcut.
+ *
+ * Usage (in MDX):
+ *   import AiSkill from '../../../components/AiSkill.astro';
+ *   <AiSkill name="add-polykybd-language">
+ *     Automates the whole flow — classify, build the key column, re-cog, wire
+ *     the host and verify the keycaps.
+ *   </AiSkill>
+ */
+interface Props {
+  /** The skill's name, shown as a code chip (e.g. "add-polykybd-language"). */
+  name?: string;
+}
+const { name } = Astro.props;
+---
+
+<aside class="ai-skill" aria-label="AI assistant skill">
+  <span class="ai-skill__mark" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Sparkles: the shared, recognisable AI mark used across every section. -->
+      <path
+        d="M12 2.5l1.7 4.6a4 4 0 0 0 2.4 2.4l4.6 1.7-4.6 1.7a4 4 0 0 0-2.4 2.4L12 20.3l-1.7-4.6a4 4 0 0 0-2.4-2.4L3.3 11.6l4.6-1.7a4 4 0 0 0 2.4-2.4L12 2.5z"
+        fill="currentColor"
+      />
+      <path
+        d="M19 3l.7 1.9a2 2 0 0 0 1.2 1.2L22.8 7l-1.9.7a2 2 0 0 0-1.2 1.2L19 10.8l-.7-1.9a2 2 0 0 0-1.2-1.2L15.2 7l1.9-.7a2 2 0 0 0 1.2-1.2L19 3z"
+        fill="currentColor"
+        opacity="0.75"
+      />
+    </svg>
+  </span>
+  <div class="ai-skill__body">
+    <p class="ai-skill__label">
+      AI Assist{name && (
+        <> · <code>{name}</code></>
+      )}
+    </p>
+    <div class="ai-skill__text"><slot /></div>
+  </div>
+</aside>
+
+<style>
+  .ai-skill {
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+    margin-block: 1.5rem 1rem;
+    padding: 0.9rem 1.05rem;
+    border: 1px solid var(--sl-color-accent);
+    border-left-width: 3px;
+    border-radius: 0.5rem;
+    /* A faint accent wash so it reads as a distinct, repeating motif without
+       shouting louder than the surrounding Asides. */
+    background:
+      linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--sl-color-accent) 12%, transparent),
+        transparent 60%
+      ),
+      var(--sl-color-bg);
+  }
+
+  .ai-skill__mark {
+    flex: none;
+    display: inline-flex;
+    color: var(--sl-color-accent);
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-top: 0.1rem;
+  }
+  .ai-skill__mark svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--sl-color-accent) 55%, transparent));
+  }
+
+  .ai-skill__body {
+    min-width: 0;
+  }
+
+  .ai-skill__label {
+    margin: 0 0 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--sl-color-accent-high);
+  }
+  .ai-skill__label code {
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 600;
+  }
+
+  .ai-skill__text {
+    font-size: 0.9rem;
+    color: var(--sl-color-gray-2);
+  }
+  .ai-skill__text :global(:last-child) {
+    margin-bottom: 0;
+  }
+  .ai-skill__text :global(:first-child) {
+    margin-top: 0;
+  }
+</style>

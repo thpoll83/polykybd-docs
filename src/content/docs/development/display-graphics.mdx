@@ -4,6 +4,7 @@ description: How the PolyKybd per-key displays are rendered, and how the keycap 
 ---
 
 import { Aside } from '@astrojs/starlight/components';
+import AiSkill from '../../../components/AiSkill.astro';
 
 Each of the 72 per-key OLED displays is a **72×40 pixel monochrome** canvas. Rendering uses a fork of the Adafruit GFX library, adapted for the RP2040 and the FPC-connected display array.
 
@@ -52,3 +53,11 @@ Byte-reproducible headers require the **pinned** `fontconvert` build (FreeType 2
 <Aside type="tip">
 Use `--debug 2` with PolyKybdHost to watch the raw HID overlay traffic and confirm the firmware is receiving and rendering the expected display data.
 </Aside>
+
+<AiSkill name="make-font-resident">
+Working with Claude Code? **`make-font-resident`** moves a glyph into the compiled-in resident set
+so it renders with no font pack flashed (handling the tiny-dedicated-font case and the
+byte-reproducible regenerate), and **`reship-fontpack-bundle`** refreshes a bundle's shipped
+`.plyf` from the committed headers when host and firmware bytes drift — neither needs the pinned
+`fontconvert` build.
+</AiSkill>

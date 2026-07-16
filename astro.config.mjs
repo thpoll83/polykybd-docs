@@ -14,6 +14,9 @@ export default defineConfig({
     '/firmware/keymaps': '/using/keymaps/',
     '/software/keymap-editor': '/using/keymap-editor/',
     '/software/multi-machine': '/using/multi-machine/',
+    // Hardware got its own top-level section; the modification page moved out
+    // of Development.
+    '/development/hardware': '/hardware/modification/',
   },
   integrations: [
     // Renders ```mermaid code blocks; must come before Starlight.
@@ -94,12 +97,18 @@ export default defineConfig({
           ],
         },
         {
+          label: 'Hardware',
+          items: [
+            { label: 'Electronics & Schematics', slug: 'hardware/electronics' },
+            { label: 'PCB & Case Modification', slug: 'hardware/modification' },
+          ],
+        },
+        {
           label: 'Development',
           items: [
             { label: 'System Model & Data Flow', slug: 'development/system-model' },
             { label: 'Firmware Development', slug: 'development/firmware' },
             { label: 'Display Graphics & Fonts', slug: 'development/display-graphics' },
-            { label: 'Hardware & PCB Modification', slug: 'development/hardware' },
             { label: 'Test Rig & CI', slug: 'development/test-rig' },
             { label: 'Contributing', slug: 'development/contributing' },
           ],
