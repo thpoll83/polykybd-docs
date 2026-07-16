@@ -40,12 +40,26 @@ The documentation is licensed under **CC BY 4.0**. By contributing, you agree th
 <AiSkill name="update-polykybd-docs">
 Working with Claude Code? When you change a user-facing feature in the firmware or host, the
 **`update-polykybd-docs`** skill finds the docs pages that a change makes wrong or incomplete and
-extends them, so this site never drifts behind the code.
+extends them, so this site never drifts behind the code. At the end of a meaty session,
+**`session-retro`** scans it for hard-won gotchas worth recording and workflows worth codifying as
+new skills.
 </AiSkill>
 
 ## Contributing to the firmware
 
 See [Firmware Development](/development/firmware/) for setup instructions. For significant changes, open an issue first to discuss the approach.
+
+## Releases
+
+Both the firmware and the host app ship as **GitHub Releases** — a tagged version with
+customer-facing release notes, and (for the firmware) CI-built `.bin`/`.uf2` assets. Maintainers
+draft the notes newest-version-first, keep them concise, then publish.
+
+<AiSkill name="polykybd-github-release">
+Working with Claude Code? **`polykybd-github-release`** drives the whole release — it drafts the
+notes, gets your review, then publishes with the right tag, title and assets.
+**`polykybd-release-notes`** just writes the changelog for a version range if that's all you need.
+</AiSkill>
 
 ## Reporting issues
 
