@@ -76,6 +76,14 @@ A USB-C to USB-A cable + USB-A to USB-C adapter combination only works in one or
 
 ## Optional parts
 
+<Aside type="caution">
+Each half has a **single** expansion slot, shared by the rotary encoder, a pointing device
+(trackball/trackpad) and the light sensor — only **one** of the three fits per half. Fitting the
+light sensor therefore replaces the encoder/pointing device on that half. You can still put a
+different one on the other half (e.g. the sensor on the left and a trackpad on the right). Decide
+which one you want per side before you start.
+</Aside>
+
 ### Rotary encoder
 
 Either of these fits the PCB footprint:
@@ -94,3 +102,20 @@ Either of these fits the PCB footprint:
 | Trackpad (large, experimental) | Cirque TM035035-2024-003 (35mm) | Modify OpenSCAD source before printing the holder |
 
 Only one pointing device can be installed per half.
+
+### Ambient-light + proximity sensor (highly recommended)
+
+| Option | Part | Notes |
+|---|---|---|
+| Light + proximity sensor | Pimoroni LTR-559 breakout | Plus a 5-pin 2.54mm pin header. Solders to the labelled `3-6V / SDA / SCL / INT / GND` footprint on the Split72 PCB (shares the Cirque I2C bus). |
+
+With the sensor fitted, the keyboard drives keycap brightness from the measured light level and
+wakes the displays when your hand approaches — see [Display Brightness](/using/brightness/). It is
+optional in firmware (a clean no-op when absent) and side-agnostic. Split72 only — the Split42 has
+no expansion port.
+
+<Aside type="caution">
+The sensor must be soldered **before** the plate goes on — it does not fit through the plate hole,
+so it cannot be added later without an almost complete disassembly. Fit it as the very first
+assembly step (see the [Step-by-Step Build Guide](/assembly/step-by-step/)).
+</Aside>
