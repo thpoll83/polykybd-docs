@@ -83,23 +83,23 @@
 
 /* ---------------------------------------------------------------------------
    Reclaim the "On this page" table-of-contents column for the content.
-   The ToC components are overridden to render nothing (see the `components`
-   block in astro.config.mjs); this collapses the now-empty right column and
-   widens the content measure so the reclaimed space actually reaches the
-   content. These docs lean on wide LR flowcharts and sequence diagrams that
-   use the horizontal space far better than a ToC does.
+   The ToC is cleared at the route-data level (see routeMiddleware in
+   astro.config.mjs), so Starlight renders no right sidebar and drops its
+   `data-has-toc` marker — the main pane is already full width. We then widen
+   the content measure so the content fills that whole width instead of sitting
+   in a narrow column with blank space on the right. These docs lean on wide LR
+   flowcharts and sequence diagrams that use the horizontal space far better
+   than a ToC does.
    --------------------------------------------------------------------------- */
 
-/* Collapse the empty right column (belt-and-braces: the ToC stub already emits
-   nothing, this removes the reserved grid track so the main pane fills it). */
-.right-sidebar-container {
-  display: none !important;
-}
-
 :root {
-  /* Wider content measure now that the ToC no longer competes for the row.
-     Still bounded so prose lines stay readable; diagrams get the rest below. */
-  --sl-content-width: 56rem;
+  /* Fill the full reclaimed width. This is a cap, not a fixed width: on normal
+     and wide screens (up to ~1960px) the content pane is narrower than this, so
+     the content spans it edge-to-edge with no right-hand gap; only on very wide
+     (>~2000px) displays does the cap kick in to keep line length from becoming
+     unreadable, and there it leaves a small symmetric margin, not a one-sided
+     gap. */
+  --sl-content-width: 130rem;
 }
 
 /* Let Mermaid diagrams grow into the reclaimed width instead of sitting at
