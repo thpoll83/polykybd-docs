@@ -13,7 +13,11 @@
 set -euo pipefail
 
 # Always run from the repo root (the dir this script lives in), whatever the cwd.
-cd "$(dirname "$(readlink -f "$0")")"
+# Capture the script's name before cd so `--help` can still read it afterwards,
+# and use plain `dirname` (no `readlink -f` — BSD/macOS readlink lacks it, and we
+# don't need symlink resolution here).
+SCRIPT_NAME="$(basename "$0")"
+cd "$(dirname "$0")"
 
 MODE="dev"
 PORT="4321"
@@ -25,7 +29,7 @@ while [ $# -gt 0 ]; do
     --port) shift; PORT="${1:?--port needs a value}" ;;
     --reinstall) REINSTALL=1 ;;
     -h|--help)
-      sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//'
+      sed -n '2,11p' "$SCRIPT_NAME" | sed 's/^# \{0,1\}//'
       exit 0 ;;
     *) echo "preview.sh: unknown argument '$1'" >&2; exit 2 ;;
   esac
