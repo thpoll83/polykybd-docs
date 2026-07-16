@@ -29,23 +29,23 @@ The runtime dynamic keymap is **reset to the compiled defaults if you later refl
 a change that survives reflashing, use route 2 or 3.
 </Aside>
 
-## Route 2 — QMK keymap JSON
+## Route 2 — QMK keymap JSON (local)
 
-A `keymap.json` is QMK's portable keymap format — the same file the
-[QMK Configurator](https://config.qmk.fm) exports. It's much easier to edit than `keymap.c`, and
-QMK can **compile it directly**, so it's the sweet spot when you want a permanent, shareable keymap
-without touching C.
+A `keymap.json` is QMK's portable keymap format. It's much easier to edit than `keymap.c`, and the
+local `qmk` CLI can **compile it directly**, so it's the sweet spot when you want a permanent,
+shareable keymap without touching C. This is a **fully local workflow** — you edit the JSON in your
+checkout and build it with your own toolchain.
 
-<Aside type="tip">
-The online Configurator only lists keyboards that are in **mainline** QMK. PolyKybd is a fork, so
-it won't appear there — but the JSON *format* and the local `qmk` tooling below work exactly the
-same against your checkout.
+<Aside type="caution">
+The **online QMK Configurator ([config.qmk.fm](https://config.qmk.fm)) does not work for
+PolyKybd.** It only lists keyboards that are in mainline QMK, and PolyKybd is a fork — so it won't
+appear there, and you can't use it to build or download an image. Use the local `qmk` commands
+below instead.
 </Aside>
 
 <Steps>
 
-1. **Get a starting JSON.** Convert the variant's existing keymap to JSON, or start from a
-   Configurator export of a similar board and change the `keyboard` field:
+1. **Get a starting JSON** by converting the variant's existing keymap in your checkout:
 
    ```sh
    qmk c2json -kb polykybd/split72 -km default -o my_keymap.json
@@ -53,10 +53,10 @@ same against your checkout.
 
    The file holds `keyboard`, `keymap`, `layout` and a `layers` array of keycodes.
 
-2. **Edit `my_keymap.json`.** Change keycodes, add layers — it's plain JSON. QMK's keycode
-   reference is at [docs.qmk.fm/keycodes](https://docs.qmk.fm/keycodes).
+2. **Edit `my_keymap.json`** in your editor. Change keycodes, add layers — it's plain JSON. QMK's
+   keycode reference is at [docs.qmk.fm/keycodes](https://docs.qmk.fm/keycodes).
 
-3. **Compile it directly** (no conversion needed), then flash per
+3. **Compile it directly** with your local toolchain (no conversion needed), then flash per
    [Build & Flash from Source](/howto/build-and-flash/):
 
    ```sh
