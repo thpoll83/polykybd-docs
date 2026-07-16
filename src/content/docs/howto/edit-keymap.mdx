@@ -1,94 +1,122 @@
 ---
 title: Edit the Keymap
-description: Step-by-step guide to changing what the PolyKybd keys do, at runtime or in firmware source.
+description: The three routes to changing what the PolyKybd keys do — the host layout editor, a QMK keymap JSON, or firmware source.
 ---
 
 import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
-This HowTo changes **what the keys do**. There are two routes, and which one you want depends on
-whether the change needs to survive a firmware reflash:
+This HowTo changes **what the keys do**. There are three routes, from quickest to most powerful —
+pick by how permanent the change is and how deep it goes:
 
-- **Runtime** — remap individual keys over HID with the [Keymap Editor](/using/keymap-editor/). No
-  recompile, instant, and stored in the keyboard's flash — but reset if you later reflash firmware.
-- **Source** — edit the variant's `keymap.c`, then rebuild and flash. Permanent, and the only way to
-  add layers, macros or tap-dance. That's the route this page covers.
+| Route | Best for | Recompile? | Survives a reflash? |
+|---|---|---|---|
+| **1. PolyKybdHost Layout Editor** | Remapping individual keys, quickly | No | No — reset to firmware defaults on reflash |
+| **2. QMK keymap JSON** | A full, portable keymap you keep as a file | Yes | Yes (it's compiled in) |
+| **3. QMK firmware source** | Layers, macros, tap-dance — and behaviour beyond the keymap | Yes | Yes |
+
+Background on layers and the dynamic keymap is on [Keymaps & Layers](/using/keymaps/).
+
+## Route 1 — PolyKybdHost Layout Editor (runtime)
+
+The fastest route. Right-click the PolyKybdHost tray icon → **Layout Editor**, click a key, pick a
+keycode, and it's written to the keyboard over HID immediately — no recompile. It writes a single
+key at a time (`ID_DYNAMIC_KEYMAP_SET_KEYCODE`) and the change persists across power cycles.
+
+Full walkthrough and limitations: [Keymap Editor](/using/keymap-editor/).
 
 <Aside type="note">
-Background on layers and the dynamic keymap is on [Keymaps & Layers](/using/keymaps/). This page is
-the step-by-step for the source route.
+The runtime dynamic keymap is **reset to the compiled defaults if you later reflash firmware**. For
+a change that survives reflashing, use route 2 or 3.
 </Aside>
 
-## Where the keymap lives
+## Route 2 — QMK keymap JSON
 
-The shared keymap *logic* is in `keyboards/polykybd/poly_keymap.c`. Each variant's default keymap
-*data* — the `keymaps[]` array and `encoder_map[]` — is in its own directory:
+A `keymap.json` is QMK's portable keymap format — the same file the
+[QMK Configurator](https://config.qmk.fm) exports. It's much easier to edit than `keymap.c`, and
+QMK can **compile it directly**, so it's the sweet spot when you want a permanent, shareable keymap
+without touching C.
+
+<Aside type="tip">
+The online Configurator only lists keyboards that are in **mainline** QMK. PolyKybd is a fork, so
+it won't appear there — but the JSON *format* and the local `qmk` tooling below work exactly the
+same against your checkout.
+</Aside>
+
+<Steps>
+
+1. **Get a starting JSON.** Convert the variant's existing keymap to JSON, or start from a
+   Configurator export of a similar board and change the `keyboard` field:
+
+   ```sh
+   qmk c2json -kb polykybd/split72 -km default -o my_keymap.json
+   ```
+
+   The file holds `keyboard`, `keymap`, `layout` and a `layers` array of keycodes.
+
+2. **Edit `my_keymap.json`.** Change keycodes, add layers — it's plain JSON. QMK's keycode
+   reference is at [docs.qmk.fm/keycodes](https://docs.qmk.fm/keycodes).
+
+3. **Compile it directly** (no conversion needed), then flash per
+   [Build & Flash from Source](/howto/build-and-flash/):
+
+   ```sh
+   qmk compile my_keymap.json
+   ```
+
+   Or convert it to a `keymap.c` first if you'd rather keep C sources:
+   `qmk json2c my_keymap.json -o keymap.c`.
+
+</Steps>
+
+## Route 3 — QMK firmware source
+
+Editing the firmware directly is the most powerful route: it does **much more than remap keys** —
+new layers, macros, tap-dance, encoder behaviour, and any custom QMK logic. Use it when the JSON
+format isn't enough.
+
+The keymap *data* — the `keymaps[]` array and `encoder_map[]` — lives per-variant:
 
 ```
 keyboards/polykybd/split72/keymaps/default/keymap.c
 keyboards/polykybd/split42/keymaps/default/keymap.c
 ```
 
-Both are in the [qmk_firmware fork](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd)
-(branch `PolyKybd`). See [Keyboard Variants](/firmware/variants/) for why the logic is shared but
-the data is per-variant.
-
-## Steps
+The shared keymap *logic* (rendering, HID handling, the QMK callbacks) is in
+`keyboards/polykybd/poly_keymap.c`. Both are in the
+[qmk_firmware fork](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd); see
+[Keyboard Variants](/firmware/variants/) for why the logic is shared but the data is per-variant.
 
 <Steps>
 
-1. **Start from a copy, not the default** (recommended, so you can always fall back):
+1. **Start from a copy** so you can fall back to the default:
 
    ```sh
    qmk new-keymap -kb polykybd/split72 -km my_keymap    # or /split42
    ```
 
-   Or edit the variant's `keymaps/default/keymap.c` directly if you prefer.
-
-2. **Make the change.** The `keymaps[]` array is data only — each layer is a `LAYOUT(...)` of
-   keycodes:
-
-   ```c
-   const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-       [0] = LAYOUT(
-           KC_ESC,  KC_1,  KC_2,  /* ... */
-       ),
-       [1] = LAYOUT(
-           /* function layer */
-       ),
-   };
-   ```
+2. **Make the change** in `keymaps[]` (each layer is a `LAYOUT(...)` of keycodes):
 
    <Tabs>
-     <TabItem label="Remap a key">
-       Replace the keycode at that position. QMK's full keycode reference is at
-       [docs.qmk.fm/keycodes](https://docs.qmk.fm/keycodes) — everything there works on PolyKybd.
+     <TabItem label="Remap / add a layer">
+       Replace a keycode, or add another `[n] = LAYOUT(...)` entry (up to 9 layers) plus a key that
+       reaches it — `MO(n)` (momentary) or `TG(n)` (toggle).
      </TabItem>
-     <TabItem label="Add a layer">
-       Add another `[n] = LAYOUT(...)` entry (up to 9 layers) and a key that reaches it, e.g.
-       `MO(n)` (momentary) or `TG(n)` (toggle).
-     </TabItem>
-     <TabItem label="Macro / tap-dance">
+     <TabItem label="Macro / tap-dance / custom">
        These need firmware logic, not just data — implement them via the QMK callbacks and reference
-       them from `keymaps[]`. See [Firmware Development](/development/firmware/).
+       them from `keymaps[]`. This is exactly what makes route 3 worth it. See
+       [Firmware Development](/development/firmware/).
      </TabItem>
    </Tabs>
 
-3. **Rebuild and flash** your keymap. Follow [Build & Flash from Source](/howto/build-and-flash/),
-   passing your keymap name:
+3. **Rebuild and flash** per [Build & Flash from Source](/howto/build-and-flash/):
 
    ```sh
    qmk compile -kb polykybd/split72 -km my_keymap
    ```
 
-   A keymap change lands on the per-key displays automatically — the firmware re-derives every
-   legend from the active layer.
-
 </Steps>
 
-<Aside type="tip">
-For a one-off remap you don't want to recompile for, use the [Keymap Editor](/using/keymap-editor/)
-instead — it writes a single key over HID (`ID_DYNAMIC_KEYMAP_SET_KEYCODE`) and takes effect
-immediately. Just remember a firmware reflash resets the dynamic keymap to the compiled defaults.
-</Aside>
+A keymap change lands on the per-key displays automatically — the firmware re-derives every legend
+from the active layer.
 
 See [Contributing](/development/contributing/) if you want to upstream a keymap change.
