@@ -4,6 +4,7 @@ description: The Raspberry Pi hardware-in-the-loop station that flashes and test
 ---
 
 import { Aside } from '@astrojs/starlight/components';
+import AiSkill from '../../../components/AiSkill.astro';
 
 **polykybd-ctnd** is a Raspberry Pi 4 hardware-in-the-loop (HIL) test and deploy station for the PolyKybd keyboard. It lets firmware changes be built in the cloud and then verified against **real hardware** automatically, with no physical button presses or replugging.
 
@@ -41,3 +42,9 @@ This is dev-infrastructure for maintainers — you do not need the rig to build 
 ## Self-deploying
 
 The rig keeps itself current: a systemd timer fetches the tracked branch every few minutes and, when it gains commits **and the rig is idle**, fast-forwards, reinstalls dependencies if needed, and restarts the station — never interrupting an in-progress flash or test run. An **UPDATE** badge in the touch UI can also trigger this on demand.
+
+<AiSkill name="diagnose-hil-failure">
+Working with Claude Code? When the **HIL test** check goes red on a firmware PR, the
+**`diagnose-hil-failure`** skill triages it — stale-rig-code, no-enumeration, boot-burst flake,
+stale-rig-test or a real firmware bug — and drives it to green or a correct root-cause diagnosis.
+</AiSkill>

@@ -1,0 +1,94 @@
+---
+/**
+ * SupportedSince — a compact "supported since firmware protocol vN" tag meant
+ * to sit directly under a page (or section) headline, so a reader instantly
+ * sees the minimum version a feature needs without a paragraph of prose.
+ *
+ * Place it as the first thing in the MDX body (it lands right under the H1),
+ * or right after a section heading.
+ *
+ * Usage (in MDX):
+ *   import SupportedSince from '../../../components/SupportedSince.astro';
+ *   <SupportedSince protocol={10} />
+ *   <SupportedSince firmware="0.9.0" note="host-auto brightness" />
+ */
+interface Props {
+  /** Minimum firmware PROTOCOL_VERSION. Renders "Firmware protocol v{N}+". */
+  protocol?: number;
+  /** Minimum dotted FW_VERSION, for changes not tied to a protocol bump. */
+  firmware?: string;
+  /** Override the whole label text. */
+  label?: string;
+  /** Short trailing note, e.g. the feature name. */
+  note?: string;
+}
+const { protocol, firmware, label, note } = Astro.props;
+const text =
+  label ??
+  (protocol != null
+    ? `Firmware protocol v${protocol}+`
+    : firmware != null
+      ? `Firmware v${firmware}+`
+      : 'Firmware');
+// Protocol tags deep-link to the protocol reference; version-only tags don't.
+const href = protocol != null ? '/reference/hid-protocol/' : undefined;
+const Tag = href ? 'a' : 'span';
+---
+
+<Tag
+  class="supported-since"
+  href={href}
+  title="Minimum firmware version this feature needs"
+>
+  <svg class="supported-since__icon" viewBox="0 0 24 24" aria-hidden="true">
+    <!-- A little chip/tag mark to read as "version tag". -->
+    <path
+      d="M9 4h6a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.6"
+    />
+    <path d="M4 8h3M4 12h3M4 16h3M17 8h3M17 12h3M17 16h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+  </svg>
+  <span class="supported-since__text">{text}</span>
+  {note && <span class="supported-since__note">{note}</span>}
+</Tag>
+
+<style>
+  .supported-since {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-block: -0.3rem 1.2rem;
+    padding: 0.2rem 0.6rem 0.2rem 0.45rem;
+    border: 1px solid var(--sl-color-accent);
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--sl-color-accent-high);
+    background: color-mix(in srgb, var(--sl-color-accent) 14%, transparent);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  a.supported-since:hover {
+    background: color-mix(in srgb, var(--sl-color-accent) 24%, transparent);
+  }
+
+  .supported-since__icon {
+    width: 0.95rem;
+    height: 0.95rem;
+    flex: none;
+    color: var(--sl-color-accent);
+  }
+
+  .supported-since__note {
+    font-weight: 500;
+    opacity: 0.85;
+  }
+  .supported-since__note::before {
+    content: '·';
+    margin-right: 0.4rem;
+    opacity: 0.7;
+  }
+</style>

@@ -4,21 +4,18 @@ description: Step-by-step guide to building keycap shortcut-icon overlays for an
 ---
 
 import { Aside, Steps } from '@astrojs/starlight/components';
+import AiSkill from '../../../components/AiSkill.astro';
 
 PolyKybd can draw a **shortcut icon on each keycap OLED** for whichever app is focused — see
 [Context-Aware Overlays](/using/overlays/) for the user-facing side. This HowTo builds a new
 overlay set for an application.
 
 The mechanical work — cell placement, modifier channels, scaling, the 1-bit threshold, preview
-sheets and the mapping stanza — is automated by `scripts/generate_app_overlays.py` in
+sheets and the mapping stanza — is done for you by `scripts/generate_app_overlays.py` in
 [PolyKybdHost](https://github.com/thpoll83/PolyKybdHost). Your job is the *research, sourcing and
-reproducibility* half that feeds it.
-
-<Aside type="tip">
-There is a `generate-app-overlays` agent skill that runs this whole flow. This page is the
-human-readable version; the authoritative format spec is
+reproducibility* half that feeds it: find the app's real shortcuts, pick a clear icon for each,
+and record where every icon came from. The authoritative format spec is
 `polyhost/res/overlay_specification.md` in the host repo.
-</Aside>
 
 ## How overlays are packed
 
@@ -102,3 +99,10 @@ polyhost/res/overlay_sources/<app>/
 See [Contributing](/development/contributing/) for how to open the pull request, and
 [Display Graphics & Fonts](/development/display-graphics/) for how overlays are rendered on the
 device.
+
+<AiSkill name="generate-app-overlays">
+Working with Claude Code? The **`generate-app-overlays`** skill runs this end to end — it
+researches the app's shortcuts from its docs or source, sources a matching icon per shortcut,
+saves every source for reproducibility, converts to the 1-bit channel-packed format and wires
+the `overlay-mapping.poly.yaml` entry.
+</AiSkill>

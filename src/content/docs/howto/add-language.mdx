@@ -4,6 +4,7 @@ description: Step-by-step guide to adding a new xx-YY keyboard-language layout t
 ---
 
 import { Aside, Steps } from '@astrojs/starlight/components';
+import AiSkill from '../../../components/AiSkill.astro';
 
 This HowTo walks through adding a new **keyboard-language layout** — a new `xx-YY` entry
 in the on-screen language picker (see [Languages & Unicode Input](/using/languages/) for
@@ -14,11 +15,11 @@ So a layout is really three things — a per-key codepoint map drawn on the OLED
 can render those codepoints, and a host hint that switches the OS input source. The firmware
 never composes characters and needs no input-method engine.
 
-<Aside type="tip">
-There is an `add-polykybd-language` agent skill that automates this whole flow. This page is
-the human-readable version of that playbook; the authoritative deep-dive lives in the firmware
-repo at `keyboards/polykybd/lang/FUTURE_LANGUAGES.md`.
-</Aside>
+It's a hands-on job: you edit a spreadsheet in a spreadsheet program, run a couple of code
+generators, and check the result in a preview tool. Nothing exotic, but there are several files
+to keep in step. The authoritative deep-dive — with the full decision table and every locale
+already implemented — lives in the firmware repo at
+`keyboards/polykybd/lang/FUTURE_LANGUAGES.md`.
 
 All paths below are relative to `keyboards/polykybd/` in the
 [qmk_firmware fork](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd) (branch `PolyKybd`),
@@ -54,15 +55,18 @@ Python environment with `openpyxl cogapp pyyaml fonttools pillow`. You only need
    ISO-639-2/3 language needs a 2-char **pseudo-code** stored verbatim (Hawaiian `hw`,
    Sorani `ku-IQ`).
 
-3. **Add the per-key column.** Language layouts are code-generated from the spreadsheet
-   `lang/lang_lut.xlsx`. Add or extend a column generator (model it on the existing
-   `lang/_gen_*_cols.py` scripts) that emits the per-key codepoints, then patch the spreadsheet
-   with the provided helper scripts.
+3. **Add the per-key column.** The language layouts live in a real spreadsheet,
+   `lang/lang_lut.xlsx` — open it in LibreOffice Calc (or Excel) to see how the existing
+   languages are laid out, one column per language, one row per key. You add your language as a
+   new column of per-key codepoints, either by hand for a small clone/override or by extending
+   one of the `lang/_gen_*_cols.py` helper scripts (model it on the existing ones) that emit the
+   column and patch the sheet for you.
 
    <Aside type="caution">
-   Never re-save `lang_lut.xlsx` with openpyxl — it drops the cached formula values that the
-   code generator reads, corrupting every existing language. Always patch surgically and
-   regenerate from a clean committed base.
+   Don't just *Save As* over `lang_lut.xlsx` from openpyxl — it drops the cached formula values
+   the code generator reads and quietly corrupts **every** existing language. Edit it in a
+   spreadsheet program, or patch it surgically with the helper scripts, and always regenerate
+   from a clean committed base.
    </Aside>
 
 4. **Handle fonts, if needed.** Latin-1, Latin Extended-A/B are already present, so most
@@ -119,3 +123,10 @@ Python environment with `openpyxl cogapp pyyaml fonttools pillow`. You only need
   three repos.
 
 See [Contributing](/development/contributing/) for how to open the pull requests.
+
+<AiSkill name="add-polykybd-language">
+Working with Claude Code? The **`add-polykybd-language`** skill runs this whole playbook for you
+— classify the layout, build the key column from xkb, handle fonts and glyphs, re-cog every
+generated file, wire the host folds and frozen index table, then verify the keycaps with the
+preview tool.
+</AiSkill>

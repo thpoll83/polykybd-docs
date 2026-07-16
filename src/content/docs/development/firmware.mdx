@@ -4,6 +4,7 @@ description: Setting up the QMK development environment for PolyKybd firmware.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
+import AiSkill from '../../../components/AiSkill.astro';
 
 The PolyKybd firmware is a heavily customised QMK build that runs on the keyboard's **Raspberry Pi RP2040**. Two hardware variants share a single firmware codebase: **`split72`** (72-key, RGB matrix, Cirque trackpad, 128×64 status OLED) and **`split42`** (42-key CRKBD footprint, no RGB/trackpad, 128×32 status OLED).
 
@@ -123,3 +124,10 @@ All standard QMK features are available. Refer to the [official docs](https://do
 <Aside type="tip">
 When working on display-related code, use `--debug 2` with PolyKybdHost to see the raw HID traffic and verify the firmware is sending the expected display commands. See the [HID Protocol Reference](/reference/hid-protocol/) for the command format.
 </Aside>
+
+<AiSkill name="firmware-size-diff">
+Working with Claude Code? A few skills cover the recurring firmware chores: **`firmware-size-diff`**
+builds the image at `HEAD` vs your working tree and reports the flash/RAM delta and whether `.text`
+is byte-identical; **`mirror-master-with-upstream`** + **`merge-upstream-into-branch`** keep the
+fork's `master` a clean mirror of QMK upstream and bring those changes into the `PolyKybd` branch.
+</AiSkill>

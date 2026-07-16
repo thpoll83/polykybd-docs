@@ -4,6 +4,10 @@ description: How PolyKybd stores the large glyph set that draws symbols, CJK, em
 ---
 
 import { Aside } from '@astrojs/starlight/components';
+import SupportedSince from '../../../components/SupportedSince.astro';
+import AiSkill from '../../../components/AiSkill.astro';
+
+<SupportedSince protocol={6} note="per-bundle versioning & auto-flash" />
 
 PolyKybd can draw an enormous range of glyphs on its keycaps — Latin of course, but also
 symbols, CJK, emoji, country flags and the [glyph scripts](/using/glyph-scripts/). That
@@ -51,3 +55,10 @@ boot, is covered in [System Model & Data Flow](/development/system-model/#where-
 Generating the fonts themselves is a development task — see
 [Display Graphics & Fonts](/development/display-graphics/).
 </Aside>
+
+<AiSkill name="reship-fontpack-bundle">
+Working with Claude Code? The **`reship-fontpack-bundle`** skill refreshes a bundle's shipped
+`.plyf` from the committed firmware headers when the host and firmware bytes have drifted — no
+`fontconvert` build needed. To make a single glyph render with **no** pack flashed, the
+companion **`make-font-resident`** skill moves it into the compiled-in resident set.
+</AiSkill>
