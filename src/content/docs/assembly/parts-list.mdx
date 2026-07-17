@@ -77,10 +77,9 @@ A USB-C to USB-A cable + USB-A to USB-C adapter combination only works in one or
 ## Optional parts
 
 <Aside type="caution">
-Each half has a **single physical expansion slot**. The rotary-encoder header, the pointing-device
-connector (trackball/trackpad) and the light-sensor header are **separate connectors** that share
-that one slot — so only **one** component physically fits per half. Fitting the light sensor therefore replaces the encoder/pointing device on that half. You can
-still put a different one on the other half (e.g. the sensor on the left and a trackpad on the
+Each half has a **single physical expansion slot**. The sensors and input devices might have
+different pins to connect, but you have to choose a single one per side that fits into the slot. You
+can still put a different one on the other half (e.g. the sensor on the left and a trackpad on the
 right). Decide which one you want per side before you start.
 </Aside>
 
@@ -97,7 +96,7 @@ Either of these fits the PCB footprint:
 
 | Option | Part | Notes |
 |---|---|---|
-| Trackball | Pimoroni Trackball | Solder header without the plastic distance holder |
+| Trackball | [Pimoroni Trackball](https://mou.sr/3rmFiAO) | Solder header without the plastic distance holder |
 | Trackpad (small) | Cirque TM023023-2024-002 (23mm) | Remove R1 on back to switch to I2C; needs 12-pin FPC ~50–70mm |
 | Trackpad (large, experimental) | Cirque TM035035-2024-003 (35mm) | Modify OpenSCAD source before printing the holder |
 
