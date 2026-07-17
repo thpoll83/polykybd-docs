@@ -28,10 +28,11 @@ The photos throughout these docs are shown small — **click any photo to enlarg
 
    <Aside type="caution">
    Each half has a **single physical expansion slot**. The sensor header, the rotary-encoder header
-   and the pointing-device connector (trackball / trackpad) are **three separate, electrically
-   independent interfaces** — they just share the same slot. You could wire all of them, but only
-   **one component physically fits the slot at a time**. So pick at most one per half. Fitting a
-   different one on each half is fine (e.g. the sensor on the left, a trackpad on the right).
+   and the pointing-device connector (trackball / trackpad) are **three separate connectors** that
+   share that one slot — different pinouts, so a part only fits its own header. You could wire all
+   of them, but only **one component physically fits the slot at a time**. So pick at most one per
+   half. Fitting a different one on each half is fine (e.g. the sensor on the left, a trackpad on
+   the right).
    </Aside>
 
    Full per-component instructions are in [Optional components](#optional-components) at the end of
@@ -178,9 +179,9 @@ and it is auto-detected (there is no option to enable). They are **Split72 only*
 no expansion port.
 
 Remember the constraint from step 1: each half has **one** physical expansion slot. The sensor
-header, the rotary-encoder header and the pointing-device connector are separate, independent
-interfaces that share that one slot, so **only one component fits per half** (a different one on
-each half is fine). Fit them at the points marked **(if using)** in the steps above:
+header, the rotary-encoder header and the pointing-device connector are separate connectors that
+share that one slot, so **only one component fits per half** (a different one on each half is
+fine). Fit them at the points marked **(if using)** in the steps above:
 
 | Component | Fit it at | Notes |
 |---|---|---|
@@ -205,8 +206,8 @@ any chance you will want it.
 </Aside>
 
 The Split72 PCB has a dedicated, labelled 5-pin footprint (`3-6V / SDA / SCL / INT / GND`) for the
-sensor — its own interface, separate from the encoder and pointing-device connectors that share the
-same slot. Solder it like this:
+sensor — its own connector, separate from the encoder and pointing-device connectors in the same
+slot. Solder it like this:
 
 <Steps>
 1. Solder the 5-pin header into the PCB footprint.
