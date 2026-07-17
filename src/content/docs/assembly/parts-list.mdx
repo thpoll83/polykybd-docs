@@ -22,8 +22,8 @@ This page lists every part needed for a complete PolyKybd Split72 build.
 |---|---|---|
 | Left aluminum plate (1.2mm) | 1 | Order as 1.2mm aluminium PCB |
 | Right aluminum plate (1.2mm) | 1 | Order as 1.2mm aluminium PCB |
-| Left 3D-printed case | 1 | STL: `case/case_polysplit72_left2_r4.stl` |
-| Right 3D-printed case | 1 | STL: `case/case_polysplit72_right2_r4.stl` |
+| Left 3D-printed case | 1 | STL: `case/case_polykybd_split72_left_r7.stl` (latest revision) |
+| Right 3D-printed case | 1 | STL: `case/case_polykybd_split72_right_r7.stl` (latest revision) |
 | Spacer | 2 | STL: `case/spacer.stl` |
 | M3×10 hex screws (rounded head) | 8 | — |
 | M3 hex nuts | 8 | Required for case revision r4+ |
@@ -100,6 +100,15 @@ Either of these fits the PCB footprint:
 | Trackball | Pimoroni Trackball | Solder header without the plastic distance holder |
 | Trackpad (small) | Cirque TM023023-2024-002 (23mm) | Remove R1 on back to switch to I2C; needs 12-pin FPC ~50–70mm |
 | Trackpad (large, experimental) | Cirque TM035035-2024-003 (35mm) | Modify OpenSCAD source before printing the holder |
+
+The 23mm trackpad needs a 3D-printed holder — pick the height that fits your build:
+
+| Holder | STL |
+|---|---|
+| Slim / low insert | `parts/cirque23_slim_insert_r8.stl` |
+| High insert | `parts/cirque23_insert_high_r1.stl` |
+
+Both are in the [PolyKybd hardware repo](https://github.com/thpoll83/PolyKybd) under `parts/`. The OpenSCAD sources (`parts/cirque23_slim_insert.scad`, `parts/cirque23_insert.scad`, and the experimental `parts/cirque35_insert.scad`) are there too if you want to adjust the fit.
 
 Only one pointing device can be installed per half.
 

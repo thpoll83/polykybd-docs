@@ -1,0 +1,112 @@
+---
+/*
+ * PhotoZoom — wrap a region of Markdown/MDX so every photo inside it renders
+ * small (2/5 of the content width) and enlarges to a full-screen lightbox on
+ * click. Built for the step-by-step assembly guide, where the inline photos are
+ * reference shots you glance at, then click to inspect.
+ *
+ * Usage (MDX):
+ *   import PhotoZoom from '../../../components/PhotoZoom.astro';
+ *   <PhotoZoom>
+ *     ...markdown with ![alt](img) images...
+ *   </PhotoZoom>
+ *
+ * No external dependencies — the lightbox is a tiny vanilla-JS overlay.
+ */
+---
+
+<div class="photo-zoom">
+  <slot />
+</div>
+
+<style is:global>
+  /* Thumbnails: 2/5 of the content column. The photos are reference shots, so
+     they sit small inline and open full-size on click. */
+  .photo-zoom img {
+    display: block;
+    width: 40%;
+    height: auto;
+    margin-block: 0.75rem;
+    border-radius: 0.4rem;
+    cursor: zoom-in;
+    transition: filter 0.12s ease;
+  }
+  .photo-zoom img:hover {
+    filter: brightness(1.06);
+  }
+
+  /* On narrow screens 40% is too small to be useful even as a thumbnail; let
+     them grow a little (click-to-enlarge still gives the full view). */
+  @media (max-width: 50rem) {
+    .photo-zoom img {
+      width: 70%;
+    }
+  }
+
+  /* Full-screen lightbox created on click. */
+  .photo-zoom-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5vmin;
+    background: rgba(6, 9, 14, 0.88);
+    cursor: zoom-out;
+    animation: photo-zoom-fade 0.12s ease;
+  }
+  .photo-zoom-lightbox img {
+    max-width: 96vw;
+    max-height: 92vh;
+    width: auto;
+    height: auto;
+    border-radius: 0.4rem;
+    box-shadow: 0 0.5rem 2.5rem rgba(0, 0, 0, 0.6);
+    cursor: zoom-out;
+  }
+  @keyframes photo-zoom-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+</style>
+
+<script is:inline>
+  // Delegate one set of handlers per page, even if <PhotoZoom> is used twice.
+  (function () {
+    if (window.__polyPhotoZoom) return;
+    window.__polyPhotoZoom = true;
+
+    function closeLightbox() {
+      var existing = document.querySelector('.photo-zoom-lightbox');
+      if (existing) existing.remove();
+    }
+
+    document.addEventListener('click', function (event) {
+      var img = event.target && event.target.closest
+        ? event.target.closest('.photo-zoom img')
+        : null;
+      if (!img) return;
+
+      closeLightbox();
+
+      var overlay = document.createElement('div');
+      overlay.className = 'photo-zoom-lightbox';
+      overlay.setAttribute('role', 'dialog');
+      overlay.setAttribute('aria-modal', 'true');
+      overlay.setAttribute('aria-label', img.alt || 'Enlarged photo');
+
+      var big = document.createElement('img');
+      big.src = img.currentSrc || img.src;
+      big.alt = img.alt;
+      overlay.appendChild(big);
+
+      overlay.addEventListener('click', closeLightbox);
+      document.body.appendChild(overlay);
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') closeLightbox();
+    });
+  })();
+</script>
