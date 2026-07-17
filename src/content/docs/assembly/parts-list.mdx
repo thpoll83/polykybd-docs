@@ -77,11 +77,12 @@ A USB-C to USB-A cable + USB-A to USB-C adapter combination only works in one or
 ## Optional parts
 
 <Aside type="caution">
-Each half has a **single** expansion slot, shared by the rotary encoder, a pointing device
-(trackball/trackpad) and the light sensor — only **one** of the three fits per half. Fitting the
-light sensor therefore replaces the encoder/pointing device on that half. You can still put a
-different one on the other half (e.g. the sensor on the left and a trackpad on the right). Decide
-which one you want per side before you start.
+Each half has a **single physical expansion slot**. The rotary-encoder header, the pointing-device
+connector (trackball/trackpad) and the light-sensor header are **separate, electrically independent
+interfaces** that happen to share that one slot — so only **one** component physically fits per
+half. Fitting the light sensor therefore replaces the encoder/pointing device on that half. You can
+still put a different one on the other half (e.g. the sensor on the left and a trackpad on the
+right). Decide which one you want per side before you start.
 </Aside>
 
 ### Rotary encoder
@@ -116,7 +117,7 @@ Only one pointing device can be installed per half.
 
 | Option | Part | Notes |
 |---|---|---|
-| Light + proximity sensor | Pimoroni LTR-559 breakout | Plus a 5-pin 2.54mm pin header. Solders to the labelled `3-6V / SDA / SCL / INT / GND` footprint on the Split72 PCB (shares the Cirque I2C bus). |
+| Light + proximity sensor | Pimoroni LTR-559 breakout | Plus a 5-pin 2.54mm pin header. Solders to the sensor's own labelled `3-6V / SDA / SCL / INT / GND` footprint on the Split72 PCB — a separate interface from the encoder and pointing-device connectors in the same expansion slot. |
 
 With the sensor fitted, the keyboard drives keycap brightness from the measured light level and
 wakes the displays when your hand approaches — see [Display Brightness](/using/brightness/). It is

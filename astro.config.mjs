@@ -24,6 +24,16 @@ export default defineConfig({
     starlight({
       title: 'PolyKybd',
       description: 'Documentation for PolyKybd — a split ergonomic keyboard where every key has its own OLED display.',
+      // Site-wide click-to-enlarge lightbox for page-body photos. The thumbnail
+      // styling lives in src/styles/custom.css; this script (public/js/) opens
+      // the full-screen view on click. Global so every page's photos behave the
+      // same without a per-page wrapper.
+      head: [
+        {
+          tag: 'script',
+          attrs: { src: '/js/photo-zoom.js', defer: true },
+        },
+      ],
       logo: {
         light: './src/assets/polytasten-logo.svg',
         dark: './src/assets/polytasten-logo-dark.svg',
