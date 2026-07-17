@@ -116,3 +116,70 @@
      use the whole column rather than capping at its rendered pixel width. */
   max-width: 100% !important;
 }
+
+/* ---------------------------------------------------------------------------
+   Photos & figures: small, centered, click-to-enlarge — site-wide.
+
+   Every raster image in the page body renders as a centered thumbnail and
+   opens full-screen on click (the lightbox lives in public/js/photo-zoom.js,
+   wired in as a global <head> script via astro.config.mjs). This used to be an
+   opt-in <PhotoZoom> wrapper around the assembly guide only; it is now the
+   default everywhere, so a photo never dominates the column and the reader
+   clicks to inspect detail.
+
+   Vector art is excluded: inline SVG logos / diagrams and Mermaid render as
+   <svg> (handled above), and any `<img src=".svg">` (wordmarks, badges) stays
+   at its natural size via the :not() below. Schematics, screenshots, renders
+   and GIFs are raster and DO get the thumbnail treatment — full resolution is
+   one click away in the lightbox.
+   --------------------------------------------------------------------------- */
+.sl-markdown-content img:not([src$='.svg']) {
+  display: block;
+  /* A touch larger than a bare thumbnail so captions/detail read inline; the
+     lightbox still gives the full-resolution view on click. */
+  width: 55%;
+  height: auto;
+  margin-inline: auto;      /* center in the content column */
+  margin-block: 0.9rem;
+  border-radius: 0.4rem;
+  cursor: zoom-in;
+  transition: filter 0.12s ease;
+}
+.sl-markdown-content img:not([src$='.svg']):hover {
+  filter: brightness(1.06);
+}
+
+/* On narrow screens 55% is too small to be useful even as a thumbnail; let
+   them grow (click-to-enlarge still gives the full view). */
+@media (max-width: 50rem) {
+  .sl-markdown-content img:not([src$='.svg']) {
+    width: 82%;
+  }
+}
+
+/* Full-screen lightbox, created on click by public/js/photo-zoom.js. */
+.photo-zoom-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5vmin;
+  background: rgba(6, 9, 14, 0.88);
+  cursor: zoom-out;
+  animation: photo-zoom-fade 0.12s ease;
+}
+.photo-zoom-lightbox img {
+  max-width: 96vw;
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  border-radius: 0.4rem;
+  box-shadow: 0 0.5rem 2.5rem rgba(0, 0, 0, 0.6);
+  cursor: zoom-out;
+}
+@keyframes photo-zoom-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
