@@ -96,6 +96,7 @@ export default defineConfig({
             { label: 'Using the Tray App', slug: 'software/usage' },
             { label: 'Daemon & Client Model', slug: 'software/architecture' },
             { label: 'Command Line (polyctl)', slug: 'software/cli' },
+            { label: 'WinCompose', slug: 'software/wincompose' },
           ],
         },
         {
