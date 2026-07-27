@@ -1,0 +1,91 @@
+---
+title: WinCompose
+description: The compose-key tool PolyKybd uses for unicode input on Windows, and the PolyKybd fork of it.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**WinCompose** adds a compose key to Windows: press the compose key, then a short
+sequence, and you get a character your keyboard has no key for — `Compose` `'` `e`
+gives `é`, `Compose` `<` `3` gives ❤.
+
+PolyKybd uses it for **unicode and emoji input on Windows**. PolyKybdHost detects a
+running WinCompose and switches the keyboard into its compose mode automatically;
+without it, Windows unicode input falls back to a numeric escape that cannot produce
+emoji.
+
+## Why PolyKybd maintains a fork
+
+WinCompose was written by **Sam Hocevar**, who has maintained it since 2013. That
+original project is no longer actively developed — its own issue tracker carries a
+notice to that effect, and the last release predates Windows 11's taskbar changes.
+
+Because unicode input on Windows is a hard dependency for PolyKybd, we maintain a
+fork so the tool keeps working for PolyKybd users. It is a fork, not a replacement:
+essentially all of the code, all of the compose sequence data, and the design are
+Sam's work.
+
+<Aside type="note">
+  The PolyKybd fork exists to keep a dependency healthy. If the original project
+  becomes active again, our changes are intended to go back upstream.
+</Aside>
+
+## What the PolyKybd fork changes
+
+The fork builds on [ell1010's fork](https://github.com/ell1010/wincompose), which
+had already modernised the UI and retargeted the project to .NET Framework 4.8.1.
+On top of that we fixed:
+
+- **The tray tooltip never updated.** A change notification was raised under the
+  wrong property name, so the tooltip silently stayed empty.
+- **The tray icon stopped reflecting state.** The composing indicator and the
+  update marker had been dropped from the icon update path, and the "hide icon"
+  setting did nothing at all.
+- **Settings dialog styling.** Text and controls were sized well above native
+  Windows dialogs, tabs wrapped onto a second row, and the window could not be
+  resized or scrolled.
+- **The update check** no longer polls the original project's server over plain
+  HTTP for versions that do not correspond to this fork's builds.
+
+## Installing
+
+Download the latest build from the
+[releases page](https://github.com/thpoll83/wincompose/releases).
+
+Both a portable build and an installer are published. The portable build runs from
+any folder; the installer registers WinCompose to start with Windows.
+
+<Aside type="caution">
+  Our builds are not code-signed yet, so Windows SmartScreen will warn that the
+  publisher is unrecognised. Choose **More info → Run anyway** if you are happy to
+  proceed. Signing is planned, and is waiting on a registered business entity —
+  the certificate has to be issued to one.
+</Aside>
+
+### Verifying your download
+
+Because the builds are unsigned, every release ships a `SHA256SUMS.txt` listing
+the SHA-256 of each asset, produced by the same build that made them. To check a
+download in PowerShell:
+
+```powershell
+Get-FileHash .\WinCompose-NoInstall-0.9.16.zip -Algorithm SHA256
+```
+
+Compare the result with the matching line in `SHA256SUMS.txt`.
+
+This proves the file is byte-for-byte what our CI produced — it does not prove
+who produced it, which is what a signature is for. Until the certificate is in
+place it is the strongest check available.
+
+Once WinCompose is running, set PolyKybdHost's unicode input mode to WinCompose (it
+is detected automatically) and the keyboard's emoji and unicode layers will work.
+
+## Credits and licence
+
+WinCompose is © Sam Hocevar and contributors, released under the
+[WTFPL](http://www.wtfpl.net/). The PolyKybd fork keeps that licence.
+
+- [Original project](https://github.com/samhocevar/wincompose) — Sam Hocevar
+- [ell1010's fork](https://github.com/ell1010/wincompose) — the UI and .NET modernisation
+- [PolyKybd fork](https://github.com/thpoll83/wincompose) — the builds linked above
