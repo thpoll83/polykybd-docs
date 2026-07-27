@@ -41,6 +41,12 @@ so a shortcut layer is visible before you commit to it.
   see [Multi-Machine Setup](/using/multi-machine/)).
 - An overlay set for the app. PolyKybdHost ships overlays for common apps; you can add your own.
 
+<Aside type="tip">
+Browsers are a special case: many web apps share one browser process, so matching on the app
+name alone isn't enough. [Website-Aware Overlays](/using/website-detection/) match the overlay
+to the focused tab's **URL** instead, so Gmail, Jira and Figma each get their own layer.
+</Aside>
+
 <Aside type="note">
 Want the technical version — the exact HID commands, the compression path, and how both
 halves stay in sync? See [System Model & Data Flow](/development/system-model/#overlay-data-path--an-app-switch)
