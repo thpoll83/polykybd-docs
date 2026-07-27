@@ -1,0 +1,48 @@
+---
+title: Browser Extension Privacy Policy
+description: What the PolyKybd Website Reporter browser extension accesses, and where that data goes.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+_Last updated: 2026-07-27_
+
+This is the privacy policy for the **PolyKybd Website Reporter** browser extension, which
+helps [PolyKybdHost](/software/overview/) show [website-specific keycap overlays](/using/website-detection/).
+It describes exactly what the extension accesses and where that data goes.
+
+## What it accesses
+
+- The **URL** and **title** of your **currently active browser tab**.
+- Whether the browser window is **focused**.
+
+It does **not** read page content, form data, cookies, history, or any other tab. It activates
+only on tab switches, navigation, and window-focus changes.
+
+## Where the data goes
+
+- Reports are sent **only to `http://127.0.0.1` (localhost)** — the PolyKybdHost application
+  running on the **same computer**.
+- **Nothing is transmitted over the internet.** The data is not sent to the developer, to
+  PolyKybd / PolyTasten, or to any third party.
+- The data is used solely, in the moment, to pick the matching keyboard overlay. The extension
+  does not log or retain your browsing activity.
+
+## What it stores
+
+- Only your **settings** — the host port and an optional token — saved with the browser's
+  extension storage on your device. No browsing data is stored.
+
+## Data sharing / selling
+
+None. The extension does not sell data and does not share it with anyone.
+
+<Aside type="note">
+Under both Chrome and Mozilla policies, active-tab URLs are classified as **web browsing
+activity**. The extension collects it strictly to power the website-aware overlay feature and
+transmits it only to the local PolyKybdHost app.
+</Aside>
+
+## Contact
+
+Questions or issues: [github.com/thpoll83/PolyKybdHost/issues](https://github.com/thpoll83/PolyKybdHost/issues)

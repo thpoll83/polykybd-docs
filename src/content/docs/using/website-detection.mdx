@@ -1,0 +1,104 @@
+---
+title: Website-Aware Overlays
+description: Show website-specific keycap overlays — pick the right shortcut layer for Gmail, Jira, Figma and more from the tab's URL, not the window title.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+[Context-aware overlays](/using/overlays/) normally pick a shortcut layer from the **app**
+you're in. But a browser is a special case: Gmail, Jira, Figma and every other web app all
+run inside the *same* browser process, and their window titles are inconsistent — so the app
+name "chrome" isn't enough to tell them apart.
+
+**Website detection** fixes that: PolyKybdHost can see the **URL of your focused browser tab**
+and match an overlay to the *website*, so switching from Jira to Outlook in the same browser
+re-labels your keycaps just like switching between two native apps.
+
+<Aside type="note">
+This is entirely optional and off nothing else — with it disabled (or no URL available),
+browser overlays simply fall back to matching on the window title, exactly as before.
+</Aside>
+
+## How the URL reaches the host
+
+PolyKybdHost gets the active tab's URL from one of two sources:
+
+| Platform | Source | Install needed |
+|---|---|---|
+| **Windows / Linux** | The **browser extension** (below) | Yes — install the extension |
+| **macOS** (Chrome, Edge, Brave, Vivaldi, Opera, Arc, Safari) | Built-in **AppleScript** query | No — works out of the box |
+| **Firefox on macOS** | The **browser extension** | Yes — AppleScript can't read Firefox |
+
+The extension sends only the tab's **URL**, its **title**, and whether the window is
+**focused** — to `http://127.0.0.1` (your own machine) and nowhere else. No page content is
+ever read. See the [extension privacy policy](/reference/browser-extension-privacy/) for the
+full details.
+
+<Aside type="tip">
+On macOS the first URL read triggers a one-time *"PolyHost wants to control &lt;Browser&gt;"*
+system prompt — allow it. Firefox on macOS has no AppleScript URL support, so Firefox users
+still need the extension.
+</Aside>
+
+## Installing the browser extension
+
+The extension works on all **Chromium** browsers (Chrome, Edge, Brave, Vivaldi, Opera, Arc)
+and **Firefox**. Once it's published you'll install it from the Chrome Web Store or Firefox
+Add-ons in one click, with automatic updates. To load it manually in the meantime:
+
+- **Chromium**: `chrome://extensions` → enable **Developer mode** → **Load unpacked** →
+  pick the `dist/chromium/` folder from a `build.sh` run.
+- **Firefox**: `about:debugging#/runtime/this-firefox` → **Load Temporary Add-on** → pick
+  `dist/firefox/manifest.json`.
+
+Then open the extension's **Options**, confirm the **Host port** matches PolyKybdHost's
+`browser_report_port` (default **50164**), and click **Test connection** — it should read
+*Connected to PolyKybdHost ✓*.
+
+<Aside type="note">
+For managed fleets, IT can **force-install** the extension by policy instead of a per-user
+install (Chromium `ExtensionInstallForcelist`, Firefox `policies.json` with the add-on id
+`website-reporter@polykybd`).
+</Aside>
+
+## Host settings
+
+Website detection is controlled by a few settings in PolyKybdHost (Settings dialog, or
+`polyctl settings`):
+
+| Setting | Default | What it does |
+|---|---|---|
+| `browser_url_detection` | on | Master switch for the whole feature. Off → browser overlays match on title only. |
+| `browser_report_local_enabled` | on | Runs the loopback receiver the extension posts to. Bound to `127.0.0.1` only. |
+| `browser_report_port` | `50164` | Port the receiver listens on — must match the extension's **Host port**. |
+| `browser_report_token` | *(empty)* | Optional shared secret. When set, a report must present the same token (set it in the extension Options too) — extra defence against other local apps. |
+
+## Mapping overlays to websites
+
+In your overlay mapping, a browser entry can carry a **`urls-contains`** block: each key is a
+substring matched against the focused tab's URL, and the first match wins. URL matches take
+priority over `titles-contains`, and both are kept so title matching still works whenever no
+URL is available.
+
+```yaml
+chrome,google-chrome,chromium,brave,msedge,microsoft-edge,vivaldi,opera,arc:
+  overlay: [chrome_template.mods.png, chrome_template.combo.mods.png]
+  urls-contains:
+    atlassian.net:   { overlay: jira_template.mods.png }
+    outlook.office.com: { overlay: web_outlook_template.mods.png }
+    miro.com:        { overlay: miro_template.mods.png }
+  titles-contains:
+    Jira:   { overlay: jira_template.mods.png }
+    Outlook:{ overlay: web_outlook_template.mods.png }
+```
+
+<Aside type="tip">
+Because a URL identifies a web app far more reliably than its title, an SPA route change (e.g.
+navigating within Jira) can swap overlays even when the window title doesn't change.
+</Aside>
+
+## See also
+
+- [Context-Aware Overlays](/using/overlays/) — the general how-it-works.
+- [Multi-Machine Setup](/using/multi-machine/) — relaying the focused window from another computer.
+- [Browser Extension Privacy Policy](/reference/browser-extension-privacy/).

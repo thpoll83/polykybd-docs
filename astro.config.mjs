@@ -80,6 +80,7 @@ export default defineConfig({
           label: 'Using the Keyboard',
           items: [
             { label: 'Context-Aware Overlays', slug: 'using/overlays' },
+            { label: 'Website-Aware Overlays', slug: 'using/website-detection' },
             { label: 'Languages & Unicode Input', slug: 'using/languages' },
             { label: 'Glyph Scripts', slug: 'using/glyph-scripts' },
             { label: 'Display Brightness', slug: 'using/brightness' },
@@ -137,6 +138,7 @@ export default defineConfig({
           label: 'Reference',
           items: [
             { label: 'HID Protocol', slug: 'reference/hid-protocol' },
+            { label: 'Browser Extension Privacy', slug: 'reference/browser-extension-privacy' },
             { label: 'Glossary', slug: 'reference/glossary' },
           ],
         },
