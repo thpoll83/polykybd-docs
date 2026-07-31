@@ -119,6 +119,9 @@ The **firmware partition** is the budget that matters for adding languages and f
 to the linker's `flash1` length, so a build that exceeds 2 MB fails to **link** rather
 than silently growing into the staging area.
 
+Font-pack bundles are **`.plyf`** files carrying **ABI version 2** — column-native
+(OLED page) glyph bitmaps (see [Column-native glyph bitmap format](/development/display-graphics/#column-native-glyph-bitmap-format)). A keyboard rejects a bundle whose ABI does not match its firmware and falls back to its resident fonts, so the host, firmware, and shipped bundles are versioned together.
+
 ### The RAM working set
 
 | | |
