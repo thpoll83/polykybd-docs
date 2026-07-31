@@ -54,6 +54,34 @@ Byte-reproducible headers require the **pinned** `fontconvert` build (FreeType 2
 Use `--debug 2` with PolyKybdHost to watch the raw HID overlay traffic and confirm the firmware is receiving and rendering the expected display data.
 </Aside>
 
+### Column-native glyph bitmap format
+
+Generated glyph bitmaps are stored **column-native** (OLED page order), matching the SSD1306's page
+memory so the firmware can copy a whole vertical column-byte at once instead of
+setting pixels individually. One byte holds **8 vertical pixels**; a glyph is laid
+out as `cb = (height + 7) / 8` page-bytes per column, so it occupies `width × cb`
+whole bytes. To read pixel `(x, y)`:
+
+```text
+byte = bitmapOffset + x*cb + (y >> 3)     bit = 1 << (y & 7)     // LSB = top of the page
+```
+
+This is **not** the classic Adafruit row-major layout (`bit = y*width + x`,
+MSB-first). The canonical types are `PolyColGfx` / `PolyColGlyph`
+(`base/fonts/gfxfont.h`), with `GFXfont` / `GFXglyph` kept as compatibility
+aliases so the generated headers still compile. `fontconvert` emits this layout
+directly; the dither/edge/outline passes still work row-major internally and are
+transposed at the single per-glyph emit point.
+
+<Aside type="caution">
+This layout is carried by the **font-pack ABI version 2**. The bitmap byte length
+changed (`width × ⌈height/8⌉`, vs the old row-major `⌈width × height / 8⌉`), so
+ABI-1 (row-major) and ABI-2 (column-native) packs are structurally incompatible —
+a keyboard cleanly **rejects** a mismatched-ABI pack (falling back to its resident
+fonts) rather than mis-rendering it. Firmware, host, and the flashed `.plyf`
+bundles move to ABI 2 together.
+</Aside>
+
 <AiSkill name="make-font-resident">
 **`make-font-resident`** moves a glyph into the compiled-in resident set
 so it renders with no font pack flashed (handling the tiny-dedicated-font case and the
