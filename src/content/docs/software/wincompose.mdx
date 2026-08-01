@@ -49,7 +49,11 @@ On top of that we fixed:
 
 ## Installing
 
-Download the latest build from the
+The easiest route is from PolyKybdHost itself: while WinCompose is not running, the
+tray menu shows **Install WinCompose…**, which downloads the latest build and starts
+its installer for you. See [Using the Tray App](/software/usage/).
+
+To install it by hand instead, download the latest build from the
 [releases page](https://github.com/thpoll83/wincompose/releases).
 
 Both a portable build and an installer are published. The portable build runs from
@@ -69,7 +73,7 @@ the SHA-256 of each asset, produced by the same build that made them. To check a
 download in PowerShell:
 
 ```powershell
-Get-FileHash .\WinCompose-NoInstall-0.9.16.zip -Algorithm SHA256
+Get-FileHash .\WinCompose-NoInstall-<version>.zip -Algorithm SHA256
 ```
 
 Compare the result with the matching line in `SHA256SUMS.txt`.
