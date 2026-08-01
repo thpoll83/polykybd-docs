@@ -24,8 +24,8 @@ static legends baked into the firmware; the host is what makes them dynamic.
 
 <Aside type="tip">
 Frequently-used apps are cached (the **MRU** — most-recently-used — cache), so returning to a
-recent app replays from cache instead of re-sending every image. `polyctl mru save` persists
-that cache between sessions.
+recent app replays from cache instead of re-sending every image. The cache lives in
+PolyKybdHost and is rebuilt when the keyboard reconnects.
 </Aside>
 
 ## Modifier variants
@@ -34,6 +34,12 @@ An overlay isn't a single image per key — each key stores **9 variants**, one 
 combination (bare, Ctrl, Shift, Ctrl+Shift, Alt, Ctrl+Alt, Alt+Shift, Ctrl+Alt+Shift, GUI).
 Hold a modifier and the keycaps update to show what each key does *with that modifier down*,
 so a shortcut layer is visible before you commit to it.
+
+<Aside type="tip">
+**Ctrl+Alt+Shift and the GUI/Win key are shown too.** Older releases could not display
+either — Ctrl+Alt+Shift had nowhere to store its images, and GUI overlays were discarded
+before reaching the keyboard. Both work now, so app overlays can cover those shortcuts.
+</Aside>
 
 ## What you need
 

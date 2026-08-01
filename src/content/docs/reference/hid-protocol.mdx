@@ -55,7 +55,7 @@ source commonly uses it.
 | **START / SEND_ROI_OVERLAY** | `0x12` / `0x13` | Partial refresh of a region of a keycap's display. |
 | **SEND_OVERLAY_MAPPING** | `0x15` (21) | Maps overlay pool slots to displays / usage bits. **Silent since v3** (no per-chunk ACK). |
 | **OVERLAY_FLAGS on / off** | `0x0B` / `0x0C` | Enable/disable overlay rendering; enable force-syncs overlay state to the slave. |
-| **SAVE_MRU** | `0x1A` (26) | Persist the most-recently-used overlay cache. |
+| **SAVE_MRU** | `0x1A` (26) | Persist the keyboard's most-recently-used emoji / language picks. Unrelated to the host's overlay cache. |
 
 ### Configuration & display
 

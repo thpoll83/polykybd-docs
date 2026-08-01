@@ -26,7 +26,8 @@ a different modifier variant** of that key:
 | File | Red | Green | Blue | Alpha |
 |---|---|---|---|---|
 | `*.mods.png` (primary) | Ctrl | Alt | Shift | no modifier |
-| `*.combo.mods.png` (combo) | Ctrl+Shift | Ctrl+Alt | Alt+Shift | GUI *(dropped)* |
+| `*.combo.mods.png` (combo) | Ctrl+Shift | Ctrl+Alt | Alt+Shift | GUI |
+| `*.extra.mods.png` (extra) | Ctrl+Alt+Shift | *reserved* | *reserved* | *reserved* |
 | `*.png` (plain) | — | — | — | grayscale → no modifier only |
 
 So one RGBA image holds four layers of the same keyboard at once — you can see it in GIMP's
@@ -40,7 +41,10 @@ channels are the Ctrl/Alt/Shift variants, independent of alpha (see the export s
 
 A few hard limits baked into the firmware — don't fight them:
 
-- **Ctrl+Alt+Shift can't be shown**, and **GUI/Win-key overlays are dropped** — skip those shortcuts.
+- **All nine modifier variants work**, including Ctrl+Alt+Shift and the GUI/Win key. Earlier
+  releases dropped both — if you skipped those shortcuts before, you can add them now.
+- Repeating the **same icon across several variants is free**: the host spots byte-identical
+  images and stores them once on the keyboard, so only genuinely different artwork costs space.
 - Cells are **72×40, 1-bit monochrome** on the OLED — draw simple, high-contrast icons.
 - Only the **90 mapped keys** carry a cell (`A`–`Z`, `0`–`9`, `F1`–`F12`, punctuation, the nav
   cluster, modifiers). Keypad and media keys have none.
@@ -72,7 +76,8 @@ A few hard limits baked into the firmware — don't fight them:
    survives the 1-bit OLED far better than a detailed logo.
 
 4. **Export the PNG(s).** Export the image to `polyhost/res/overlays/<app>_template.mods.png` as
-   720×360 RGBA. Add a `<app>_template.combo.mods.png` only if you drew combo (Ctrl+Shift / Ctrl+Alt
+   720×360 RGBA. Add a `<app>_template.extra.mods.png` only if you drew Ctrl+Alt+Shift, and a
+   `<app>_template.combo.mods.png` only if you drew combo (Ctrl+Shift / Ctrl+Alt
    / Alt+Shift) layers. If you only need plain, unmodified icons, a single grayscale
    `<app>_template.png` is enough.
 
