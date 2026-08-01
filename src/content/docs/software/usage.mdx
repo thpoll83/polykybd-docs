@@ -15,6 +15,7 @@ Right-click the tray icon to access:
 - **Settings** — configure brightness, unicode mode, daemon mode, and other options
 - **Command menu** — send one-off commands to the keyboard
 - **Flash firmware** — push a new firmware `.bin` to the keyboard over HID
+- **Install WinCompose…** — Windows only, and shown only while [WinCompose](/software/wincompose/) is not running
 - **Log viewer** — view communication logs for debugging (includes a **Daemon Log** tab when the daemon is running)
 - **Quit** — close the tray app (the daemon keeps running)
 
@@ -31,6 +32,19 @@ The tray app is the front-end for the keyboard's live features — each has its 
 ## Firmware updates
 
 You can flash new firmware directly from the tray — choose the **Flash firmware .bin…** action and select a firmware `.bin`. Flashing works over HID and is available even when the keyboard is on a protocol version the rest of PolyKybdHost doesn't fully support, so a mismatched keyboard can always be updated. The same operation is available from the command line with `polyctl fw flash` — see [Command Line](/software/cli/) and [Flashing Firmware](/setup/flashing/).
+
+## Installing WinCompose (Windows)
+
+[WinCompose](/software/wincompose/) is what lets the keyboard type arbitrary unicode
+on Windows — emoji, accents and the language layers all go through it. When it is not
+running, the tray menu offers **Install WinCompose…**: it downloads PolyKybd's build
+from GitHub and starts the installer (Windows asks you to confirm the elevation).
+
+The entry appears only on Windows, and only while WinCompose is not running — it
+disappears by itself once WinCompose is up. At that point the keyboard is switched to
+compose mode straight away; the unicode input mode is otherwise only sent when the
+keyboard connects, so no replug is needed. `polyctl unicode-mode` does the same
+re-detection from the command line.
 
 ## Debug logging
 
