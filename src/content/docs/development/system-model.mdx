@@ -126,8 +126,9 @@ Font-pack bundles are **`.plyf`** files carrying **ABI version 2** — column-na
 
 | | |
 |---|---|
-| `overlays[810][360]` | ≈ 285 KB — the live keycap images (90 slots × 9 modifier variants × 360 B) |
-| overlay index | `slot + 90 × modifier_variant` (9 variants: bare … GUI) |
+| `overlay_pool[600][360]` | ≈ 211 KiB — the live keycap images, addressed indirectly so variants sharing artwork share a slot |
+| `display_to_pool[1440]` | display position → pool slot (90 slots × 16 modifier variants) |
+| display position | `slot + 90 × modifier_variant`; since v12 the variant is the modifier bitmask (Ctrl/Shift/Alt/GUI), so all 16 combinations are addressable |
 | `g_all_fonts` | resident fonts ++ the flashed font-pack bundles, assembled at boot |
 
 ## Runtime processes

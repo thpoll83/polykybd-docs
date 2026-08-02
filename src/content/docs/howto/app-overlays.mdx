@@ -27,7 +27,8 @@ a different modifier variant** of that key:
 |---|---|---|---|---|
 | `*.mods.png` (primary) | Ctrl | Alt | Shift | no modifier |
 | `*.combo.mods.png` (combo) | Ctrl+Shift | Ctrl+Alt | Alt+Shift | GUI |
-| `*.extra.mods.png` (extra) | Ctrl+Alt+Shift | *reserved* | *reserved* | *reserved* |
+| `*.extra.mods.png` (extra) | Ctrl+Alt+Shift | GUI+Shift | GUI+Alt | GUI+Ctrl |
+| `*.gui.mods.png` (GUI combos) | GUI+Ctrl+Shift | GUI+Alt+Shift | GUI+Ctrl+Alt | GUI+Ctrl+Alt+Shift |
 | `*.png` (plain) | — | — | — | grayscale → no modifier only |
 
 So one RGBA image holds four layers of the same keyboard at once — you can see it in GIMP's
@@ -41,8 +42,12 @@ channels are the Ctrl/Alt/Shift variants, independent of alpha (see the export s
 
 A few hard limits baked into the firmware — don't fight them:
 
-- **All nine modifier variants work**, including Ctrl+Alt+Shift and the GUI/Win key. Earlier
-  releases dropped both — if you skipped those shortcuts before, you can add them now.
+- **All sixteen modifier combinations work** — every mix of Ctrl, Shift, Alt and GUI. Until
+  recently GUI could not be *combined* with another modifier: `GUI+Shift`, `GUI+Alt` and so on
+  all drew the plain GUI icon instead of their own. That mattered most on macOS, where `Cmd+Shift`
+  chords are everywhere (`Cmd+Shift+P` opens the command palette in a lot of editors). If you
+  skipped those shortcuts before, you can draw them now — see the `extra` and `GUI combos` rows
+  above.
 - Repeating the **same icon across several variants is free**: the host spots byte-identical
   images and stores them once on the keyboard, so only genuinely different artwork costs space.
 - Cells are **72×40, 1-bit monochrome** on the OLED — draw simple, high-contrast icons.
@@ -61,8 +66,8 @@ A few hard limits baked into the firmware — don't fight them:
    organised.
 
 2. **Look up the app's real shortcuts.** From the app's own menus, help, or shortcut reference. Note
-   the modifier each one uses, and drop the ones the hardware can't show (Ctrl+Alt+Shift, and
-   GUI/Win).
+   the modifier each one uses — every combination of Ctrl, Shift, Alt and GUI can be drawn, so
+   nothing has to be dropped for lack of a channel.
 
    <Aside type="caution">
    Mind app-specific quirks — don't assume the obvious meaning. Outlook `Ctrl+F` is *Forward*, not
@@ -76,9 +81,11 @@ A few hard limits baked into the firmware — don't fight them:
    survives the 1-bit OLED far better than a detailed logo.
 
 4. **Export the PNG(s).** Export the image to `polyhost/res/overlays/<app>_template.mods.png` as
-   720×360 RGBA. Add a `<app>_template.extra.mods.png` only if you drew Ctrl+Alt+Shift, and a
-   `<app>_template.combo.mods.png` only if you drew combo (Ctrl+Shift / Ctrl+Alt
-   / Alt+Shift) layers. If you only need plain, unmodified icons, a single grayscale
+   720×360 RGBA. Add each further tier **only if you drew for it** — `<app>_template.combo.mods.png`
+   for the combo layers (Ctrl+Shift / Ctrl+Alt / Alt+Shift / GUI),
+   `<app>_template.extra.mods.png` for Ctrl+Alt+Shift and the two-modifier GUI chords, and
+   `<app>_template.gui.mods.png` for the three- and four-modifier GUI chords. Most apps never need
+   that last one. If you only need plain, unmodified icons, a single grayscale
    `<app>_template.png` is enough.
 
    <Aside type="caution">

@@ -27,8 +27,8 @@ Responses are prefixed with the command echo plus a status marker:
 
 The main dispatcher lives in the firmware's `hid_com.c` (`raw_hid_receive()`); a separate range
 (`0x50`+) handles the resource-flash transport. The `PROTOCOL_VERSION`, reported inside the
-**GET_ID** identity string, gates which host features are available — and the host connects only
-on an **exact** version match.
+**GET_ID** identity string, tells the host which commands this keyboard understands, so each
+feature can be enabled or greyed out individually.
 
 ## Command areas
 
@@ -53,7 +53,8 @@ source commonly uses it.
 | **SEND_OVERLAY** | `0x0A` | Plain overlay: each 360-byte keycap in 6 × 60-byte segments. (v11 packs modifier + segment into one header byte so a 60-byte segment fits the report exactly.) |
 | **START / SEND_COMPRESSED_OVERLAY** | `0x10` / `0x11` | RLE-compressed keycap in 1–2 packets; decompressed in firmware (optionally on RP2040 core1). The common case. |
 | **START / SEND_ROI_OVERLAY** | `0x12` / `0x13` | Partial refresh of a region of a keycap's display. |
-| **SEND_OVERLAY_MAPPING** | `0x15` (21) | Maps overlay pool slots to displays / usage bits. **Silent since v3** (no per-chunk ACK). |
+| **SEND_OVERLAY_MAPPING** | `0x15` (21) | Maps overlay pool slots to displays / usage bits, at a fixed 10 bits per index. **Silent since v3** (no per-chunk ACK). The only mapping command a pre-v12 keyboard understands. |
+| **SEND_OVERLAY_MAPPING_W** | `0x21` (33) | **v12+.** The same mapping stream, but a width byte says how many bits each index uses (8–11), so the host packs each group of pairs as tightly as it fits. Also silent. |
 | **OVERLAY_FLAGS on / off** | `0x0B` / `0x0C` | Enable/disable overlay rendering; enable force-syncs overlay state to the slave. |
 | **SAVE_MRU** | `0x1A` (26) | Persist the keyboard's most-recently-used emoji / language picks. Unrelated to the host's overlay cache. |
 
@@ -94,20 +95,37 @@ The bulk overlay commands (`0x0A`, `0x10`/`0x11`, `0x12`/`0x13`, and mapping on 
 
 ## Overlay addressing
 
-Overlay memory holds **90 keycap slots × 9 modifier variants**, 360 bytes each. The overlay index is:
+A keycap image is addressed by **90 keycap slots × 16 modifier variants**:
 
 ```
 overlay_index = keycode_slot + 90 * modifier_variant
 ```
 
-The 9 modifier variants are: bare, Ctrl, Shift, Ctrl+Shift, Alt, Ctrl+Alt, Alt+Shift, Ctrl+Alt+Shift, GUI.
+Since **v12** the modifier variant is simply the modifier bitmask — bit 0 Ctrl, bit 1 Shift,
+bit 2 Alt, bit 3 GUI — so all 16 combinations are addressable and the numbering is self-describing
+(variant 0 = bare, 5 = Ctrl+Alt, 10 = GUI+Shift, 15 = all four). Before v12 there were 9 variants
+and GUI could not be combined with anything.
+
+That index is an **address, not storage**. It selects an entry in a lookup table that points at
+one of **600 slots** in the image pool (360 bytes each, ≈ 211 KiB). Variants that share the same
+artwork share a slot, so adding variants costs address space rather than image memory — which is
+why v12 grew the addressable set from 810 to 1440 without needing more room for pixels.
 
 ## Protocol versions
 
 The firmware advertises a `PROTOCOL_VERSION` (in the GET_ID string) that the host reads to decide
-which commands to use. The host connects **only on an exact match** — a mismatch shows
-*"Protocol mismatch, please update"* and refuses to connect, so firmware and host are always
-bumped in lockstep. Selected milestones:
+which commands to use. **The versions do not have to match.** The host connects to any keyboard
+from v2 onwards and then gates each feature on its own:
+
+- **Same version** — everything works.
+- **Keyboard older than the host** — it still connects, and only the features that keyboard is too
+  old for are greyed out, with a *"some features need a firmware update"* hint.
+- **Keyboard newer than the host** — the host asks what you want to do, defaulting to a safe
+  connect that sticks to the stable command set until you update the host app.
+- **Older than v2** — refused, with *"Firmware too old… please update the keyboard firmware"*.
+  The host cannot even list the keyboard's languages below that.
+
+Selected milestones:
 
 - **v2** — the **packed language list** (`0x1b`): a count byte plus one 2-byte ISO index pair per language, replacing the 4-ASCII-char legacy list. The legacy list (`0x08`) is retired and NACKs.
 - **v3** — the **overlay-mapping** command (`0x15`) made **silent** (no per-chunk ACK), matching the other bulk overlay commands and removing a frequent source of stale replies.
@@ -117,11 +135,13 @@ bumped in lockstep. Selected milestones:
 - **v9** — **GLYPH_SCRIPT** (`0x1e`): override the letter/digit legends with an alternative script.
 - **v10** — the glyph script became an **open-ended index** (an unknown script renders the normal legend), so new scripts ship without a protocol bump.
 - **v11** — the **plain overlay upload** (`0x0a`) packs modifier + segment into one header byte, so a full 60-byte segment fits a 64-byte report exactly.
+- **v12** — **GUI combines with the other modifiers** for [app overlays](/howto/app-overlays/): `Cmd+Shift`, `Cmd+Alt` and the rest each get their own artwork instead of all falling back to the plain GUI icon, taking the addressable modifier variants from 9 to 16. The upload commands are unchanged, but the wider index space no longer fits the fixed 10-bit fields of `0x15`, so **SEND_OVERLAY_MAPPING_W** (`0x21`) was added alongside it.
 
 <Aside type="note">
 Not every version number above is a separate feature listed here — the list highlights the
-milestones that changed the command surface. Because the connect gate is exact-match, the host
-and firmware are released together at the same `PROTOCOL_VERSION`.
+milestones that changed the command surface. Host and firmware are still released together at the
+same `PROTOCOL_VERSION`, so keeping both current is the simplest way to have everything available —
+but a mismatch costs you only the newer features, not the connection.
 </Aside>
 
 <Aside type="tip">

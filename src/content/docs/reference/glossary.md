@@ -69,7 +69,7 @@ A quick reference for terms used across the PolyKybd documentation, firmware, an
 : The anti-burn-in animation the keycaps run while idle — **pulse** (per-key breathing) or **jitter** (legends migrate to fresh spots). See [Idle & Burn-in Protection](/using/idle/).
 
 **Protocol version**
-: The `PROTOCOL_VERSION` the firmware reports in its GET_ID string. The host connects only on an exact match, so firmware and host are released in lockstep. See the [HID Protocol Reference](/reference/hid-protocol/).
+: The `PROTOCOL_VERSION` the firmware reports in its GET_ID string. The versions need not match — the host connects to any keyboard from v2 on and gates each feature individually, so a mismatch costs you only the newer features. Firmware and host are still released in lockstep. See the [HID Protocol Reference](/reference/hid-protocol/).
 
 **LTR-559**
 : The optional ambient-light + proximity sensor (Pimoroni) on the Split72 expansion port. Drives automatic brightness and wakes the displays on approach. See [Display Brightness](/using/brightness/).
