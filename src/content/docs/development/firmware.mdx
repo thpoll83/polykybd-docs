@@ -3,7 +3,7 @@ title: Firmware Development
 description: Setting up the QMK development environment for PolyKybd firmware.
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { Aside, Steps } from '@astrojs/starlight/components';
 import AiSkill from '../../../components/AiSkill.astro';
 
 The PolyKybd firmware is a heavily customised QMK build that runs on the keyboard's **Raspberry Pi RP2040**. Two hardware variants share a single firmware codebase: **`split72`** (72-key, RGB matrix, Cirque trackpad, 128×64 status OLED) and **`split42`** (42-key CRKBD footprint, no RGB/trackpad, 128×32 status OLED).
@@ -94,6 +94,36 @@ arm-none-eabi-objcopy -O binary .build/polykybd_split72_default.elf \
 ```
 
 PolyKybdHost flashes this raw image over the HID firmware-update protocol; the `.uf2` is only needed if you have to recover through the RP2040 bootloader drive.
+
+## Firmware signing
+
+The keyboard can **verify the authenticity** of a firmware image before applying it. A CRC32 (which the update protocol already checks) proves the bytes arrived intact, but not *who* produced them — so the firmware also checks an **Ed25519 signature** over the staged image against a **public key embedded in the firmware**. Only images signed with the matching private key are trusted.
+
+<Aside type="note">
+Signing is rolled out in **warn-only mode** today: the keyboard verifies the signature and logs the result (`OK` / `INVALID` / `UNSIGNED`) but **never blocks the update**. Flashing keeps working with unsigned images and with the committed placeholder key, so there is **no brick risk** while keys and signed releases are being provisioned.
+</Aside>
+
+**Verification is master-only** — the half connected over USB. The other half is reachable only through the internal bridge/UART connector, where UF2/BOOTSEL flashing is already easier, so signing defends the remote/HID surface, which the master check fully covers.
+
+### The workflow
+
+<Steps>
+1. **Generate a keypair** once with `keyboards/polykybd/tools/gen_signing_key.py`. It writes `base/fw_pubkey.h` (the **public** key, committed to the repo) and a **private** key you keep out of the repo. The shipped `fw_pubkey.h` is an all-zero placeholder until you do this.
+2. **Sign a build** with `keyboards/polykybd/tools/sign_firmware.py`, which produces a detached `<image>.bin.sig` (64 raw Ed25519 bytes) next to the `.bin`.
+3. **Flash normally.** When a `.bin.sig` sits beside the `.bin`, PolyKybdHost sends the signature to the keyboard during the flash, so the firmware can verify it before applying.
+</Steps>
+
+For published releases this is automated: the release CI signs the built `.bin` with the `FW_SIGNING_KEY` repository secret and attaches the `.bin.sig` alongside the `.bin`/`.uf2`. When the secret is unset the release is simply unsigned, so releases work before a key exists.
+
+### Enforcing signatures
+
+To make the keyboard **reject** unsigned or invalid images (instead of just warning), define `FW_REQUIRE_SIGNATURE` at build time — add one line to `keyboards/polykybd/rules.mk`:
+
+```make
+OPT_DEFS += -DFW_REQUIRE_SIGNATURE
+```
+
+Only do this once a real key is provisioned and your releases are signed — otherwise the firmware will refuse to flash any image. Full key-generation and rotation details are in `keyboards/polykybd/tools/SIGNING.md`.
 
 ## Adding a new keymap
 

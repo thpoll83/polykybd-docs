@@ -82,6 +82,12 @@ source commonly uses it.
 The same three-command flow, with a different target byte, drives **firmware update**,
 **font-pack bundles**, and other resource packs.
 
+A firmware update may additionally carry an **Ed25519 image signature** (command `0x45`, sent
+before COMMIT) that the keyboard verifies against a key built into its firmware. It is **additive**
+— older hosts simply never send it, so there is no `PROTOCOL_VERSION` bump — and currently
+**warn-only** (the result is logged, the update is not rejected). See
+[Firmware signing](/development/firmware/#firmware-signing).
+
 <Aside type="note">
 The bulk overlay commands (`0x0A`, `0x10`/`0x11`, `0x12`/`0x13`, and mapping on v3) are **not** ACK'd per chunk — the host follows a burst with a `GET_ID` liveness check rather than waiting for replies.
 </Aside>
