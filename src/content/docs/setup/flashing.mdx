@@ -52,6 +52,13 @@ protocol compatibility — so this is the way to recover a keyboard that's on a 
 version.
 </Aside>
 
+<Aside type="note">
+Official firmware releases are **signed**, and the keyboard verifies the signature against a key
+built into its firmware before applying an update. Today this is informational (the result is logged
+but an unsigned image still flashes), so nothing changes for you. If you build and sign your own
+firmware — or want to require signatures — see [Firmware signing](/development/firmware/#firmware-signing).
+</Aside>
+
 ## Fallback: UF2 bootloader drive
 
 Use this if the keyboard can't be reached over HID (e.g. a bad image left it unresponsive). It flashes
