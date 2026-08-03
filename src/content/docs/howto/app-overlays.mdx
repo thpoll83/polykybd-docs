@@ -116,6 +116,28 @@ A few hard limits baked into the firmware — don't fight them:
    window title with `title:` (a regex) or the `titles-startswith` / `titles-contains` /
    `titles-endswith` maps — see the existing Chrome and JetBrains entries for the pattern.
 
+   If the app's shortcuts differ per platform, give it an `os:` branch. Sublime Text does exactly
+   this — `Cmd` on macOS, `Ctrl` elsewhere:
+
+   ```yaml
+   sublime_text:
+     overlay: [sublime_template.mods.png, sublime_template.combo.mods.png]   # the default
+     os:
+       macos:
+         overlay: [sublime_mac_template.mods.png, sublime_mac_template.combo.mods.png,
+                   sublime_mac_template.extra.mods.png, sublime_mac_template.gui.mods.png]
+   ```
+
+   Accepted keys are `windows`, `macos`, `linux`, plus `linux_gnome` / `linux_kde` when a desktop
+   environment needs its own artwork (a plain `linux:` branch still covers those two). Anything the
+   host can't identify falls back to the entry's own `overlay:`, so the default is never skipped.
+
+   <Aside type="note">
+   Every key the mapping file understands — and the traps, like app names being an exact match and
+   the title maps comparing whole words — is documented in
+   [`polyhost/res/overlay-mapping.md`](https://github.com/thpoll83/PolyKybdHost/blob/main/polyhost/res/overlay-mapping.md).
+   </Aside>
+
 6. **Test it.** Focus the app with the keyboard connected — the overlay loads automatically. Run
    PolyKybdHost with `--debug 2` to watch the overlay HID traffic if a key doesn't show.
 
