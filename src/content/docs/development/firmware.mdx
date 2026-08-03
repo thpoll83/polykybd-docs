@@ -35,7 +35,8 @@ keyboards/polykybd/
 ├── state.c             — shared state structs (EEPROM-persisted)
 ├── multicore_exec.c    — offloads RLE decompression to RP2040 core1
 ├── base/
-│   ├── overlay.c       — overlay memory (90 slots × 9 variants × 360 B)
+│   ├── overlay.c       — overlay image pool (600 × 360 B), addressed via
+│   │                     90 keys × 16 modifier variants
 │   └── disp_array.c    — per-keycap OLED driver
 ├── lang/
 │   └── lang_lut.c      — language lookup table (code-generated via cog)

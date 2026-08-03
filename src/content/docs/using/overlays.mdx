@@ -30,22 +30,55 @@ PolyKybdHost and is rebuilt when the keyboard reconnects.
 
 ## Modifier variants
 
-An overlay isn't a single image per key — each key stores **9 variants**, one per modifier
-combination (bare, Ctrl, Shift, Ctrl+Shift, Alt, Ctrl+Alt, Alt+Shift, Ctrl+Alt+Shift, GUI).
-Hold a modifier and the keycaps update to show what each key does *with that modifier down*,
-so a shortcut layer is visible before you commit to it.
+An overlay isn't a single image per key — each key stores **16 variants**, one for every
+combination of Ctrl, Shift, Alt and GUI (Command on macOS, Win elsewhere). Hold a modifier and
+the keycaps update to show what each key does *with that modifier down*, so a shortcut layer is
+visible before you commit to it.
 
 <Aside type="tip">
-**Ctrl+Alt+Shift and the GUI/Win key are shown too.** Older releases could not display
-either — Ctrl+Alt+Shift had nowhere to store its images, and GUI overlays were discarded
-before reaching the keyboard. Both work now, so app overlays can cover those shortcuts.
+**GUI combinations work now.** Older releases showed the GUI key on its own, but folded every
+`GUI+…` chord onto it — so holding `Cmd+Shift` drew the plain `Cmd` icons rather than the right
+ones. That mattered most on macOS, where `Cmd+Shift` chords are everywhere. All sixteen
+combinations are addressable now, so an overlay can cover them.
 </Aside>
 
 ## What you need
 
 - **PolyKybdHost running** on the machine you're typing on (or relayed from another machine —
   see [Multi-Machine Setup](/using/multi-machine/)).
-- An overlay set for the app. PolyKybdHost ships overlays for common apps; you can add your own.
+- An overlay set for the app. PolyKybdHost ships overlays for common apps (below); you can
+  [add your own](/howto/app-overlays/).
+
+## Which apps are covered
+
+PolyKybdHost ships overlay sets for:
+
+| Category | Apps |
+|---|---|
+| **Office & documents** | Word · Excel · PowerPoint · Outlook · LibreOffice Writer / Calc / Impress |
+| **Code & text** | Visual Studio · VS Code · JetBrains IDEs · Sublime Text · Notepad++ |
+| **Creative** | Photoshop · Illustrator · Figma · Krita · GIMP · Inkscape |
+| **Video** | DaVinci Resolve · Premiere Pro · After Effects |
+| **Notes** | Obsidian · Notion |
+| **Communication** | Teams · Slack · Discord · Zoom |
+| **Web apps** (matched by tab URL) | GitHub · GitLab · Jira · Confluence · Bitbucket · Google Docs · Notion · Miro · Outlook Web |
+| **System** | Windows Explorer · KiCad PCB Editor · Windows lock screen |
+
+Missing your app? An overlay is a plain image plus a one-line mapping entry —
+[Create App Overlays](/howto/app-overlays/) walks through it, and contributions are welcome.
+
+## Same app, different platform
+
+Which shortcuts an app uses depends on the platform it runs on: Sublime Text binds `Cmd+P` on
+macOS and `Ctrl+P` on Windows and Linux. A single set of artwork therefore can't be right
+everywhere, so the host picks the one matching your OS — macOS users of Sublime Text get the
+`Cmd` overlays, everyone else the `Ctrl` ones, with nothing to configure.
+
+<Aside type="tip">
+This follows the machine the **app** runs on, not the one your keyboard is plugged into. If you
+drive the keyboard from a Mac over a [multi-machine setup](/using/multi-machine/), you still get
+the Mac artwork.
+</Aside>
 
 <Aside type="tip">
 Browsers are a special case: many web apps share one browser process, so matching on the app
