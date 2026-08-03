@@ -46,33 +46,16 @@ combinations are addressable now, so an overlay can cover them.
 
 - **PolyKybdHost running** on the machine you're typing on (or relayed from another machine —
   see [Multi-Machine Setup](/using/multi-machine/)).
-- An overlay set for the app. PolyKybdHost ships overlays for common apps (below); you can
-  [add your own](/howto/app-overlays/).
-
-## Which apps are covered
-
-PolyKybdHost ships overlay sets for:
-
-| Category | Apps |
-|---|---|
-| **Office & documents** | Word · Excel · PowerPoint · Outlook · LibreOffice Writer / Calc / Impress |
-| **Code & text** | Visual Studio · VS Code · JetBrains IDEs · Sublime Text · Notepad++ |
-| **Creative** | Photoshop · Illustrator · Figma · Krita · GIMP · Inkscape |
-| **Video** | DaVinci Resolve · Premiere Pro · After Effects |
-| **Notes** | Obsidian · Notion |
-| **Communication** | Teams · Slack · Discord · Zoom |
-| **Web apps** (matched by tab URL) | GitHub · GitLab · Jira · Confluence · Bitbucket · Google Docs · Notion · Miro · Outlook Web |
-| **System** | Windows Explorer · KiCad PCB Editor · Windows lock screen |
-
-Missing your app? An overlay is a plain image plus a one-line mapping entry —
-[Create App Overlays](/howto/app-overlays/) walks through it, and contributions are welcome.
+- An overlay set for the app. PolyKybdHost ships overlays for a range of common apps, and
+  adding one is a plain image plus a one-line mapping entry —
+  [Create App Overlays](/howto/app-overlays/) walks through it.
 
 ## Same app, different platform
 
 Which shortcuts an app uses depends on the platform it runs on: Sublime Text binds `Cmd+P` on
 macOS and `Ctrl+P` on Windows and Linux. A single set of artwork therefore can't be right
-everywhere, so the host picks the one matching your OS — macOS users of Sublime Text get the
-`Cmd` overlays, everyone else the `Ctrl` ones, with nothing to configure.
+everywhere, so where an app has per-OS overlays the host picks the one matching your OS —
+`Cmd` artwork on macOS, `Ctrl` artwork elsewhere — with nothing to configure.
 
 <Aside type="tip">
 This follows the machine the **app** runs on, not the one your keyboard is plugged into. If you
