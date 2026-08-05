@@ -85,9 +85,27 @@ The same three-command flow, with a different target byte, drives **firmware upd
 
 A firmware update may additionally carry an **Ed25519 image signature** (command `0x45`, sent
 before COMMIT) that the keyboard verifies against a key built into its firmware. It is **additive**
-— older hosts simply never send it, so there is no `PROTOCOL_VERSION` bump — and currently
-**warn-only** (the result is logged, the update is not rejected). See
-[Firmware signing](/development/firmware/#firmware-signing).
+— older hosts simply never send it, so there is no `PROTOCOL_VERSION` bump — and it is now
+**enforced**. See [Firmware signing](/development/firmware/#firmware-signing).
+
+Enforcement gives the firmware COMMIT four status bytes rather than two:
+
+| Byte | Meaning |
+|---|---|
+| `.` | Accepted — the staged image verified. |
+| `?` | Awaiting a physical **ACCEPT/REJECT** on the keycaps (unsigned image). Re-poll COMMIT until it changes; the staged image and its CRC are untouched between polls. |
+| `S` | Refused — not validly signed (rejected at the prompt, timed out, or the signature failed to verify). |
+| `!` | Staged-CRC mismatch. |
+
+`?` and `S` are why the refusal reason is no longer guessed from a bare NACK. A COMMIT carrying
+`'x'` in `data[2]` **cancels** a pending prompt — safe to expose over HID because it can only ever
+deny, whereas accepting stays a keypress on the board.
+
+<Aside type="caution">
+A host that predates `?` has no case for it, falls into its generic failure branch and leaves the
+progress dialog stalled while the keyboard stays modal for its full 60 s window. Update
+PolyKybdHost before flashing an unsigned image.
+</Aside>
 
 <Aside type="note">
 The bulk overlay commands (`0x0A`, `0x10`/`0x11`, `0x12`/`0x13`, and mapping on v3) are **not** ACK'd per chunk — the host follows a burst with a `GET_ID` liveness check rather than waiting for replies.
