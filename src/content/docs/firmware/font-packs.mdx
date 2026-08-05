@@ -38,9 +38,14 @@ Because bundles are versioned, adding a new language flag or a new glyph script 
 one bundle that changed — the rest are left untouched.
 </Aside>
 
-## Managing it by hand
+## Checking and updating it yourself
 
-For troubleshooting you can drive the pack from the CLI:
+The tray's **Updates** menu carries a **Keyboard fonts** row that already knows the
+answer: it reads *"Keyboard fonts: up to date"* when nothing is stale, or
+*"Update keyboard fonts (2)…"* when something is — with the outdated bundles named in
+its tooltip. Clicking it flashes exactly those.
+
+For troubleshooting you can also drive the pack from the CLI:
 
 ```sh
 polyctl fontpack status        # show device-vs-shipped versions per bundle
@@ -49,7 +54,9 @@ polyctl fontpack flash <id>    # force-flash one bundle
 polyctl fontpack wipe [id]     # empty one bundle (or all)
 ```
 
-Wiping a bundle is harmless — the host re-flashes it on the next connect.
+Wiping a bundle is harmless — the host re-flashes it on the next connect. The same
+per-bundle view and a wipe are available in the tray under **Developer → Font Pack**
+(see [developer mode](/software/usage/#developer-mode)).
 
 <Aside type="note">
 Where the pack sits in the 8 MB flash map, and how the resident + pack fonts are merged at

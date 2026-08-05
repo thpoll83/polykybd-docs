@@ -104,8 +104,8 @@ python -m polyhost                  # GUI + daemon (default)
 python -m polyhost --no-daemon      # legacy in-process startup (development)
 python -m polyhost --connect        # run the GUI as a client of a running daemon
 python -m polyhost --headless       # run only the daemon, no GUI
-python -m polyhost --debug 1        # basic debug logging
-python -m polyhost --debug 2        # verbose debug logging
+python -m polyhost --dev            # developer mode + debug logging
+python -m polyhost --dev 2          # developer mode + verbose debug logging
 python -m polyhost --host <IP>      # forwarder mode (remote machine)
 python -m polyhost --portable       # skip autostart registration
 ```
