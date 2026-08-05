@@ -18,7 +18,7 @@ import { Aside } from '@astrojs/starlight/components';
 | `status` | Show connection state and current keyboard status |
 | `lang list` / `lang set <code>` | List available languages, or switch the active language |
 | `brightness <value>` | Set display brightness |
-| `brightness --auto` | Hand brightness back to [automatic](/using/brightness/) (a manual level otherwise sticks until you do) |
+| `brightness --auto` | Hand brightness back to [automatic](/using/brightness/) — a manual level otherwise sticks until you do. With adaptive daylight off there is no automatic source to return to, so it just clears the override and restores the keyboard's stored level. |
 | `idle <…>` | Configure or trigger idle behaviour |
 | `idle-style [pulse\|jitter]` | Get or set the [idle anti-burn-in style](/using/idle/) |
 | `glyph-script [standard\|tengwar\|…]` | Get or set the [glyph-script](/using/glyph-scripts/) legend override |
@@ -30,7 +30,7 @@ import { Aside } from '@astrojs/starlight/components';
 | `fw flash <bin> [--apply]` | Flash a firmware `.bin` over HID (streams progress) |
 | `pause` / `resume` | Suspend or resume the daemon's device I/O |
 | `mru save` | Ask the keyboard to persist its recently-used emoji / language picks |
-| `settings get <key>` / `settings set <key> <value>` | Read or change a setting (e.g. `settings set developer_mode true`) |
+| `settings get <key>` / `settings set <key> <value>` | Read or change a setting (e.g. `settings set developer_mode true` — restart the app for the Developer submenu to appear) |
 | `update check` / `update install` | Check for and install host updates (streams progress) |
 | `unicode-mode` | Re-detect the host's unicode input method ([WinCompose](/software/wincompose/) vs native) and push it to the keyboard |
 | `window report` | Report the current active window to the daemon |
