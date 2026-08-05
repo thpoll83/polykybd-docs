@@ -98,13 +98,15 @@ PolyKybdHost flashes this raw image over the HID firmware-update protocol; the `
 
 ### System clock
 
-The firmware runs the RP2040 at its **125 MHz** default. Raspberry Pi has since certified the chip for **200 MHz**, and you can build for that with one flag:
+The firmware runs the RP2040 at **200 MHz**, and has done since v0.11.0. Raspberry Pi certified the chip for that in 2025; it is a supported operating point, not an overclock — but only with the core voltage raised from 1.10 V to **1.15 V**, so the build does both: it selects the 200 MHz PLL setting *and* raises the regulator before the clock comes up. There is nothing to configure.
+
+If a board ever misbehaves at the higher clock, one flag builds the old one:
 
 ```sh
-qmk compile -kb polykybd/split72 -km default -e POLYKYBD_SYS_CLK=200
+qmk compile -kb polykybd/split72 -km default -e POLYKYBD_SYS_CLK=125
 ```
 
-This is a supported operating point, not an overclock — but it is only certified with the core voltage raised from 1.10 V to **1.15 V**, so the flag does both: it selects the 200 MHz PLL setting *and* raises the regulator before the clock comes up. There is nothing else to configure. Leave the flag off and you get the unchanged 125 MHz build.
+That escape hatch is verified **byte-for-byte identical** to the pre-v0.11.0 firmware, so it is a genuine return to what shipped before rather than a similar-looking rebuild.
 
 Measured on the [test rig](/development/test-rig/), against a 125 MHz build on the same hardware:
 
@@ -120,7 +122,7 @@ Measured on the [test rig](/development/test-rig/), against a 125 MHz build on t
 The gains land on **compute** — drawing keycaps, decompressing overlays. Anything bound by a bus or a wire rather than by the processor is unaffected: HID latency is set by the USB frame rate, and traffic to the other half by the fixed UART speed. That is also why the idle loop gains less than the 1.6× clock increase might suggest — roughly half of each idle pass is time on the wire to the other half, which no amount of MHz will shorten.
 </Aside>
 
-To confirm what a keyboard is actually running, watch the boot banner on the [firmware console](/development/test-rig/) — it reports the clock and the regulator setting read back from the hardware:
+To confirm what a keyboard is actually running — and that the regulator was raised to match — watch the boot banner on the [firmware console](/development/test-rig/). Both values are read back from the hardware rather than assumed from the build flags:
 
 ```text
    clk: sys=200000000Hz vreg_vsel=0xC
