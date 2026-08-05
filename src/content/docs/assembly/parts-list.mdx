@@ -77,10 +77,18 @@ A USB-C to USB-A cable + USB-A to USB-C adapter combination only works in one or
 ## Optional parts
 
 <Aside type="caution">
-Each half has a **single physical expansion slot**. The sensors and input devices might have
-different pins to connect, but you have to choose a single one per side that fits into the slot. You
-can still put a different one on the other half (e.g. the sensor on the left and a trackpad on the
+Each half has a **single physical expansion slot**, and only one part can occupy it per side. You
+can still fit a different one on each half (e.g. the sensor on the left and a trackpad on the
 right). Decide which one you want per side before you start.
+
+The slot is one *mechanical* space served by **three separate electrical connections** — they are
+not variants of one connector:
+
+| Part | Connects to |
+|---|---|
+| Light + proximity sensor, trackball | The labelled 5-pin footprint `3-6V / SDA / SCL / INT / GND` |
+| Rotary encoder | Its own footprint in the same space, on different pins |
+| Cirque trackpad | A 12-pin FPC running to **J37 — a flex socket on the *back* of the PCB** |
 </Aside>
 
 ### Rotary encoder
@@ -97,7 +105,7 @@ Either of these fits the PCB footprint:
 | Option | Part | Notes |
 |---|---|---|
 | Trackball | [Pimoroni Trackball](https://mou.sr/3rmFiAO) | Solder header without the plastic distance holder |
-| Trackpad (small) | Cirque TM023023-2024-002 (23mm) | Remove R1 on back to switch to I2C; needs 12-pin FPC ~50–70mm |
+| Trackpad (small) | Cirque TM023023-2024-002 (23mm) | Remove R1 on back to switch to I2C; needs 12-pin FPC ~50–70mm, running to **J37** on the back of the keyboard PCB |
 | Trackpad (large, experimental) | Cirque TM035035-2024-003 (35mm) | Modify OpenSCAD source before printing the holder |
 
 The 23mm trackpad needs a 3D-printed holder — pick the height that fits your build:
