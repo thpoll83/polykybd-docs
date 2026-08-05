@@ -101,7 +101,7 @@ PolyKybdHost flashes this raw image over the HID firmware-update protocol; the `
 The keyboard can **verify the authenticity** of a firmware image before applying it. A CRC32 (which the update protocol already checks) proves the bytes arrived intact, but not *who* produced them — so the firmware also checks an **Ed25519 signature** over the staged image against a **public key embedded in the firmware**. Only images signed with the matching private key are trusted.
 
 <Aside type="caution">
-Signature enforcement is **on**. An image without a valid signature is **refused** at the end of a firmware update over HID. Released firmware is signed automatically, so normal updates are unaffected — but a build you compiled yourself needs either a signature or the physical override described below. Flashing over **BOOTSEL/UF2 is never affected**, so there is no way to lock yourself out.
+Signature enforcement is **on**. An image without a valid signature is **refused** at the end of a firmware update over HID. Released firmware is signed automatically, so normal updates are unaffected — but a build you compiled yourself needs either a signature or a physical confirmation on the keyboard, described below. Flashing over **BOOTSEL/UF2 is never affected**, so there is no way to lock yourself out.
 </Aside>
 
 **Verification is master-only** — the half connected over USB. The other half is reachable only through the internal bridge/UART connector, where UF2/BOOTSEL flashing is already easier, so signing defends the remote/HID surface, which the master check fully covers.
@@ -128,7 +128,7 @@ With it defined, an unsigned or badly-signed image is rejected instead of merely
 
 ### Flashing your own (unsigned) build
 
-A firmware you compiled yourself is unsigned, so it will be refused over HID. Two ways through:
+A firmware you compiled yourself is unsigned, so the keyboard will not apply it without asking you first. Two ways through:
 
 <Steps>
 1. **Sign it**, exactly as the release pipeline does:
@@ -138,11 +138,13 @@ A firmware you compiled yourself is unsigned, so it will be refused over HID. Tw
    python3 keyboards/polykybd/tools/sign_firmware.py --privkey fw_signing_key.bin out.bin
    ```
 
-2. **Or arm the override on the keyboard**: press the *allow unsigned firmware* key (settings layer, beside the Eden key), then start the flash within **2 minutes**. It is single-use and cleared by a reboot.
+2. **Or confirm it on the keyboard.** Just flash. At the end of the transfer the keyboard notices the image is unsigned and **turns its keycaps into a dialog**: every key goes dark except one on each half — a big **A / ACCEPT** on the left home-row index key (`D`) and a big **R / REJECT** on the right one (`J`). Press **A** to let this image through. The host shows *"Confirm on the KEYBOARD…"* and waits for you.
+
+   The prompt lasts **60 seconds** and a timeout counts as *reject*. It authorises only the image being flashed right then — the next unsigned flash asks again — and nothing about it survives a reboot. While it is up, all other keys are ignored: the whole board is the dialog.
 </Steps>
 
 <Aside type="note">
-The override is a **keypress**, not a checkbox in the host app — deliberately. Signing protects against anything that can talk to the keyboard over HID, and a confirmation sent over that same channel could be sent by an attacker just as easily. A physical keypress cannot be produced remotely.
+The answer is a **keypress**, not a checkbox in the host app — deliberately. Signing protects against anything that can talk to the keyboard over HID, and a confirmation sent over that same channel could be sent by an attacker just as easily. A physical keypress cannot be produced remotely.
 </Aside>
 
 Flashing over **BOOTSEL/UF2** skips signature checking altogether, so it always works as a recovery path. Full key-generation and rotation details are in `keyboards/polykybd/tools/SIGNING.md`.
