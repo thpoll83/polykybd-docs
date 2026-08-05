@@ -157,6 +157,15 @@
   }
 }
 
+/* Opt-out of the 55% thumbnail rule for a showcase photo — the landing page's
+   lead image, which is meant to fill the column rather than sit inside it.
+   Everything else about the treatment (centering, radius, click-to-enlarge) is
+   inherited from the rule above. Use sparingly: one per page at most. */
+.sl-markdown-content img.landing-showcase {
+  width: 100%;
+  margin-block: 0 2rem;
+}
+
 /* Full-screen lightbox, created on click by public/js/photo-zoom.js. */
 .photo-zoom-lightbox {
   position: fixed;
