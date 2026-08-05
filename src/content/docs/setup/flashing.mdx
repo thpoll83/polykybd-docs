@@ -52,11 +52,20 @@ protocol compatibility — so this is the way to recover a keyboard that's on a 
 version.
 </Aside>
 
-<Aside type="note">
+<Aside type="caution">
 Official firmware releases are **signed**, and the keyboard verifies the signature against a key
-built into its firmware before applying an update. Today this is informational (the result is logged
-but an unsigned image still flashes), so nothing changes for you. If you build and sign your own
-firmware — or want to require signatures — see [Firmware signing](/development/firmware/#firmware-signing).
+built into its firmware before applying an update. **Download the release's `.bin.sig` file into the
+same folder as the `.bin`** — the host sends it during the flash, and without it the keyboard treats
+the image as unsigned.
+
+An unsigned image is not rejected, but it is not applied silently either: the keyboard blanks its
+keycaps except a big **A / ACCEPT** on the left half and **R / REJECT** on the right, states the
+question on the status OLED, and waits up to a minute for you to press one. That is expected for a
+firmware you built yourself. If the host instead reports that the signature *does not match*, the
+`.bin` and `.sig` are from different builds or one of them is damaged — re-download both.
+
+If you build and sign your own firmware — or want to require signatures — see
+[Firmware signing](/development/firmware/#firmware-signing).
 </Aside>
 
 ## Fallback: UF2 bootloader drive
