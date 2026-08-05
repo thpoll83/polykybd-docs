@@ -12,6 +12,8 @@ Once PolyKybdHost is running, it lives in your system tray (Windows) or menu bar
 Right-click the tray icon. The menu is deliberately short — everything you need for
 normal use, and nothing else:
 
+![The PolyKybdHost tray menu: a status line naming the connected Split72 and its firmware, then Pause, Selected Language, Brightness, Idle Display, Keycap Script, Configure Keymap, Updates, Maintenance, Settings, Help & About and Quit](../../../assets/software/tray-menu.png)
+
 | Entry | What it does |
 |---|---|
 | *Status line* | The connected keyboard and its firmware. Clicking it is a shortcut for **Pause** below. |
@@ -45,8 +47,17 @@ firmware, keymap dumps — live in a separate **Developer** submenu that is hidd
 default. Turn it on in **Settings → Developer → Mode** (then restart the app), or start
 with `--dev` for one session.
 
+![The Developer submenu: Change System Input Language, Inspect Font Packs, Refresh unicode input mode, Save MRU cache now, then Overlays, Idle, Keymap, Font Pack and Firmware submenus, and Run command file](../../../assets/software/tray-developer-submenu.png)
+
 Switching it on **only adds** the Developer submenu; nothing else in the menu moves,
 so you can leave it on without relearning where things are.
+
+<Aside type="note">
+The screenshots on this page are rendered from the app itself, so they show the real
+labels and order. Your desktop draws its own menu style, and a couple of entries are
+conditional — "Quit && stop background daemon" appears when a daemon owns the keyboard
+(the default), and the in-process-only debugging entries are absent in that mode.
+</Aside>
 
 ## What the app drives
 
