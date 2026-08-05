@@ -1,0 +1,66 @@
+---
+title: RGB Lighting
+description: The Split72's 72 per-key RGB LEDs — how to control them, and how the keyboard uses colour to tell you what it is doing.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+The **Split72** has a per-key RGB LED under every keycap — 72 in total, 36 per half. Because the
+keycaps are transparent and the OLED sits inside them, one key shows both a **legend** and a
+**colour** at the same time.
+
+![Close-up of transparent keycaps lit in a green-to-purple gradient, each showing its own OLED legend](../../../assets/landing/rgb-keycaps-closeup.jpg)
+
+<Aside>
+This is a Split72 feature. The **Split42** has no LEDs fitted, so none of the controls below do
+anything on it — see [Keyboard Variants](/firmware/variants/).
+</Aside>
+
+## Controlling the lighting
+
+The lighting controls live together on the **settings layer** of the default keymap, in the
+right-hand block. You don't need to memorise them: when that layer is active every keycap shows
+what it does, so the controls read themselves.
+
+| Control | What it does |
+|---|---|
+| On / off | Toggles the matrix. The status display shows **RGB Off** while it is off |
+| Previous / next effect | Steps through the enabled effects |
+| Four direct effect keys | Jump straight to a plain, breathing, rainbow or swirl effect |
+| Hue − / + | Shifts the colour |
+| Saturation − / + | From washed-out to fully saturated |
+| Brightness − / + | Dims or brightens the LEDs |
+| Speed − / + | How fast an animated effect runs |
+
+There are **41 effects** compiled in, including reactive ones that light the key you just pressed
+and splash effects that ripple outward from it.
+
+Your choices are stored on the keyboard and survive a reboot, and the on/off state is shared with
+the other half so both sides stay in step.
+
+<Aside type="note">
+RGB brightness is separate from the **keycap display** brightness. The displays are what you read;
+the LEDs are what you see around them. Display brightness — including the automatic daylight and
+light-sensor modes — is covered in [Display Brightness](/using/brightness/).
+</Aside>
+
+## Colour as a status signal
+
+The keyboard also uses the lighting to tell you something the keycaps cannot, because during an
+update they are busy: **whether it is safe to keep typing.**
+
+| What you see | What is happening | Can you type? |
+|---|---|---|
+| Breathing **cyan** | A font pack or a firmware image is being written to the keyboard | **Yes** — the keyboard is still running normally |
+| Breathing **orange** | A staged firmware image is being applied, or a half is in its bootloader | **No** — a reboot is imminent |
+
+The rule is worth remembering on its own: **orange means the keyboard cannot accept input right
+now.** Cyan means a transfer is in progress but nothing is interrupted.
+
+When the update finishes, your normal lighting comes back exactly as it was — including staying
+**off** if you had it off. The keyboard turns the matrix on only for the duration of the signal.
+
+<Aside type="tip">
+Both halves show the signal, so you can tell at a glance whether an update reached the second half
+— which is the half that has no USB connection of its own.
+</Aside>
