@@ -100,8 +100,8 @@ PolyKybdHost flashes this raw image over the HID firmware-update protocol; the `
 
 The keyboard can **verify the authenticity** of a firmware image before applying it. A CRC32 (which the update protocol already checks) proves the bytes arrived intact, but not *who* produced them — so the firmware also checks an **Ed25519 signature** over the staged image against a **public key embedded in the firmware**. Only images signed with the matching private key are trusted.
 
-<Aside type="note">
-Signing is rolled out in **warn-only mode** today: the keyboard verifies the signature and logs the result (`OK` / `INVALID` / `UNSIGNED`) but **never blocks the update**. Flashing keeps working with unsigned images and with the committed placeholder key, so there is **no brick risk** while keys and signed releases are being provisioned.
+<Aside type="caution">
+Signature enforcement is **on**. An image without a valid signature is **refused** at the end of a firmware update over HID. Released firmware is signed automatically, so normal updates are unaffected — but a build you compiled yourself needs either a signature or the physical override described below. Flashing over **BOOTSEL/UF2 is never affected**, so there is no way to lock yourself out.
 </Aside>
 
 **Verification is master-only** — the half connected over USB. The other half is reachable only through the internal bridge/UART connector, where UF2/BOOTSEL flashing is already easier, so signing defends the remote/HID surface, which the master check fully covers.
@@ -118,13 +118,34 @@ For published releases this is automated: the release CI signs the built `.bin` 
 
 ### Enforcing signatures
 
-To make the keyboard **reject** unsigned or invalid images (instead of just warning), define `FW_REQUIRE_SIGNATURE` at build time — add one line to `keyboards/polykybd/rules.mk`:
+Enforcement is enabled in `keyboards/polykybd/rules.mk`:
 
 ```make
 OPT_DEFS += -DFW_REQUIRE_SIGNATURE
 ```
 
-Only do this once a real key is provisioned and your releases are signed — otherwise the firmware will refuse to flash any image. Full key-generation and rotation details are in `keyboards/polykybd/tools/SIGNING.md`.
+With it defined, an unsigned or badly-signed image is rejected instead of merely logged. Only enable this on a fork once your own key is provisioned **and** your releases are signed — otherwise the firmware refuses every image you build.
+
+### Flashing your own (unsigned) build
+
+A firmware you compiled yourself is unsigned, so it will be refused over HID. Two ways through:
+
+<Steps>
+1. **Sign it**, exactly as the release pipeline does:
+
+   ```sh
+   arm-none-eabi-objcopy -O binary .build/polykybd_split72_default.elf out.bin
+   python3 keyboards/polykybd/tools/sign_firmware.py --privkey fw_signing_key.bin out.bin
+   ```
+
+2. **Or arm the override on the keyboard**: press the *allow unsigned firmware* key (settings layer, beside the Eden key), then start the flash within **2 minutes**. It is single-use and cleared by a reboot.
+</Steps>
+
+<Aside type="note">
+The override is a **keypress**, not a checkbox in the host app — deliberately. Signing protects against anything that can talk to the keyboard over HID, and a confirmation sent over that same channel could be sent by an attacker just as easily. A physical keypress cannot be produced remotely.
+</Aside>
+
+Flashing over **BOOTSEL/UF2** skips signature checking altogether, so it always works as a recovery path. Full key-generation and rotation details are in `keyboards/polykybd/tools/SIGNING.md`.
 
 ## Adding a new keymap
 
