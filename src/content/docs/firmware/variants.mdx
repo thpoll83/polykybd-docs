@@ -20,6 +20,16 @@ the keyboard lands on both at once.
 | Per-keycap OLEDs | 72×40 px monochrome | 72×40 px monochrome |
 | Build target | `polykybd/split72` | `polykybd/split42` |
 
+A split72 half — 36 keys, the 128×64 status OLED (here naming the active layout, Colemak DH), and a
+rotary encoder fitted in the expansion slot:
+
+![An assembled split72 left half, each keycap OLED showing its Colemak-DH legend, with the status display reading "2 LEFT / Colemak DH"](../../../assets/firmware/split72-left-half.jpg)
+
+The split42 board, which carries 21 keys per half and no RGB or pointing device (KiCad render of
+the `PolyCorne Split42` rev1.0 left side):
+
+![KiCad 3D render of the split42 left PCB, silkscreened "PolyCorne Split42, rev1.0"](../../../assets/firmware/split42-pcb-render.jpg)
+
 <Aside>
 **split42 was renamed from `corne42` in 2026-06.** Same hardware, PID and `LAYOUT_crkbd`; the old
 `corne42` paths are gone. If you see `corne42` referenced anywhere, read it as `split42`.

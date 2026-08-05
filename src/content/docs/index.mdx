@@ -21,24 +21,38 @@ hero:
       variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+import { Image } from 'astro:assets';
+import rgbBothHalves from '../../assets/landing/rgb-both-halves.jpg';
+
+<Image
+  src={rgbBothHalves}
+  class="landing-showcase"
+  alt="Both PolyKybd halves in the dark, each key lit by its own RGB LED in a rainbow gradient running from blue through purple to magenta, with the OLED legends readable through the transparent keycaps."
+/>
 
 ## What makes it unique
 
 <CardGrid>
   <Card title="72 per-key displays" icon="laptop">
-    Every key has its own 72×40 px OLED showing its current function — layers, languages and app overlays are visible at a glance, no guessing.
+    Every key has its own 72×40 px OLED showing its current function — layers, languages and app overlays are visible at a glance, no guessing. See [Context-Aware Overlays](/using/overlays/).
   </Card>
   <Card title="Fully split ergonomic" icon="puzzle">
-    Two halves linked over a full-duplex serial cable, so each hand sits exactly where it feels natural. Available as **Split72** and the smaller **Split42**.
+    Two halves linked over a full-duplex serial cable, so each hand sits exactly where it feels natural. Available as [**Split72** and the smaller **Split42**](/firmware/variants/).
   </Card>
   <Card title="Context-aware overlays" icon="setting">
-    The host software tracks your active window and re-labels every key automatically when you switch apps.
+    The host software tracks your active window and re-labels every key automatically when you switch apps — see [how the host does it](/software/overview/).
   </Card>
   <Card title="Open hardware & firmware" icon="open-book">
-    KiCad schematics, gerbers, STL case files, a QMK firmware fork and the Python host app — every layer is open.
+    KiCad schematics, gerbers, STL case files, a QMK firmware fork and the Python host app — every layer is open. Start at [Architecture & Ecosystem](/introduction/architecture/).
   </Card>
 </CardGrid>
+
+![Close-up of transparent keycaps lit in a green-to-purple gradient, each one showing its own OLED legend — letters, an emoji face, a Windows logo and an "Intl" key](../../assets/landing/rgb-keycaps-closeup.jpg)
+
+A per-key RGB LED sits under the same transparent keycap as the OLED, so one key carries both a
+**legend** and a **colour** — the lighting is a layer of information, not just decoration. (RGB
+is a [Split72](/firmware/variants/) feature; the Split42 has no LED matrix.)
 
 ## The ecosystem
 
@@ -54,7 +68,62 @@ PolyKybd is built from a handful of open-source repositories that work together:
 
 See [Architecture & Ecosystem](/introduction/architecture/) for how these pieces talk to each other.
 
-## Where to start
+## Browse the docs
+
+<CardGrid>
+  <LinkCard
+    title="Introduction"
+    href="/introduction/architecture/"
+    description="How the keyboard, firmware and host app fit together."
+  />
+  <LinkCard
+    title="Assembly"
+    href="/assembly/overview/"
+    description="Parts list, PCB, case, displays, switches and the step-by-step build."
+  />
+  <LinkCard
+    title="Setup"
+    href="/setup/installation/"
+    description="Install PolyKybdHost and flash the firmware onto a finished board."
+  />
+  <LinkCard
+    title="Using the Keyboard"
+    href="/using/overlays/"
+    description="Overlays, languages, glyph scripts, brightness, idle, keymaps and multi-machine use."
+  />
+  <LinkCard
+    title="Host Software"
+    href="/software/overview/"
+    description="The tray app, the daemon/client model, the polyctl CLI and WinCompose."
+  />
+  <LinkCard
+    title="Firmware"
+    href="/firmware/overview/"
+    description="What runs on the RP2040 — keyboard variants and font packs."
+  />
+  <LinkCard
+    title="Hardware"
+    href="/hardware/electronics/"
+    description="Schematics, electronics and PCB / case modification."
+  />
+  <LinkCard
+    title="HowTo"
+    href="/howto/add-language/"
+    description="Add a language or glyph script, create app overlays, build from source, edit the keymap."
+  />
+  <LinkCard
+    title="Development"
+    href="/development/system-model/"
+    description="System model, firmware development, display graphics, the test rig and contributing."
+  />
+  <LinkCard
+    title="Reference"
+    href="/reference/hid-protocol/"
+    description="HID protocol, browser-extension privacy and the glossary."
+  />
+</CardGrid>
+
+### Or jump straight to a task
 
 - **Want to build one?** → [Assembly Overview](/assembly/overview/)
 - **Already have one?** → [Install PolyKybdHost](/setup/installation/)

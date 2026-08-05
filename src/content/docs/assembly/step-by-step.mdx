@@ -27,10 +27,14 @@ The photos throughout these docs are shown small — **click any photo to enlarg
    - **Cirque trackpad** (23mm, or the experimental 35mm). See [Cirque trackpad](#cirque-trackpad).
 
    <Aside type="caution">
-   Each half has a **single physical expansion slot**. The sensors and input devices might have
-   different pins to connect, but you have to choose a single one per side that fits into the slot.
-   (Fitting a different one on each half is fine — e.g. the sensor on the left, a trackpad on the
-   right.)
+   Each half has a **single physical expansion slot** and only one of these parts can occupy it per
+   side. (Fitting a different one on each half is fine — e.g. the sensor on the left, a trackpad on
+   the right.)
+
+   It is one *mechanical* space with **three separate electrical connections**: the labelled 5-pin
+   `3-6V / SDA / SCL / INT / GND` footprint (sensor or trackball), the encoder's own footprint on
+   different pins, and — for the trackpad only — a 12-pin flex cable to **J37 on the back of the
+   PCB**.
    </Aside>
 
    **Fit the under-plate parts now**, before the aluminum plate goes on — they don't fit through it
@@ -254,8 +258,9 @@ the 12-pin FPC cable to the trackpad (note the pin 1 marker). Place the trackpad
 amount of adhesive. Do not connect it to the PCB yet.
 
 **Mounting:** Feed the FPC cable through the slot in the plate, push the holder into place
-(press-fit, no glue needed), then insert the FPC into the trackpad socket on the PCB and lock it by
-lowering the flap. Verify pin 1 alignment.
+(press-fit, no glue needed), then insert the FPC into **J37** — the trackpad's flex socket, which is
+on the **back** of the keyboard PCB, not next to the slot itself — and lock it by lowering the flap.
+Verify pin 1 alignment.
 
 ![Insert the trackpad](../../../assets/assembly/insert_cirque.jpg)
 

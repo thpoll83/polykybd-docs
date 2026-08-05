@@ -9,6 +9,15 @@ The PolyKybd uses two 4-layer PCBs (left and right), each 1.6mm thick. The PCBs 
 
 ![Assembled PCB](../../../assets/assembly/pcb_photo.jpeg)
 
+A bare board as it arrives from the fab — this is the rev3.2 left PCB, matching the gerbers below.
+One side carries the RP2040, the two USB-C connectors and the 72 FPC sockets:
+
+![Bare left PCB, showing the RP2040, USB-C connectors and the rows of FPC sockets](../../../assets/assembly/pcb-bare-sockets.jpg)
+
+The other side carries the switch footprints and the RGB LEDs:
+
+![The same board reversed, showing switch footprints and RGB LEDs](../../../assets/assembly/pcb-bare-switches.jpg)
+
 ## Gerber files
 
 The latest gerber files, BOM, and pick & place files are in the [PolyKybd hardware repo](https://github.com/thpoll83/PolyKybd):
@@ -26,6 +35,13 @@ The key plates are also ordered as PCBs — specify 1.2mm aluminum when ordering
 |---|---|
 | `poly_kybd/Gerber/Plate/gerber-left-side-v3-17.11.2023.zip` | Left aluminum plate |
 | `poly_kybd/Gerber/Plate/gerber-right-side-v3-17.11.2023.zip` | Right aluminum plate |
+
+The two plates are mirrored — one per half. Each switch cutout is square; the larger opening takes
+the expansion slot part:
+
+![Aluminum plate for one half, with the square switch cutouts and the larger expansion-slot opening](../../../assets/assembly/plate-a.jpg)
+
+![The mirrored plate for the other half](../../../assets/assembly/plate-b.jpg)
 
 ## Ordering from JLCPCB
 
