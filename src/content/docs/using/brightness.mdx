@@ -11,10 +11,23 @@ The per-key OLEDs can be dimmed and brightened three different ways. Whichever y
 ## Manual
 
 - **On the keyboard** — the brightness preset keys step the keycap OLEDs up and down.
-- **In PolyKybdHost** — set a level under **Settings → Brightness**.
+- **In PolyKybdHost** — pick a level from the tray's **Brightness** submenu, or set one
+  under **Settings → Brightness**.
 - **Command line** — `polyctl brightness <0–100>`.
 
 A manual set switches automatic mode off, so the board holds exactly the level you picked.
+
+### Going back to automatic
+
+A manual level sticks until something turns automatic mode back on — the keyboard will
+not do it by itself, not even after the sun comes up. To hand control back, choose
+**Brightness → Back to automatic** in the tray (or run `polyctl brightness --auto`).
+
+![The tray Brightness submenu: Off, 1%, 50% and 100% presets, then a separated "Back to automatic" entry](../../../assets/software/tray-brightness-submenu.png)
+
+If adaptive daylight brightness is switched off in Settings, that entry reads **Clear
+manual override** instead: there is no automatic source to return to, so it just puts
+the keyboard back on its own stored level.
 
 ## Adaptive (daylight)
 

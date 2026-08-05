@@ -60,4 +60,4 @@ Debugging PolyKybdHost on **Windows with Python 3.13**? The
 
 ## Logging
 
-The daemon writes its own log to `daemon_log.txt`. When that file exists, the GUI's Log Viewer adds a **"Daemon Log"** tab, so reconnect, overlay, and window-tracking activity happening inside the daemon is visible from the GUI side. Pass `--debug 2` to the daemon to surface verbose (detailed) lines such as window-report receipts; `--debug 1` shows the standard debug level.
+The daemon writes its own log to `daemon_log.txt`. When that file exists, the GUI's Log Viewer adds a **"Daemon Log"** tab, so reconnect, overlay, and window-tracking activity happening inside the daemon is visible from the GUI side. Pass `--dev 2` to the daemon to surface verbose (detailed) lines such as window-report receipts; `--dev 1` shows the standard debug level. It is the same [`--dev` flag](/software/usage/#developer-mode) the GUI takes — it turns developer mode on and its number selects the log level.
