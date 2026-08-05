@@ -146,7 +146,7 @@ Signature enforcement is **on**, and the two ways an image can fail it are treat
 3. **Flash normally.** When a `.bin.sig` sits beside the `.bin`, PolyKybdHost sends the signature to the keyboard during the flash, so the firmware can verify it before applying.
 </Steps>
 
-For published releases this is automated: the release CI signs the built `.bin` with the `FW_SIGNING_KEY` repository secret and attaches the `.bin.sig` alongside the `.bin`/`.uf2`. When the secret is unset the release is simply unsigned, so releases work before a key exists.
+For published releases this is automated end to end: the release CI signs the built `.bin` with the `FW_SIGNING_KEY` repository secret and attaches the `.bin.sig` alongside the `.bin`/`.uf2`, and PolyKybdHost's release-update flow downloads both — so a release installed from the tray menu is verified without anyone handling the signature. When the secret is unset the release is simply unsigned, so releases work before a key exists.
 
 ### Enforcing signatures
 
