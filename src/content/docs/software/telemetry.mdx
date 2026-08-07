@@ -24,7 +24,7 @@ polyctl telemetry preview
 
 ## What the report contains
 
-| | |
+| Category | What is sent |
 |---|---|
 | **Versions** | PolyKybdHost version, protocol version |
 | **Your system** | Operating system and coarse release (e.g. `Windows 11`), CPU architecture, Python version |
@@ -43,7 +43,10 @@ PolyKybdHost can see all of the following while it runs. **None of it is collect
   right keycap overlays. They never leave your machine.
 - **Anything you type.** No keystrokes, ever.
 - **Your location.** The adaptive-brightness feature may look up an approximate
-  location for sunrise/sunset; that is never included.
+  location for sunrise/sunset; that is never included, and neither is anything from
+  your device's location services. The only geographic information in the report is
+  the **two-letter country code** the server derives from your connection (see
+  above) — the same thing any website you visit can tell.
 - Your user name, computer name, MAC address, or keyboard serial number.
 - File paths, overlay images, or your keymap.
 
@@ -59,12 +62,19 @@ It is **not** derived from your hardware, network card, or anything else about y
 its only job is to stop one computer being counted five times in a day.
 
 You can see it with `polyctl telemetry status`. To become a brand-new install, delete
-the `telemetry_install_id` line from your settings file.
+the `telemetry_install_id` line from `settings.yaml` — a fresh one is generated on the
+next start. The file lives here:
+
+| OS | Path |
+|---|---|
+| Windows | `%LOCALAPPDATA%\PolyHost\PolyHost\settings.yaml` |
+| macOS | `~/Library/Application Support/PolyHost/settings.yaml` |
+| Linux | `~/.config/PolyHost/settings.yaml` |
 
 <Aside type="caution" title="A small user base is not a crowd">
-  While only a handful of PolyKybds exist, "anonymous" means the report carries
-  nothing that identifies you — not that it is lost among thousands of others. We
-  would rather say so than imply otherwise.
+  While only a small number of PolyKybd keyboards exist, "anonymous" means the report
+  carries nothing that identifies you — not that it is lost among thousands of others.
+  We would rather say so than imply otherwise.
 </Aside>
 
 ## Turning it off
