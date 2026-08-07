@@ -10,8 +10,11 @@ which host and firmware versions people are actually running, and whether update
 firmware flashes are working — things that are otherwise invisible to us unless
 someone writes in to say something broke.
 
-It is **on by default**, you are told about it the first time the app runs, and you
-can turn it off in one click.
+It is **on by default** and you can turn it off in one click.
+
+There is no popup asking you to decide. We announce it in the release notes instead,
+so you read it when you download rather than being interrupted afterwards — and
+PolyKybdHost writes a line into its log on every start saying whether reporting is on.
 
 ## See exactly what would be sent
 
@@ -79,10 +82,8 @@ next start. The file lives here:
 
 ## Turning it off
 
-Any one of these is enough:
+Either of these is enough:
 
-- **Tray app:** the notice on first run has a **No** button. (Closing that dialog also
-  turns it off — if you did not answer, we do not send.)
 - **Settings dialog:** *Settings → Telemetry → Enabled*, untick it.
 - **Command line:** `polyctl telemetry disable`
 
