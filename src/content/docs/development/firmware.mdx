@@ -205,24 +205,31 @@ See [Display Graphics & Fonts](/development/display-graphics/) for the rendering
 
 ## QMK documentation
 
-All standard QMK features are available. The fork is currently based on **QMK
-0.33.13**, so where upstream behaviour has changed between releases, the 0.33.x
-documentation is the one that matches your build.
+All standard QMK features are available. PolyKybd firmware **v0.11.6** is built on
+**QMK 0.33.13**. Note that QMK's documentation site is not versioned — there is one
+live copy — so when upstream behaviour has changed between releases, check the
+[breaking-changes history](https://docs.qmk.fm/breaking_changes_history) rather than
+assuming a page matches your build.
 
 The fork tracks upstream's **stable release tags**, not `master` — merging a tag
 means the base is a version people can look up, rather than an arbitrary commit.
 To check the base of any checkout yourself, rather than trusting this page:
 
 ```bash
-git fetch upstream --tags
-git describe --tags --abbrev=0 $(git merge-base HEAD upstream/master)
+# The fork's own master is kept as an untouched mirror of upstream QMK,
+# so no extra remote is needed — the clone above already has it as origin.
+git fetch origin master --tags
+base="$(git merge-base HEAD origin/master)"
+[ -n "$base" ] || { echo "no merge base — unshallow the clone first" >&2; exit 1; }
+git describe --tags --abbrev=0 "$base"
 ```
 
 <Aside type="caution">
-On a shallow clone (the default in some cloud dev containers) `git merge-base`
-returns an **empty string** instead of an error, and the command above silently
-reports the wrong thing. Run `git rev-parse --is-shallow-repository` first, and
-`git fetch origin --unshallow` if it says `true`.
+The `[ -n "$base" ]` guard is load-bearing. On a shallow clone (the default in some
+cloud dev containers) `git merge-base` returns an **empty string** instead of
+failing — and an empty argument would leave `git describe` describing `HEAD`, so
+without the guard the command reports a confident, wrong answer. If it trips, run
+`git rev-parse --is-shallow-repository` and then `git fetch origin --unshallow`.
 </Aside>
 
 Refer to the [official docs](https://docs.qmk.fm/) for:
