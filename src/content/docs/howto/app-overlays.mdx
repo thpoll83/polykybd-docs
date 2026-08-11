@@ -112,9 +112,50 @@ A few hard limits baked into the firmware — don't fight them:
      overlay: [myapp_template.mods.png, myapp_template.combo.mods.png]
    ```
 
-   When one process serves many contexts (a browser hosting several web apps, an IDE), narrow it by
-   window title with `title:` (a regex) or the `titles-startswith` / `titles-contains` /
-   `titles-endswith` maps — see the existing Chrome and JetBrains entries for the pattern.
+   When one process serves many contexts (a browser hosting several web apps, an IDE), narrow it
+   with a sub-map. The host tries them in a fixed order and the first match wins:
+
+   | Key | Matches on | How |
+   | --- | --- | --- |
+   | `urls-contains:` | the focused tab's URL | plain substring |
+   | `titles-startswith:` | the **first word** of the title | whole word |
+   | `titles-endswith:` | the **last word** of the title | whole word |
+   | `titles-contains:` | **any word** in the title | whole word |
+
+   ```yaml
+   chrome,google-chrome,chromium:
+     overlay: [chrome_template.mods.png]      # plain browsing
+     urls-contains:
+       atlassian.net: { overlay: [jira_template.mods.png] }
+     titles-contains:
+       Jira: { overlay: [jira_template.mods.png] }     # used when no URL is known
+   ```
+
+   See the existing Chrome and JetBrains entries for the full pattern.
+
+   <Aside type="caution">
+   The title maps are **word-based, not substring-based** — the title is split on whitespace and
+   each key is compared against a whole word. Two consequences catch people out:
+
+   - `titles-contains: Doc` matches `My Doc here` but **not** `My Docs here`.
+   - A key containing a space (`titles-contains: My Doc`) can never match, because no single word
+     ever equals it.
+
+   `titles-startswith` is likewise the whole first *word*, not an arbitrary prefix string.
+   For anything finer, use `title:`, which is a regex over the entire title.
+   </Aside>
+
+   <Aside type="note">
+   **A known URL outranks the title.** `urls-contains` is checked first because a URL identifies a
+   web app far more reliably than a window title. For an entry that declares `urls-contains`, the
+   `titles-contains` map is a fallback for when the URL is *unknown* (no browser extension
+   reporting, or a non-browser window) — not merely when it matched no key.
+
+   So while the extension is reporting, searching Google for "jira" keeps the plain browser
+   overlay: the URL is positive evidence that this is not Jira, and a stray word in the title
+   must not overrule it. `titles-startswith` / `titles-endswith` and entries with no
+   `urls-contains` are unaffected.
+   </Aside>
 
    If the app's shortcuts differ per platform, give it an `os:` branch. Sublime Text does exactly
    this — `Cmd` on macOS, `Ctrl` elsewhere:
