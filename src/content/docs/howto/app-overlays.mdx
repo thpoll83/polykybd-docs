@@ -142,7 +142,20 @@ A few hard limits baked into the firmware — don't fight them:
      ever equals it.
 
    `titles-startswith` is likewise the whole first *word*, not an arbitrary prefix string.
-   For anything finer, use `title:`, which is a regex over the entire title.
+   For anything finer, use `title:` — but note it works differently from the four maps above
+   (see below).
+   </Aside>
+
+   <Aside type="note">
+   **`title:` is a filter, not a fifth sub-map.** The four keys in the table *route* — each one
+   selects a nested entry with its own overlay. `title:` (a regex over the whole title, and its
+   sibling `url:`) instead acts as a **constraint on the entry that declares it**, checked only
+   *after* every sub-map above has been tried: if the regex does not match, that entry is rejected
+   outright and matching moves on. So it can veto an entry, never redirect to a different overlay.
+
+   Use `title:` to stop an entry firing on the wrong window, and the maps in the table to pick
+   between overlays. One wrinkle worth knowing: when the title is empty or unknown, a `title:`
+   regex is skipped rather than treated as a failure, so the entry still applies.
    </Aside>
 
    <Aside type="note">
