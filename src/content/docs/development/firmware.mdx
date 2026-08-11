@@ -205,7 +205,27 @@ See [Display Graphics & Fonts](/development/display-graphics/) for the rendering
 
 ## QMK documentation
 
-All standard QMK features are available. Refer to the [official docs](https://docs.qmk.fm/) for:
+All standard QMK features are available. The fork is currently based on **QMK
+0.33.13**, so where upstream behaviour has changed between releases, the 0.33.x
+documentation is the one that matches your build.
+
+The fork tracks upstream's **stable release tags**, not `master` — merging a tag
+means the base is a version people can look up, rather than an arbitrary commit.
+To check the base of any checkout yourself, rather than trusting this page:
+
+```bash
+git fetch upstream --tags
+git describe --tags --abbrev=0 $(git merge-base HEAD upstream/master)
+```
+
+<Aside type="caution">
+On a shallow clone (the default in some cloud dev containers) `git merge-base`
+returns an **empty string** instead of an error, and the command above silently
+reports the wrong thing. Run `git rev-parse --is-shallow-repository` first, and
+`git fetch origin --unshallow` if it says `true`.
+</Aside>
+
+Refer to the [official docs](https://docs.qmk.fm/) for:
 
 - [Keycodes reference](https://docs.qmk.fm/keycodes)
 - [Layers](https://docs.qmk.fm/feature_layers)
