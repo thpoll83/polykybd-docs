@@ -43,6 +43,69 @@ Want to restyle the legends themselves — Tengwar, runes, Braille — without c
 type? That's a separate, cosmetic feature: [Glyph Scripts](/using/glyph-scripts/).
 </Aside>
 
+## The Intl layer: accented letters on demand
+
+Switching your whole layout is the right move when you *write* in another language. When you only
+need the occasional accented letter — a name, a loanword, a single `ñ` in an English sentence —
+there is the **Intl layer**. Hold the **Intl** key [ İñțł ] and the letters that have accented
+forms show one:
+
+| Hold Intl, press… | You get |
+|---|---|
+| `a` | `à` (or whichever variation you picked for `a`) |
+| `s` | `ș` |
+| `e` | `é` |
+
+Press the letter and PolyKybd types that character — no dead keys, no compose sequence, no layout
+switch. 19 letters carry variations, up to 10 each; `a`, `e`, `i`, `o` and `u` have the most.
+
+<Aside type="note">
+Upper and lower case are chosen separately, so `Á` and `á` can be set to different accents. Hold
+Shift (or turn on Caps Lock) to work on the capital.
+</Aside>
+
+### Choosing which accent a letter types
+
+Each letter remembers **one** variation at a time — the one on its keycap. To change it, use the
+picker on the number row.
+
+1. Hold **Intl**.
+2. Press the letter you want to change, so the keyboard knows which one you mean.
+3. Tap **Ctrl** [ Á»Æ ]. The Ctrl keycap turns **inverted** — dark legend on a lit key — to show
+   the picker is armed, and the number row fills with every variation available for that letter.
+4. Press the digit under the accent you want.
+
+That becomes the letter's variation from then on, and it survives a reboot. The picker closes as
+soon as you pick.
+
+<Aside type="tip">
+The picker **latches**, so you don't have to hold Ctrl down. Tap it to arm, tap it again to close
+it without changing anything — leaving the Intl layer closes it too. While it's armed you can press
+a different letter to switch which one you're setting, and add or release Shift to flip between the
+capital and lower-case rows; the number row re-renders each time.
+</Aside>
+
+The inverted Ctrl keycap is the thing to look for: if it's lit, the number row is a picker and the
+digits won't type numbers.
+
+### Romanian and the comma-below letters
+
+Romanian's `ș` and `ț` use a **comma** below the letter, not a cedilla — `ș` is a genuinely
+different character from `ş`, and using the wrong one is a spelling error in Romanian. Both cases of
+both letters are available as variations of `s` and `t`.
+
+<Aside type="caution">
+The Intl layer types its letters as **Unicode**, the same path the emoji layer uses — so it needs
+your OS input mode set up first. If Intl letters produce nothing (or the wrong thing), that is the
+usual cause: see [Unicode input](#unicode-input) below.
+</Aside>
+
+<Aside type="note">
+The Intl key is on the [split72](/firmware/variants/) keymap. It is not currently bound on split42,
+whose smaller key count leaves no obvious home for it — you can add it yourself in the
+[keymap editor](/using/keymap-editor/).
+</Aside>
+
 ## Emoji layer
 
 PolyKybd also has a dedicated **emoji layer** that turns the keycaps into a visual emoji picker —
