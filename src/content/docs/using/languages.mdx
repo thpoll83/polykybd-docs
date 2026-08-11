@@ -86,8 +86,9 @@ soon as you pick, and reopens on the first page.
 
 The picker row holds 12 variations at a time on split72 and 10 on split42, so the richest letters
 span several pages. The two **page arrows** sit on the outer left of the row on both models — the
-same position, so the reach is the same muscle memory whichever you own. They **wrap**, so either
-arrow gets you round a two-page letter.
+same position, so the reach is the same muscle memory whichever you own. They **wrap** in both
+directions — past the last page returns to the first, before the first returns to the last — so you
+can never get stranded partway through a letter.
 
 | | Letters that page | Most pages |
 |---|---|---|
@@ -98,8 +99,9 @@ Every other letter fits on a single row, and there the arrows stay **blank** —
 you are already looking at all of them.
 
 <Aside type="note">
-What gets stored is the variation itself, not its position on the row, so a pick made on page 2 is
-the same pick on either model — your accents follow you from a split72 to a split42.
+What gets stored is the accent itself, not where it sat on the row. Your choices therefore follow
+you from a split72 to a split42 unchanged — though with 12 variations per page against 10, the same
+accent may well turn up on a different page and a different key there.
 </Aside>
 
 <Aside type="tip">
@@ -118,19 +120,27 @@ Romanian's `ș` and `ț` use a **comma** below the letter, not a cedilla — `ș
 different character from `ş`, and using the wrong one is a spelling error in Romanian. Both cases of
 both letters are available as variations of `s` and `t`.
 
-### Languages the full set covers
+### What the full set adds
 
-Because the picker now carries every precomposed accented letter, a number of languages that were
-previously only partly served are complete:
+The picker now carries every accented letter that Unicode encodes as a **single character**. These
+are the writing systems that gained the most from that — the middle column is what was missing
+before, not the whole of what each one uses:
 
-| Language | What it needs |
+| Language or system | Letters it gained |
 |---|---|
-| Welsh | `ẁ ẃ ẅ ỳ` — the accented `w` and `y` |
+| Welsh | `ẁ ẃ ẅ ỳ` — the grave, acute and diaeresis forms of `w` and `y` (the circumflex `ŵ ŷ` were already there) |
 | Irish | the séimhiú dotted consonants `ḃ ċ ḋ ḟ ġ ṁ ṗ ṡ ṫ` |
-| Guaraní | `Ẽ` and `Ỹ` — the capitals that had no partner for the existing lower-case forms |
+| Guaraní | `Ẽ` and `Ỹ`, the capitals that had no partner for the existing lower-case forms |
 | Vietnamese | the horned vowels `ơ ư`, including their tone combinations |
 | Pinyin | 3rd-tone carons and the full `ü` set |
 | African reference alphabet | the hook letters `ɓ ɗ ƙ ƴ` and relatives |
+
+<Aside type="caution">
+A letter is only available here if Unicode gives it its own character. Guaraní's `g̃` is the one
+that catches people out: it has no character of its own — it is a `g` followed by a combining tilde
+— so the picker cannot produce it, and Guaraní still needs a compose key or a layout switch for
+that one letter.
+</Aside>
 
 <Aside type="caution">
 The Intl layer types its letters as **Unicode**, the same path the emoji layer uses — so it needs
