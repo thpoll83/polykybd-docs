@@ -52,8 +52,20 @@ RAM, which is why an image change has to be sent to both halves.
 
 Every report is `[report-id][command][payload…]`, 64 bytes. Replies are prefixed
 `P\xNN.` (ACK) or `P\xNN!` (NACK). Commands live on the keyboard-specific
-`ID_POLYKYBD = 80` channel. Newer commands are gated by `PROTOCOL_VERSION` — the host
-connects only on an **exact** version match.
+`ID_POLYKYBD = 80` channel. Newer commands are gated by `PROTOCOL_VERSION`, but the host
+does **not** require an exact match — it connects to any firmware reporting protocol **2 or
+newer** (the floor at which it can still enumerate languages) and then enables each feature
+individually:
+
+| Keyboard vs host protocol | What happens |
+|---|---|
+| Below the floor | Refused — *"please update the keyboard firmware"* |
+| Older than the host | Connects; features the firmware lacks are greyed out |
+| Same as the host | Fully supported |
+| Newer than the host | Connects in a restricted **safe mode**, and offers to update the host app |
+
+So a keyboard and a host app from different releases still work together, with only the
+newer features unavailable — rather than refusing to connect at all.
 
 ### Overlays — the bulk data path
 
