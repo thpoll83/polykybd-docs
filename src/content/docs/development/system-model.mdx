@@ -51,7 +51,7 @@ RAM, which is why an image change has to be sent to both halves.
 ## The HID command surface
 
 Every report is `[report-id][command][payload…]`, 64 bytes. Replies are prefixed
-`P\xNN.` (ACK) or `P\xNN!` (NACK). Commands live under the VIA-reserved
+`P\xNN.` (ACK) or `P\xNN!` (NACK). Commands live on the keyboard-specific
 `ID_POLYKYBD = 80` channel. Newer commands are gated by `PROTOCOL_VERSION` — the host
 connects only on an **exact** version match.
 
