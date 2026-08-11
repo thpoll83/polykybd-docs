@@ -57,7 +57,9 @@ forms show one:
 | `e` | `é` |
 
 Press the letter and PolyKybd types that character — no dead keys, no compose sequence, no layout
-switch. 19 letters carry variations, up to 10 each; `a`, `e`, `i`, `o` and `u` have the most.
+switch. **Every letter of the alphabet** carries variations — 549 in all, covering every accented
+form Unicode has a single character for. `o` has the most at 36, then `a` and `u` at 30 and `e`
+at 25; even `q` and `x` have a couple.
 
 <Aside type="note">
 Upper and lower case are chosen separately, so `Á` and `á` can be set to different accents. Hold
@@ -72,11 +74,33 @@ picker on the number row.
 1. Hold **Intl**.
 2. Press the letter you want to change, so the keyboard knows which one you mean.
 3. Tap **Ctrl** [ Á»Æ ]. The Ctrl keycap turns **inverted** — dark legend on a lit key — to show
-   the picker is armed, and the number row fills with every variation available for that letter.
-4. Press the digit under the accent you want.
+   the picker is armed, and the number row fills with that letter's variations.
+4. If the letter has more than a row's worth, step through them with the **page arrows** on the
+   outer left of the picker row.
+5. Press the key under the accent you want.
 
 That becomes the letter's variation from then on, and it survives a reboot. The picker closes as
-soon as you pick.
+soon as you pick, and reopens on the first page.
+
+### When a letter needs more than one row
+
+The picker row holds 12 variations at a time on split72 and 10 on split42, so the richest letters
+span several pages. The two **page arrows** sit on the outer left of the row on both models — the
+same position, so the reach is the same muscle memory whichever you own. They **wrap**, so either
+arrow gets you round a two-page letter.
+
+| | Letters that page | Most pages |
+|---|---|---|
+| split72 (12 per row) | `a` `e` `i` `o` `u` | 3 (`o`) |
+| split42 (10 per row) | `a` `e` `i` `n` `o` `s` `t` `u` `y` | 4 (`o`) |
+
+Every other letter fits on a single row, and there the arrows stay **blank** — if you see no arrows,
+you are already looking at all of them.
+
+<Aside type="note">
+What gets stored is the variation itself, not its position on the row, so a pick made on page 2 is
+the same pick on either model — your accents follow you from a split72 to a split42.
+</Aside>
 
 <Aside type="tip">
 The picker **latches**, so you don't have to hold Ctrl down. Tap it to arm, tap it again to close
@@ -94,6 +118,20 @@ Romanian's `ș` and `ț` use a **comma** below the letter, not a cedilla — `ș
 different character from `ş`, and using the wrong one is a spelling error in Romanian. Both cases of
 both letters are available as variations of `s` and `t`.
 
+### Languages the full set covers
+
+Because the picker now carries every precomposed accented letter, a number of languages that were
+previously only partly served are complete:
+
+| Language | What it needs |
+|---|---|
+| Welsh | `ẁ ẃ ẅ ỳ` — the accented `w` and `y` |
+| Irish | the séimhiú dotted consonants `ḃ ċ ḋ ḟ ġ ṁ ṗ ṡ ṫ` |
+| Guaraní | `Ẽ` and `Ỹ` — the capitals that had no partner for the existing lower-case forms |
+| Vietnamese | the horned vowels `ơ ư`, including their tone combinations |
+| Pinyin | 3rd-tone carons and the full `ü` set |
+| African reference alphabet | the hook letters `ɓ ɗ ƙ ƴ` and relatives |
+
 <Aside type="caution">
 The Intl layer types its letters as **Unicode**, the same path the emoji layer uses — so it needs
 your OS input mode set up first. If Intl letters produce nothing (or the wrong thing), that is the
@@ -103,7 +141,8 @@ usual cause: see [Unicode input](#unicode-input) below.
 <Aside type="note">
 The Intl key is on the [split72](/firmware/variants/) keymap. It is not currently bound on split42,
 whose smaller key count leaves no obvious home for it — you can add it yourself in the
-[keymap editor](/using/keymap-editor/).
+[keymap editor](/using/keymap-editor/), and the layer behind it is ready: split42 carries the full
+10-slot picker row and its page arrows.
 </Aside>
 
 ## Emoji layer
