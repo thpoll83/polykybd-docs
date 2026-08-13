@@ -82,6 +82,45 @@ picker on the number row.
 That becomes the letter's variation from then on, and it survives a reboot. The picker closes as
 soon as you pick, and reopens on the first page.
 
+![Holding Intl and tapping Ctrl turns the number row into a picker of the current letter's accented variations; picking one changes that letter's keycap](/img/intl-picker.gif)
+
+### Giving one letter several keys
+
+The picker chooses another *form* of the letter a key already hosts, so it can only ever give you
+one accent per key. French wants `è` `é` and `ê` at the same time — three forms of one letter, and
+only one `e` key to put them on.
+
+So a key can be **reassigned to host a different letter**:
+
+1. Hold **Intl**.
+2. Tap the **remap** key [ à»ñ ], next to the picker's Ctrl. It **inverts**, and the board blanks
+   down to just the keys you are allowed to choose from.
+3. Press the key you want to change. It inverts too.
+4. Press the letter it should host.
+
+That key now carries the chosen letter's variations, and its own picker works exactly as before —
+so you can give each of them a different accent. `q` and `j` are good candidates: they have one and
+two variations of their own, which makes them close to dead keys on this layer otherwise.
+
+![Remapping q, j and semicolon to host e, then picking a different accent on each, leaving é è ê ë on four keys at once](/img/intl-remap.gif)
+
+**Punctuation keys can host a letter too** — `` ` `` `'` `,` `.` `/` `;` `[` `]` `=` on split72, and
+`;` `,` `.` `/` on split42. Which ones you get is decided by the layout: a key that isn't on the
+Intl layer simply never offers itself. An unmapped punctuation key keeps typing its own symbol, so
+nothing changes until you deliberately remap it.
+
+<Aside type="note">
+The remap **latches** — tap it, don't hold it. Releasing **Intl** leaves the mode at any point, so
+that is always the way out. Tapping the remap key again backs out too.
+</Aside>
+
+<Aside type="tip">
+Two ways back. Re-assigning a key to **its own letter** clears just that key (for a punctuation key,
+press the highlighted key a second time). **Shift + remap** clears every assignment at once — worth
+knowing, because once the board is remapped the Intl legends no longer match the letters printed on
+your keycaps.
+</Aside>
+
 ### When a letter needs more than one row
 
 The picker row holds 12 variations at a time on split72 and 10 on split42, so the richest letters
