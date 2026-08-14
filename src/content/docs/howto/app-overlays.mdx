@@ -186,6 +186,45 @@ A few hard limits baked into the firmware — don't fight them:
    environment needs its own artwork (a plain `linux:` branch still covers those two). Anything the
    host can't identify falls back to the entry's own `overlay:`, so the default is never skipped.
 
+   <Aside type="caution" title="Repeat title:/url: constraints inside an os: branch">
+   A matched `os:` branch **replaces** the outer entry rather than adding to it. So if the entry
+   carries a `title:` or `urls-contains:` constraint, repeat it inside the branch — otherwise the
+   macOS case matches every window of that app. (The generator below does this for you.)
+   </Aside>
+
+   ### One file for both platforms: `CMDCTRL`
+
+   Writing the two sets by hand means maintaining the same shortcut list twice, and they drift.
+   Instead, a binding file for `scripts/generate_app_overlays.py` can use **`CMDCTRL`** — the
+   OS-relative command modifier, `Ctrl` on Windows/Linux and `Cmd` on macOS:
+
+   ```yaml
+   bindings:
+     - { key: P, mods: [CMDCTRL, SHIFT], icon: palette.png, label: command palette }
+   ```
+
+   One spec, two artwork sets: the generator renders `<output>.*` with `CMDCTRL` as Ctrl and
+   `<output>_mac.*` with it as Cmd, then emits the `os: macos:` branch selecting between them.
+   Spellings `CMDCTRL`, `CMD_OR_CTRL` and `CMDORCTRL` all work — GTK calls the same idea
+   `<Primary>` and Electron calls it `CmdOrCtrl`.
+
+   A plain `CTRL` binding stays **literal Ctrl on every platform**, which matters: macOS keeps real
+   Ctrl chords of its own, and apps do too. Both spellings coexist in one file.
+
+   <Aside type="caution" title="It swaps a modifier — it cannot remap a shortcut">
+   Reach for `CMDCTRL` when an app's macOS keymap is its Windows keymap with a different modifier.
+   Hand-author two specs when it is genuinely a *different* keymap. Both shapes ship in the repo:
+
+   - **VS Code — one spec.** It registers most chords as `KeyMod.CtrlCmd`, so 22 bindings are
+     `CMDCTRL` and 3 stay literal Ctrl (macOS keeps `⌃G`, `` ⌃` ``, `⌃F5`). Eight genuinely
+     remapped actions are left out rather than approximated.
+   - **Sublime Text — two specs.** `CMDCTRL` would reproduce only 21 of its 40 macOS bindings, and
+     `Cmd+Shift+[`/`]` is fold/unfold on Windows but *cycle tab* on macOS — so it would draw a
+     confident, wrong icon on a real key.
+
+   A missing overlay is a blank keycap; a wrong one actively misleads.
+   </Aside>
+
    <Aside type="note">
    Every key the mapping file understands — and the traps, like app names being an exact match and
    the title maps comparing whole words — is documented in
