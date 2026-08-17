@@ -116,6 +116,8 @@ export default defineConfig({
             { label: 'Case & Spacer', slug: 'assembly/case' },
             { label: 'Displays & FPC Extension', slug: 'assembly/displays' },
             { label: 'Compatible Switches', slug: 'assembly/compatible-switches' },
+            { label: 'Keycap Stems', slug: 'assembly/keycap-stems' },
+            { label: 'Tenting Legs & LED Diffuser', slug: 'assembly/printed-extras' },
             { label: 'Step-by-Step Build Guide', slug: 'assembly/step-by-step' },
           ],
         },
