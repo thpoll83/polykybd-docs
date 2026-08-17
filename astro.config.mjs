@@ -33,6 +33,23 @@ export default defineConfig({
           tag: 'script',
           attrs: { src: '/js/photo-zoom.js', defer: true },
         },
+        // Google Analytics (GA4). Injected into every page's <head> here rather
+        // than per page; the loader is async and the config snippet below it
+        // runs inline, matching Google's recommended gtag.js install.
+        {
+          tag: 'script',
+          attrs: {
+            async: true,
+            src: 'https://www.googletagmanager.com/gtag/js?id=G-8JB88YY4E5',
+          },
+        },
+        {
+          tag: 'script',
+          content: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8JB88YY4E5');`,
+        },
       ],
       logo: {
         light: './src/assets/polytasten-logo.svg',
