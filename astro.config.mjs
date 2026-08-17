@@ -2,6 +2,53 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import mermaid from 'astro-mermaid';
 
+// Google Analytics (GA4), emitted ONLY for a real `astro build`.
+//
+// Astro loads this file for every CLI command and puts the command name in
+// argv, so `astro dev` (what ./preview.sh runs by default) leaves the tag out
+// entirely — otherwise a local docs preview reports pageviews into the live
+// property. `astro preview` just serves the already-built output, so the tag
+// it shows is whatever the preceding build emitted.
+const isProductionBuild = process.argv.slice(2)[0] === 'build';
+
+// Consent Mode v2. The defaults deny storage, so on a first visit GA sets no
+// cookies and sends only cookieless pings; public/js/consent.js flips
+// `analytics_storage` to granted when the visitor accepts, and replays that
+// choice from localStorage on later visits (which is why this runs before the
+// gtag.js loader — the queued consent state must be in dataLayer first).
+const GA_MEASUREMENT_ID = 'G-8JB88YY4E5';
+const googleAnalyticsTags = [
+  {
+    tag: 'script',
+    content: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {
+  ad_storage: 'denied',
+  ad_user_data: 'denied',
+  ad_personalization: 'denied',
+  analytics_storage: 'denied'
+});
+try {
+  if (localStorage.getItem('pk-analytics-consent') === 'granted') {
+    gtag('consent', 'update', { analytics_storage: 'granted' });
+  }
+} catch (e) {}
+gtag('js', new Date());
+gtag('config', '${GA_MEASUREMENT_ID}');`,
+  },
+  {
+    tag: 'script',
+    attrs: {
+      async: true,
+      src: `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`,
+    },
+  },
+  {
+    tag: 'script',
+    attrs: { src: '/js/consent.js', defer: true },
+  },
+];
+
 export default defineConfig({
   site: 'https://www.polykybd.org',
   base: '/',
@@ -33,23 +80,9 @@ export default defineConfig({
           tag: 'script',
           attrs: { src: '/js/photo-zoom.js', defer: true },
         },
-        // Google Analytics (GA4). Injected into every page's <head> here rather
-        // than per page; the loader is async and the config snippet below it
-        // runs inline, matching Google's recommended gtag.js install.
-        {
-          tag: 'script',
-          attrs: {
-            async: true,
-            src: 'https://www.googletagmanager.com/gtag/js?id=G-8JB88YY4E5',
-          },
-        },
-        {
-          tag: 'script',
-          content: `window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-8JB88YY4E5');`,
-        },
+        // Google Analytics, consent-gated and build-only — see the tag list at
+        // the top of this file. Spread so a dev run injects nothing at all.
+        ...(isProductionBuild ? googleAnalyticsTags : []),
       ],
       logo: {
         light: './src/assets/polytasten-logo.svg',

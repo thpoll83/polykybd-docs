@@ -192,3 +192,67 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+/* Analytics consent chip, created on first visit by public/js/consent.js.
+   A small pill in the bottom-left corner rather than a full-width banner, so
+   it stays out of the way of the docs content on every screen size. */
+.pk-consent {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 9998; /* below the photo lightbox (9999) */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 2rem;
+  background: var(--sl-color-gray-6);
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.25);
+  font-size: 0.75rem;
+  line-height: 1;
+  /* Entry/dismiss animation; the starting state is set here and lifted by the
+     data-visible attribute one frame after the node is inserted. */
+  opacity: 0;
+  transform: translateY(0.5rem);
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+.pk-consent[data-visible] {
+  opacity: 1;
+  transform: translateY(0);
+}
+.pk-consent[data-leaving] {
+  opacity: 0;
+  transform: translateY(0.5rem);
+}
+.pk-consent__text {
+  color: var(--sl-color-white);
+  white-space: nowrap;
+}
+.pk-consent__cookie {
+  /* Nudged to sit on the text's optical centre. */
+  font-size: 0.9rem;
+  vertical-align: -0.05em;
+}
+.pk-consent__btn {
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 1rem;
+  background: transparent;
+  color: var(--sl-color-white);
+  font: inherit;
+  cursor: pointer;
+}
+.pk-consent__btn:hover,
+.pk-consent__btn:focus-visible {
+  border-color: var(--sl-color-white);
+}
+.pk-consent__btn--yes {
+  border-color: var(--sl-color-white);
+  font-weight: 600;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pk-consent {
+    transition: none;
+  }
+}
