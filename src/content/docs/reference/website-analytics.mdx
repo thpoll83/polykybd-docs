@@ -1,0 +1,81 @@
+---
+title: Website Analytics
+description: What this documentation site measures with Google Analytics, what it never sees, and how to switch it off at any time.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+_Last updated: 2026-08-17_
+
+This documentation site uses **Google Analytics 4** to count visits, so we can see which
+pages people actually read and which ones nobody can find. It is **off until you say yes** —
+nothing is stored in your browser unless you accept the small 🍪 prompt in the corner.
+
+This page describes exactly what that collects, and lets you change your mind whenever
+you like.
+
+## Your current setting
+
+<div data-pk-consent-control>
+  <p>
+    Analytics only runs on the published site, with JavaScript enabled. If you are seeing
+    this text, nothing is being collected and there is nothing to change.
+  </p>
+</div>
+
+Turning it off also deletes the analytics cookies described below. The choice is remembered
+per browser (and per device), so you may see the prompt again on another one.
+
+## What it collects
+
+Once you accept, Google Analytics records, for each page you open:
+
+- The **page address and title**, and the **referrer** — the page or search that sent you here.
+- An **approximate location** (city level at best), derived from your IP address.
+- Your **browser, operating system, device type** and screen size.
+- **Timestamps**, so visits can be grouped into sessions.
+
+## What it never collects
+
+- **Nothing you type.** There are no forms on this site, and no keystrokes are recorded.
+- **Nothing from your keyboard or from PolyKybdHost.** This is website traffic only —
+  the host application's own reporting is a separate thing entirely, described in
+  [Usage Data & Privacy](/software/telemetry/).
+- **No name, email, or account** — the site has no login.
+- **Nothing at all** if you decline, or before you answer.
+
+## Cookies
+
+Accepting lets Google Analytics set two first-party cookies in your browser:
+
+| Cookie | Purpose |
+| --- | --- |
+| `_ga` | Distinguishes one visitor from another |
+| `_ga_8JB88YY4E5` | Keeps track of the current session |
+
+Both are set by the site you are on, not by a third-party domain, and neither is used for
+advertising. Their exact lifetime is set by Google Analytics — your browser's developer
+tools will show the current expiry. Turning analytics off using the control above deletes
+both.
+
+## Before you answer
+
+Until you accept, the tag runs in Google's **Consent Mode** with storage denied. In that
+state it sets no cookies and sends only anonymous, cookieless signals — no identifier that
+can follow you between visits. Declining keeps it that way permanently.
+
+<Aside type="note">
+Advertising features are switched off outright: `ad_storage`, `ad_user_data` and
+`ad_personalization` are denied and are never granted, whatever you choose here. Accepting
+enables `analytics_storage` and nothing else.
+</Aside>
+
+## Where the data goes
+
+Collected data is processed by **Google** as the analytics provider, under
+[their terms](https://business.safety.google/adsprocessorterms/). It is used only to
+understand documentation traffic. It is not sold, and it is not shared with anyone else.
+
+## Contact
+
+Questions or issues: [github.com/thpoll83/polykybd-docs/issues](https://github.com/thpoll83/polykybd-docs/issues)

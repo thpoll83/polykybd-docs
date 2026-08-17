@@ -256,3 +256,47 @@
     transition: none;
   }
 }
+
+/* The chip's label doubles as a link to /reference/website-analytics/, so the
+   pill can stay small without leaving the visitor to guess what they're
+   agreeing to. Underlined on hover only, to keep the chip quiet at rest. */
+.pk-consent__link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dotted currentColor;
+}
+.pk-consent__link:hover,
+.pk-consent__link:focus-visible {
+  border-bottom-style: solid;
+}
+
+/* "Your current setting" widget on the analytics page. The static fallback
+   inside it is replaced by public/js/consent.js; both states are styled, so the
+   box looks deliberate on a local preview too (where analytics never loads). */
+.pk-consent-control {
+  margin-block: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.5rem;
+  background: var(--sl-color-gray-6);
+}
+.pk-consent-control > :first-child {
+  margin-top: 0;
+}
+.pk-consent-control__state {
+  margin-bottom: 0.75rem;
+}
+.pk-consent-control__btn {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--sl-color-white);
+  border-radius: 1.5rem;
+  background: transparent;
+  color: var(--sl-color-white);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pk-consent-control__btn:hover,
+.pk-consent-control__btn:focus-visible {
+  background: var(--sl-color-gray-5);
+}

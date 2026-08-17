@@ -190,6 +190,7 @@ export default defineConfig({
           label: 'Reference',
           items: [
             { label: 'HID Protocol', slug: 'reference/hid-protocol' },
+            { label: 'Website Analytics', slug: 'reference/website-analytics' },
             { label: 'Browser Extension Privacy', slug: 'reference/browser-extension-privacy' },
             { label: 'Glossary', slug: 'reference/glossary' },
           ],
