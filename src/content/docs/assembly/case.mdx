@@ -14,6 +14,7 @@ The PolyKybd case and spacer can be 3D printed (resin SLA recommended) or CNC ma
 | Left case | `parts/export/case/case_polykybd_split72_left_r7.stl` |
 | Right case | `parts/export/case/case_polykybd_split72_right_r7.stl` |
 | Spacer (×2) | `parts/export/case/spacer.stl` |
+| Spacer for the LED diffuser frame (×2) | `parts/export/case/spacer_diffuser_frame.stl` |
 
 <Aside type="tip">
 Always grab the **latest** revision from the repo — `r7` is current at the time of writing. Superseded revisions are no longer kept in the tree; they remain in the git history if you ever need one.
@@ -29,6 +30,13 @@ The spacer keeps the right distance between the plate and the PCB and is printed
 
 ![Spacer](../../../assets/assembly/spacer.png)
 
+<Aside>
+If you fit the [LED diffuser frame](/assembly/printed-extras/), print
+`spacer_diffuser_frame.stl` instead — the plain spacer leaves nowhere for the frame's web to sit.
+It is notched on **both** faces, so the same part works on either half, and
+`spacer_diffuser_frame_4x.stl` puts four on one plate.
+</Aside>
+
 ## Printing recommendations
 
 Resin (SLA) printing gives the best results — the fine details of the case walls and display cutouts come out cleanly.
@@ -42,6 +50,28 @@ If your resin print has slight warping (common with large flat parts), use a **h
 ## CNC machining
 
 If you have the case CNC machined instead of printed, add threaded inserts to the four corner screw holes — the M3 screws need something to bite into since CNC aluminium won't self-tap.
+
+### Metal case
+
+There is a dedicated **metal case** design, re-authored for machining rather than exported from
+the printable one — so it ships as proper B-Rep STEP, which is what a machine shop actually wants
+to quote and program from:
+
+| Part | File |
+|---|---|
+| Left, STEP (B-Rep) | `parts/export/case/metal-case-left.step` |
+| Right, STEP (B-Rep) | `parts/export/case/metal-case-right.step` |
+| Mesh preview | `parts/export/case/case_polykybd_split72_metal.stl`, `.3mf`, and `..._metal-bottom.stl` |
+
+<Aside type="caution">
+The first machined set has just arrived and is being **fit-tested against a real build** —
+plate, PCB, spacer and screws — so treat these files as not-yet-confirmed and expect the
+dimensions to move if the test turns anything up. The printed `r7` case above is the validated
+one.
+</Aside>
+
+The source is `parts/case/case_polykybd_split72_metal.scad`, with the STEP re-authoring pipeline
+in `parts/case/step/`. The threaded-insert note above still applies.
 
 ## Screws and nuts
 
