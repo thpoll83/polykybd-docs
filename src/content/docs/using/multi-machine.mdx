@@ -5,7 +5,7 @@ description: Use one PolyKybd keyboard across multiple computers with PolyKybdHo
 
 import { Aside } from '@astrojs/starlight/components';
 
-PolyKybdHost supports a forwarder mode that lets a single PolyKybd serve multiple computers. The keyboard is physically connected to one machine, but the key displays reflect the active window on whichever machine you are currently using.
+PolyKybdHost supports a forwarder mode that lets a single PolyKybd serve multiple computers. The keyboard is physically connected to one machine, but the key displays reflect the active window on whichever machine you are currently working on.
 
 ## How it works
 
@@ -14,43 +14,133 @@ flowchart LR
     remote["<b>Remote machine</b><br/>PolyForwarder<br/>watches active window,<br/>sends window info"]
     keyboard["<b>Keyboard machine</b><br/>PolyHost<br/>owns HID device,<br/>updates displays"]
     kbd(["PolyKybd"])
-    remote -- TCP --> keyboard -- USB --> kbd
+    remote -- "window reports<br/>(TCP 50163)" --> keyboard -- USB --> kbd
 ```
 
 - **Keyboard machine**: running PolyKybdHost in normal mode, physically connected to the keyboard
 - **Remote machine(s)**: running PolyKybdHost in forwarder mode (`--host <IP>`), no keyboard attached
 
-When focus changes on a remote machine, it sends the window title and app info over TCP to the keyboard machine, which then updates the key displays.
+When focus changes on a remote machine, it sends the window title and app info to the keyboard machine, which then updates the key displays.
+
+## Before you start
+
+Two things are easy to miss, and each one on its own makes the whole setup look silently broken.
+
+**The network transport is off by default.** PolyKybdHost does not listen for window reports until you turn the listener on — step 1 below. Without it the forwarder just logs a connection error every few seconds.
+
+**You need a `remote` entry in your overlay mapping.** The keyboard machine only uses a forwarded window while its *own* focused window is an app marked `remote` in `overlay-mapping.poly.yaml` — normally the remote-desktop client you are viewing the other machine through. The shipped mapping already covers NoMachine:
+
+```yaml
+nxplayer:
+  remote: true
+  title: .*NoMachine.*
+```
+
+Add an entry the same way for whichever client you use. While that window has focus, the keycaps follow the app focused *inside* the remote session; when you switch back to a local window, they follow that local window again.
 
 ## Setup
 
-1. **On the keyboard machine:** run PolyKybdHost normally:
-   ```sh
-   python -m polyhost
-   ```
+### 1. Turn on the window-report listener (keyboard machine)
 
-2. **On each remote machine:** run PolyKybdHost in forwarder mode, pointing at the keyboard machine's IP address:
-   ```sh
-   python -m polyhost --host 192.168.1.100
-   ```
+```bash
+polyctl settings set window_report_network_enabled true
+```
 
-   Or use a file containing the IP (useful if the address changes):
-   ```sh
-   python -m polyhost --host-file /path/to/host.txt
-   ```
+Then **restart PolyKybdHost** — the setting is read once at startup, so it does not take effect until the daemon comes back up.
 
-By default the forwarder uses the legacy plaintext TCP relay on **port 50162**. Make sure the keyboard machine's firewall allows inbound TCP on that port.
+Allow inbound TCP on **port 50163** in the keyboard machine's firewall.
 
-<Aside>
-Check the Settings dialog or logs for the port number in use if you have changed it from the default.
+<Aside type="caution">
+  The listener is only started by the background daemon, not by a GUI running with `--no-daemon`. Daemon mode is the default; if you have turned it off, check with `polyctl settings get daemon_mode` and switch it back on for this feature.
 </Aside>
 
-## Advanced: secured window-report RPC
+After the restart the log should contain:
 
-For setups where you'd rather not expose the device-control surface over the network, there is an opt-in, authenticated **`window.report` RPC** path on **port 50163**. It is a *separate* listener from the default plaintext relay: it serves only window reports — it carries no device-control, firmware-flash, or bootloader access — and is gated by its own authentication key.
+```
+Window-report network listener on 0.0.0.0:50163 (auth-gated, 'window.report' only)
+```
 
-It is **off by default**. Enable it on the keyboard machine (via the `window_report_network_enabled` setting) and have the forwarder push to it with `--report-rpc`. The plaintext relay on port 50162 remains the default unless you switch.
+### 2. Copy the authentication key to the remote machine
+
+The connection is authenticated with a shared key, so the remote machine needs a copy of the keyboard machine's key file. It is created the first time the listener starts, so do this **after** step 1.
+
+The file is called **`polykybd-winreport.authkey`** and lives in PolyKybdHost's config folder — reachable from the tray menu under **Help & About → Open config folder**, or directly:
+
+| Platform | Location |
+|---|---|
+| Windows | `%LOCALAPPDATA%\PolyHost\PolyHost\polykybd-winreport.authkey` |
+| macOS | `~/Library/Application Support/PolyHost/polykybd-winreport.authkey` |
+| Linux | `~/.config/PolyHost/polykybd-winreport.authkey` |
+
+Copy it to each remote machine. It can live anywhere there — you pass its path on the command line in the next step.
+
+<Aside type="note">
+  This key is deliberately separate from PolyKybdHost's local control key. It only ever unlocks window reports: the listener that accepts it cannot reach brightness, language, keymaps, firmware flashing or the bootloader. Sharing it with your other machines does not hand them control of the keyboard.
+</Aside>
+
+### 3. Run the forwarder (remote machine)
+
+```bash
+python -m polyhost --host 192.168.1.100 --report-rpc --report-authkey-file /path/to/polykybd-winreport.authkey
+```
+
+Or use a file containing the IP, if the address changes:
+
+```bash
+python -m polyhost --host-file /path/to/host.txt --report-rpc --report-authkey-file /path/to/polykybd-winreport.authkey
+```
+
+If you moved the listener to another port, add `--report-port <n>` to match.
+
+<Aside type="caution">
+  `--report-authkey-file` is not optional across machines. Leave it out and the forwarder falls back to its *own* local key, which the keyboard machine will not accept — it logs `Using this machine's local window-report authkey` and every report then fails.
+</Aside>
+
+## Checking that it works
+
+Focus a window on the remote machine and watch the two logs.
+
+The forwarder reports which window it saw:
+
+```
+Active App: 'Document1 - Word' winword 12345678
+```
+
+The keyboard machine's log — the **Daemon Log** tab in the log viewer — shows the matching change once the remote-desktop client is focused:
+
+```
+Remote App Changed: "winword", Title: "Document1 - Word"  Handle: 12345678
+```
+
+If the forwarder logs windows but the keyboard machine never mentions them, the reports are not arriving — see below.
+
+## If it does not work
+
+| What you see | What it means | Fix |
+|---|---|---|
+| Forwarder: `Window-report RPC to … failed: timed out` | Nothing is listening, or a firewall is dropping the connection | Confirm step 1 on the keyboard machine (`polyctl settings get window_report_network_enabled`), that it was restarted afterwards, and that port 50163 is allowed |
+| Forwarder: `Using this machine's local window-report authkey` | `--report-authkey-file` was omitted | Add it, pointing at the key copied in step 2 |
+| Forwarder: `control protocol mismatch … restart so versions match` | The two machines run incompatible PolyKybdHost versions | Update both to the same version |
+| Forwarder: `Connection timed out` on port 50162 | The forwarder is still using the legacy relay | Add `--report-rpc` (and the key file), or see the legacy section below |
+| Keyboard machine: `Remote overlay entries are configured but the legacy plaintext window relay (TCP 50162) is disabled` | Same as above, seen from the other side | As above |
+| Both logs look fine, keycaps do not change | The keyboard machine's focused window is not a `remote` mapping entry | Focus your remote-desktop client, and check it has a `remote: true` entry (see [Before you start](#before-you-start)) |
+
+## Legacy plaintext relay (port 50162)
+
+Older versions relayed window reports over a plaintext TCP socket on **port 50162** with no authentication, accepting connections from anywhere on the network. That relay is **disabled by default** since PolyKybdHost 0.10.5 and has been replaced by the authenticated path above.
+
+If you have an existing setup built on it and want it back for now, enable it on the keyboard machine and restart:
+
+```bash
+polyctl settings set dev_legacy_plaintext_relay true
+```
+
+The forwarder then needs no extra flags — plain `--host <IP>` uses it. In the settings dialog the option only appears when [developer mode](/software/usage/#developer-mode) is on.
+
+<Aside type="caution">
+  Anything that can reach port 50162 on the keyboard machine can inject window reports, and there is no way to restrict who. Prefer the authenticated setup above; use this only on a network you trust, and as a stepping stone rather than a destination.
+</Aside>
 
 ## Use case
 
-A common setup: a desktop (with the keyboard) and a laptop. When you switch to the laptop and start typing, the forwarder detects the focus change and notifies the desktop. The keyboard displays update to reflect the laptop's active app — all while the keyboard stays physically on the desk connected to the desktop.
+A common setup: a desktop (with the keyboard) and a laptop, with the laptop on screen through a remote-desktop client. As you move between applications in that session, the forwarder on the laptop reports each focus change to the desktop, and the keycaps show the overlays for the app you are actually working in — all while the keyboard stays physically on the desk connected to the desktop.
