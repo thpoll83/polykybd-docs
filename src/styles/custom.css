@@ -194,12 +194,14 @@
 }
 
 /* Analytics consent chip, created on first visit by public/js/consent.js.
-   A small pill in the bottom-left corner rather than a full-width banner, so
-   it stays out of the way of the docs content on every screen size. */
+   A small pill in the bottom-right corner rather than a full-width banner, so
+   it stays out of the way of the docs content on every screen size. The right
+   side is free of chrome here — the route middleware drops Starlight's table of
+   contents — whereas the left would sit over the nav sidebar. */
 .pk-consent {
   position: fixed;
   bottom: 1rem;
-  left: 1rem;
+  right: 1rem;
   z-index: 9998; /* below the photo lightbox (9999) */
   display: flex;
   align-items: center;

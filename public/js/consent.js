@@ -10,7 +10,7 @@
  * shown exactly once.
  *
  * Two pieces:
- *   - the chip: a single pill in the bottom-left corner rather than a
+ *   - the chip: a single pill in the bottom-right corner rather than a
  *     full-width bar, so it never covers the docs content. Its label links to
  *     the analytics page for anyone who wants to know what they're agreeing to.
  *   - the control: whatever the analytics page marks with
