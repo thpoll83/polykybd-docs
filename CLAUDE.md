@@ -37,6 +37,30 @@ you changed rather than trusting the source. A PR here can be fully green with
 zero checks having compiled the site (#48, 2026-08-17: the only check was a
 CodeRabbit status).
 
+## ⚠️ Merging a page SHIPS it — a host feature ships on a RELEASE
+
+`deploy.yml` runs on `push: [main]`, so a merged docs PR is live within minutes.
+The host app is the opposite: a merged PR only bumps the version in `main`, and
+users keep running the last **published release** until someone cuts a new one.
+
+That asymmetry is a trap in both directions, and this repo has now been caught by
+each of them within one day:
+
+- **Docs lagging code** — PolyKybdHost gated the plaintext window relay off by
+  default in 0.10.5 and nothing updated the Multi-Machine page, which went on
+  recommending the dead path for six weeks until a user hit it (docs#51,
+  2026-08-17).
+- **Docs leading code** — the same page's follow-up (docs#52) described browser-URL
+  forwarding, which existed only in `main`. Merging it put the live site ahead of
+  the newest release (0.12.3 in `main` vs v0.11.10 published), so a reader running
+  the released host would again be following steps that cannot work.
+
+**So: a docs PR that describes new host/firmware behaviour waits for the release
+that carries it, not merely for the code PR to merge.** Say so in the PR body when
+you open it — nothing else will catch it, since there is no CI here and the deploy
+is automatic. When a page must land early anyway, name the required version in the
+page itself rather than leaving the reader to find out.
+
 ## Architecture
 
 Astro **Starlight**. Pages are Markdown/MDX under
