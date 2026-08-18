@@ -150,6 +150,7 @@ export default defineConfig({
             { label: 'Daemon & Client Model', slug: 'software/architecture' },
             { label: 'Command Line (polyctl)', slug: 'software/cli' },
             { label: 'WinCompose', slug: 'software/wincompose' },
+            { label: 'Reporting a Problem', slug: 'software/reporting-problems' },
             { label: 'Usage Data & Privacy', slug: 'software/telemetry' },
           ],
         },
