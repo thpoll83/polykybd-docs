@@ -97,8 +97,25 @@ Because a URL identifies a web app far more reliably than its title, an SPA rout
 navigating within Jira) can swap overlays even when the window title doesn't change.
 </Aside>
 
+## Across two machines
+
+Website detection also works for a computer you are *forwarding* from — see
+[Multi-Machine Setup](/using/multi-machine/). Install the browser extension on the
+**remote** machine (it always reports to `127.0.0.1` on its own machine, so nothing about
+it changes) and run the forwarder with `--report-rpc`. The focused tab's URL then travels
+with the window report, and your `urls-contains` entries match forwarded browsers exactly
+as local ones.
+
+<Aside type="caution">
+The URL only travels over the **authenticated** window-report path (`--report-rpc`). The
+legacy plaintext relay on port 50162 does not carry it — a forwarded browser falls back to
+title matching there. This is deliberate: that relay's message format puts the window title
+in the middle of a `;`-separated line, so adding another field would make a title containing
+a semicolon even more fragile than it already is.
+</Aside>
+
 ## See also
 
 - [Context-Aware Overlays](/using/overlays/) — the general how-it-works.
-- [Multi-Machine Setup](/using/multi-machine/) — relaying the focused window from another computer.
+- [Multi-Machine Setup](/using/multi-machine/) — relaying the focused window (and its URL) from another computer.
 - [Browser Extension Privacy Policy](/reference/browser-extension-privacy/).
