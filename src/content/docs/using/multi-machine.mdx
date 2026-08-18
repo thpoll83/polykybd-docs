@@ -138,6 +138,12 @@ legacy relay in the next section does not carry the URL.
 | Both logs look fine, keycaps do not change | The keyboard machine's focused window is not a `remote` mapping entry | Focus your remote-desktop client, and check it has a `remote: true` entry (see [Before you start](#before-you-start)) |
 | A forwarded browser matches its title but never a `urls-contains` entry | The URL is not reaching the keyboard machine | Check the extension is installed on the **remote** machine and its Options page reports *Connected*, and that the forwarder runs with `--report-rpc` (the legacy relay never carries the URL) |
 
+Collecting the evidence is one click on each side: the forwarder's tray menu has the
+same **Report a Problem…** and **Collect logs…** entries as the keyboard machine's, and
+a forwarder report says so on its first line. Because the two halves run on different
+computers, a bundle from one never contains the other's log — collect from **both**.
+See [Reporting a Problem](/software/reporting-problems/).
+
 ## Legacy plaintext relay (port 50162)
 
 Older versions relayed window reports over a plaintext TCP socket on **port 50162** with no authentication, accepting connections from anywhere on the network. That relay is **disabled by default** since PolyKybdHost 0.10.5 and has been replaced by the authenticated path above.
