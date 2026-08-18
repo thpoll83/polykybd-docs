@@ -114,6 +114,18 @@ Remote App Changed: "winword", Title: "Document1 - Word"  Handle: 12345678
 
 If the forwarder logs windows but the keyboard machine never mentions them, the reports are not arriving — see below.
 
+## Website-aware overlays for a forwarded browser
+
+A forwarded browser can match on its **website**, not just its window title. Install the
+[browser extension](/using/website-detection/) on the **remote** machine — it reports to
+`127.0.0.1` there, so it needs no special configuration — and the forwarder sends the
+focused tab's URL along with the window. Your `urls-contains` entries then apply to
+forwarded browsers just as they do locally, including an in-app navigation that never
+changes the window title.
+
+This rides the authenticated path only: it needs the `--report-rpc` setup above, and the
+legacy relay in the next section does not carry the URL.
+
 ## If it does not work
 
 | What you see | What it means | Fix |
@@ -124,6 +136,7 @@ If the forwarder logs windows but the keyboard machine never mentions them, the 
 | Forwarder: `Connection timed out` on port 50162 | The forwarder is still using the legacy relay | Add `--report-rpc` (and the key file), or see the legacy section below |
 | Keyboard machine: `Remote overlay entries are configured but the legacy plaintext window relay (TCP 50162) is disabled` | Same as above, seen from the other side | As above |
 | Both logs look fine, keycaps do not change | The keyboard machine's focused window is not a `remote` mapping entry | Focus your remote-desktop client, and check it has a `remote: true` entry (see [Before you start](#before-you-start)) |
+| A forwarded browser matches its title but never a `urls-contains` entry | The URL is not reaching the keyboard machine | Check the extension is installed on the **remote** machine and its Options page reports *Connected*, and that the forwarder runs with `--report-rpc` (the legacy relay never carries the URL) |
 
 ## Legacy plaintext relay (port 50162)
 
