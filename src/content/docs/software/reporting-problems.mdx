@@ -99,9 +99,22 @@ everything masked usually has to be repeated. Tick **Mask window titles** if you
 rather not include them.
 </Aside>
 
+## Clearing the logs
+
+**Clear Logs…**, next to *Collect Logs…* in the log viewer, empties every log file at
+once. It is worth doing right before you reproduce a problem: what you collect
+afterwards then contains that run and nothing else.
+
+It asks before doing anything, and offers to collect a bundle first. Two things to know:
+
+- **The crash log goes too** — the record of whether this app has crashed. The ordinary
+  logs refill within minutes of using the keyboard; that one does not come back.
+- **A note is left in its place**, so a report filed later says the logs were cleared
+  rather than looking like a machine that has never had a problem.
+
 ## From the command line
 
-`polyctl logs` does the same three things without the GUI — and, unlike every other
+`polyctl logs` does the same things without the GUI — and, unlike every other
 `polyctl` command, it **works with the host stopped**. That is deliberate: the moment
 you most need the logs is the one where the app failed to start or the daemon died.
 
@@ -117,6 +130,9 @@ polyctl logs show --since 30m --lines 200
 
 # Just list the log files that were found, and how big they are
 polyctl logs paths
+
+# Empty every log file (asks first; -y skips the prompt)
+polyctl logs clear
 ```
 
 `--since` accepts `30m`, `2h`, `7d` or `all`. If the logs are somewhere unusual — a
