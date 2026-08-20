@@ -1,0 +1,67 @@
+---
+title: Legend Size
+description: Draw the main letter on each keycap bigger — three sizes, from the original compact face up to one that fills the display.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import SupportedSince from '../../../components/SupportedSince.astro';
+
+<SupportedSince protocol={13} />
+
+Every keycap display draws one **main legend** — the character that key produces — and, where the
+layout has them, small previews of what you get with **Shift** and **AltGr**. The main legend can
+now be drawn at three sizes.
+
+![The letters a, K, 7, é and W drawn on keycap displays at all three legend sizes: small, medium and large](../../../assets/using/legend-sizes.png)
+
+| Size | Cap height | Notes |
+|---|---|---|
+| **Small** | 20 px | The face PolyKybd has always used, and still the default. |
+| **Medium** | 24 px | About a fifth larger. |
+| **Large** | 27 px | As large as the 40 px-tall display allows. |
+
+Only the **main legend** changes size. The Shift and AltGr previews stay small, and so does
+everything else the keycap draws — app overlays, shortcut hints, the language layer, layer
+badges. A keycap has room for one big thing, and this is the setting that picks it.
+
+## Changing the size
+
+- **On the keyboard** — the **Size** key on the settings layer cycles Small → Medium → Large.
+  It shows the current size on its own keycap, so you can see what you picked without the host
+  app running.
+- **Tray menu** — right-click the PolyKybdHost tray icon → **Keycap Size** → pick a size.
+- **Command line** — `polyctl glyph-size large` (or `medium`, `small`; omit the size to print
+  the current one).
+
+Your choice is saved on the keyboard and persists across reboots.
+
+## What gets bigger, and what doesn't
+
+The larger faces cover the **Latin repertoire** — the plain letters and digits, the accented
+Latin letters, Cyrillic, Greek, currency symbols. Those are the legends the size setting was
+built for, and they cover every layout that draws its keys with them.
+
+A legend the bigger faces do not cover — a Japanese, Korean, Arabic, Devanagari, Thai or
+Ethiopic keycap, for instance — simply keeps drawing at its normal size. Nothing blanks, and
+you can leave the setting on Large with a mixed set of layouts.
+
+<Aside type="note">
+Not every character grows by the same amount. The display is 40 px tall and a capital with an
+accent stacked on top — **É**, **Ç**, **Ф** — is already close to filling it at the normal size,
+so those grow less than a plain letter does before they run out of room. That is a property of
+the letters, not a setting; it keeps them from being clipped.
+</Aside>
+
+## Requirements
+
+The larger faces are drawn from a **`latinbig` font-pack bundle** that PolyKybdHost flashes to
+the keyboard automatically the first time it connects (see
+[Font Packs & Resources](/firmware/font-packs/)). Until that bundle is present the keyboard keeps
+drawing at the normal size whatever you select, so nothing breaks if it hasn't been flashed yet —
+and the setting takes effect on its own once the bundle lands.
+
+<Aside type="tip">
+Pairing this with a [glyph script](/using/glyph-scripts/)? They are independent settings, but a
+glyph script draws its own faces at its own size — the legend size applies to the normal
+letter and digit legends, not to a script override.
+</Aside>
