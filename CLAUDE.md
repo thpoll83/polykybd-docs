@@ -14,26 +14,17 @@ default (**`main`**), and never keep committing to a branch whose PR has merged.
   threshold, so every review must be asked for (`@coderabbitai review`). See the
   code-review section of `PolyKybdHost/CLAUDE.md` for that and the other ways a
   PR can look reviewed without having been.
-- **So comment `@claude review` — on this repo it is the only reviewer that is
-  always available.** `.github/workflows/claude-review.yml` runs the `code-review`
-  plugin on demand and posts inline comments; `claude-mention.yml` answers a plain
-  `@claude <question>` with the repo and this file loaded. Neither is automatic and
-  neither draws on a bot's quota. That combination matters more here than in the
-  code repos, because this one stacks **three** gaps at once: no PR CI (above), no
-  CodeRabbit auto-review (the note above), and a merge that publishes immediately —
-  so "nothing objected" is the default state of a docs PR, not a verdict.
-  - ⚠️ Runs are billed to the `CLAUDE_CODE_OAUTH_TOKEN` owner's Claude **subscription**,
-    so a summons is a spend. Both workflows pin `github.actor` on top of the action's own
-    write-access + human-actor checks; do **not** add `allowed_non_write_users` or
-    `allowed_bots`.
-  - ⚠️ Comment and `workflow_dispatch` triggers always run the copy on the **default
-    branch**, so neither does anything until merged — you cannot test them on the PR
-    that adds them.
-  - ⚠️ This repo has no `.claude/settings.json`, and the `settings:` block in both
-    workflows is a **pre-emptive** guard against adding one: the action applies a
-    checked-in `permissions.allow` list inside the runner, where an unlisted tool is
-    denied rather than prompted, and the reviewer then runs green having read
-    nothing. Keep the block if you add a settings file.
+- ⚠️ **An on-demand Claude reviewer was tried here and REMOVED (2026-08-20) —
+  don't rebuild it.** `.github/workflows/claude-review.yml` + `claude-mention.yml`
+  were ported from the host repo to close exactly the gap above. Across three
+  summonses it never published a single review: every run went green, and the
+  result JSON showed `permission_denials_count` 2, then 1 after widening the
+  `Bash(git:*)` grant, with nothing posted either time. ~$1.30 of subscription
+  spend for zero findings, and the remaining denial was not identifiable — the
+  action logs `full output hidden for security` and uploads no artifact. The
+  workflows, the `CLAUDE_CODE_OAUTH_TOKEN` secret and the tracking notes are all
+  gone. **The review posture here is: ask CodeRabbit by hand** (`@coderabbitai
+  review`), and treat the local `npm run build` as the only gate.
 
 ## Commands
 
