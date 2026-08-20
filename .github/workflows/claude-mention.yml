@@ -73,18 +73,19 @@ jobs:
           # (it holds issues/pull-requests write), so without these tools it
           # would answer a question about the docs having read none of them.
           #
-          # `Bash(gh:*)` is deliberately broad: narrowing it to the subcommands
-          # used today re-arms exactly this silent failure the next time another
-          # is needed. ⚠️ Unlike the review job, this one DOES hold write
-          # permissions, so the actor guard above is what bounds it.
+          # `Bash(gh:*)` and `Bash(git:*)` are deliberately broad: narrowing
+          # either to the subcommands used today re-arms exactly this silent
+          # failure the next time another is needed. The git glob replaced a
+          # narrow `git diff/log/show` list that cost the review workflow a
+          # whole run — see the longer note in claude-review.yml. ⚠️ Unlike the
+          # review job, this one DOES hold write permissions, so the actor guard
+          # above is what bounds it.
           settings: |
             {
               "permissions": {
                 "allow": [
                   "Bash(gh:*)",
-                  "Bash(git diff:*)",
-                  "Bash(git log:*)",
-                  "Bash(git show:*)",
+                  "Bash(git:*)",
                   "Read",
                   "Glob",
                   "Grep"

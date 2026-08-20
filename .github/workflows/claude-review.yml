@@ -168,18 +168,28 @@ jobs:
           # silently disarm the reviewer — which is the whole failure mode, since
           # nothing about it is visible from the PR.
           #
-          # `Bash(gh:*)` is deliberately broad: narrowing it to the subcommands
-          # the plugin happens to use today re-arms exactly this silent failure
-          # the next time it uses another. The job's own GitHub permissions stay
-          # read-only.
+          # ⚠️ `Bash(gh:*)` and `Bash(git:*)` are deliberately broad, and the
+          # git one was narrow ONCE and cost a whole review. On PR #36
+          # (2026-08-20) this listed only `git diff/log/show`; the run went 14
+          # turns, logged `permission_denials_count: 2`, billed $1.10 and posted
+          # NOTHING. The host repo's equivalent run had 0 denials and published
+          # — the difference being that PolyKybdHost's checked-in
+          # `.claude/settings.json` also grants `Bash(git merge-base *)` and
+          # `Bash(git rev-list *)`, which a review needs to work out its
+          # base..head range and which this repo (having no settings file) did
+          # not supply from anywhere.
+          #
+          # So the same trap the `gh` glob was written to avoid was sitting in
+          # the line below it. Narrowing either one to the subcommands used
+          # today re-arms it the next time another is needed — and the failure
+          # is a GREEN run that reviewed nothing. The job's own GitHub
+          # permissions stay read-only, which is what bounds this.
           settings: |
             {
               "permissions": {
                 "allow": [
                   "Bash(gh:*)",
-                  "Bash(git diff:*)",
-                  "Bash(git log:*)",
-                  "Bash(git show:*)",
+                  "Bash(git:*)",
                   "Read",
                   "Glob",
                   "Grep"
