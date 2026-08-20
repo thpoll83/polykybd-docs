@@ -243,7 +243,9 @@ A few hard limits baked into the firmware — don't fight them:
      - { key: "-",  mods: [CTRL, ALT], icon: goback.png, label: Go back, only: [linux] }
    ```
 
-   Valid platforms are `windows`, `macos` and `linux`. Use `only:` **or** `except:`, never both.
+   Valid platforms are `windows`, `macos` and `linux`. A binding with **neither** key applies
+   everywhere — which is every binding in every other example on this page, so scoping is
+   opt-in and nothing you have already written changes. Use `only:` **or** `except:`, never both.
 
    VS Code's **Show Output** is the real case: `Ctrl+Shift+U` on Windows and `⇧⌘U` on macOS, but
    Linux moves it to the chord `Ctrl+K Ctrl+H` (Ubuntu reserves `Ctrl+Shift+U` for unicode input),
@@ -251,9 +253,10 @@ A few hard limits baked into the firmware — don't fight them:
    one, while Windows and macOS keep the icon — deleting the binding would have cost all three.
 
    A **third** artwork set (`<output>_linux.*`, plus a matching `os: linux:` branch) is generated
-   only when a binding actually distinguishes Linux from the default. `CMDCTRL` alone never does —
-   it is `Ctrl` on both — so an app that scopes nothing keeps emitting exactly the files it always
-   did.
+   only when a binding actually distinguishes Linux from the default. Both scoped bindings above
+   do — `except: [linux]` drops one there, and the `only:` pair puts *Go back* on a different key —
+   so that spec gets one. `CMDCTRL` alone never does, since it is `Ctrl` on Windows and Linux
+   alike: an app that scopes nothing keeps emitting exactly the two sets it always did.
 
    <Aside type="note">
    Every key the mapping file understands — and the traps, like app names being an exact match and
