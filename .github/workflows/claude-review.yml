@@ -137,6 +137,21 @@ jobs:
       - uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # ⚠️ TEMPORARY DIAGNOSTIC — REVERT once the denial is identified.
+          #
+          # Two runs on PR #36 (2026-08-20) went green and published nothing.
+          # Broadening the git grant took `permission_denials_count` from 2 to 1
+          # and the turn count from 14 to 5, so one denial is still blocking the
+          # review and the normal log will not say which tool: it prints
+          # "Running Claude Code via SDK (full output hidden for security)".
+          # The run uploads no artifact either, so there is nowhere else to look.
+          #
+          # This is safe to switch on here: GitHub masks registered secrets in
+          # logs (`GITHUB_TOKEN: ***` is visible in these very runs), and this
+          # repo is public documentation with no credentials in the tree. It is
+          # still noisy — it prints the whole model conversation into a public
+          # Actions log — so it comes straight back out once we know the answer.
+          show_full_output: true
           plugin_marketplaces: "https://github.com/anthropics/claude-code.git"
           plugins: "code-review@claude-code-plugins"
           prompt: "/code-review:code-review --comment ${{ github.repository }}/pull/${{ github.event.issue.number || github.event.pull_request.number || inputs.pr }}"
