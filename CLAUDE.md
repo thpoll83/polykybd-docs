@@ -22,8 +22,8 @@ default (**`main`**), and never keep committing to a branch whose PR has merged.
   code repos, because this one stacks **three** gaps at once: no PR CI (above), no
   CodeRabbit auto-review (the note above), and a merge that publishes immediately —
   so "nothing objected" is the default state of a docs PR, not a verdict.
-  - ⚠️ Runs bill the `CLAUDE_CODE_OAUTH_TOKEN` owner's Claude **subscription**, so a
-    summons is a spend. Both workflows pin `github.actor` on top of the action's own
+  - ⚠️ Runs are billed to the `CLAUDE_CODE_OAUTH_TOKEN` owner's Claude **subscription**,
+    so a summons is a spend. Both workflows pin `github.actor` on top of the action's own
     write-access + human-actor checks; do **not** add `allowed_non_write_users` or
     `allowed_bots`.
   - ⚠️ Comment and `workflow_dispatch` triggers always run the copy on the **default
