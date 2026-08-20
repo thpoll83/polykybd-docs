@@ -138,6 +138,12 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           # ⚠️ TEMPORARY DIAGNOSTIC — REVERT once the denial is identified.
+          # TODO(2026-08-20, docs#59): remove `show_full_output` in the same
+          # PR that fixes the denied grant. If you are reading this after
+          # ~2026-08-27 it was forgotten — delete it, the diagnostic has
+          # long since served its purpose. This repo's sibling has the scar:
+          # a qmk discriminator series was committed to the release branch
+          # and left there, and the leftover state broke split42 for weeks.
           #
           # Two runs on PR #36 (2026-08-20) went green and published nothing.
           # Broadening the git grant took `permission_denials_count` from 2 to 1
