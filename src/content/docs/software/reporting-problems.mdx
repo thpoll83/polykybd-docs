@@ -6,7 +6,7 @@ description: Collect PolyKybdHost's logs into a single file and file a bug repor
 import { Aside } from '@astrojs/starlight/components';
 
 When something goes wrong, the useful answer is almost always in the logs — but
-PolyKybdHost writes **five** of them, each with its own rotated backups, and under the
+PolyKybdHost writes **six** of them, most with their own rotated backups, and under the
 default daemon setup the interesting half belongs to the background daemon rather than
 the tray app you were looking at.
 
@@ -44,8 +44,20 @@ report is too long for GitHub to pre-fill, just open a blank issue and paste.
 
 The issue body carries your description plus a short diagnostics block — app and
 firmware versions, protocol version, operating system and architecture, run mode, the
-connected keyboard, and (on Linux) the desktop session, since that decides how window
-tracking works. It contains **no log lines**; those travel only in the attached file.
+connected keyboard, (on Linux) the desktop session, since that decides how window
+tracking works, and a one-line summary of the crash log. It contains **no log lines**;
+those travel only in the attached file.
+
+That crash-log line is a count, not a diagnosis:
+
+```
+Crash log        : 1 session(s), 0 clean exit(s), 1 native fault dump(s), newest marker 2026-08-15 09:00:00
+```
+
+It never claims the app crashed, and a session with no matching clean exit is not by
+itself bad news — the app writing the report is one such session, and so is a running
+daemon. It is there so whoever reads the issue can tell at a glance whether the attached
+file has a crash in it.
 
 Paths are stripped of your account name, and on a forwarder machine the address of the
 computer it forwards to is masked — an issue tracker is public.
@@ -74,6 +86,12 @@ The `.zip` contains every log file merged in chronological order, a `diagnostics
 describing your setup, your settings with any secrets removed, and a `README.txt`
 stating the timeframe and whether titles were masked.
 
+The timeframe applies to the rotating logs. **Crash markers and native fault dumps are
+always included in full**, whichever window you pick — a fault dump is written at the
+instant of the crash and carries no timestamp of its own, so filtering it by time would
+be as likely to throw away the crash you are reporting as to keep it. That file is small
+and never rotated, so it always travels whole.
+
 <Aside type="caution">
 Masking is **off** by default here, because a bundle you inspect yourself is a
 different decision from one aimed at a public tracker — and a first support round with
@@ -81,9 +99,22 @@ everything masked usually has to be repeated. Tick **Mask window titles** if you
 rather not include them.
 </Aside>
 
+## Clearing the logs
+
+**Clear Logs…**, next to *Collect Logs…* in the log viewer, empties every log file at
+once. It is worth doing right before you reproduce a problem: what you collect
+afterwards then contains that run and nothing else.
+
+It asks before doing anything, and offers to collect a bundle first. Two things to know:
+
+- **The crash log goes too** — the record of whether this app has crashed. The ordinary
+  logs refill within minutes of using the keyboard; that one does not come back.
+- **A note is left in its place**, so a report filed later says the logs were cleared
+  rather than looking like a machine that has never had a problem.
+
 ## From the command line
 
-`polyctl logs` does the same three things without the GUI — and, unlike every other
+`polyctl logs` does the same things without the GUI — and, unlike every other
 `polyctl` command, it **works with the host stopped**. That is deliberate: the moment
 you most need the logs is the one where the app failed to start or the daemon died.
 
@@ -99,6 +130,9 @@ polyctl logs show --since 30m --lines 200
 
 # Just list the log files that were found, and how big they are
 polyctl logs paths
+
+# Empty every log file (asks first; -y skips the prompt)
+polyctl logs clear
 ```
 
 `--since` accepts `30m`, `2h`, `7d` or `all`. If the logs are somewhere unusual — a
@@ -119,5 +153,7 @@ which symptom.
 ## Where the logs live
 
 The log viewer (**Help & About → Log file…**) shows the same files in a window, with the
-daemon's own activity under the **Daemon Log** tab. For more detail in the first place,
+daemon's own activity under the **Daemon Log** tab and anything the app recorded about a
+crash under **Crash Log**. A tab appears once its file exists, so the set you see is
+whatever this machine has actually written. For more detail in the first place,
 start the app with `--dev` or `--dev 2` — see [Using the Tray App](/software/usage/#debug-logging).

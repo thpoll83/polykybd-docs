@@ -35,7 +35,7 @@ import { Aside } from '@astrojs/starlight/components';
 | `update check` / `update install` | Check for and install host updates (streams progress) |
 | `telemetry status\|preview\|enable\|disable\|send` | Inspect or turn off the anonymous [usage report](/software/telemetry/) — `preview` prints the exact report that would be sent |
 | `unicode-mode` | Re-detect the host's unicode input method ([WinCompose](/software/wincompose/) vs native) and push it to the keyboard |
-| `logs bundle\|show\|paths` | Collect the log files — write a support `.zip`, print recent lines, or list what was found. **Works with the host stopped** — see [Reporting a Problem](/software/reporting-problems/) |
+| `logs bundle\|show\|paths\|clear` | Collect the log files — write a support `.zip`, print recent lines, list what was found, or empty them all (`clear` asks first; `-y` skips the prompt). **Works with the host stopped** — see [Reporting a Problem](/software/reporting-problems/) |
 | `window report` | Report the current active window to the daemon |
 | `watch` | Stream live events from the daemon to the terminal |
 | `shutdown` | Stop the daemon |
@@ -69,6 +69,9 @@ polyctl watch
 
 # Collect a support bundle (this one works even if the host is not running)
 polyctl logs bundle --since 2h
+
+# Start from a clean slate before reproducing something (asks for confirmation)
+polyctl logs clear
 
 # Adopt the daemon-by-default startup model
 polyctl settings set daemon_mode true
