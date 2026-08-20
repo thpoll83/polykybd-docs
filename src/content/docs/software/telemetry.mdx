@@ -1,0 +1,111 @@
+---
+title: Usage Data & Privacy
+description: The anonymous once-a-day report PolyKybdHost sends, exactly what it contains, and how to turn it off.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+PolyKybdHost sends a **small anonymous report once a day**. It exists so we can see
+which host and firmware versions people are actually running, and whether updates and
+firmware flashes are working — things that are otherwise invisible to us unless
+someone writes in to say something broke.
+
+It is **on by default** and you can turn it off in one click.
+
+There is no popup asking you to decide. We announce it in the release notes instead,
+so you read it when you download rather than being interrupted afterwards — and
+PolyKybdHost writes a line into its log on every start saying whether reporting is on.
+
+## See exactly what would be sent
+
+You never have to take our word for it. This prints the real report from your own
+machine, without sending anything:
+
+```bash
+polyctl telemetry preview
+```
+
+## What the report contains
+
+| Category | What is sent |
+|---|---|
+| **Versions** | PolyKybdHost version, protocol version |
+| **Your system** | Operating system and coarse release (e.g. `Windows 11`), CPU architecture, Python version |
+| **Your keyboard** | Model name, firmware version, protocol version, hardware revision, font-pack versions — and whether one was connected at all |
+| **Counts since the last report** | App starts, keyboard connects, connection drops, firmware flashes, font-pack flashes, host updates |
+| **A random ID** | A random number generated on your machine, so one install counts once per day |
+
+The server adds the time it arrived and a two-letter country code derived from the
+connection, then **discards your IP address**.
+
+## What it never contains
+
+PolyKybdHost can see all of the following while it runs. **None of it is collected:**
+
+- **Window titles and application names.** The app reads these constantly to pick the
+  right keycap overlays. They never leave your machine.
+- **Anything you type.** No keystrokes, ever.
+- **Your location.** The adaptive-brightness feature may look up an approximate
+  location for sunrise/sunset; that is never included, and neither is anything from
+  your device's location services. The only geographic information in the report is
+  the **two-letter country code** the server derives from your connection (see
+  above) — the same thing any website you visit can tell.
+- Your user name, computer name, MAC address, or keyboard serial number.
+- File paths, overlay images, or your keymap.
+
+<Aside type="note">
+  This is enforced in the code, not just by policy: the report is built from a fixed
+  list of fields, and the test suite fails if that list ever changes by accident.
+</Aside>
+
+## The random ID
+
+The ID is a random number created on your machine the first time PolyKybdHost runs.
+It is **not** derived from your hardware, network card, or anything else about you —
+its only job is to stop one computer being counted five times in a day.
+
+You can see it with `polyctl telemetry status`. To become a brand-new install, delete
+the `telemetry_install_id` line from `settings.yaml` — a fresh one is generated on the
+next start. The file lives here:
+
+| OS | Path |
+|---|---|
+| Windows | `%LOCALAPPDATA%\PolyHost\PolyHost\settings.yaml` |
+| macOS | `~/Library/Application Support/PolyHost/settings.yaml` |
+| Linux | `~/.config/PolyHost/settings.yaml` |
+
+<Aside type="caution" title="A small user base is not a crowd">
+  While only a small number of PolyKybd keyboards exist, "anonymous" means the report
+  carries nothing that identifies you — not that it is lost among thousands of others.
+  We would rather say so than imply otherwise.
+</Aside>
+
+## Turning it off
+
+Either of these is enough:
+
+- **Settings dialog:** *Settings → Telemetry → Enabled*, untick it.
+- **Command line:** `polyctl telemetry disable`
+
+There is nothing else to clean up: switching it off stops the next report, and no
+report is ever queued or stored elsewhere.
+
+## Other things worth knowing
+
+- **A failed send is simply forgotten.** If you are offline or our server is down,
+  nothing is retried aggressively and nothing is ever shown to you as an error. It
+  cannot slow the app down or interfere with your keyboard.
+- **One report per install, not per window.** In the usual
+  [daemon setup](/software/architecture/) the background daemon sends the report, so
+  restarting the tray app does not produce extra reports.
+- **Nothing is sent until we are ready.** Builds ship with no collector address
+  configured, which disables sending entirely.
+
+## Related commands
+
+| Command | What it does |
+|---|---|
+| `polyctl telemetry status` | Show whether it is on, the ID, and when the last report went |
+| `polyctl telemetry preview` | Print the exact report that would be sent |
+| `polyctl telemetry enable` / `disable` | Turn it on or off |
+| `polyctl telemetry send` | Send one now, ignoring the once-a-day limit |

@@ -22,9 +22,9 @@ This page lists every part needed for a complete PolyKybd Split72 build.
 |---|---|---|
 | Left aluminum plate (1.2mm) | 1 | Order as 1.2mm aluminium PCB |
 | Right aluminum plate (1.2mm) | 1 | Order as 1.2mm aluminium PCB |
-| Left 3D-printed case | 1 | STL: `case/case_polykybd_split72_left_r7.stl` (latest revision) |
-| Right 3D-printed case | 1 | STL: `case/case_polykybd_split72_right_r7.stl` (latest revision) |
-| Spacer | 2 | STL: `case/spacer.stl` |
+| Left 3D-printed case | 1 | STL: `parts/export/case/case_polykybd_split72_left_r7.stl` (latest revision) |
+| Right 3D-printed case | 1 | STL: `parts/export/case/case_polykybd_split72_right_r7.stl` (latest revision) |
+| Spacer | 2 | STL: `parts/export/case/spacer.stl` |
 | M3×10 hex screws (rounded head) | 8 | — |
 | M3 hex nuts | 8 | Required for case revision r4+ |
 
@@ -41,12 +41,15 @@ If a resin case is slightly warped, use a hair dryer to soften it, then press it
 | Part | Quantity | Notes |
 |---|---|---|
 | MX-compatible key switches | 72 | See [Compatible Switches](/assembly/compatible-switches/) |
-| 3D-printed key stems (1U) | 58 | SLA print recommended |
-| 3D-printed key stems (1.25U) | 14 | SLA print recommended |
+| 3D-printed key stems (1U) | 58 | SLA print recommended; see [Keycap Stems](/assembly/keycap-stems/) |
+| 3D-printed key stems (1.25U) | 14 | SLA print recommended; see [Keycap Stems](/assembly/keycap-stems/) |
 | Transparent relegendable keycap covers (1U) | 58 | e.g. AliExpress relegendable keycaps |
 | Transparent relegendable keycap covers (1.25U) | 14 | — |
 
-Key stem profiles available: **Flat** (R3), **Stepped** (R2), or **Curved** (R1–R5). See the build guide for quantities per profile.
+Three stem profiles are available — **Flat**, **Stepped** (in a sculpted and a uniform variation)
+and **Curved**. They all use the same 72 pieces, so the choice is only about feel. See
+[Keycap Stems](/assembly/keycap-stems/) for the pictures, the plate filenames and how many of
+each to print.
 
 ![Flat profile](../../../assets/assembly/profile_flat.png)
 
@@ -60,8 +63,8 @@ Key stem profiles available: **Flat** (R3), **Stepped** (R2), or **Curved** (R1�
 |---|---|---|
 | 0.42" OLED displays with FPC | 72 | Must be 14-pin; see [Displays & FPC Extension](/assembly/displays/) |
 | 0.96" status displays (FPW096W001Z0) | 2 | Optional; ~40mm FPC cable |
-| Status display holder | 2 | STL: `parts/display_holder_r1.stl` |
-| Dummy display holder (if no status display) | 2 | STL: `parts/display_holder_dummy_r1.stl` |
+| Status display holder | 2 | STL: `parts/export/display_holder/display_holder_r1.stl` |
+| Dummy display holder (if no status display) | 2 | STL: `parts/export/display_holder/display_holder_dummy_r1.stl` |
 
 ### Cables
 
@@ -75,6 +78,18 @@ A USB-C to USB-A cable + USB-A to USB-C adapter combination only works in one or
 </Aside>
 
 ## Optional parts
+
+### Printed extras
+
+Neither is needed for a working keyboard — see
+[Tenting Legs & LED Diffuser](/assembly/printed-extras/):
+
+| Part | Quantity | Notes |
+|---|---|---|
+| Tenting legs | 8 | One plate does both halves: `parts/export/legs/legs_r2_8p.stl` |
+| LED diffuser frame | 2 | `parts/export/diffuser/diffuser_frame_{left,right}.stl` — one piece per half, holding all 36 diffusers. **Requires** `spacer_diffuser_frame.stl` in place of the plain spacer |
+
+### Expansion slot
 
 <Aside type="caution">
 Each half has a **single physical expansion slot**, and only one part can occupy it per side. You
@@ -112,10 +127,10 @@ The 23mm trackpad needs a 3D-printed holder — pick the height that fits your b
 
 | Holder | STL |
 |---|---|
-| Slim / low insert | `parts/cirque23_slim_insert_r8.stl` |
-| High insert | `parts/cirque23_insert_high_r1.stl` |
+| Slim / low insert | `parts/export/cirque_insert/cirque23_slim_insert_r8.stl` |
+| High insert | `parts/export/cirque_insert/cirque23_insert_high_r1.stl` |
 
-Both are in the [PolyKybd hardware repo](https://github.com/thpoll83/PolyKybd) under `parts/`. The OpenSCAD sources (`parts/cirque23_slim_insert.scad`, `parts/cirque23_insert.scad`, and the experimental `parts/cirque35_insert.scad`) are there too if you want to adjust the fit.
+Both are in the [PolyKybd hardware repo](https://github.com/thpoll83/PolyKybd) under `parts/export/cirque_insert/`. The OpenSCAD sources (`parts/cirque_insert/cirque23_slim_insert.scad`, `parts/cirque_insert/cirque23_insert.scad`, and the experimental `parts/cirque_insert/cirque35_insert.scad`) are there too if you want to adjust the fit.
 
 Only one pointing device can be installed per half.
 

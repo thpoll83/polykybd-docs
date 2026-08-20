@@ -19,6 +19,13 @@ PolyKybd is a **heavily customised QMK fork** maintained on the `PolyKybd` branc
 
 [github.com/thpoll83/qmk_firmware — branch: PolyKybd](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd)
 
+**Upstream base: QMK 0.33.13** (as of PolyKybd firmware v0.11.6). The fork tracks
+upstream QMK's *stable release tags* rather than its moving `master`, and is
+re-based onto a newer tag periodically — so everything in the QMK documentation
+for 0.33.x applies to your keyboard, alongside the PolyKybd additions described
+here. The fork's own `master` branch is kept as an untouched mirror of upstream,
+which is what makes the difference between "stock QMK" and "PolyKybd" easy to see.
+
 The keyboard-specific files live at:
 
 ```

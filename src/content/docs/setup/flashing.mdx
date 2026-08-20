@@ -54,9 +54,13 @@ version.
 
 <Aside type="caution">
 Official firmware releases are **signed**, and the keyboard verifies the signature against a key
-built into its firmware before applying an update. **Download the release's `.bin.sig` file into the
-same folder as the `.bin`** — the host sends it during the flash, and without it the keyboard treats
-the image as unsigned.
+built into its firmware before applying an update.
+
+The **release-update flow in the tray app handles this for you** — it downloads the release's
+`.bin.sig` alongside the `.bin`, and stops with an explanation rather than flashing if the signature
+can't be fetched. If you download a release **by hand** instead, take the `.bin.sig` too and **put it
+in the same folder as the `.bin`**: the host looks for it right there, and without it the keyboard
+treats the image as unsigned.
 
 An unsigned image is not rejected, but it is not applied silently either: the keyboard blanks its
 keycaps except a big **A / ACCEPT** on the left half and **R / REJECT** on the right, states the

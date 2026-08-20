@@ -46,9 +46,40 @@ combinations are addressable now, so an overlay can cover them.
 
 - **PolyKybdHost running** on the machine you're typing on (or relayed from another machine —
   see [Multi-Machine Setup](/using/multi-machine/)).
-- An overlay set for the app. PolyKybdHost ships overlays for a range of common apps, and
-  adding one is a plain image plus a one-line mapping entry —
-  [Create App Overlays](/howto/app-overlays/) walks through it.
+- An overlay set for the app. PolyKybdHost ships overlays for the apps listed
+  [below](#which-apps-are-covered), and adding one is a plain image plus a one-line mapping
+  entry — [Create App Overlays](/howto/app-overlays/) walks through it.
+
+## Which apps are covered
+
+These ship with PolyKybdHost and work as soon as it is running — nothing to install or
+configure.
+
+| | Apps |
+| --- | --- |
+| **Browsers** | Chrome, Chromium, Edge, Brave, Vivaldi, Opera, Arc |
+| **Web apps** (by URL) | GitHub, GitLab, Jira, Confluence, Bitbucket, Google Docs, Miro, Notion, Outlook on the web |
+| **Office & documents** | Word, Excel, PowerPoint, Outlook, LibreOffice Writer / Calc / Impress |
+| **Creative** | Photoshop, Illustrator, After Effects, Premiere Pro, DaVinci Resolve, GIMP, Krita, Inkscape, Figma |
+| **Development** | VS Code, Visual Studio, JetBrains IDEs (IntelliJ, PyCharm, CLion), Sublime Text, Notepad++, KiCad PCB Editor |
+| **Notes** | Obsidian, Notion |
+| **Communication** | Slack, Discord, Teams, Zoom |
+| **System** | Windows Explorer, Windows lock screen |
+
+A few entries are narrower than the app name suggests: KiCad covers the **PCB Editor** window
+specifically, and Notion appears twice because the desktop app and the web version are matched
+separately.
+
+<Aside type="tip">
+Sublime Text ships a macOS-specific set alongside the default one — see
+[Same app, different platform](#same-app-different-platform) below.
+</Aside>
+
+<Aside type="note">
+This is what ships today; the authoritative list is `overlay-mapping.poly.yaml` in
+PolyKybdHost. An app that isn't here simply keeps the keyboard's static legends — nothing
+breaks — and adding it yourself is a template image plus one mapping entry.
+</Aside>
 
 ## Same app, different platform
 
@@ -66,7 +97,7 @@ the Mac artwork.
 <Aside type="tip">
 Browsers are a special case: many web apps share one browser process, so matching on the app
 name alone isn't enough. [Website-Aware Overlays](/using/website-detection/) match the overlay
-to the focused tab's **URL** instead, so Gmail, Jira and Figma each get their own layer.
+to the focused tab's **URL** instead, so Jira, GitHub and Miro each get their own layer.
 </Aside>
 
 <Aside type="note">

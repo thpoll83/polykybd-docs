@@ -1,0 +1,159 @@
+---
+title: Reporting a Problem
+description: Collect PolyKybdHost's logs into a single file and file a bug report that a maintainer can act on.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+When something goes wrong, the useful answer is almost always in the logs — but
+PolyKybdHost writes **six** of them, most with their own rotated backups, and under the
+default daemon setup the interesting half belongs to the background daemon rather than
+the tray app you were looking at.
+
+So you never have to go hunting: two entries under **Help & About** do it for you.
+
+| Entry | Use it when |
+|---|---|
+| **Report a Problem…** | You want to file a bug. Describe what happened; it collects the logs and opens a pre-filled GitHub issue. |
+| **Collect logs…** | You just need the log file — to send by email or chat, to attach to an existing issue, or to read yourself. |
+
+## Report a Problem
+
+**Help & About → Report a Problem…**
+
+1. Describe what went wrong, and optionally what you expected instead.
+2. Pick how far back the logs should reach (the default is the **last hour** — a
+   problem you are reporting now is usually minutes old).
+3. Press **Create Report…**.
+
+PolyKybdHost then saves a log file to your Downloads folder, puts the finished report
+on your clipboard, and opens a **pre-filled GitHub issue** in your browser. Nothing is
+sent until you press *Submit* there.
+
+The last step is yours: **drag the saved log file into the comment box** before
+submitting. The app deliberately does not upload it for you — an attachment is a file
+you can open and look at first, which pasted log text is not. The dialog's **Show Log
+File** button reveals it in your file manager.
+
+<Aside type="tip">
+The report body is on your clipboard either way. If your browser doesn't open, or the
+report is too long for GitHub to pre-fill, just open a blank issue and paste.
+</Aside>
+
+### What the report contains
+
+The issue body carries your description plus a short diagnostics block — app and
+firmware versions, protocol version, operating system and architecture, run mode, the
+connected keyboard, (on Linux) the desktop session, since that decides how window
+tracking works, and a one-line summary of the crash log. It contains **no log lines**;
+those travel only in the attached file.
+
+That crash-log line is a count, not a diagnosis:
+
+```
+Crash log        : 1 session(s), 0 clean exit(s), 1 native fault dump(s), newest marker 2026-08-15 09:00:00
+```
+
+It never claims the app crashed, and a session with no matching clean exit is not by
+itself bad news — the app writing the report is one such session, and so is a running
+daemon. It is there so whoever reads the issue can tell at a glance whether the attached
+file has a crash in it.
+
+Paths are stripped of your account name, and on a forwarder machine the address of the
+computer it forwards to is masked — an issue tracker is public.
+
+### Window titles
+
+**Mask window titles** is ticked by default here. PolyKybdHost reads window titles
+constantly (that is how overlays follow the focused app), and a title can name a
+document. With masking on, application names are kept — which is what overlay problems
+are actually diagnosed from — and the titles themselves are replaced with placeholders.
+
+Untick it only when the problem *is* the wrong overlay appearing for a particular
+window, and look at the file before you attach it.
+
+## Collect logs
+
+**Help & About → Collect logs…**, or the **Collect Logs…** button in the log viewer.
+
+Choose a timeframe — 15 minutes, 1 hour, 24 hours (the default), 7 days, or everything
+on disk — and then either:
+
+- **Save Bundle…** — write a `.zip` you can attach anywhere, or
+- **Copy to Clipboard** — paste the same content straight into a chat window.
+
+The `.zip` contains every log file merged in chronological order, a `diagnostics.txt`
+describing your setup, your settings with any secrets removed, and a `README.txt`
+stating the timeframe and whether titles were masked.
+
+The timeframe applies to the rotating logs. **Crash markers and native fault dumps are
+always included in full**, whichever window you pick — a fault dump is written at the
+instant of the crash and carries no timestamp of its own, so filtering it by time would
+be as likely to throw away the crash you are reporting as to keep it. That file is small
+and never rotated, so it always travels whole.
+
+<Aside type="caution">
+Masking is **off** by default here, because a bundle you inspect yourself is a
+different decision from one aimed at a public tracker — and a first support round with
+everything masked usually has to be repeated. Tick **Mask window titles** if you would
+rather not include them.
+</Aside>
+
+## Clearing the logs
+
+**Clear Logs…**, next to *Collect Logs…* in the log viewer, empties every log file at
+once. It is worth doing right before you reproduce a problem: what you collect
+afterwards then contains that run and nothing else.
+
+It asks before doing anything, and offers to collect a bundle first. Two things to know:
+
+- **The crash log goes too** — the record of whether this app has crashed. The ordinary
+  logs refill within minutes of using the keyboard; that one does not come back.
+- **A note is left in its place**, so a report filed later says the logs were cleared
+  rather than looking like a machine that has never had a problem.
+
+## From the command line
+
+`polyctl logs` does the same things without the GUI — and, unlike every other
+`polyctl` command, it **works with the host stopped**. That is deliberate: the moment
+you most need the logs is the one where the app failed to start or the daemon died.
+
+```sh
+# Write a support .zip of the last 24 hours
+polyctl logs bundle
+
+# A specific window and destination, with window titles masked
+polyctl logs bundle --since 2h --redact -o ~/polyhost-logs.zip
+
+# Print recent lines to the terminal (pipe it anywhere)
+polyctl logs show --since 30m --lines 200
+
+# Just list the log files that were found, and how big they are
+polyctl logs paths
+
+# Empty every log file (asks first; -y skips the prompt)
+polyctl logs clear
+```
+
+`--since` accepts `30m`, `2h`, `7d` or `all`. If the logs are somewhere unusual — a
+daemon started from a different working directory — point at them with `--log-dir`.
+
+## On the forwarder
+
+Both entries are in the [forwarder](/using/multi-machine/)'s tray menu too, and this
+matters more than it looks: the forwarder runs on a **different machine** from the
+keyboard, so its logs can never appear in a bundle collected on the keyboard side. Its
+reports say **FORWARDER mode** on the first line and describe which report transport it
+uses, so the two machines' reports can't be mistaken for each other.
+
+If overlays are not following a forwarded window, collect from **both** machines —
+[If it does not work](/using/multi-machine/#if-it-does-not-work) lists which log carries
+which symptom.
+
+## Where the logs live
+
+The log viewer (**Help & About → Log file…**) shows the same files in a window, with the
+daemon's own activity under the **Daemon Log** tab and anything the app recorded about a
+crash under **Crash Log**. A tab appears once its file exists, so the set you see is
+whatever this machine has actually written. For more detail in the first place,
+start the app with `--dev` or `--dev 2` — see [Using the Tray App](/software/usage/#debug-logging).
