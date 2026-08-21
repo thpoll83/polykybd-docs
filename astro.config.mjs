@@ -135,6 +135,7 @@ export default defineConfig({
             { label: 'Website-Aware Overlays', slug: 'using/website-detection' },
             { label: 'Languages & Unicode Input', slug: 'using/languages' },
             { label: 'Glyph Scripts', slug: 'using/glyph-scripts' },
+            { label: 'Legend Size', slug: 'using/legend-size' },
             { label: 'Display Brightness', slug: 'using/brightness' },
             { label: 'RGB Lighting', slug: 'using/rgb-lighting' },
             { label: 'Idle & Burn-in Protection', slug: 'using/idle' },
