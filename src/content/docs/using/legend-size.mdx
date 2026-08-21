@@ -24,6 +24,10 @@ Only the **main legend** changes size. The Shift and AltGr previews stay small, 
 everything else the keycap draws — app overlays, shortcut hints, the language layer, layer
 badges. A keycap has room for one big thing, and this is the setting that picks it.
 
+The larger faces cover the **Latin alphabet, Cyrillic and Greek** — see
+[Which letters grow](#which-letters-grow) for what that means on a layout written in another
+script.
+
 ## Changing the size
 
 - **On the keyboard** — the **Size** key on the settings layer cycles Small → Medium → Large.
@@ -35,21 +39,37 @@ badges. A keycap has room for one big thing, and this is the setting that picks 
 
 Your choice is saved on the keyboard and persists across reboots.
 
-## What gets bigger, and what doesn't
+## Which letters grow
 
-The larger faces cover the **Latin repertoire** — the plain letters and digits, the accented
-Latin letters, Cyrillic, Greek, currency symbols. Those are the legends the size setting was
-built for, and they cover every layout that draws its keys with them.
+The larger faces are **Latin, Cyrillic and Greek**: the plain letters and digits, the accented
+Latin letters, the currency symbols. Every layout written in one of those three scripts grows
+completely — English, French, German, the Nordics, Czech, Polish, Russian, Ukrainian, Greek and
+the rest.
 
-A legend the bigger faces do not cover — a Japanese, Korean, Arabic, Devanagari, Thai or
-Ethiopic keycap, for instance — simply keeps drawing at its normal size. Nothing blanks, and
-you can leave the setting on Large with a mixed set of layouts.
+**A legend outside those three keeps its normal size.** Japanese, Korean, Chinese, Arabic,
+Hebrew, Devanagari, Thai, Armenian, Georgian, Ethiopic and Cherokee keycaps all draw exactly as
+they did before, whatever you select. Nothing blanks and nothing is clipped — the key simply
+shows the largest face it has.
+
+<Aside type="caution">
+**On a layout written in another script, expect a mixed board.** Most such layouts still put
+plain digits and punctuation on the number row and the right-hand keys, and *those* are Latin —
+so they grow while the letters do not. On a Korean layout at **Large**, for instance, the ten
+digits and thirteen punctuation keys take the bigger face and the twenty-six Hangul keys are
+unchanged. That is the setting working as intended, not a fault; if you would rather the board
+stayed uniform, leave the size on **Small**.
+</Aside>
+
+Widening this to more scripts is possible but not automatic — the display is 40 px tall and
+several scripts already fill most of it, so there is simply no room to grow. If the layout you
+use every day would benefit, say so on the [issue tracker](https://github.com/thpoll83/qmk_firmware/issues)
+and it can be looked at script by script.
 
 <Aside type="note">
-Not every character grows by the same amount. The display is 40 px tall and a capital with an
-accent stacked on top — **É**, **Ç**, **Ф** — is already close to filling it at the normal size,
-so those grow less than a plain letter does before they run out of room. That is a property of
-the letters, not a setting; it keeps them from being clipped.
+Not every character grows by the same amount. A capital with an accent stacked on top — **É**,
+**Ç**, **Ф** — is already close to filling the display at the normal size, so those grow less
+than a plain letter does before they run out of room. That is a property of the letters, not a
+setting; it keeps them from being clipped.
 </Aside>
 
 ## Requirements
