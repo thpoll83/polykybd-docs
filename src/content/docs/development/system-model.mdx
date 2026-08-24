@@ -124,7 +124,13 @@ Custom hardware: 8 MB external QSPI, hard-partitioned. The authoritative map is
 | `0x200000–0x400000` | 2 MB | Firmware-update staging (4 KB header + staged image) |
 | `0x400000–0x600000` | 2 MB | Font pack — independently-versioned bundles, each in its own slot |
 | `0x600000–0x7C0000` | 1.75 MB | DOOM WAD (pinned to the engine's XIP address) |
-| `0x7C0000–0x800000` | 256 KB | DOOM engine pack |
+| `0x7C0000–0x7FE000` | 248 KB | DOOM engine pack |
+| `0x7FE000–0x800000` | 8 KB | Emulated EEPROM (wear-levelling backing store) |
+
+The last 8 KB is not the keyboard's to spend: QMK's RP2040 wear-levelling driver
+places the emulated EEPROM at the very top of flash, so everything you configure —
+keymap, brightness, language, idle style, glyph script — lives there, and the DOOM
+engine-pack slot deliberately stops short of it.
 
 The **firmware partition** is the budget that matters for adding languages and fonts:
 `split72:default` uses roughly a third of its 2 MB. `FW_STAGING_OFFSET` is kept equal
