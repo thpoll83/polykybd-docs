@@ -15,6 +15,43 @@ PolyKybd uses QMK's **dynamic keymap** with **9 host-remappable layers**, so rem
 to the keyboard at runtime without recompiling. Remapping is done with the keymap editor built into
 [PolyKybdHost](/software/overview/) — see [Keymap Editor](/using/keymap-editor/).
 
+## The utility and settings layers
+
+Two layers hold the keyboard's own controls, and which one a thing lives on follows a single
+rule: **how often you reach for it.**
+
+**Utility** is what you touch while working — media and volume, the display brightness presets,
+[legend size](/using/legend-size/), mute, scroll lock. Nothing here changes how the keyboard is
+set up; it all changes what it is doing right now.
+
+**Settings** is set-once or destructive — pinning the [OS](/using/overlays/), picking a base
+layout, [RGB](/using/rgb-lighting/), and the keys that reboot the board. Its everyday half is
+visible as soon as you open the layer: the OS pins and the five layout picks.
+
+### More…
+
+The rest of the settings layer is **blank and inert until you tap `More…`** — the
+[idle style](/using/idle/), the [glyph script](/using/glyph-scripts/), the modifier and command
+legend modes, debug logging, the Eden replay, and Restart and Boot. Tap it once and that row
+appears; leave the layer and it hides itself again.
+
+That is not decoration. `Restart` and `Boot` are one tap from a layer you open to change the OS
+pin, and neither is undoable from the keyboard — so they, and everything else on that row, take
+a deliberate second press to reach.
+
+<Aside type="note">
+Keys behind `More…` are **inert as well as blank** while hidden — a key that renders nothing but
+still reboots the board would be worse than a visible one.
+</Aside>
+
+### Keys that name their own state
+
+Several of these keycaps show **what they are set to** rather than what they do, so the layer can
+be read at a glance instead of pressed to find out: the idle-style and glyph-script keys carry a
+label over the current value (`IDLE:` / `Eden`), the layout picks show their name over a lit or
+unlit switch, and the modifier/command legend keys read `Mods` / `Icon` or `Cmds` / `Text`
+depending on which rendering is active.
+
 ## Where the keymap lives
 
 The shared keymap *logic* (rendering, HID handling, language selection, and the QMK callbacks) is in:
