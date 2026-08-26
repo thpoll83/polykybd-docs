@@ -106,12 +106,12 @@ newer features unavailable — rather than refusing to connect at all.
 
 | Cmd | Name | Notes |
 |----|------|-------|
-| `0x50` | FONTPACK_BEGIN | Erase the target slot; a byte selects the target (font bundle, firmware, DOOM data). |
+| `0x50` | FONTPACK_BEGIN | Erase the target slot; a byte selects the target (font bundle, firmware, engine data). |
 | `0x51` | FONTPACK_CHUNK | 56-byte sequential chunks; deferred sector erase; bridged to the slave. |
 | `0x52` | FONTPACK_COMMIT | Verify CRC32, mark the slot present. |
 
 The same three-command flow, with a different target, drives **firmware update**,
-**font-pack bundles**, and the **DOOM** data — see [Resource flashing](#resource-flashing-firmware--font-packs) below.
+**font-pack bundles**, and the **engine packs** — see [Resource flashing](#resource-flashing-firmware--font-packs) below.
 
 ## Where resources live — the 8 MB flash
 
@@ -229,7 +229,7 @@ own idle animation on its own keys from the shared pulse value.
 
 ### Resource flashing (firmware & font packs)
 
-Firmware images, font-pack bundles, and the DOOM data all ride the same BEGIN / CHUNK
+Firmware images, font-pack bundles, and the engine packs all ride the same BEGIN / CHUNK
 / COMMIT transport. The master streams chunks to its own staging flash **and** bridges
 them to the slave, so both halves end up with byte-identical data. A firmware apply
 reboots both halves in lockstep.
