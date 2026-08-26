@@ -55,11 +55,23 @@ choosing this style simply does nothing.
 
 <SupportedSince protocol={4} note="selectable idle style" />
 
+- **On the keyboard** — a key on the settings layer, behind **More…** (see
+  [the settings layer](/using/keymaps/#more)). It names the active style rather than
+  its own function — `IDLE:` on the first line, the current style on the second — so the
+  keycap answers *what is this set to* without being pressed. Each tap moves to the next
+  style.
 - **Tray menu** — right-click the PolyKybdHost tray icon → **Idle Display** →
   *Pulse*, *Jitter*, *IDDQD*, or *Eden*.
 - **Command line** — `polyctl idle-style pulse` (or `jitter`, `iddqd`, `eden`).
 
 Your choice is saved on the keyboard and persists across reboots.
+
+<Aside type="tip">
+The keyboard key **skips IDDQD** as it cycles. That style is the DOOM easter egg and has its
+own way in, so a key that cycled into it would hand it to anyone who pressed twice. A keyboard
+already set to it cycles back out normally, and the tray menu and `polyctl` can still select it
+directly.
+</Aside>
 
 <Aside type="note">
 Each half runs its own idle animation on its own keys — only the *style* (pulse, jitter,
