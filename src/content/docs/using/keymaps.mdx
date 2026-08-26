@@ -4,6 +4,7 @@ description: How to customize key assignments and layers on the PolyKybd.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
+import SupportedSince from '../../../components/SupportedSince.astro';
 
 ## What are layers?
 
@@ -11,7 +12,7 @@ Layers work like the Shift key but for your entire layout. You can define multip
 and switch between them with a dedicated key. PolyKybd's per-key displays make layers instantly
 visible — every key shows its current function on the active layer.
 
-PolyKybd uses QMK's **dynamic keymap** with **9 host-remappable layers**, so remaps can be written
+PolyKybd uses QMK's **dynamic keymap** with **8 host-remappable layers**, so remaps can be written
 to the keyboard at runtime without recompiling. Remapping is done with the keymap editor built into
 [PolyKybdHost](/software/overview/) — see [Keymap Editor](/using/keymap-editor/).
 
@@ -52,6 +53,37 @@ label over the current value (`IDLE:` / `Eden`), the layout picks show their nam
 unlit switch, and the modifier/command legend keys read `Mods` / `Icon` or `Cmds` / `Text`
 depending on which rendering is active.
 
+## The function layer
+
+<SupportedSince firmware="0.15.14" note="one function layer, aligned F-row" />
+
+Hold **Fn** and the number row becomes **F1–F12**. There is one function layer shared by
+every base layout, and the F-keys line themselves up with **whichever layout you are
+using**: F5 sits on the key that types `5`, wherever that key is.
+
+That matters because the layouts don't agree on where the number row splits between the
+halves. Most carry `1`–`5` on the left and `6`–`0` on the right; one carries `1`–`6` on the
+left. The keyboard reads the active layout's own number row and places the F-keys to match,
+rather than guessing.
+
+<Aside type="note" title="If your F-keys used to be one key off">
+On **Colemak** and **Workman** the F-keys from F6 up previously sat one position to the
+left of their matching number — F6 over the `-` or `` ` `` key, F7 over `6`, and so on.
+That is fixed. Qwerty, Neo and the `1`–`6` layout are unchanged.
+</Aside>
+
+### Editing the function layer switches the alignment off
+
+The function layer is remappable like any other, so you can change it in the
+[keymap editor](/using/keymap-editor/). But the editor shows what is *stored*, and the
+alignment happens on the keyboard as it draws — so the two would disagree if both were
+active at once.
+
+They can't be. **The moment you change any key on the Fn number row, the alignment stops
+for that whole row** and the keyboard uses exactly what you stored. Editor and keyboard
+agree again, which is what you want while you are editing. Reset the keymap and the
+alignment comes back.
+
 ## Where the keymap lives
 
 The shared keymap *logic* (rendering, HID handling, language selection, and the QMK callbacks) is in:
@@ -72,6 +104,15 @@ Both live in the [PolyKybd firmware repo](https://github.com/thpoll83/qmk_firmwa
 See [Keyboard Variants](/firmware/variants/) for why the logic is shared.
 
 ## Customizing with PolyKybdHost
+
+<Aside type="caution" title="Updating to v0.15.14 clears a customised keymap, once">
+This version merged two near-identical function layers into one, which shifts the internal
+numbering of every layer above it. The keyboard stores your remaps *by layer number*, so it
+clears them once on the first boot after the update rather than serving them on the wrong
+layers. Any custom layout needs re-applying — after that, updates leave it alone as usual.
+The layout editor also now offers **eight** remappable layers instead of nine, since one of
+the two it merged is gone.
+</Aside>
 
 The easiest way to remap keys is through the PolyKybdHost keymap editor, which writes changes
 directly to the keyboard's dynamic keymap without needing to recompile firmware:
