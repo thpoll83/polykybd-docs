@@ -1,0 +1,92 @@
+---
+title: Macros
+description: Store a phrase, a login or a command on a key — and have the keycap spell out what it does instead of leaving you to remember.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import SupportedSince from '../../../components/SupportedSince.astro';
+
+<SupportedSince protocol={14} />
+
+A **macro** is a piece of text — or a short sequence of keys — stored on the keyboard and typed
+back when you press one key. An email address, a login, a shell command, a phrase you write ten
+times a day.
+
+Every keyboard with macros has this. What is different here is that the **keycap tells you which
+one it is**. A macro key shows a short label along its bottom edge, so the row reads `push`,
+`work mail`, `sign off` rather than M0, M1, M2.
+
+## Writing one
+
+Macros live in the **Keymap Editor** — open the tray menu and choose **Configure Keymap**, then
+the **Macros** tab beside *Layers & Mods*.
+
+1. Pick a macro from the list on the left.
+2. Type the **label** — what the keycap will say.
+3. Type **what it types** in the field below.
+4. **Save macro**.
+5. Click the key you want it on in the keyboard picture, then **Use on selected key**.
+
+The label field shows the keycap exactly as it will look, next to a meter of how much of the
+72-pixel-wide display the label uses. Both update as you type.
+
+<Aside type="tip" title="The meter counts pixels, not letters">
+The keycap face is proportional, so the number of letters that fit depends entirely on which
+letters they are. `WWWWWWWW` fills the display at eight characters; `iiiiiiiiiiii` fits twelve
+with room left over. About **twelve characters** is typical. Anything past the edge is simply not
+drawn, and the meter turns amber to tell you before you save.
+</Aside>
+
+## What a macro can type
+
+Printable ASCII, tab and newline. That is what a keyboard can actually send: it types
+**keystrokes**, not characters, so anything your keyboard layout cannot produce with a keypress —
+an accented letter, an emoji, a character from another script — is not something a macro can type.
+
+If you need those, the keyboard has better tools for it: the
+[language layer](/using/languages/) for accented letters and other scripts, and the emoji layer
+for emoji.
+
+<Aside type="caution" title="A macro is stored in the clear">
+Macros are kept on the keyboard as plain text, and anything on your computer that can talk to the
+keyboard over USB can read them back. That is fine for an email address or a git command. Think
+twice before putting a password in one.
+</Aside>
+
+## The label
+
+The label is drawn in the smallest face the keyboard has, along the bottom edge of the key, with
+the macro's number above it. A macro with no label shows just the number, centred — so an
+unlabelled macro is still identifiable, it just does not say what it does.
+
+Labels are **ASCII only**. The small face has no accented letters, so anything outside the basic
+alphabet, digits and punctuation is dropped as you type rather than appearing on the keycap as a
+blank.
+
+## Interrupting one
+
+**Press any key.** A macro that is part-way through typing stops immediately, and the key you
+pressed does what it normally does.
+
+That matters more than it sounds: a macro can contain a deliberate pause, and the keyboard keeps
+working normally while one runs — it does not lock up and finish before responding to you.
+
+## From the command line
+
+Everything above is scriptable:
+
+```bash
+polyctl macro list                                   # every macro, its label and size
+polyctl macro set 0 --text "git push" --label "push"
+polyctl macro get 0
+polyctl macro clear 0
+```
+
+`polyctl macro list` also prints how much of the shared store is in use.
+
+## How much fits
+
+All the macros share one pool of about **2.2 KB** on the keyboard, across **16** slots. That is a
+lot of text — an email address is around 25 bytes — but it is shared, so one very long macro
+leaves less for the others. The editor shows the total at the bottom, and the keyboard refuses a
+save that would not fit rather than truncating it.
