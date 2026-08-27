@@ -44,6 +44,28 @@ with room left over. About **twelve characters** is typical. Anything past the e
 drawn, and the meter turns amber to tell you before you save.
 </Aside>
 
+## Putting one behind a modifier
+
+A macro takes a whole key — it cannot be folded into a modifier the way `Ctrl+C` or a
+tap-hold key is. That is a QMK limit rather than a choice: `MT()`, `LT()` and `Ctrl+`*key*
+all carry the key they wrap in a single byte, and a macro keycode does not fit in one.
+
+Use a **layer** instead, which is how the keyboard expresses "modifier + key" for anything
+that is not a plain keystroke:
+
+1. In the Keymap Editor, switch to a layer above the base one — `Fn`, `Numpad` or `Utility`.
+2. Assign the macro to a key there, exactly as on the base layer.
+3. Hold that layer's key and press it — **Fn** + **E**, say.
+
+The keycap shows the macro's label while the layer is held, so the assignment is visible on
+the board rather than something you have to remember.
+
+<Aside type="note" title="Modifiers *inside* a macro are a different thing">
+This is about how you *trigger* a macro. A macro can also *send* modifier chords — a
+`Ctrl`+`S` in the middle of one, for instance — but those have to be written with
+`polyctl macro set` for now; the editor's text field types plain characters only.
+</Aside>
+
 ## What a macro can type
 
 Printable ASCII, tab and newline. That is what a keyboard can actually send: it types
