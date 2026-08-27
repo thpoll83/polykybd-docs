@@ -108,6 +108,36 @@ Two things worth knowing:
 Leaving a modifier held at the end of a macro is allowed — the summary says so
 (`hold Ctrl`) rather than quietly dropping it.
 
+### Writing it as text
+
+The step editor's **View** switch has a second setting: **Script**, the same macro as a
+line of text.
+
+```
+{+KC_LCTL}{KC_A}{-KC_LCTL}{50}done
+```
+
+| Written | Means |
+| --- | --- |
+| `done` | type the characters |
+| `{KC_A}` | tap |
+| `{+KC_LSFT}` | hold |
+| `{-KC_LSFT}` | release |
+| `{250}` | wait, in milliseconds |
+| `\{` | a literal `{` |
+
+Switching between **Table** and **Script** converts the macro rather than replacing it,
+so use whichever suits the moment — build a chord by recording it, then switch to Script
+to change one keycode. If the script does not parse, the switch is refused and your text
+is left alone with the problem named underneath.
+
+<Aside type="tip" title="This is VIA's syntax, on purpose">
+It is the same text [VIA](https://usevia.app/) uses, so a macro can be pasted between
+the two. Two differences: VIA's `{KC_LSFT,KC_A}` shorthand is not read here — write the
+keys out, or use the table — and both apps accept QMK's short names, so `{KC_LSFT}` and
+`{KC_LEFT_SHIFT}` mean the same key. PolyKybd prints the long form back.
+</Aside>
+
 ## What a macro can type
 
 Printable ASCII, tab and newline. That is what a keyboard can actually send: it types
@@ -186,9 +216,16 @@ polyctl macro clear 0
 
 `polyctl macro list` also prints how much of the shared store is in use.
 
-`--text` writes plain characters only; **chords and pauses are written in the step
-editor**, not from the command line. `polyctl macro get` will show them, so a macro
-built in the editor is still readable from a script.
+`--text` writes plain characters. For chords and pauses use **`--script`**, the same
+syntax as the editor's Script view:
+
+```bash
+polyctl macro set 0 --script "{+KC_LCTL}{KC_A}{-KC_LCTL}{50}done" --label "sel all"
+```
+
+`polyctl macro get` prints the script form beside the steps, so a macro built in the
+editor can be copied straight back out. A script with a typo is refused before anything
+is written, naming the token it could not read.
 
 ## How much fits
 
