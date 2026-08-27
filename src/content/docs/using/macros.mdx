@@ -62,8 +62,10 @@ the board rather than something you have to remember.
 
 <Aside type="note" title="Modifiers *inside* a macro are a different thing">
 This is about how you *trigger* a macro. A macro can also *send* modifier chords — a
-`Ctrl`+`S` in the middle of one, for instance — but those have to be written with
-`polyctl macro set` for now; the editor's text field types plain characters only.
+`Ctrl`+`S` in the middle of one — and the keyboard plays those back happily, but
+**nothing writes one yet**: the editor's field and `polyctl macro set --text` both
+produce plain characters. A macro that already contains chords or delays is shown as
+its steps and left alone rather than flattened into text.
 </Aside>
 
 ## What a macro can type
