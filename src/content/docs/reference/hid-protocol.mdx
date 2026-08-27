@@ -71,10 +71,33 @@ source commonly uses it.
 | **SET_OS** | `0x1D` (29) | Active host OS → modifier legends. |
 | **GLYPH_SCRIPT** | `0x1E` (30) | **v9+.** Get/set the [glyph-script](/using/glyph-scripts/) override (open-ended index since v10). |
 | **GLYPH_SIZE** | `0x22` (34) | **v13+.** Get/set the [legend size](/using/legend-size/) — how large a key's main legend is drawn. A closed range (0 small / 1 medium / 2 large); anything else NACKs. |
-| **MACRO_INFO** | `0x23` (35) | **v14+.** How many [macros](/using/macros/) the keyboard holds, how long a label may be, and how much of the shared body buffer is used. Read-only. |
-| **MACRO_BODY** | `0x24` (36) | **v14+.** Read or write a window of the shared macro body buffer — offset, count, bytes. The bodies are NUL-separated, so the host reads the whole buffer, edits one and writes it back. |
-| **MACRO_LABEL** | `0x25` (37) | **v14+.** Get/set one macro's label — the short text the keycap spells out along its bottom edge. |
+| **GET_LAYER_NAMES** | `0x23` (35) | **v14+.** Read-only. The keyboard reports how many layers it lets you remap and what each is called — the labels the [layout editor](/using/keymap-editor/) puts on its layer tabs. The reply leads with its own total length, then the count, then one NUL-terminated name per layer. |
+| **MACRO_INFO** | `0x24` (36) | **v15+.** How many [macros](/using/macros/) the keyboard holds, how long a label may be, and how much of the shared body buffer is used. Read-only. |
+| **MACRO_BODY** | `0x25` (37) | **v15+.** Read or write a window of the shared macro body buffer — offset, count, bytes. The bodies are NUL-separated, so the host reads the whole buffer, edits one and writes it back. |
+| **MACRO_LABEL** | `0x26` (38) | **v15+.** Get/set one macro's label — the short text the keycap spells out along its bottom edge. |
 | **BOOTLOADER / HANDEDNESS** | `0x17` / `0x19` | Enter bootloader; set which half is which. |
+
+### Layer names — the reply format
+
+`GET_LAYER_NAMES` answers with a payload that describes its own length, so a reader
+knows when it has the whole thing without waiting for a timeout:
+
+| Offset | Bytes | Meaning |
+| --- | --- | --- |
+| `0` | 1 | **total** — the whole payload length, this byte included |
+| `1` | 1 | **count** — how many layers are named |
+| `2…` | rest | `count` NUL-terminated ASCII names, at most 8 characters each |
+
+With today's eight remappable layers that is 54 bytes, which fits a single 64-byte
+report (three of which are the `P`, command and status header). A longer set simply
+spans more reports; the reader concatenates each report's payload and stops once it
+holds `total` bytes.
+
+Two details follow from carrying the total rather than padding each name to a fixed
+width. The zero fill at the end of the final report is never examined, because the
+total already says where the names stop — so it can't be mistaken for a separator.
+And a layer with **no** name is expressible: it is simply an empty entry, which stays
+distinguishable from that fill.
 
 ### Resource-flash transport — BEGIN / CHUNK / COMMIT
 
@@ -159,7 +182,8 @@ Selected milestones:
 - **v11** — the **plain overlay upload** (`0x0a`) packs modifier + segment into one header byte, so a full 60-byte segment fits a 64-byte report exactly.
 - **v12** — **GUI combines with the other modifiers** for [app overlays](/howto/app-overlays/): `Cmd+Shift`, `Cmd+Alt` and the rest each get their own artwork instead of all falling back to the plain GUI icon, taking the addressable modifier variants from 9 to 16. The upload commands are unchanged, but the wider index space no longer fits the fixed 10-bit fields of `0x15`, so **SEND_OVERLAY_MAPPING_W** (`0x21`) was added alongside it.
 - **v13** — **GLYPH_SIZE** (`0x22`): the [legend size](/using/legend-size/) — draw a key's main legend at one of three sizes, leaving the Shift/AltGr previews alone. Unlike the glyph script, the range is closed: the keyboard refuses a size it doesn't know, because an accepted-but-unrenderable size would look like a setting that does nothing.
-- **v14** — **macros** (`0x23`–`0x25`): store text or a short key sequence on the keyboard and type it back with one key, with a short **label the keycap spells out** so a row of macro keys reads `push`, `work mail`, `sign off` rather than M0, M1, M2. All three commands sit behind a single feature gate — a host that could read the macro list but not the bodies would draw an editor over data it cannot fetch. See [Macros](/using/macros/).
+- **v14** — **GET_LAYER_NAMES** (`0x23`): the keyboard names its own remappable layers, so the [layout editor](/using/keymap-editor/) labels its tabs from the board in front of you rather than from a list baked into the host at build time. It reports the same layer count as the existing count command, so the editor can never draw a tab it has no name for.
+- **v15** — **macros** (`0x24`–`0x26`): store text or a short key sequence on the keyboard and type it back with one key, with a short **label the keycap spells out** so a row of macro keys reads `push`, `work mail`, `sign off` rather than M0, M1, M2. All three commands sit behind a single feature gate — a host that could read the macro list but not the bodies would draw an editor over data it cannot fetch. See [Macros](/using/macros/).
 
 <Aside type="note">
 Not every version number above is a separate feature listed here — the list highlights the
