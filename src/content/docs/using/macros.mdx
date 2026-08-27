@@ -82,15 +82,43 @@ keyboard over USB can read them back. That is fine for an email address or a git
 twice before putting a password in one.
 </Aside>
 
-## The label
+## What the keycap shows
 
-The label is drawn in the smallest face the keyboard has, along the bottom edge of the key, with
-the macro's number above it. A macro with no label shows just the number, centred — so an
-unlabelled macro is still identifiable, it just does not say what it does.
+A macro takes a whole key, so the key is free to be more than a legend. Three layouts, chosen
+per macro from the **Keycap** dropdown in the editor:
+
+| Layout | What it draws |
+|---|---|
+| **Number above the label** | `M3` over the label. The default, and the only one that needs nothing else. |
+| **Icon above the label** | A symbol you pick, over the label. |
+| **Label only, as large as it fits** | No mark at all — the label gets the whole key, at the largest face it fits on. |
+
+The label itself is drawn in the smallest face the keyboard has, along the bottom edge. A macro
+with no label shows just the mark, centred — so an unlabelled macro is still identifiable, it
+just does not say what it does.
 
 Labels are **ASCII only**. The small face has no accented letters, so anything outside the basic
 alphabet, digits and punctuation is dropped as you type rather than appearing on the keycap as a
 blank.
+
+### Choosing an icon
+
+**Choose icon…** opens a picker of the symbols and emoji the keyboard can draw — they come from
+the font packs already on it, so what you see in the picker is what the key can show. It opens on
+**Emoji and symbols**; **Show: Every bundle** widens it to everything on the keyboard, language
+scripts included. Filter by typing a character or a codepoint (`1F4E7`, `U+2699`). **Clear** goes
+back to no icon.
+
+A chosen icon is drawn at half size when the label leaves it no room at full size, which is most
+of the time: the icons are drawn at nearly the full height of the key, and a label takes about a
+quarter of it. That is why an icon looks smaller beside a label than it does on a key with no
+label, where it fills the whole face.
+
+<Aside type="note" title="An icon the keyboard cannot draw falls back to the number">
+The picker only offers glyphs the keyboard has, so this is rare — but if a font pack is
+re-flashed and a symbol goes away, that key shows its number again rather than going blank. The
+editor says so too: the icon button reads `U+1F4E7 (no glyph)` when it cannot find one.
+</Aside>
 
 ## Interrupting one
 
@@ -107,6 +135,7 @@ Everything above is scriptable:
 ```bash
 polyctl macro list                                   # every macro, its label and size
 polyctl macro set 0 --text "git push" --label "push"
+polyctl macro set 0 --style icon --icon 1F4E7        # the keycap layout, and its symbol
 polyctl macro get 0
 polyctl macro clear 0
 ```
