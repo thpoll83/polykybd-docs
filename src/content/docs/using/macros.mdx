@@ -84,7 +84,7 @@ twice before putting a password in one.
 
 ## What the keycap shows
 
-A macro takes a whole key, so the key is free to be more than a legend. Three layouts, chosen
+A macro takes a whole key, so the key is free to be more than a legend. Four layouts, chosen
 per macro from the **Keycap** dropdown in the editor:
 
 | Layout | What it draws |
@@ -92,6 +92,7 @@ per macro from the **Keycap** dropdown in the editor:
 | **Number above the label** | `M3` over the label. The default, and the only one that needs nothing else. |
 | **Icon above the label** | A symbol you pick, over the label. |
 | **Label only, as large as it fits** | No mark at all — the label gets the whole key, at the largest face it fits on. |
+| **Icon only, filling the key** | The icon alone, at full size across the whole key. The label is kept but not drawn, so switching back does not lose it. |
 
 The label itself is drawn in the smallest face the keyboard has, along the bottom edge. A macro
 with no label shows just the mark, centred — so an unlabelled macro is still identifiable, it
@@ -111,8 +112,8 @@ back to no icon.
 
 A chosen icon is drawn at half size when the label leaves it no room at full size, which is most
 of the time: the icons are drawn at nearly the full height of the key, and a label takes about a
-quarter of it. That is why an icon looks smaller beside a label than it does on a key with no
-label, where it fills the whole face.
+quarter of it. That is why an icon looks smaller beside a label than it does under **Icon only,
+filling the key** — or on a key with no label at all — where it gets the whole face.
 
 <Aside type="note" title="An icon the keyboard cannot draw falls back to the number">
 The picker only offers glyphs the keyboard has, so this is rare — but if a font pack is
@@ -136,6 +137,7 @@ Everything above is scriptable:
 polyctl macro list                                   # every macro, its label and size
 polyctl macro set 0 --text "git push" --label "push"
 polyctl macro set 0 --style icon --icon 1F4E7        # the keycap layout, and its symbol
+polyctl macro set 0 --style icononly --icon 1F4E7    # …the symbol alone, filling the key
 polyctl macro get 0
 polyctl macro clear 0
 ```
