@@ -62,11 +62,51 @@ the board rather than something you have to remember.
 
 <Aside type="note" title="Modifiers *inside* a macro are a different thing">
 This is about how you *trigger* a macro. A macro can also *send* modifier chords — a
-`Ctrl`+`S` in the middle of one — and the keyboard plays those back happily, but
-**nothing writes one yet**: the editor's field and `polyctl macro set --text` both
-produce plain characters. A macro that already contains chords or delays is shown as
-its steps and left alone rather than flattened into text.
+`Ctrl`+`S` in the middle of one — and those are written in the **step editor** below.
+The `Types:` field itself only ever produces plain characters, and `polyctl macro set
+--text` likewise; a macro that holds chords or pauses shows a summary there and is
+edited through **Steps…**.
 </Aside>
+
+## Chords, pauses and held keys
+
+A macro is really a list of **steps**, and plain text is the common case rather than the
+only one. Press **Steps…** beside the `Types:` field to open the step editor:
+
+| Action | What it does |
+| --- | --- |
+| **Tap** | press and release one key |
+| **Hold** | press a key and leave it down |
+| **Release** | let a held key back up |
+| **Wait** | pause, in milliseconds |
+| **Type** | one character, as the text field produces |
+
+A chord is a Hold, the key, then a Release — `Ctrl`+`Shift`+`P` is *Hold Ctrl, Hold
+Shift, Tap P, Release Shift, Release Ctrl*. The line under the table names what the
+macro does in ordinary terms as you build it, so you can check it without reading the
+rows back.
+
+### Recording
+
+Rather than adding those five rows by hand, press **Record** and then press the keys.
+Every press and release is captured in order; press **Stop** (or `Esc`) when you are
+done. The rows are ordinary steps afterwards, so anything captured wrongly can be
+edited or deleted.
+
+Two things worth knowing:
+
+- **Pauses are not recorded by default.** Most macros should run as fast as the keyboard
+  can send, and a `Wait` between every keystroke is both noise in the list and bytes out
+  of the shared store. Switch the box beside Record to *with timing* if the rhythm
+  matters — for an application that drops input sent too quickly, say.
+- **Recording reads the character a key produces, not its position.** On a layout where
+  the key in the QWERTY `Y` position types `z`, that key records as `KC_Z` — the keycode
+  that types `z` on *your* machine, which is what you meant by pressing it. It is only
+  the wrong answer if the macro will be replayed on a machine set to a different layout,
+  and every step names the keycode it stored, so you can see and change it.
+
+Leaving a modifier held at the end of a macro is allowed — the summary says so
+(`hold Ctrl`) rather than quietly dropping it.
 
 ## What a macro can type
 
@@ -145,6 +185,10 @@ polyctl macro clear 0
 ```
 
 `polyctl macro list` also prints how much of the shared store is in use.
+
+`--text` writes plain characters only; **chords and pauses are written in the step
+editor**, not from the command line. `polyctl macro get` will show them, so a macro
+built in the editor is still readable from a script.
 
 ## How much fits
 
