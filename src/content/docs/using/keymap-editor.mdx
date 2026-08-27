@@ -3,6 +3,8 @@ title: Keymap Editor
 description: Remap keys on any layer using the PolyKybdHost layout editor.
 ---
 
+import SupportedSince from '../../../components/SupportedSince.astro';
+
 import { Aside } from '@astrojs/starlight/components';
 
 The Layout Editor in PolyKybdHost lets you remap any key on any layer directly, without recompiling or reflashing firmware. Changes take effect immediately and are stored in the keyboard's flash memory.
@@ -16,6 +18,9 @@ Right-click the PolyKybdHost tray icon → **Configure Keymap**.
 ## Using the editor
 
 1. Select a layer using the layer tabs at the top of the editor window. All key labels update to reflect the selected layer.
+
+   The tab labels come from the keyboard itself, so they name what each layer actually is — `Qwerty`, `ColemkDH`, `Fn`, `Numpad` and so on. Older firmware doesn't report them, and the editor then falls back to a list shipped with the host, which shows the shorter internal names instead.
+   <SupportedSince protocol={14} note="layer names reported by the keyboard" />
 2. Click a key to select it. The key is highlighted.
 3. Choose a new keycode from the keycode browser panel.
 4. The change is written immediately to the keyboard over HID. The key label updates on both the editor and the physical key display.
