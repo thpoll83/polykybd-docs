@@ -27,6 +27,7 @@ import { Aside } from '@astrojs/starlight/components';
 | `fontpack status\|sync\|flash <id>\|wipe [id]` | Inspect and manage the [font-pack](/firmware/font-packs/) bundles |
 | `overlay …` | Inspect and manage key overlays |
 | `keymap …` | Read/write the dynamic keymap |
+| `macro list\|get <id>\|set <id> …\|clear <id>` | Read and write the keyboard's [macros](/using/macros/) — `set` takes `--text` and `--label`; `list` also reports how much of the shared store is in use |
 | `commands` | List the keyboard's available one-off commands |
 | `fw version` | Report the keyboard's firmware version |
 | `fw flash <bin> [--apply]` | Flash a firmware `.bin` over HID (streams progress) |
