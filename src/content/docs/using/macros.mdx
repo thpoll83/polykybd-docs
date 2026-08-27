@@ -110,8 +110,8 @@ Leaving a modifier held at the end of a macro is allowed — the summary says so
 
 ### Writing it as text
 
-The step editor's **View** switch has a second setting: **Script**, the same macro as a
-line of text.
+The step editor has two tabs. **Table** is the one above; **Script** is the same macro
+as a line of text.
 
 ```
 {+KC_LCTL}{KC_A}{-KC_LCTL}{50}done
@@ -126,10 +126,14 @@ line of text.
 | `{250}` | wait, in milliseconds |
 | `\{` | a literal `{` |
 
-Switching between **Table** and **Script** converts the macro rather than replacing it,
-so use whichever suits the moment — build a chord by recording it, then switch to Script
-to change one keycode. If the script does not parse, the switch is refused and your text
-is left alone with the problem named underneath.
+Switching tabs converts the macro rather than replacing it, so use whichever suits the
+moment — build a chord by recording it, then switch to Script to change one keycode. If
+the script does not parse, the switch is refused and your text is left alone with the
+problem named underneath.
+
+**Record** works on either tab: it appends to whichever one you are looking at. The
+row buttons — add, remove, reorder — belong to the Table tab, since that is what they
+act on.
 
 <Aside type="tip" title="This is VIA's syntax, on purpose">
 It is the same text [VIA](https://usevia.app/) uses, so a macro can be pasted between
