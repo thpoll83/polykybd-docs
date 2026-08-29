@@ -1,0 +1,243 @@
+---
+title: Macros
+description: Store a phrase, a login or a command on a key — and have the keycap spell out what it does instead of leaving you to remember.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import SupportedSince from '../../../components/SupportedSince.astro';
+
+<SupportedSince protocol={15} />
+
+A **macro** is a piece of text — or a short sequence of keys — stored on the keyboard and typed
+back when you press one key. An email address, a login, a shell command, a phrase you write ten
+times a day.
+
+Every keyboard with macros has this. What is different here is that the **keycap tells you which
+one it is**. A macro key shows a short label along its bottom edge, so the row reads `push`,
+`work mail`, `sign off` rather than M0, M1, M2.
+
+<Aside type="note" title="You need the release that carries them">
+Macros arrived after the **v0.15.14** firmware / **v0.13.16** host release. If the Keymap Editor
+has no **Macros** tab, one of the two is older than that: update the host app from the tray
+(**Updates → Check for updates**), then the keyboard from the same menu. The tab and the
+keyboard's macro keys arrive together — there is no half-working state to diagnose.
+</Aside>
+
+## Writing one
+
+Macros live in the **Keymap Editor** — open the tray menu and choose **Configure Keymap**, then
+the **Macros** tab beside *Layers & Mods*.
+
+1. Pick a macro from the list on the left.
+2. Type the **label** — what the keycap will say.
+3. Type **what it types** in the field below.
+4. **Save macro**.
+5. Click the key you want it on in the keyboard picture, then **Use on selected key**.
+
+The label field shows the keycap exactly as it will look, next to a meter of how much of the
+72-pixel-wide display the label uses. Both update as you type.
+
+<Aside type="tip" title="The meter counts pixels, not letters">
+The keycap face is proportional, so the number of letters that fit depends entirely on which
+letters they are. `WWWWWWWW` fills the display at eight characters; `iiiiiiiiiiii` fits twelve
+with room left over. About **twelve characters** is typical. Anything past the edge is simply not
+drawn, and the meter turns amber to tell you before you save.
+</Aside>
+
+## Putting one behind a modifier
+
+A macro takes a whole key — it cannot be folded into a modifier the way `Ctrl+C` or a
+tap-hold key is. That is a QMK limit rather than a choice: `MT()`, `LT()` and `Ctrl+`*key*
+all carry the key they wrap in a single byte, and a macro keycode does not fit in one.
+
+Use a **layer** instead, which is how the keyboard expresses "modifier + key" for anything
+that is not a plain keystroke:
+
+1. In the Keymap Editor, switch to a layer above the base one — `Fn`, `Numpad` or `Utility`.
+2. Assign the macro to a key there, exactly as on the base layer.
+3. Hold that layer's key and press it — **Fn** + **E**, say.
+
+The keycap shows the macro's label while the layer is held, so the assignment is visible on
+the board rather than something you have to remember.
+
+<Aside type="note" title="Modifiers *inside* a macro are a different thing">
+This is about how you *trigger* a macro. A macro can also *send* modifier chords — a
+`Ctrl`+`S` in the middle of one — and those are written in the **step editor** below.
+The `Types:` field itself only ever produces plain characters, and `polyctl macro set
+--text` likewise; a macro that holds chords or pauses shows a summary there and is
+edited through **Steps…**.
+</Aside>
+
+## Chords, pauses and held keys
+
+A macro is really a list of **steps**, and plain text is the common case rather than the
+only one. Press **Steps…** beside the `Types:` field to open the step editor:
+
+| Action | What it does |
+| --- | --- |
+| **Tap** | press and release one key |
+| **Hold** | press a key and leave it down |
+| **Release** | let a held key back up |
+| **Wait** | pause, in milliseconds |
+| **Type** | one character, as the text field produces |
+
+Each row is an action and its **Value** — a key for Tap, Hold and Release, a duration
+for Wait — in a single column, so a row only ever offers the one editor its action can
+use.
+
+A chord is a Hold, the key, then a Release — `Ctrl`+`Shift`+`P` is *Hold Ctrl, Hold
+Shift, Tap P, Release Shift, Release Ctrl*. The line under the table names what the
+macro does in ordinary terms as you build it, so you can check it without reading the
+rows back.
+
+### Recording
+
+Rather than adding those five rows by hand, press **Record** and then press the keys.
+Every press and release is captured in order; press **Stop** (or `Esc`) when you are
+done. The rows are ordinary steps afterwards, so anything captured wrongly can be
+edited or deleted.
+
+Two things worth knowing:
+
+- **Pauses are not recorded by default.** Most macros should run as fast as the keyboard
+  can send, and a `Wait` between every keystroke is both noise in the list and bytes out
+  of the shared store. Switch the box beside Record to *with timing* if the rhythm
+  matters — for an application that drops input sent too quickly, say.
+- **Recording reads the character a key produces, not its position.** On a layout where
+  the key in the QWERTY `Y` position types `z`, that key records as `KC_Z` — the keycode
+  that types `z` on *your* machine, which is what you meant by pressing it. It is only
+  the wrong answer if the macro will be replayed on a machine set to a different layout,
+  and every step names the keycode it stored, so you can see and change it.
+
+Leaving a modifier held at the end of a macro is allowed — the summary says so
+(`hold Ctrl`) rather than quietly dropping it.
+
+### Writing it as text
+
+The step editor has two tabs. **Table** is the one above; **Script** is the same macro
+as a line of text.
+
+```
+{+KC_LCTL}{KC_A}{-KC_LCTL}{50}done
+```
+
+| Written | Means |
+| --- | --- |
+| `done` | type the characters |
+| `{KC_A}` | tap |
+| `{+KC_LSFT}` | hold |
+| `{-KC_LSFT}` | release |
+| `{250}` | wait, in milliseconds |
+| `\{` | a literal `{` |
+
+Switching tabs converts the macro rather than replacing it, so use whichever suits the
+moment — build a chord by recording it, then switch to Script to change one keycode. If
+the script does not parse, the switch is refused and your text is left alone with the
+problem named underneath.
+
+**Record** works on either tab: it appends to whichever one you are looking at. The
+row buttons — add, remove, reorder — belong to the Table tab, since that is what they
+act on.
+
+<Aside type="tip" title="This is VIA's syntax, on purpose">
+It is the same text [VIA](https://usevia.app/) uses, so a macro can be pasted between
+the two. Two differences: VIA's `{KC_LSFT,KC_A}` shorthand is not read here — write the
+keys out, or use the table — and both apps accept QMK's short names, so `{KC_LSFT}` and
+`{KC_LEFT_SHIFT}` mean the same key. PolyKybd prints the long form back.
+</Aside>
+
+## What a macro can type
+
+Printable ASCII, tab and newline. That is what a keyboard can actually send: it types
+**keystrokes**, not characters, so anything your keyboard layout cannot produce with a keypress —
+an accented letter, an emoji, a character from another script — is not something a macro can type.
+
+If you need those, the keyboard has better tools for it: the
+[language layer](/using/languages/) for accented letters and other scripts, and the emoji layer
+for emoji.
+
+<Aside type="caution" title="A macro is stored in the clear">
+Macros are kept on the keyboard as plain text, and anything on your computer that can talk to the
+keyboard over USB can read them back. That is fine for an email address or a git command. Think
+twice before putting a password in one.
+</Aside>
+
+## What the keycap shows
+
+A macro takes a whole key, so the key is free to be more than a legend. Four layouts, chosen
+per macro from the **Keycap** dropdown in the editor:
+
+| Layout | What it draws |
+|---|---|
+| **Number above the label** | `M3` over the label. The default, and the only one that needs nothing else. |
+| **Icon above the label** | A symbol you pick, over the label. |
+| **Label only, as large as it fits** | No mark at all — the label gets the whole key, at the largest face it fits on. |
+| **Icon only, filling the key** | The icon alone, at full size across the whole key. The label is kept but not drawn, so switching back does not lose it. |
+
+The label itself is drawn in the smallest face the keyboard has, along the bottom edge. A macro
+with no label shows just the mark, centred — so an unlabelled macro is still identifiable, it
+just does not say what it does.
+
+Labels are **ASCII only**. The small face has no accented letters, so anything outside the basic
+alphabet, digits and punctuation is dropped as you type rather than appearing on the keycap as a
+blank.
+
+### Choosing an icon
+
+**Choose icon…** opens a picker of the symbols and emoji the keyboard can draw — they come from
+the font packs already on it, so what you see in the picker is what the key can show. It opens on
+**Emoji and symbols**; **Show: Every bundle** widens it to everything on the keyboard, language
+scripts included. Filter by typing a character or a codepoint (`1F4E7`, `U+2699`). **Clear** goes
+back to no icon.
+
+A chosen icon is drawn at half size when the label leaves it no room at full size, which is most
+of the time: the icons are drawn at nearly the full height of the key, and a label takes about a
+quarter of it. That is why an icon looks smaller beside a label than it does under **Icon only,
+filling the key** — or on a key with no label at all — where it gets the whole face.
+
+<Aside type="note" title="An icon the keyboard cannot draw falls back to the number">
+The picker only offers glyphs the keyboard has, so this is rare — but if a font pack is
+re-flashed and a symbol goes away, that key shows its number again rather than going blank. The
+editor says so too: the icon button reads `U+1F4E7 (no glyph)` when it cannot find one.
+</Aside>
+
+## Interrupting one
+
+**Press any key.** A macro that is part-way through typing stops immediately, and the key you
+pressed does what it normally does.
+
+That matters more than it sounds: a macro can contain a deliberate pause, and the keyboard keeps
+working normally while one runs — it does not lock up and finish before responding to you.
+
+## From the command line
+
+Everything above is scriptable:
+
+```bash
+polyctl macro list                                   # every macro, its label and size
+polyctl macro set 0 --text "git push" --label "push"
+polyctl macro set 0 --style icon --icon 1F4E7        # the keycap layout, and its symbol
+polyctl macro set 0 --style icononly --icon 1F4E7    # …the symbol alone, filling the key
+polyctl macro get 0
+polyctl macro clear 0
+```
+
+`polyctl macro list` also prints how much of the shared store is in use.
+
+`--text` writes plain characters. For chords and pauses use **`--script`**, the same
+syntax as the editor's Script view:
+
+```bash
+polyctl macro set 0 --script "{+KC_LCTL}{KC_A}{-KC_LCTL}{50}done" --label "sel all"
+```
+
+`polyctl macro get` prints the script form beside the steps, so a macro built in the
+editor can be copied straight back out. A script with a typo is refused before anything
+is written, naming the token it could not read.
+
+## How much fits
+
+All the macros share one pool of about **2.2 KB** on the keyboard, across **16** slots. That is a
+lot of text — an email address is around 25 bytes — but it is shared, so one very long macro
+leaves less for the others. The editor shows the total at the bottom, and the keyboard refuses a
+save that would not fit rather than truncating it.

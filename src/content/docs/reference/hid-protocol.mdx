@@ -72,6 +72,9 @@ source commonly uses it.
 | **GLYPH_SCRIPT** | `0x1E` (30) | **v9+.** Get/set the [glyph-script](/using/glyph-scripts/) override (open-ended index since v10). |
 | **GLYPH_SIZE** | `0x22` (34) | **v13+.** Get/set the [legend size](/using/legend-size/) — how large a key's main legend is drawn. A closed range (0 small / 1 medium / 2 large); anything else NACKs. |
 | **GET_LAYER_NAMES** | `0x23` (35) | **v14+.** Read-only. The keyboard reports how many layers it lets you remap and what each is called — the labels the [layout editor](/using/keymap-editor/) puts on its layer tabs. The reply leads with its own total length, then the count, then one NUL-terminated name per layer. |
+| **MACRO_INFO** | `0x24` (36) | **v15+.** How many [macros](/using/macros/) the keyboard holds, how long a label may be, and how much of the shared body buffer is used. Read-only. |
+| **MACRO_BODY** | `0x25` (37) | **v15+.** Read or write a window of the shared macro body buffer — offset, count, bytes. The bodies are NUL-separated, so the host reads the whole buffer, edits one and writes it back. |
+| **MACRO_LABEL** | `0x26` (38) | **v15+.** Get/set one macro's label — the short text the keycap spells out along its bottom edge. |
 | **BOOTLOADER / HANDEDNESS** | `0x17` / `0x19` | Enter bootloader; set which half is which. |
 
 ### Layer names — the reply format
@@ -180,6 +183,7 @@ Selected milestones:
 - **v12** — **GUI combines with the other modifiers** for [app overlays](/howto/app-overlays/): `Cmd+Shift`, `Cmd+Alt` and the rest each get their own artwork instead of all falling back to the plain GUI icon, taking the addressable modifier variants from 9 to 16. The upload commands are unchanged, but the wider index space no longer fits the fixed 10-bit fields of `0x15`, so **SEND_OVERLAY_MAPPING_W** (`0x21`) was added alongside it.
 - **v13** — **GLYPH_SIZE** (`0x22`): the [legend size](/using/legend-size/) — draw a key's main legend at one of three sizes, leaving the Shift/AltGr previews alone. Unlike the glyph script, the range is closed: the keyboard refuses a size it doesn't know, because an accepted-but-unrenderable size would look like a setting that does nothing.
 - **v14** — **GET_LAYER_NAMES** (`0x23`): the keyboard names its own remappable layers, so the [layout editor](/using/keymap-editor/) labels its tabs from the board in front of you rather than from a list baked into the host at build time. It reports the same layer count as the existing count command, so the editor can never draw a tab it has no name for.
+- **v15** — **macros** (`0x24`–`0x26`): store text or a short key sequence on the keyboard and type it back with one key, with a short **label the keycap spells out** so a row of macro keys reads `push`, `work mail`, `sign off` rather than M0, M1, M2. All three commands sit behind a single feature gate — a host that could read the macro list but not the bodies would draw an editor over data it cannot fetch. See [Macros](/using/macros/).
 
 <Aside type="note">
 Not every version number above is a separate feature listed here — the list highlights the
