@@ -97,7 +97,7 @@ newer features unavailable — rather than refusing to connect at all.
 | `15` | IDLE_STATE | Start / stop the idle anti-burn-in animation. |
 | `20` | SET_UNICODE_MODE | Linux / Mac / Windows / WinCompose / BSD input mode. |
 | `24` | DISPLAY_OFF | Blank the keycaps. |
-| `28` / `0x1C` | IDLE_STYLE | Idle anti-burn-in style: pulse / jitter. |
+| `28` / `0x1C` | IDLE_STYLE | Idle anti-burn-in style: pulse / jitter / screensaver. |
 | `29` / `0x1D` | SET_OS | Active host OS → modifier legends. |
 | `30` / `0x1E` | GLYPH_SCRIPT | Override legends with a fantasy/retro script (open-ended index). |
 | `23` / `25` | BOOTLOADER / HANDEDNESS | Enter bootloader; set which half is which. |
@@ -206,9 +206,10 @@ replays from cache rather than re-sending every image.
 
 ### Display power states
 
-To avoid burning the OLED legends in, the keycaps fade and then either pulse or
-migrate their legends while idle, and turn off entirely after a longer timeout. Any
-key activity (or proximity, if the light sensor is fitted) wakes them.
+To avoid burning the OLED legends in, the keycaps fade and then run the configured
+[idle style](/using/idle/) — pulsing, migrating their legends, or a full screensaver —
+and turn off entirely after a longer timeout. Any key activity (or proximity, if the
+light sensor is fitted) wakes them.
 
 ```mermaid
 stateDiagram-v2
@@ -216,9 +217,9 @@ stateDiagram-v2
   Awake --> Fade: idle timeout
   Fade --> Idle: fade complete
   state Idle {
-    [*] --> Pulse
-    Pulse --> Jitter: style = jitter
-    Jitter --> Pulse: style = pulse
+    [*] --> Pulse: style = pulse
+    [*] --> Jitter: style = jitter
+    [*] --> Eden: style = eden
   }
   Idle --> Off: turn-off timeout
   Awake --> Suspend: USB suspend
@@ -230,8 +231,10 @@ stateDiagram-v2
   Suspend --> Awake: USB resume
 ```
 
-Only the **style bit** (pulse vs jitter) crosses the split link; each half runs its
-own idle animation on its own keys from the shared pulse value.
+Only the **style value** crosses the split link; each half runs its own idle animation
+on its own keys from that and the shared pulse value. The Eden screensaver is drawn by
+split72-only code, so selecting it on a split42 leaves the legends dimmed and static —
+see [Idle & Burn-in Protection](/using/idle/).
 
 ### Resource flashing (firmware & font packs)
 
