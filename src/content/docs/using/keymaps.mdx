@@ -45,6 +45,57 @@ Keys behind `More…` are **inert as well as blank** while hidden — a key that
 still reboots the board would be worse than a visible one.
 </Aside>
 
+### Board info on the status display
+
+<SupportedSince firmware="0.17.0" note="status-display board info" />
+
+While `More…` is showing, the **status display swaps from the usual layout/brightness panel to
+what the board *is*** — the numbers you would otherwise have to ask the host for, or find in a
+log.
+
+![The status displays of both halves showing the board-info screen: firmware version, protocol and hardware version, USB or link role with uptime, and split-link health](../../../assets/using/status-oled-telemetry.png)
+
+The numbers above are from a development board — yours will differ, and the firmware version
+shown is whatever that board happened to be running, not the one this screen needs.
+
+| Line | Means |
+|---|---|
+| `FW 0.16.18` | The firmware version running on **this half**. |
+| `P15  HW 0x0320` | The [HID protocol version](/reference/hid-protocol/) the firmware speaks, and the hardware revision. |
+| `USB  up 1:23:45` | Whether this half is the one plugged into the computer (`USB`) or the one on the other end of the cable (`LNK`), and how long it has been powered. Past four days it switches to `3d 7h`. |
+| `Lnk 0.4% 182k` | Split-link health — see below. |
+
+Leave the settings layer and the display goes back to normal.
+
+<Aside type="note">
+On the **split42** the status display is smaller, so it shows the first two lines only. Uptime
+and link health are split72.
+</Aside>
+
+#### Reading the link line
+
+The two halves talk to each other over the cable, and the `Lnk` line is the only place that
+conversation is visible: the percentage is the share of messages that had to be retried or went
+unanswered, and the number beside it is how many have been sent.
+
+It counts from power-on, and a handful of errors while the two halves find each other at boot is
+normal — so on a healthy board the percentage **falls** the longer you leave it running, as those
+first few are diluted by everything since. What matters is the direction: a number that climbs, or
+sits high on a board that has been up for hours, points at the cable or its connectors.
+
+Two readings are not percentages at all:
+
+- **`Lnk n/a`** on the half that is *not* plugged into the computer. Only the USB half starts
+  these exchanges, so the other one has nothing to report — and showing it as `0.0%` would look
+  like a perfect link rather than no measurement.
+- **`Lnk idle`** before anything has been sent yet.
+
+<Aside type="tip">
+This is the quickest way to answer *"which firmware am I on?"* with no computer attached — and
+the numbers to quote when [reporting a problem](/software/reporting-problems/) if the host cannot
+see the keyboard at all.
+</Aside>
+
 ### Keys that name their own state
 
 Several of these keycaps show **what they are set to** rather than what they do, so the layer can
