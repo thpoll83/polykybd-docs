@@ -25,6 +25,33 @@ Right-click the PolyKybdHost tray icon → **Configure Keymap**.
 3. Choose a new keycode from the keycode browser panel.
 4. The change is written immediately to the keyboard over HID. The key label updates on both the editor and the physical key display.
 
+## Seeing the keycaps instead of keycodes
+
+By default every key in the editor shows its **keycode** — `KC_A`, `KC_LSFT`, `MO(6)`.
+That is precise, but it does not look like your keyboard.
+
+Tick **Key previews** in the editor header and each key is drawn the way the keyboard
+itself draws it: the same fonts, the same layout, the same legends — letters in the
+language you have selected, the modifier and arrow symbols, the PolyKybd setting keys,
+and your macros with their labels. It makes a layer far easier to read at a glance, and
+it shows you what a remap will actually look like on the key **before** you commit it.
+
+<SupportedSince label="Host 0.14.11+"
+                title="Minimum PolyKybdHost version this feature needs"
+                note="works without a firmware checkout" />
+
+<Aside type="note">
+Coverage is not total. A handful of keys are drawn by the firmware at the moment you
+press them rather than from a fixed legend, so the editor cannot know them in advance —
+those keep their keycode text, mixed in among the previewed keys. Two more are left
+alone on purpose: a transparent key (it shows whatever the layer below it has), and the
+two inner keys that have no display behind them.
+</Aside>
+
+If the checkbox is greyed out, hover it — the tooltip says what could not be loaded.
+The tooltip also names where the legends were read from, which is worth a look if a
+preview ever disagrees with the physical key.
+
 ## Dual-function keys (tap one thing, hold another)
 
 The keycode browser has a **behaviour** section for keys that do two different things depending on how long you press them — a *mod-tap* (`MT`) taps a normal key but acts as a modifier when held, and a *layer-tap* (`LT`) taps a key but switches layer when held. Pick the behaviour from the dropdown, tick the modifiers (or choose the layer), pick which key it taps, and choose whether the modifier is the left or the right one.

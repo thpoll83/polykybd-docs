@@ -11,6 +11,11 @@
  *   import SupportedSince from '../../../components/SupportedSince.astro';
  *   <SupportedSince protocol={10} />
  *   <SupportedSince firmware="0.9.0" note="host-auto brightness" />
+ *
+ * ⚠️ `label` only changes the visible text -- the hover text still says
+ * "firmware". For a tag about a DIFFERENT version axis (the host app, say)
+ * pass `title` too, or the badge reads one thing and its tooltip another:
+ *   <SupportedSince label="Host 0.14.11+" title="Minimum PolyKybdHost version this feature needs" />
  */
 interface Props {
   /** Minimum firmware PROTOCOL_VERSION. Renders "Firmware protocol v{N}+". */
@@ -21,8 +26,10 @@ interface Props {
   label?: string;
   /** Short trailing note, e.g. the feature name. */
   note?: string;
+  /** Override the hover text. Needed whenever `label` names a non-firmware version. */
+  title?: string;
 }
-const { protocol, firmware, label, note } = Astro.props;
+const { protocol, firmware, label, note, title } = Astro.props;
 const text =
   label ??
   (protocol != null
@@ -38,7 +45,7 @@ const Tag = href ? 'a' : 'span';
 <Tag
   class="supported-since"
   href={href}
-  title="Minimum firmware version this feature needs"
+  title={title ?? 'Minimum firmware version this feature needs'}
 >
   <svg class="supported-since__icon" viewBox="0 0 24 24" aria-hidden="true">
     <!-- A little chip/tag mark to read as "version tag". -->
