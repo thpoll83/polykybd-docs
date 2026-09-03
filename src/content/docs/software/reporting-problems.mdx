@@ -4,6 +4,7 @@ description: Collect PolyKybdHost's logs into a single file and file a bug repor
 ---
 
 import { Aside } from '@astrojs/starlight/components';
+import SupportedSince from '../../../components/SupportedSince.astro';
 
 When something goes wrong, the useful answer is almost always in the logs — but
 PolyKybdHost writes **six** of them, most with their own rotated backups, and under the
@@ -79,6 +80,37 @@ are actually diagnosed from — and the titles themselves are replaced with plac
 
 Untick it only when the problem *is* the wrong overlay appearing for a particular
 window, and look at the file before you attach it.
+
+## When the keyboard firmware crashes
+
+<SupportedSince protocol={16} />
+
+A keyboard half that hits a hardware fault or stops responding no longer just sits
+there until you replug it: the firmware records what it was doing, restarts itself,
+and reports the crash on its next boot. PolyKybdHost watches the keyboard's console for
+that report and **pops up an alert** the moment it sees one — so you find out about a
+crash without ever opening a log.
+
+The dialog says which half crashed, what kind of crash it was (a fault, an unexpected
+exception, or a watchdog restart after a hang), what the firmware was doing at the time
+and how long it had been running, and offers two ways to pass it on:
+
+| Button | What it does |
+|---|---|
+| **Report on GitHub…** | Opens *Report a Problem* with the crash already written into the description — the log bundle and the pre-filled issue work exactly as above. |
+| **Copy to Clipboard** | Copies the crash details plus the host diagnostics as plain text, to paste into a chat, an e-mail or an existing issue. |
+
+**Dismiss** keeps nothing — the record stays on the keyboard and in the console log, and
+`polyctl crash show` reads it back at any time (`--slave` for the link-side half,
+`crash clear` to forget it). The keyboard keeps working meanwhile; the alert is
+information, not an error you have to act on.
+
+<Aside type="note">
+The firmware only records crashes from protocol 16 on, and the host only alerts once it
+sees the keyboard's console line. If the host was flashing the keyboard at the moment of
+the report, the line is missed — the record is still on the board, so `polyctl crash
+show` (or the next reboot) still surfaces it.
+</Aside>
 
 ## Collect logs
 
