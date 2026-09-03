@@ -213,7 +213,9 @@ A few hard limits baked into the firmware — don't fight them:
 
    <Aside type="caution" title="It swaps a modifier — it cannot remap a shortcut">
    Reach for `CMDCTRL` when an app's macOS keymap is its Windows keymap with a different modifier.
-   Hand-author two specs when it is genuinely a *different* keymap. Both shapes ship in the repo:
+   Scope the individual binding ([below](#when-one-platform-diverges-only--except)) when only a
+   shortcut or two diverges. Hand-author two specs when it is genuinely a *different* keymap. All
+   three shapes ship in the repo:
 
    - **VS Code — one spec.** It registers most chords as `KeyMod.CtrlCmd`, so 22 bindings are
      `CMDCTRL` and 3 stay literal Ctrl (macOS keeps `⌃G`, `` ⌃` ``, `⌃F5`). Eight genuinely
@@ -224,6 +226,37 @@ A few hard limits baked into the firmware — don't fight them:
 
    A missing overlay is a blank keycap; a wrong one actively misleads.
    </Aside>
+
+   ### When one platform diverges: `only:` / `except:`
+
+   `CMDCTRL` splits Windows from macOS — but **Windows and Linux share one PNG**, so an action an
+   app remaps on only *one* of them has nowhere to go. Two optional keys scope a binding to the
+   platforms it is actually correct on:
+
+   ```yaml
+   bindings:
+     # Right on Windows and macOS; Linux moves this one to a two-stroke chord.
+     - { key: U, mods: [CMDCTRL, SHIFT], icon: output.png, label: Output, except: [linux] }
+
+     # The other shape: one icon, a different chord per platform.
+     - { key: LEFT, mods: [ALT],       icon: goback.png, label: Go back, only: [windows, macos] }
+     - { key: "-",  mods: [CTRL, ALT], icon: goback.png, label: Go back, only: [linux] }
+   ```
+
+   Valid platforms are `windows`, `macos` and `linux`. A binding with **neither** key applies
+   everywhere — which is every binding in every other example on this page, so scoping is
+   opt-in and nothing you have already written changes. Use `only:` **or** `except:`, never both.
+
+   VS Code's **Show Output** is the real case: `Ctrl+Shift+U` on Windows and `⇧⌘U` on macOS, but
+   Linux moves it to the chord `Ctrl+K Ctrl+H` (Ubuntu reserves `Ctrl+Shift+U` for unicode input),
+   which a keycap cannot draw at all. Scoping it out leaves Linux a blank key instead of a wrong
+   one, while Windows and macOS keep the icon — deleting the binding would have cost all three.
+
+   A **third** artwork set (`<output>_linux.*`, plus a matching `os: linux:` branch) is generated
+   only when a binding actually distinguishes Linux from the default. Both scoped bindings above
+   do — `except: [linux]` drops one there, and the `only:` pair puts *Go back* on a different key —
+   so that spec gets one. `CMDCTRL` alone never does, since it is `Ctrl` on Windows and Linux
+   alike: an app that scopes nothing keeps emitting exactly the two sets it always did.
 
    <Aside type="note">
    Every key the mapping file understands — and the traps, like app names being an exact match and
