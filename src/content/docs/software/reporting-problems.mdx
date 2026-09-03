@@ -100,9 +100,9 @@ and how long it had been running, and offers two ways to pass it on:
 | **Report on GitHub…** | Opens *Report a Problem* with the crash already written into the description — the log bundle and the pre-filled issue work exactly as above. |
 | **Copy to Clipboard** | Copies the crash details plus the host diagnostics as plain text, to paste into a chat, an e-mail or an existing issue. |
 
-**Dismiss** keeps nothing — the record stays on the keyboard and in the console log, and
-`polyctl crash show` reads it back at any time (`--slave` for the link-side half,
-`crash clear` to forget it). The keyboard keeps working meanwhile; the alert is
+**Dismiss** only closes the alert; it does not clear the record. The record stays on the
+keyboard and in the console log, and `polyctl crash show` reads it back at any time the
+host daemon is running (`--slave` for the link-side half, `crash clear` to forget it). The keyboard keeps working meanwhile; the alert is
 information, not an error you have to act on.
 
 <Aside type="note">
