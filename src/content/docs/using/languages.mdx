@@ -43,6 +43,30 @@ Want to restyle the legends themselves — Tengwar, runes, Braille — without c
 type? That's a separate, cosmetic feature: [Glyph Scripts](/using/glyph-scripts/).
 </Aside>
 
+## What a keycap shows
+
+A single keycap carries up to three things at once, in fixed places:
+
+![A German layout's 7 key: the digit 7 large on the left, a slash in the upper right, and a curly brace in the lower right](../../../assets/using/legend-anatomy.png)
+
+- The **main legend**, drawn largest and to the left — what the key types on its own. Just how
+  large is [adjustable](/using/legend-size/); these examples use the default.
+- The **Shift preview**, small in the upper right — what you get holding Shift.
+- The **AltGr hint**, small in the lower right — what you get holding AltGr.
+
+The two small ones are previews, so you can find a symbol without hunting for it. They appear
+only when the key actually has something to show: on most layouts a plain letter has no Shift
+preview, because its capital is no surprise.
+
+<Aside type="tip" title="Crowded scripts get a smaller AltGr hint">
+Since firmware **0.17.3**, on layouts whose letters are wide — Arabic and several Indic scripts —
+the AltGr hint is drawn at half size so it does not crowd the letter or run into the Shift preview:
+
+![An Arabic layout's key: the Arabic letter large, a bracket in the upper right, and a noticeably smaller Arabic AltGr hint in the lower right](../../../assets/using/legend-altgr-half.png)
+
+A hint that is only a combining mark stays full size — halving one of those would leave a dot.
+</Aside>
+
 ## The Intl layer: accented letters on demand
 
 Switching your whole layout is the right move when you *write* in another language. When you only

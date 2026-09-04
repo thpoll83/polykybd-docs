@@ -34,6 +34,10 @@ jitter adds stronger burn-in protection by moving the lit pixels. Eden trades th
 glanceability for a full moving picture — it's a screensaver, so the pixels never rest in
 one place. Any key press dismisses it instantly.
 
+Eden dims its drifting legend by lighting every other row rather than every row. Since firmware
+**0.17.3** that stripe pattern shifts as the legend moves, so the dimming itself no longer favours
+one set of rows for the life of the board.
+
 <Aside type="caution" title="Eden is split72 only">
 The Eden screensaver is drawn by code that only the **split72** carries. On the split42 you can
 still select it, but nothing draws it — the legends just sit dimmed and motionless until the
