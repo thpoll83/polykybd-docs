@@ -137,6 +137,7 @@ export default defineConfig({
             { label: 'Glyph Scripts', slug: 'using/glyph-scripts' },
             { label: 'Legend Size', slug: 'using/legend-size' },
             { label: 'Macros', slug: 'using/macros' },
+            { label: 'AI Key', slug: 'using/ai-key' },
             { label: 'Display Brightness', slug: 'using/brightness' },
             { label: 'RGB Lighting', slug: 'using/rgb-lighting' },
             { label: 'Idle & Burn-in Protection', slug: 'using/idle' },

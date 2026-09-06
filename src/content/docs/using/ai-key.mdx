@@ -1,0 +1,144 @@
+---
+title: AI Key
+description: One key wears your AI agent's status — green, amber, blinking red — and brings its window back to the front when you press it.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import SupportedSince from '../../../components/SupportedSince.astro';
+
+<SupportedSince protocol={17} />
+
+Working with an AI agent means glancing at a window to find out whether it is still busy or
+waiting on you. The **AI key** puts that answer on the keyboard: the key lights up in the colour
+of the agent's state, spells the state out on its keycap, and brings the agent's window back to
+the front when you press it.
+
+```mermaid
+flowchart LR
+  EV["<b>your AI agent</b><br/>starts work · needs you · finishes"]
+  HOOK["<b>a hook</b><br/>runs one command"]
+  HOST["<b>PolyKybdHost</b>"]
+  LED(["the key lights up<br/>green · amber · blinking red"])
+  CAP(["the keycap says<br/>AI / idle · busy · you!"])
+  PRESS(["you press the key"])
+  WIN(["the agent's window<br/>comes to the front"])
+
+  EV --> HOOK --> HOST
+  HOST --> LED
+  HOST --> CAP
+  PRESS --> HOST --> WIN
+```
+
+## What the key shows
+
+| State | The light | The keycap |
+|---|---|---|
+| **off** | your normal [RGB lighting](/using/rgb-lighting/), untouched | `AI` |
+| **idle** | steady green | `AI` / `idle` |
+| **busy** | breathing amber | `AI` / `busy` |
+| **needs you** | blinking red | `AI` / `you!` |
+
+Only the red state blinks. A light that blinks all the time is just a light — the blink is what
+is meant to pull your eye back to the keyboard, so it is spent on the one state that wants you.
+
+The keycap spells the state out as well as lighting it, so the key still answers the question on
+a split42 (which has no RGB matrix) and without relying on colour vision.
+
+<Aside type="note" title="Where the key is">
+On a stock keymap the AI key takes the place of **Hyper** on each base layout — on
+*Qwerty Stag!* that is the outer key of the right half's top row. Neo has no Hyper key and so
+has no AI key; put one anywhere you like with the [Keymap Editor](/using/keymap-editor/).
+</Aside>
+
+## Setting it up
+
+### 1. Say which window the key should raise
+
+The target is a piece of the window title, matched without regard to case. Write it as `/…/` if
+you want a regular expression instead.
+
+```
+polyctl ai target "Claude Code"
+polyctl ai status
+```
+
+`status` prints the state the keyboard is showing, the target, and every window matching it right
+now — which is the quickest way to check the pattern before you rely on it.
+
+### 2. Have your agent report its state
+
+Everything is driven by one command, so anything that can run a command can drive the key:
+
+```
+polyctl ai state busy
+polyctl ai state attention
+polyctl ai state idle
+polyctl ai state off
+```
+
+`busy`, `running`, `done`, `ready`, `waiting`, `ask` and `input` are understood too, so a script
+can use its own vocabulary.
+
+Most agents can run a command when something happens, and PolyKybdHost ships one adapter that
+understands the common shapes — `contrib/ai-hooks/polykybd_ai_hook.py`.
+
+**Claude Code** reports all three states. In `~/.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "UserPromptSubmit": [{"hooks": [{"type": "command",
+       "command": "python3 ~/PolyKybdHost/contrib/ai-hooks/polykybd_ai_hook.py"}]}],
+    "Notification":     [{"hooks": [{"type": "command",
+       "command": "python3 ~/PolyKybdHost/contrib/ai-hooks/polykybd_ai_hook.py"}]}],
+    "Stop":             [{"hooks": [{"type": "command",
+       "command": "python3 ~/PolyKybdHost/contrib/ai-hooks/polykybd_ai_hook.py"}]}]
+  }
+}
+```
+
+`Notification` is the event that turns the key red — it fires when Claude Code wants a permission
+answer or your input.
+
+**OpenAI Codex CLI** has a single notification event, `agent-turn-complete`, so it can turn the
+key green when a turn ends but cannot report "busy" or "needs you" on its own. In
+`~/.codex/config.toml`:
+
+```toml
+notify = ["python3", "/home/you/PolyKybdHost/contrib/ai-hooks/polykybd_ai_hook.py"]
+```
+
+…and set the other two states where you start it:
+
+```sh
+polyctl ai state busy && codex ; polyctl ai state idle
+```
+
+**Anything else** — call `polyctl ai state <state>` from wherever that tool lets you run
+something. No adapter needed.
+
+## Pressing the key
+
+One press raises the window your target matches. Press it again and the next matching window
+comes forward instead, so several agent sessions at once still works — each press walks one step
+through the list.
+
+<Aside type="caution" title="Three things that look like a broken key">
+**Nothing set.** With no target the press cannot know what to raise; the app says so in a
+notification rather than doing nothing quietly.
+
+**A Wayland session.** Native Wayland gives no way for an application to raise another
+application's window, so the press is received and nothing comes forward. This is the same limit
+that stops window tracking working there — an X11 (or XWayland) session does not have it.
+
+**Mid-update.** While the keyboard is being flashed, presses are not received. Press again once
+the update finishes.
+</Aside>
+
+## What it does not do
+
+The keyboard is told a state — it never asks for one, and it holds no memory of it. A keyboard
+reboot leaves the key dark until the next report; the host re-sends the last state it knew when
+the keyboard comes back. Nothing about your agent, your prompts or your window titles is sent
+anywhere: the state is a single number, and the window matching happens entirely on your own
+machine.
