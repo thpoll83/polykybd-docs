@@ -52,6 +52,14 @@ has no AI key; put one anywhere you like with the [Keymap Editor](/using/keymap-
 
 ## Setting it up
 
+<Aside type="note" title="You need the release that carries it">
+The AI key arrived with firmware **protocol v17** and the matching host app. On anything older
+there is no AI key at all — that position is still whatever it was before, and `polyctl ai`
+reports that the firmware is too old for the status light. Update the host app from the tray
+(**Updates → Check for updates**), then the keyboard from the same menu; the key and the commands
+that drive it arrive together.
+</Aside>
+
 ### 1. Say which window the key should raise
 
 The target is a piece of the window title, matched without regard to case. Write it as `/…/` if
