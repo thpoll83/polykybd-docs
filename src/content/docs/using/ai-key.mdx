@@ -34,12 +34,19 @@ flowchart LR
 | State | The light | The keycap |
 |---|---|---|
 | **off** | your normal [RGB lighting](/using/rgb-lighting/), untouched | `AI` |
-| **idle** | steady green | `AI` / `idle` |
-| **busy** | breathing amber | `AI` / `busy` |
-| **needs you** | blinking red | `AI` / `you!` |
+| **idle** | steady green, fading out after a minute | `AI` / `idle` |
+| **busy** | breathing amber, for as long as it takes | `AI` / `busy` |
+| **needs you** | blinking red, fading out after a minute | `AI` / `you!` |
 
 Only the red state blinks. A light that blinks all the time is just a light — the blink is what
 is meant to pull your eye back to the keyboard, so it is spent on the one state that wants you.
+
+**Green and red go out after a minute; amber does not.** Idle and "needs you" are states an agent
+can sit in for hours, so once you have seen the light it has done its job and the keyboard goes
+back to looking like a keyboard. Busy is bounded by the work itself, and it is the one state
+where a glance across the desk has to answer *is it still going?* — so the amber stays until the
+agent says otherwise. The keycap keeps showing the state either way, and any change of state
+lights the key again.
 
 The keycap spells the state out as well as lighting it, so the key still answers the question on
 a split42 (which has no RGB matrix) and without relying on colour vision.
