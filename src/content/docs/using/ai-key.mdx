@@ -60,7 +60,22 @@ reports that the firmware is too old for the status light. Update the host app f
 that drive it arrive together.
 </Aside>
 
-### 1. Say which window the key should raise
+### 1. Turn the feature on
+
+The AI key ships **off**. Until you switch it on the key's light stays dark, its keycap reads
+`AI`, and a press is noted in the log and raises nothing — because a light that can never change
+is worse than no light at all.
+
+```
+polyctl settings set ai_key_enabled true
+```
+
+<Aside type="note" title="On a multi-machine setup, turn it on in both places">
+The keyboard machine needs it for the light and the press; the machine your agent runs on needs
+it for the window the press raises. See [Across two computers](#across-two-computers) below.
+</Aside>
+
+### 2. Say which window the key should raise
 
 The target is a piece of the window title, matched without regard to case. Write it as `/…/` if
 you want a regular expression instead.
@@ -73,7 +88,7 @@ polyctl ai status
 `status` prints the state the keyboard is showing, the target, and every window matching it right
 now — which is the quickest way to check the pattern before you rely on it.
 
-### 2. Have your agent report its state
+### 3. Have your agent report its state
 
 Everything is driven by one command, so anything that can run a command can drive the key:
 
@@ -143,10 +158,76 @@ that stops window tracking working there — an X11 (or XWayland) session does n
 the update finishes.
 </Aside>
 
+## Across two computers
+
+Agents are often not on the machine the keyboard is plugged into — a work laptop beside a desktop,
+a headless box you drive over a remote desktop. The AI key crosses that gap using the same
+[multi-machine](/using/multi-machine/) setup the rest of PolyKybd uses: PolyKybdHost runs on the
+keyboard machine, the **forwarder** runs on the machine you are working on.
+
+```mermaid
+flowchart TB
+  subgraph AGENT["the computer your agent runs on"]
+    direction LR
+    EV["<b>your AI agent</b>"] --> HOOK["<b>a hook</b><br/>polyctl ai state … --host"]
+    FWD["<b>the forwarder</b>"] --> WIN(["the agent's window<br/>comes to the front"])
+  end
+  subgraph KEEB["the computer the keyboard is plugged into"]
+    direction LR
+    PRESS(["you press the key"]) --> HOST["<b>PolyKybdHost</b>"] --> LED(["the key lights up"])
+  end
+  HOOK ==>|"the state, one number"| HOST
+  HOST -.->|"the press, on the reply"| FWD
+```
+
+Both halves ride the forwarder's existing authenticated connection, so there is nothing new to
+open on the machine your agent runs on — the press comes back as the answer to a window report
+the forwarder is sending anyway.
+
+**On the keyboard machine**, alongside the normal multi-machine setup:
+
+```
+polyctl settings set ai_key_enabled true
+polyctl settings set window_report_network_enabled true
+```
+
+**On the machine your agent runs on**, run the forwarder with `--report-rpc`, then:
+
+```
+polyctl settings set ai_key_enabled true
+polyctl ai target "Claude Code"
+```
+
+…and point your hook at the keyboard machine:
+
+```
+polyctl ai state busy --host 192.168.1.20
+```
+
+<Aside type="note" title="The target belongs to the machine that has the window">
+`ai target` is set on the machine the **agent** runs on, because that is where the window is.
+`ai state --host` goes the other way, to the machine the **keyboard** is on. Getting these the
+wrong way round is the one thing that reads as a broken key here — `polyctl ai status` on each
+machine tells you which is which.
+</Aside>
+
+While an agent is reporting a state the forwarder checks in about once a second, so a press
+arrives within a second or so. The rest of the time it keeps its usual quiet 15-second rhythm.
+
 ## What it does not do
 
-The keyboard is told a state — it never asks for one, and it holds no memory of it. A keyboard
-reboot leaves the key dark until the next report; the host re-sends the last state it knew when
-the keyboard comes back. Nothing about your agent, your prompts or your window titles is sent
-anywhere: the state is a single number, and the window matching happens entirely on your own
-machine.
+**Agents that live in a browser tab.** The key raises a *window*, and a hosted agent — Claude Code
+on the web, ChatGPT, anything in a container you reach through a browser — is a tab, not a window.
+A press brings the browser forward if your target matches its title, and stops there: it will not
+switch tabs, and a hook running inside a hosted container has no route back to your keyboard. The
+key is built for an agent running on a computer you control, locally or through the forwarder
+above.
+
+**Remember anything.** The keyboard is told a state — it never asks for one, and it holds no
+memory of it. A keyboard reboot leaves the key dark until the next report; the host re-sends the
+last state it knew when the keyboard comes back.
+
+Nothing about your agent, your prompts or your window titles is sent anywhere. The state is a
+single number, the window matching happens on the machine the window is on, and across two
+computers the only thing that crosses is that number in one direction and a press count in the
+other.

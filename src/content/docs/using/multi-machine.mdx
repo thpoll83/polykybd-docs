@@ -126,6 +126,16 @@ changes the window title.
 This rides the authenticated path only: it needs the `--report-rpc` setup above, and the
 legacy relay in the next section does not carry the URL.
 
+## The AI key for a forwarded agent
+
+The [AI key](/using/ai-key/) works across the same link. An agent running on the remote
+machine reports its state to the keyboard machine with `polyctl ai state <state> --host
+<address>`, and a press of the key travels back on the reply to a window report — so the
+window it raises is the one on the machine the agent is actually on.
+
+Both machines need `ai_key_enabled` switched on, and this rides the authenticated path
+only. The [AI key page](/using/ai-key/#across-two-computers) has the full setup.
+
 ## If it does not work
 
 | What you see | What it means | Fix |
