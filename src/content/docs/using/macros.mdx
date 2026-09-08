@@ -65,9 +65,11 @@ The label field shows the keycap exactly as it will look, next to a meter of how
 
 <Aside type="tip" title="The meter counts pixels, not letters">
 The keycap face is proportional, so the number of letters that fit depends entirely on which
-letters they are. `WWWWWWWW` fills the display at eight characters; `iiiiiiiiiiii` fits twelve
-with room left over. About **twelve characters** is typical. Anything past the edge is simply not
-drawn, and the meter turns amber to tell you before you save.
+letters they are — and on which face the keyboard picks. A label that fits gets the **larger of
+two faces**, which is why `push` and `work mail` are drawn half again as big as a long one; past
+that width the keyboard drops to the small face and keeps every character rather than trimming
+one to stay large. About **nine characters** at the large face, **twelve** at the small one.
+Anything past the edge is not drawn, and the meter turns amber before you save.
 </Aside>
 
 ## Putting one behind a modifier
@@ -200,7 +202,9 @@ per macro from the **Keycap** dropdown in the editor:
 | **Label only, as large as it fits** | No mark at all — the label gets the whole key, at the largest face it fits on. |
 | **Icon only, filling the key** | The icon alone, at full size across the whole key. The label is kept but not drawn, so switching back does not lose it. |
 
-The label itself is drawn in the smallest face the keyboard has, along the bottom edge. A macro
+The label sits along the bottom edge, in the largest of two faces that fits it whole — short
+labels are noticeably bigger than long ones, and a label too wide for the larger face keeps all
+its characters at the smaller one rather than losing any to stay large. A macro
 with no label shows just the mark, centred — so an unlabelled macro is still identifiable, it
 just does not say what it does.
 
