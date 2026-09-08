@@ -23,6 +23,28 @@ has no **Macros** tab, one of the two is older than that: update the host app fr
 keyboard's macro keys arrive together — there is no half-working state to diagnose.
 </Aside>
 
+## Where they already are
+
+You do not have to place a macro before you can press one. The **Utility layer**'s top row
+*is* the macro row: twelve keys, `M0` to `M11` from left to right across the two halves.
+
+To reach it, hold **Fn** and tap the **top-left** key: that switches to Utility for a single
+keypress, so the very next key you press fires its macro. To stay on the layer instead — for
+several macros in a row — hold **Fn** and tap the **top-right** key.
+
+The last four macros share the same twelve keys: **hold Shift** and the first four become `M12`
+to `M15`. The other eight go blank while Shift is down, which is the keycap telling you where the
+second bank stops.
+
+![The twelve macro keycaps on the Utility layer. Without a modifier they read Macro 0 to Macro 11, each with the Mayan numeral for its own number above the caption. With Shift held the first four become Macro 12 to Macro 15 and the remaining eight are blank.](../../../assets/using/macro-row.png)
+
+<Aside type="caution" title="F13–F24 no longer have a home">
+That row used to be **F13** through **F24**. If you use them, put them back from the Keymap
+Editor — they are still perfectly ordinary keycodes, they just are not on the default keymap any
+more. Almost nothing sends them, and this is the only row on the board where sixteen macros are
+reachable without the host app at all.
+</Aside>
+
 ## Writing one
 
 Macros live in the **Keymap Editor** — open the tray menu and choose **Configure Keymap**, then
@@ -32,6 +54,10 @@ the **Macros** tab beside *Layers & Mods*.
 2. Type the **label** — what the keycap will say.
 3. Type **what it types** in the field below.
 4. **Save macro**.
+
+That is enough to use it — macro `0` is already on the first key of the Utility row. Step 5 is
+only if you want it somewhere else:
+
 5. Click the key you want it on in the keyboard picture, then **Use on selected key**.
 
 The label field shows the keycap exactly as it will look, next to a meter of how much of the
@@ -169,14 +195,34 @@ per macro from the **Keycap** dropdown in the editor:
 
 | Layout | What it draws |
 |---|---|
-| **Number above the label** | `M3` over the label. The default, and the only one that needs nothing else. |
-| **Icon above the label** | A symbol you pick, over the label. |
+| **Icon above the label** | A symbol you pick, over the label. What a fresh keyboard uses. |
+| **Number above the label** | `M3` over the label — the plain fallback, and the only one that needs nothing else. |
 | **Label only, as large as it fits** | No mark at all — the label gets the whole key, at the largest face it fits on. |
 | **Icon only, filling the key** | The icon alone, at full size across the whole key. The label is kept but not drawn, so switching back does not lose it. |
 
 The label itself is drawn in the smallest face the keyboard has, along the bottom edge. A macro
 with no label shows just the mark, centred — so an unlabelled macro is still identifiable, it
 just does not say what it does.
+
+### Before you write one
+
+A macro you have never touched is not blank. Each of the sixteen starts with the **Mayan numeral
+for its own number** over the caption `Macro 0`, `Macro 1`, and so on — a shell for zero, then
+dots and bars up to `Macro 15`.
+
+They are numerals rather than pictures on purpose: a slot nobody has written yet has no purpose,
+so a gear or an envelope would be a wrong label rather than a neutral one. The numeral says the
+same thing the caption does, and unlike a row of identical keys it tells you at a glance which
+one your finger is on.
+
+Anything you set replaces it and is kept — the stock look only ever fills a slot that has no
+macro **and** no look of its own. Clearing a macro hands its keycap the numeral back.
+
+<Aside type="note" title="They come from the font pack">
+The numerals live in the keyboard's `symbol` font pack, which the host app flashes on connect. On
+a keyboard that has never had one, those keys show `M0`…`M15` instead — the same fallback any
+missing symbol takes, so a keycap is never left blank.
+</Aside>
 
 Labels are **ASCII only**. The small face has no accented letters, so anything outside the basic
 alphabet, digits and punctuation is dropped as you type rather than appearing on the keycap as a
