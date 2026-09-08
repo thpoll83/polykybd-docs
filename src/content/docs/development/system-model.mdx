@@ -301,7 +301,7 @@ flowchart TB
   HOOK["<b>hook adapter</b><br/>contrib/ai-hooks/<br/>polykybd_ai_hook.py<br/><i>decide_state</i>"]
   CLI["<b>polyctl ai state busy</b><br/>cli/polyctl.py<br/><i>_cmd_ai</i>"]
   CORE["<b>the daemon</b><br/>core/poly_core.py<br/><i>set_ai_state</i>"]
-  DEV["<b>the device layer</b><br/>device/poly_kybd.py<br/><i>set_ai_state</i> · v17 gate"]
+  DEV["<b>the device layer</b><br/>device/poly_kybd.py<br/><i>set_ai_state</i> · v18 gate"]
   HID["<b>hid_com.c</b><br/><i>case 40</i><br/>GET/SET_AI_STATE"]
   ST["<b>state.c</b><br/><i>set_ai_state</i><br/>RAM only"]
   HK["<b>poly_keymap.c</b><br/><i>housekeeping_task_user</i><br/>diff → poly_sync_t.ai_state"]

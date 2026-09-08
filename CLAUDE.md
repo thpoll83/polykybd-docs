@@ -99,6 +99,21 @@ Astro **Starlight**. Pages are Markdown/MDX under
 - The **feature → page map**, the section list and the docs-PR flow live in the
   `update-polykybd-docs` skill; use it when a firmware/host feature needs
   documenting.
+- ⚠️ **A protocol version lives in FOUR places and one of them is a NUMBER, so
+  grepping for `v17` finds three of them.** A feature page carries
+  `<SupportedSince protocol={17} />` (`src/components/SupportedSince.astro`), which
+  renders as *"Firmware protocol v17+"* — the badge a reader sees first. The other
+  three are prose: the command-table row and the version-history bullet in
+  `reference/hid-protocol.mdx`, and whatever the page itself says in words. Renumbering
+  the AI key v17 → v18 (2026-09-08, after qmk#278 took 17 on the base first) hit exactly
+  this: the three prose sites were fixed, the build was green, and the page still showed
+  a **v17+ badge above a v18 sentence**. The check is the BUILT html, not the source:
+  ```bash
+  grep -rn "SupportedSince protocol" src/content/docs/     # every numeric marker
+  grep -rlo "protocol v17\|v17+" dist/                     # after npm run build
+  ```
+  Renumbering a version is also not a rename — the number you vacate belongs to whatever
+  took it, so the history list needs an entry for it or it reads as a gap.
 
 ## Site-wide `<head>` scripts
 

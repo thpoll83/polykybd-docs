@@ -6,7 +6,7 @@ description: One key wears your AI agent's status — green, amber, blinking red
 import { Aside } from '@astrojs/starlight/components';
 import SupportedSince from '../../../components/SupportedSince.astro';
 
-<SupportedSince protocol={17} />
+<SupportedSince protocol={18} />
 
 Working with an AI agent means glancing at a window to find out whether it is still busy or
 waiting on you. The **AI key** puts that answer on the keyboard: the key lights up in the colour
@@ -62,7 +62,7 @@ status light follows it there.
 ## Setting it up
 
 <Aside type="note" title="You need the release that carries it">
-The AI key arrived with firmware **protocol v17** and the matching host app. On anything older
+The AI key arrived with firmware **protocol v18** and the matching host app. On anything older
 there is no AI key at all — that position is still whatever it was before, and `polyctl ai`
 reports that the firmware is too old for the status light. Update the host app from the tray
 (**Updates → Check for updates**), then the keyboard from the same menu; the key and the commands
