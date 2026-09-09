@@ -9,11 +9,30 @@ import { Aside } from '@astrojs/starlight/components';
 
 The Layout Editor in PolyKybdHost lets you remap any key on any layer directly, without recompiling or reflashing firmware. Changes take effect immediately and are stored in the keyboard's flash memory.
 
-![The PolyKybdHost Layout Editor — the split72 key grid with layer tabs across the top and a keycode picker below](../../../assets/howto/layout-editor.png)
+![The PolyKybdHost Layout Editor: both halves of the split72 drawn on their case plates, each with its 0.96 inch status panel lit, layer tabs named Qwerty, Stag!, ColemkDH, Neo, Workman, Fn, Numpad and Utility across the top, and a keycode picker below](../../../assets/using/layout-editor.png)
 
 ## Opening the editor
 
 Right-click the PolyKybdHost tray icon → **Configure Keymap**.
+
+## The board you are editing
+
+The editor draws the keyboard, not just a grid of keys: each half sits on its own
+case plate in the same shape and stagger as the hardware, so a key is where your
+finger expects it. The two 0.96" status panels are drawn too, and they
+follow the tabs: pick **Fn** and both panels read layer 5, `Fn`. On the keyboard that
+line names the active base layout; in the editor it names the layer you are editing,
+which is the more useful of the two while you are remapping.
+
+<SupportedSince label="Host 0.19.0+"
+                title="Minimum PolyKybdHost version this feature needs"
+                note="the case plates and status panels" />
+
+<Aside type="note">
+The plate is the real case contour, exported from the hardware design rather than
+drawn by hand — which is also why it is split72 only. On another board the keys are
+laid out as before, with no plate behind them.
+</Aside>
 
 ## Using the editor
 
@@ -27,18 +46,28 @@ Right-click the PolyKybdHost tray icon → **Configure Keymap**.
 
 ## Seeing the keycaps instead of keycodes
 
-By default every key in the editor shows its **keycode** — `KC_A`, `KC_LSFT`, `MO(6)`.
-That is precise, but it does not look like your keyboard.
+Three buttons in the top-right corner of the editor decide what a key shows —
+**Symbol**, **Preview** and **Real**:
 
-Tick **Key previews** in the editor header and each key is drawn the way the keyboard
-itself draws it: the same fonts, the same layout, the same legends — letters in the
-language you have selected, the modifier and arrow symbols, the PolyKybd setting keys,
-and your macros with their labels. It makes a layer far easier to read at a glance, and
-it shows you what a remap will actually look like on the key **before** you commit it.
+- **Symbol** is the default: every key shows its **keycode** — `Q`, `NUBS`, `GRV`.
+  Precise, but it does not look like your keyboard.
+- **Preview** draws each key the way the keyboard itself draws it: the same fonts, the
+  same layout, the same legends — letters in the language you have selected, the
+  modifier and arrow symbols, the PolyKybd setting keys, and your macros with their
+  labels.
+- **Real** puts that same picture through a simulation of the OLED: the cool white the
+  panels actually emit, on true black, with the slight bloom of lit pixels.
 
-<SupportedSince label="Host 0.14.11+"
+![The same six keys drawn three times: as keycodes, as keycap previews, and through the OLED simulation](../../../assets/using/layout-editor-modes.png)
+
+Preview makes a layer far easier to read at a glance, and it shows you what a remap
+will actually look like on the key **before** you commit it. Real answers a narrower
+question — how legible a legend will be on the hardware — and the difference only shows
+up close, as above; across the whole board the two look much the same.
+
+<SupportedSince label="Host 0.18.0+"
                 title="Minimum PolyKybdHost version this feature needs"
-                note="works without a firmware checkout" />
+                note="Symbol / Preview / Real; previews alone since 0.14.11" />
 
 <Aside type="note">
 Coverage is not total. A handful of keys are drawn by the firmware at the moment you
@@ -48,9 +77,9 @@ alone on purpose: a transparent key (it shows whatever the layer below it has), 
 two inner keys that have no display behind them.
 </Aside>
 
-If the checkbox is greyed out, hover it — the tooltip says what could not be loaded.
-The tooltip also names where the legends were read from, which is worth a look if a
-preview ever disagrees with the physical key.
+If a button is greyed out, hover it — the tooltip says what could not be loaded. It
+also names where the legends were read from, which is worth a look if a preview ever
+disagrees with the physical key.
 
 ## Dual-function keys (tap one thing, hold another)
 
