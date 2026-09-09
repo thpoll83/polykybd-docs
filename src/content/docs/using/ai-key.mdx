@@ -19,7 +19,7 @@ flowchart LR
   HOOK["<b>a hook</b><br/>runs one command"]
   HOST["<b>PolyKybdHost</b>"]
   LED(["the key lights up<br/>green · amber · blinking red"])
-  CAP(["the keycap says<br/>AI / idle · busy · you!"])
+  CAP(["the keycap shows<br/>AI + 💤 · 🗘 · ❗"])
   PRESS(["you press the key"])
   WIN(["the agent's window<br/>comes to the front"])
 
@@ -34,9 +34,9 @@ flowchart LR
 | State | The light | The keycap |
 |---|---|---|
 | **off** | your normal [RGB lighting](/using/rgb-lighting/), untouched | `AI` |
-| **idle** | steady green, fading out after a minute | `AI` / `idle` |
-| **busy** | breathing amber, for as long as it takes | `AI` / `busy` |
-| **needs you** | blinking red, fading out after a minute | `AI` / `you!` |
+| **idle** | steady green, fading out after a minute | `AI` over 💤 sleeping |
+| **busy** | breathing amber, for as long as it takes | `AI` over 🗘 turning arrows |
+| **needs you** | blinking red, fading out after a minute | `AI` over ❗ |
 
 Only the red state blinks. A light that blinks all the time is just a light — the blink is what
 is meant to pull your eye back to the keyboard, so it is spent on the one state that wants you.

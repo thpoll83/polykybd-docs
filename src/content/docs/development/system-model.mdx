@@ -309,7 +309,7 @@ flowchart TB
   LEG["<i>to_static_text</i><br/>case KC_AI"]
   SLAVE["<b>slave half</b><br/>copy_local_state"]
   LED(["RGB LED under the key<br/>green · amber · blinking red"])
-  CAP(["keycap OLED<br/>AI / idle · busy · you!"])
+  CAP(["keycap OLED<br/>AI + 💤 · 🗘 · ❗"])
 
   EV --> HOOK --> CLI -- "control socket<br/>M_AI_STATE_SET" --> CORE --> DEV
   DEV -- "HID cmd 40" --> HID --> ST --> HK
