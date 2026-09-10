@@ -92,11 +92,15 @@ import rgbBothHalves from '../../assets/landing/rgb-both-halves.jpg';
 
 ## The ecosystem
 
-Five open repositories, wired together in [Architecture & Ecosystem](/introduction/architecture/):
-[hardware](https://github.com/thpoll83/PolyKybd) (KiCad PCBs, case, stems) ·
-[firmware](https://github.com/thpoll83/qmk_firmware) (QMK on RP2040) ·
-[PolyKybdHost](https://github.com/thpoll83/PolyKybdHost) (daemon, tray app, `polyctl`) ·
-[Adafruit GFX fork](https://github.com/thpoll83/adafruit-gfx-library) (display rendering) ·
-[CTND](https://github.com/thpoll83/polykybd-ctnd) (hardware-in-the-loop test rig).
+Eight open repositories, wired together in [Architecture & Ecosystem](/introduction/architecture/):
+
+- [PolyKybd](https://github.com/thpoll83/PolyKybd) — KiCad PCBs, plates, 3D-printable case and key stems
+- [qmk_firmware](https://github.com/thpoll83/qmk_firmware) — the RP2040 firmware, branch `PolyKybd`, variants `split72` and `split42`
+- [PolyKybdHost](https://github.com/thpoll83/PolyKybdHost) — the Python daemon, tray app and `polyctl` CLI
+- [Adafruit-GFX-Library](https://github.com/thpoll83/Adafruit-GFX-Library) — the GFX fork the firmware draws with, plus `fontconvert`
+- [wincompose](https://github.com/thpoll83/wincompose) — maintained fork of Sam Hocevar's WinCompose, for [unicode input on Windows](/software/wincompose/)
+- [gnome-wayland-winreader](https://github.com/thpoll83/gnome-wayland-winreader) — read-only GNOME Shell extension reporting the focused window on Wayland
+- [polykybd-ctnd](https://github.com/thpoll83/polykybd-ctnd) — Raspberry Pi hardware-in-the-loop [test and CI rig](/development/test-rig/)
+- [polykybd-docs](https://github.com/thpoll83/polykybd-docs) — this site
 
 Independent open hardware — say hello on [Discord](https://discord.gg/gW8JescH7M), support it on [Ko-fi](https://ko-fi.com/polykb).
