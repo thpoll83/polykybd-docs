@@ -7,8 +7,8 @@
 #   ./preview.sh --port 8080 [build]
 #   ./preview.sh --reinstall # force a clean dependency reinstall first
 #
-# Needs Node.js 20+ and npm on PATH. Installs dependencies automatically the
-# first time (or when package-lock.json changes). Ctrl-C to stop.
+# Needs Node.js 22.12+ (Astro 7) and npm on PATH. Installs dependencies the
+# first time automatically (or when package-lock.json changes). Ctrl-C to stop.
 
 set -euo pipefail
 
@@ -38,7 +38,7 @@ done
 # "preview" is an alias for "build" (build once, then serve it).
 [ "$MODE" = "preview" ] && MODE="build"
 
-command -v npm >/dev/null 2>&1 || { echo "preview.sh: npm not found — install Node.js 20+ first." >&2; exit 1; }
+command -v npm >/dev/null 2>&1 || { echo "preview.sh: npm not found — install Node.js 22.12+ first." >&2; exit 1; }
 
 # Install deps when missing, when the lockfile is newer than the install, or on
 # explicit --reinstall. Uses `npm ci` for a clean, lockfile-exact tree.
