@@ -16,7 +16,8 @@
   --sl-color-accent: #2f7bf6;
   --sl-color-accent-high: #9ec5ff;
 
-  /* Slightly cooler, higher-contrast grays for a hardware-doc feel. */
+  /* Slightly cooler, higher-contrast grays for a hardware-doc feel.
+     Dark mode only — the light-mode values are restored below. */
   --sl-color-gray-1: #e8edf4;
   --sl-color-gray-2: #b9c3d0;
   --sl-color-gray-3: #8593a6;
@@ -30,10 +31,25 @@
     'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
 }
 
+/* Light mode.
+   Starlight ships its own props inside the `starlight.base` cascade layer, and
+   an unlayered declaration beats every layered one regardless of specificity —
+   so the dark grays above would otherwise also apply under
+   `[data-theme='light']` and paint the light theme on a dark background. Every
+   token overridden in the `:root` block therefore needs its light-mode value
+   repeating here; these are Starlight's own light-theme values. */
 :root[data-theme='light'] {
   --sl-color-accent-low: #dbe8ff;
   --sl-color-accent: #1f5fd6;
   --sl-color-accent-high: #11337a;
+
+  --sl-color-gray-1: hsl(224, 14%, 16%);
+  --sl-color-gray-2: hsl(224, 10%, 23%);
+  --sl-color-gray-3: hsl(224, 7%, 36%);
+  --sl-color-gray-4: hsl(224, 6%, 56%);
+  --sl-color-gray-5: hsl(224, 6%, 77%);
+  --sl-color-gray-6: hsl(224, 20%, 94%);
+  --sl-color-black: hsl(0, 0%, 100%);
 }
 
 /* Tighter, more deliberate headings. */
