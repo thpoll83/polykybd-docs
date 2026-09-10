@@ -91,6 +91,29 @@
   filter: drop-shadow(0 0 28px rgba(47, 123, 246, 0.35));
 }
 
+/* Landing hero: the four entry-point buttons as a 2×2 block.
+   Starlight lays the actions out as a wrapping flex row, and the splash hero's
+   text column is too narrow for four of them — the fourth drops onto a row of
+   its own and reads as an afterthought. A two-column grid keeps them even, and
+   the max-width stops the buttons stretching on a wide viewport. */
+.hero .actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+  max-width: 28rem;
+  margin-inline: auto;   /* centred while the hero is stacked (narrow) */
+}
+.hero .actions > a {
+  justify-content: center;
+}
+
+@media (min-width: 50rem) {
+  /* Hero goes side-by-side and left-aligns; the block follows the text. */
+  .hero .actions {
+    margin-inline: 0;
+  }
+}
+
 /* Site title weight — reads as a wordmark next to the logo glyph. */
 .site-title {
   font-weight: 650;

@@ -7,21 +7,25 @@ hero:
   image:
     file: ../../assets/polytasten-badge.svg
   actions:
-    - text: Start Building
+    - text: Building PolyKybd
       link: /assembly/overview/
       icon: right-arrow
       variant: primary
-    - text: How it fits together
-      link: /introduction/architecture/
+    - text: Using PolyKybd
+      link: /using/overlays/
+      icon: laptop
+      variant: secondary
+    - text: PolyHost Software
+      link: /software/overview/
+      icon: setting
+      variant: secondary
+    - text: Development
+      link: /development/system-model/
       icon: open-book
-      variant: minimal
-    - text: Get a Kit
-      link: https://www.crowdsupply.com/polykybd/polykybd
-      icon: external
-      variant: minimal
+      variant: secondary
 ---
 
-import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
 import { Image } from 'astro:assets';
 import rgbBothHalves from '../../assets/landing/rgb-both-halves.jpg';
 
@@ -30,43 +34,6 @@ import rgbBothHalves from '../../assets/landing/rgb-both-halves.jpg';
   class="landing-showcase"
   alt="Both PolyKybd halves in the dark, each key lit by its own RGB LED in a rainbow gradient running from blue through purple to magenta, with the OLED legends readable through the transparent keycaps."
 />
-
-## What makes it unique
-
-<CardGrid>
-  <Card title="72 per-key displays" icon="laptop">
-    Every key has its own 72×40 px OLED showing its current function — layers, languages and app overlays are visible at a glance, no guessing. See [Context-Aware Overlays](/using/overlays/).
-  </Card>
-  <Card title="Fully split ergonomic" icon="puzzle">
-    Two halves linked over a full-duplex serial cable, so each hand sits exactly where it feels natural. Available as [**Split72** and the smaller **Split42**](/firmware/variants/).
-  </Card>
-  <Card title="Context-aware overlays" icon="setting">
-    The host software tracks your active window and re-labels every key automatically when you switch apps — see [how the host does it](/software/overview/).
-  </Card>
-  <Card title="Open hardware & firmware" icon="open-book">
-    KiCad schematics, gerbers, STL case files, a QMK firmware fork and the Python host app — every layer is open. Start at [Architecture & Ecosystem](/introduction/architecture/).
-  </Card>
-</CardGrid>
-
-![Close-up of transparent keycaps lit in a green-to-purple gradient, each one showing its own OLED legend — letters, an emoji face, a Windows logo and an "Intl" key](../../assets/landing/rgb-keycaps-closeup.jpg)
-
-A per-key RGB LED sits under the same transparent keycap as the OLED, so one key carries both a
-**legend** and a **colour** — the lighting is a layer of information, not just decoration. (RGB
-is a [Split72](/firmware/variants/) feature; the Split42 has no LED matrix.)
-
-## The ecosystem
-
-PolyKybd is built from a handful of open-source repositories that work together:
-
-| Component | What it is |
-|---|---|
-| [PolyKybd hardware](https://github.com/thpoll83/PolyKybd) | KiCad PCBs, 3D-printable case and key stems, assembly guide |
-| [QMK firmware](https://github.com/thpoll83/qmk_firmware) | The keyboard firmware (RP2040) — branch `PolyKybd`, variants `split72` & `split42` |
-| [PolyKybdHost](https://github.com/thpoll83/PolyKybdHost) | Python host app (Windows / macOS / Linux) — daemon + tray GUI + `polyctl` CLI |
-| [Adafruit GFX (fork)](https://github.com/thpoll83/adafruit-gfx-library) | Rendering library + `fontconvert` used to draw icons and text on the displays |
-| [PolyKybd CTND](https://github.com/thpoll83/polykybd-ctnd) | Raspberry Pi hardware-in-the-loop test & CI rig (development infrastructure) |
-
-See [Architecture & Ecosystem](/introduction/architecture/) for how these pieces talk to each other.
 
 ## Browse the docs
 
@@ -123,15 +90,17 @@ See [Architecture & Ecosystem](/introduction/architecture/) for how these pieces
   />
 </CardGrid>
 
-### Or jump straight to a task
+## The ecosystem
 
-- **Want to build one?** → [Assembly Overview](/assembly/overview/)
-- **Already have one?** → [Install PolyKybdHost](/setup/installation/)
-- **What can it do?** → [Context-Aware Overlays](/using/overlays/)
-- **Want to customize?** → [Keymaps & Layers](/using/keymaps/)
-- **Want to develop?** → [Firmware Development](/development/firmware/)
-- **Want the wire details?** → [HID Protocol Reference](/reference/hid-protocol/)
+Eight open repositories, wired together in [Architecture & Ecosystem](/introduction/architecture/):
 
-## Support the project
+- [PolyKybd](https://github.com/thpoll83/PolyKybd) — KiCad PCBs, plates, 3D-printable case and key stems
+- [qmk_firmware](https://github.com/thpoll83/qmk_firmware) — the RP2040 firmware, branch `PolyKybd`, variants `split72` and `split42`
+- [PolyKybdHost](https://github.com/thpoll83/PolyKybdHost) — the Python daemon, tray app and `polyctl` CLI
+- [Adafruit-GFX-Library](https://github.com/thpoll83/Adafruit-GFX-Library) — the GFX fork the firmware draws with, plus `fontconvert`
+- [wincompose](https://github.com/thpoll83/wincompose) — maintained fork of Sam Hocevar's WinCompose, for [unicode input on Windows](/software/wincompose/)
+- [gnome-wayland-winreader](https://github.com/thpoll83/gnome-wayland-winreader) — read-only GNOME Shell extension reporting the focused window on Wayland
+- [polykybd-ctnd](https://github.com/thpoll83/polykybd-ctnd) — Raspberry Pi hardware-in-the-loop [test and CI rig](/development/test-rig/)
+- [polykybd-docs](https://github.com/thpoll83/polykybd-docs) — this site
 
-PolyKybd is an independent open hardware project. If you find it useful, consider supporting it via [Ko-fi](https://ko-fi.com/polykb) or joining the [Discord](https://discord.gg/gW8JescH7M).
+Independent open hardware — say hello on [Discord](https://discord.gg/gW8JescH7M), support it on [Ko-fi](https://ko-fi.com/polykb).
