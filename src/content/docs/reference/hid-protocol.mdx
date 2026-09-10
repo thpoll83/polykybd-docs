@@ -65,7 +65,7 @@ source commonly uses it.
 | **SET_BRIGHTNESS** | `0x0D` (13) | Keycap OLED contrast; a flags byte selects volatile / host-auto (**v5+**). |
 | **KEYPRESS** | `0x0E` (14) | Host-injected key event. |
 | **IDLE_STATE** | `0x0F` (15) | Start / stop the [idle](/using/idle/) animation. |
-| **SET_UNICODE_MODE** | `0x14` (20) | Select the OS unicode-input mode. |
+| **SET_UNICODE_MODE** | `0x14` (20) | Select the OS unicode-input mode. **v17+** adds a *volatile* flag: the mode applies in RAM only and the keyboard's stored choice is left alone, which is how the host applies a reading it is not yet sure of. |
 | **DISPLAY_OFF** | `0x18` (24) | Blank the keycaps. |
 | **IDLE_STYLE** | `0x1C` (28) | **v4+.** Get/set the idle style (pulse / jitter). |
 | **SET_OS** | `0x1D` (29) | Active host OS → modifier legends. |
@@ -76,6 +76,7 @@ source commonly uses it.
 | **MACRO_BODY** | `0x25` (37) | **v15+.** Read or write a window of the shared macro body buffer — offset, count, bytes. The bodies are NUL-separated, so the host reads the whole buffer, edits one and writes it back. |
 | **MACRO_LABEL** | `0x26` (38) | **v15+.** Get/set one macro's label — the short text the keycap spells out along its bottom edge. |
 | **CRASH_RECORD** | `0x27` (39) | **v16+.** Read the keyboard's last [crash record](/software/reporting-problems/#when-the-keyboard-firmware-crashes) — `0` this half, `1` the link-side half (pulled over the split link), `2` clears it. The reply is a flags byte (present / fresh) and the 48-byte record: crash kind, core, the faulting `pc`/`lr`/`sp`, what the firmware was doing, uptime and firmware version. |
+| **AI_STATE** | `0x28` (40) | **v18+.** Get/set what the [AI key](/using/ai-key/) shows — `0` off, `1` idle, `2` busy, `3` needs you; `0xFF` queries. RAM only: the state describes something running on the host, so it means nothing after a reboot and the host re-sends it on reconnect. The range is closed — an unknown value is refused, because every value names both a colour to light and a word to draw. |
 | **BOOTLOADER / HANDEDNESS** | `0x17` / `0x19` | Enter bootloader; set which half is which. |
 
 ### Layer names — the reply format
@@ -186,6 +187,8 @@ Selected milestones:
 - **v14** — **GET_LAYER_NAMES** (`0x23`): the keyboard names its own remappable layers, so the [layout editor](/using/keymap-editor/) labels its tabs from the board in front of you rather than from a list baked into the host at build time. It reports the same layer count as the existing count command, so the editor can never draw a tab it has no name for.
 - **v15** — **macros** (`0x24`–`0x26`): store text or a short key sequence on the keyboard and type it back with one key, with a short **label the keycap spells out** so a row of macro keys reads `push`, `work mail`, `sign off` rather than M0, M1, M2. All three commands sit behind a single feature gate — a host that could read the macro list but not the bodies would draw an editor over data it cannot fetch. See [Macros](/using/macros/).
 - **v16** — **CRASH_RECORD** (`0x27`): the firmware records a hardware fault, an unexpected exception or a watchdog restart, reboots through it, and announces it on its next boot — on the console (which the host turns into an alert) and over this command. See [when the keyboard firmware crashes](/software/reporting-problems/#when-the-keyboard-firmware-crashes).
+- **v17** — a *volatile* flag on **SET_UNICODE_MODE** (`0x14`): the mode is applied in RAM and the keyboard's stored choice is left untouched. At Windows logon the host cannot yet tell "WinCompose is not installed" from "WinCompose has not started yet", so it applies its first reading volatile and re-asserts it for keeps once it can tell the two apart — otherwise every logon on a WinCompose machine would write the wrong mode and then write it back.
+- **v18** — **AI_STATE** (`0x28`): the [AI key](/using/ai-key/) wears an AI agent's status — the LED under it and the word on its keycap — and pressing it asks the host to bring the agent's window forward. The status is pushed by this command; the key PRESS travels the other way on the firmware console, because a keycode the firmware handles itself produces no HID traffic of its own.
 
 <Aside type="note">
 Not every version number above is a separate feature listed here — the list highlights the

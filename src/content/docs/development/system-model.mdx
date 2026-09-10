@@ -284,6 +284,62 @@ flowchart LR
 This is why a compressed-overlay burst does not stall matrix scanning on `core0` — the
 CPU-heavy part happens on the second core.
 
+### The AI key — two directions, two transports
+
+The [AI key](/using/ai-key/) is worth tracing end to end because its two halves travel by
+completely different routes, and the reason is a property of the keyboard rather than a design
+preference.
+
+**Host → keyboard** is an ordinary HID command. An agent's lifecycle event reaches a hook, the
+hook runs one `polyctl` command, and that lands on the control socket, the daemon, the device
+layer and finally the firmware — which stores it in RAM, syncs it to the other half, and paints
+both the LED and the keycap from it.
+
+```mermaid
+flowchart TB
+  EV["<b>A lifecycle event</b><br/>Claude Code hook,<br/>Codex notify, or you"]
+  HOOK["<b>hook adapter</b><br/>contrib/ai-hooks/<br/>polykybd_ai_hook.py<br/><i>decide_state</i>"]
+  CLI["<b>polyctl ai state busy</b><br/>cli/polyctl.py<br/><i>_cmd_ai</i>"]
+  CORE["<b>the daemon</b><br/>core/poly_core.py<br/><i>set_ai_state</i>"]
+  DEV["<b>the device layer</b><br/>device/poly_kybd.py<br/><i>set_ai_state</i> · v18 gate"]
+  HID["<b>hid_com.c</b><br/><i>case 40</i><br/>GET/SET_AI_STATE"]
+  ST["<b>state.c</b><br/><i>set_ai_state</i><br/>RAM only"]
+  HK["<b>poly_keymap.c</b><br/><i>housekeeping_task_user</i><br/>diff → poly_sync_t.ai_state"]
+  RGB["<i>ai_rgb_paint</i><br/>from rgb_matrix_indicators_kb"]
+  LEG["<i>to_static_text</i><br/>case KC_AI"]
+  SLAVE["<b>slave half</b><br/>copy_local_state"]
+  LED(["RGB LED under the key<br/>green · amber · blinking red"])
+  CAP(["keycap OLED<br/>AI + 💤 · 🗘 · ❗"])
+
+  EV --> HOOK --> CLI -- "control socket<br/>M_AI_STATE_SET" --> CORE --> DEV
+  DEV -- "HID cmd 40" --> HID --> ST --> HK
+  HK --> RGB --> LED
+  HK --> LEG --> CAP
+  HK -- "split sync" --> SLAVE --> CAP
+```
+
+**Keyboard → host** cannot use the same road. `KC_AI` is handled and swallowed by the firmware,
+so pressing it produces no HID traffic at all, and nothing in the protocol lets the keyboard call
+the host — every other command is host-initiated. The press is announced on the **firmware
+console** instead, which the host already drains every 250 ms for crash records, so the whole
+return path costs no new transport:
+
+```mermaid
+flowchart LR
+  KEY(["you press the AI key"])
+  PRESS["<b>poly_keymap.c</b><br/><i>poly_custom_key_action</i><br/>case KC_AI, release edge"]
+  CONSP["<b>core/poly_core.py</b><br/><i>_console_periodic</i><br/>every 250 ms"]
+  SCAN["<b>services/ai_link.py</b><br/><i>AiScanner.feed</i><br/>fragments → lines"]
+  RAISE["<b>services/ai_link.py</b><br/><i>WindowRaiser.raise_next</i><br/>match · cycle · activate"]
+  WIN(["the agent's window,<br/>in front of you"])
+
+  KEY --> PRESS -- "firmware console:<br/>ai open" --> CONSP --> SCAN --> RAISE --> WIN
+```
+
+The one consequence worth knowing: console output is dropped while a firmware or font-pack flash
+is streaming (the worker runs the upload as one long job, so the console read never gets a turn),
+so a press during an update is lost.
+
 ## Where to go next
 
 - [Firmware Development](/development/firmware/) — build the firmware and set up the toolchain.
