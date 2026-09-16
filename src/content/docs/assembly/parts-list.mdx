@@ -123,6 +123,12 @@ Either of these fits the PCB footprint:
 | Trackpad (small) | Cirque TM023023-2024-002 (23mm) | Remove R1 on back to switch to I2C; needs 12-pin FPC ~50–70mm, running to **J37** on the back of the keyboard PCB |
 | Trackpad (large, experimental) | Cirque TM035035-2024-003 (35mm) | Modify OpenSCAD source before printing the holder |
 
+<Aside type="caution">
+A trackpad only works on the **right** half — the firmware reads the pad there
+(`POINTING_DEVICE_RIGHT`) and its gesture zones were measured on a right-hand mount. See
+[Trackpad](/using/trackpad/).
+</Aside>
+
 The 23mm trackpad needs a 3D-printed holder — pick the height that fits your build:
 
 | Holder | STL |

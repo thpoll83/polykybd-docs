@@ -256,6 +256,13 @@ prevent shorts against the aluminum plate.
 
 Prepare the trackpad before the plate goes on, then mount it once the plate is in place.
 
+<Aside type="caution">
+**Fit the trackpad on the RIGHT half.** The firmware reads the pad on the right half only
+(`POINTING_DEVICE_RIGHT`), and the gesture zones — the right-click corner and the dial ring — were
+measured on a right-hand mount, skew included. A left-mounted pad is not read at all. See
+[Trackpad](/using/trackpad/) for what the gestures do.
+</Aside>
+
 **Preparation:** Remove R1 from the back of the trackpad PCB to switch it from SPI to I2C. Connect
 the 12-pin FPC cable to the trackpad (note the pin 1 marker). Place the trackpad in its
 [3D-printed holder](/assembly/parts-list/#pointing-devices-choose-one) and secure with a small
@@ -270,3 +277,6 @@ Verify pin 1 alignment.
 
 The 23mm trackpad needs a [3D-printed holder](/assembly/parts-list/#pointing-devices-choose-one) —
 see the Parts List for the holder STLs and the experimental 35mm option.
+
+Once it is built and flashed, [Trackpad](/using/trackpad/) covers the gestures: tap to click,
+tap-and-drag, the top-right right-click corner and the rotary dial for scrolling.
