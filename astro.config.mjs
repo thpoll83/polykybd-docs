@@ -142,6 +142,7 @@ export default defineConfig({
             { label: 'Idle & Burn-in Protection', slug: 'using/idle' },
             { label: 'Keymaps & Layers', slug: 'using/keymaps' },
             { label: 'Keymap Editor', slug: 'using/keymap-editor' },
+            { label: 'Trackpad', slug: 'using/trackpad' },
             { label: 'Multi-Machine Setup', slug: 'using/multi-machine' },
           ],
         },
