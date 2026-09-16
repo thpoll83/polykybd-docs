@@ -120,8 +120,8 @@ Either of these fits the PCB footprint:
 | Option | Part | Notes |
 |---|---|---|
 | Trackball | [Pimoroni Trackball](https://mou.sr/3rmFiAO) | Solder header without the plastic distance holder |
-| Trackpad (small) | Cirque TM023023-2024-002 (23mm) | Remove R1 on back to switch to I2C; needs 12-pin FPC ~50–70mm, running to **J37** on the back of the keyboard PCB |
-| Trackpad (large, experimental) | Cirque TM035035-2024-003 (35mm) | Modify OpenSCAD source before printing the holder |
+| **Trackpad (recommended)** | Cirque **TM035035-2024-003 (35mm)** | Remove R1 on back to switch to I2C; needs 12-pin FPC ~50–70mm, running to **J37** on the back of the keyboard PCB |
+| Trackpad (smaller) | Cirque TM023023-2024-002 (23mm) | Same wiring; a smaller target for the same gestures |
 
 <Aside type="caution">
 A trackpad only works on the **right** half — the firmware reads the pad there
@@ -129,14 +129,22 @@ A trackpad only works on the **right** half — the firmware reads the pad there
 [Trackpad](/using/trackpad/).
 </Aside>
 
-The 23mm trackpad needs a 3D-printed holder — pick the height that fits your build:
+<Aside type="tip">
+**Take the 35mm pad.** The firmware is configured for it (`CIRQUE_PINNACLE_DIAMETER_MM 35`),
+and the gesture zones — the right-click corner and the dial ring — were fitted to corners
+measured on a 35mm pad. A 23mm pad still works, but it packs the same zones into a target
+barely a third of the area, and the fit was not measured on one.
+</Aside>
 
-| Holder | STL |
-|---|---|
-| Slim / low insert | `parts/export/cirque_insert/cirque23_slim_insert_r8.stl` |
-| High insert | `parts/export/cirque_insert/cirque23_insert_high_r1.stl` |
+Either pad needs a 3D-printed holder:
 
-Both are in the [PolyKybd hardware repo](https://github.com/thpoll83/PolyKybd) under `parts/export/cirque_insert/`. The OpenSCAD sources (`parts/cirque_insert/cirque23_slim_insert.scad`, `parts/cirque_insert/cirque23_insert.scad`, and the experimental `parts/cirque_insert/cirque35_insert.scad`) are there too if you want to adjust the fit.
+| Pad | Holder | STL |
+|---|---|---|
+| 35mm | Insert | `parts/export/cirque_insert/cirque35_insert_r3_4p.stl` |
+| 23mm | Slim / low insert | `parts/export/cirque_insert/cirque23_slim_insert_r8.stl` |
+| 23mm | High insert | `parts/export/cirque_insert/cirque23_insert_high_r1.stl` |
+
+All are in the [PolyKybd hardware repo](https://github.com/thpoll83/PolyKybd) under `parts/export/cirque_insert/`; the `_4p` suffix means the mesh is a four-up print plate. The OpenSCAD sources (`parts/cirque_insert/cirque35_insert.scad`, `cirque23_slim_insert.scad`, `cirque23_insert.scad`) are there too if you want to adjust the fit.
 
 Only one pointing device can be installed per half.
 
