@@ -43,9 +43,18 @@ the thumb already travels, not where the geometry is tidiest.
 ## The pad on the status OLED
 
 While your thumb is on the pad, the right half's **128×64 status OLED** switches to a pad view: a
-circle with your finger's position in it, a dashed ring marking where a dial can start, and
+circle with your finger's position in it, a dotted ring marking where a dial can start, and
 markers on the two corner zones. It goes back to the normal status display a moment after you
 lift off.
+
+![The split72 status OLED showing the trackpad view: a solid circle for the pad rim, a dotted ring inside it marking where a dial can start, a dashed marker outside the rim at the top left for the dial-start wedge, a solid marker at the top right for the right-click corner, a round dot below and left of centre for the finger, and the raw pad coordinates 250 and 640 in the bottom corners](../../../assets/using/trackpad-oled-pad-view.png)
+
+Reading it: the **solid outer circle** is the pad and the **dotted ring** is how far out a dial has
+to start. The **solid marker** at the top right is the right-click corner; the **broken marker** at
+the top left is the dial-start wedge, broken to match the dotted ring. So a broken mark means dial
+and a solid one means right click. The dot is your finger, and it grows for the moment a tap
+registers. The two numbers in the bottom corners are the raw pad coordinates, useful when a
+gesture is not behaving.
 
 That view is the fastest way to learn the zones — put your thumb down, watch where the dot is,
 and the right-click corner and dial ring stop being something you have to remember.
