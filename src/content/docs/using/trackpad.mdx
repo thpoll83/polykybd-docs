@@ -1,0 +1,73 @@
+---
+title: Trackpad
+description: The Cirque trackpad on split72 — tap to click, tap-and-drag, a rotary dial for scrolling, a right-click corner, and the pad drawn on the status OLED.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import SupportedSince from '../../../components/SupportedSince.astro';
+
+<SupportedSince firmware="0.25.0" note="PolyKybd gesture layer" />
+
+The **split72** right half carries a circular **Cirque** trackpad under the thumb. Since firmware
+0.25.0 the gestures are decided by PolyKybd's own firmware rather than by the sensor chip, which
+is what makes the zones land where your thumb actually reaches.
+
+<Aside type="note">
+split42 has no trackpad. Everything on this page is split72 only.
+</Aside>
+
+## The gestures
+
+| Gesture | What you do | What you get |
+|---|---|---|
+| **Move** | Slide your thumb anywhere on the pad | Cursor motion |
+| **Left click** | Tap — a short, deliberate press | Left button |
+| **Drag** | Tap, then keep your thumb down and slide | Button held while you move |
+| **Right click** | Tap in the **top-right** corner, around 1–2 o'clock | Right button |
+| **Scroll** | Start in the **top-left** wedge around 10–11 o'clock, then circle | Wheel, as long as you keep circling |
+
+Scrolling is a **rotary dial**: once started, turning clockwise scrolls down and anticlockwise
+scrolls up, for as many turns as you like. You can also start a dial anywhere on the **outer
+ring** near the pad's edge — the top-left wedge exists because the ring is narrow on the axes and
+a wedge stays a generous target.
+
+<Aside type="tip">
+Both special zones sit at the **far** edge of the pad. The near edge is hard against the key
+wells, so reaching it means curling your thumb back into the keys — the zones are placed where
+the thumb already travels, not where the geometry is tidiest.
+</Aside>
+
+## The pad on the status OLED
+
+While your thumb is on the pad, the right half's **128×64 status OLED** switches to a pad view: a
+circle with your finger's position in it, a dashed ring marking where a dial can start, and
+markers on the two corner zones. It goes back to the normal status display a moment after you
+lift off.
+
+That view is the fastest way to learn the zones — put your thumb down, watch where the dot is,
+and the right-click corner and dial ring stop being something you have to remember.
+
+## Tracking feel
+
+Cursor motion is filtered in firmware: a median of the last three samples removes single-sample
+spikes, a one-pole low pass smooths the rest, and a glitch cap discards jumps no finger could
+make. Acceleration carries its remainder between reports, so slow tracking stays steady and a
+fast flick still crosses the screen.
+
+A tap has to be a real press. Resting contact and hover are ignored, so the pad will not click
+because your thumb happens to be lying on it.
+
+## Going back to the stock behaviour
+
+The stock Cirque gestures are still in the tree as an A/B escape hatch. They are **not**
+recommended — the sensor picks its corner before the firmware rotates the coordinates, so the
+stock right-click corner lands at 11 o'clock and neither of its scroll gestures fires at all.
+
+If you want to build them anyway:
+
+```bash
+qmk compile -kb polykybd/split72 -km default -e POLYKYBD_CIRQUE_RELATIVE=yes
+```
+
+This is a **build-time** choice, not a setting — there is nothing in the host app or on the
+keyboard that switches between the two.
