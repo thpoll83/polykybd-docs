@@ -135,6 +135,47 @@ for that whole row** and the keyboard uses exactly what you stored. Editor and k
 agree again, which is what you want while you are editing. Reset the keymap and the
 alignment comes back.
 
+## Home row mods on Workman
+
+<SupportedSince firmware="0.24.0" note="Workman base layout only" />
+
+Pick the **Workman** base layout and its home row doubles as your modifiers: tap a key for
+the letter, hold it for the modifier.
+
+| | Left hand | Right hand |
+|---|---|---|
+| **GUI** (Win/Cmd) | `a` | `i` |
+| **Alt** | `s` | `o` |
+| **Ctrl** | `h` | `e` |
+| **Shift** | `t` | `n` |
+
+The order is the Miryoku GACS arrangement — outside in, mirrored across the two halves —
+so the two strongest fingers carry Ctrl and Shift.
+
+**The keycaps tell you.** A key that carries a held modifier draws a small badge in its
+corner, so you can see which finger holds what instead of memorising the table above.
+
+<Aside type="note" title="Only Workman — the base layout is the on/off switch">
+  These exist **only** on the Workman layer. Qwerty, Colemak, Neo and Stag are untouched,
+  and so is their typing feel: there is no setting to find and nothing to turn off, you
+  just pick a different base layout on the [settings layer](#the-utility-and-settings-layers).
+</Aside>
+
+<Aside type="caution" title="Right ring is Alt, not AltGr">
+  The literal Miryoku arrangement puts **AltGr** on the right ring finger. PolyKybd uses
+  plain Alt there instead, because AltGr on this keyboard is a deliberate separate
+  function with its own keycap legends — a home row mod that quietly started producing
+  accented characters would be a nasty surprise.
+</Aside>
+
+If a hold ever fires when you meant to type, that is what the tap-hold tuning is for:
+the keyboard uses a 200 ms tapping term together with QMK's **chordal hold** and **Flow
+Tap**, which between them suppress a modifier on ordinary fast rolls. Settling as *held*
+on any other keypress is deliberately switched off.
+
+Workman's bottom row also gained its missing `<` / `\` key, which had been a second `B`
+by mistake.
+
 ## Where the keymap lives
 
 The shared keymap *logic* (rendering, HID handling, language selection, and the QMK callbacks) is in:

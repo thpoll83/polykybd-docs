@@ -30,7 +30,8 @@ polyctl telemetry preview
 | Category | What is sent |
 |---|---|
 | **Versions** | PolyKybdHost version, protocol version |
-| **Your system** | Operating system and coarse release (e.g. `Windows 11`), CPU architecture, Python version |
+| **Your system** | Operating system and coarse release (e.g. `Windows 11`), CPU architecture, Python version — and on Linux, the session type (`x11` / `wayland`) and desktop (`gnome`, `kde`, `xfce`, …) |
+| **Which window tracker** | Which of the three window-tracking backends this machine uses (`pywinctl`, `kde_win_reporter`, `gnome_wayland_reporter`) |
 | **Your keyboard** | Model name, firmware version, protocol version, hardware revision, font-pack versions — and whether one was connected at all |
 | **Counts since the last report** | App starts, keyboard connects, connection drops, firmware flashes, font-pack flashes, host updates |
 | **A random ID** | A random number generated on your machine, so one install counts once per day |
@@ -56,6 +57,15 @@ PolyKybdHost can see all of the following while it runs. **None of it is collect
 <Aside type="note">
   This is enforced in the code, not just by policy: the report is built from a fixed
   list of fields, and the test suite fails if that list ever changes by accident.
+</Aside>
+
+<Aside type="note" title="The Linux session and desktop are bucketed before they are sent">
+  Those two values come from `XDG_SESSION_TYPE` and `XDG_CURRENT_DESKTOP`, which are
+  **free text on your machine** — a custom session can set them to anything, and some
+  distributions prefix their own name. PolyKybdHost maps them against a fixed list
+  *before* building the report, and anything it does not recognise is sent as `other`,
+  so the raw text never leaves your computer. `polyctl telemetry preview` shows you
+  exactly what yours resolves to.
 </Aside>
 
 ## The random ID
