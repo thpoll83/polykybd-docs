@@ -54,6 +54,12 @@ you changed rather than trusting the source. A PR here can be fully green with
 zero checks having compiled the site (#48, 2026-08-17: the only check was a
 CodeRabbit status).
 
+⚠️ **Never pipe the build into `head`.** `npm run build | head -60` closes the
+pipe, the build dies on SIGPIPE partway through, and `dist/` is left half
+written — HTML pointing at WebP files the image step never emitted. That reads
+exactly like broken image handling and cost a false diagnosis. Redirect to a log
+file (`npm run build > /tmp/build.log 2>&1`) and grep that instead.
+
 ## ⚠️ Merging a page SHIPS it — a host feature ships on a RELEASE
 
 `deploy.yml` runs on `push: [main]`, so a merged docs PR is live within minutes.
@@ -99,6 +105,23 @@ Astro **Starlight**. Pages are Markdown/MDX under
 - The **feature → page map**, the section list and the docs-PR flow live in the
   `update-polykybd-docs` skill; use it when a firmware/host feature needs
   documenting.
+
+## Astro 7 / Starlight 0.42 (upgraded 2026-09-10)
+
+- **Node 22.12+ is required** — Astro 7 runs on Vite 8. `deploy.yml` pins
+  `node-version: 22`; anything older fails the build outright.
+- The collection config is **`src/content.config.ts`**. Astro 6 removed the
+  legacy `src/content/config.ts` path and refuses to build when it finds one.
+- ⚠️ **Starlight ships its CSS inside `@layer starlight.*`, and an unlayered
+  rule beats every layered one whatever its specificity.** So a bare
+  `:root { --sl-color-gray-*: … }` in `src/styles/custom.css` now also wins
+  under `:root[data-theme='light']`, which painted the light theme's dark text
+  on the dark background — the fix is a light-mode value in the
+  `:root[data-theme='light']` block for **every** token the `:root` block sets.
+  Give any new token override both blocks. The failure is silent: the build is
+  green, dark mode is fine, and only the light theme breaks — check it with
+  Playwright's `colorScheme: 'light'`, or by reading `--sl-color-bg` off the
+  page, before believing a theme change is safe.
 
 ## Site-wide `<head>` scripts
 

@@ -96,9 +96,52 @@ If you moved the listener to another port, add `--report-port <n>` to match.
   `--report-authkey-file` is not optional across machines. Leave it out and the forwarder falls back to its *own* local key, which the keyboard machine will not accept — it logs `Using this machine's local window-report authkey` and every report then fails.
 </Aside>
 
+## The forwarder's tray menu
+
+The forwarder puts its own icon in the remote machine's tray. Its menu follows the same
+shape as [the keyboard machine's](/software/usage/#system-tray-menu), minus everything
+that needs a keyboard attached:
+
+![The PolyKybdHost forwarder tray menu: a status line reading "Forwarding to 192.168.1.100", then Pause, Check for host update, Settings, Help & About and Quit](../../../assets/using/tray-menu-forwarder.png)
+
+| Entry | What it does |
+|---|---|
+| *Status line* | Where this machine is forwarding to, and whether the reports are arriving. Clicking it is a shortcut for **Pause**. |
+| **Pause** | Stop sending this machine's active window. Reads **Resume** while paused. |
+| **Check for host update…** | Update PolyKybdHost on this machine. There is no firmware or font entry — those belong to the machine holding the keyboard. |
+| **Settings** | The handful of settings that mean something here: the light/dark theme and the [browser-URL](/using/website-detection/) options. |
+| **Help & About** | About, the log viewer, **Open config folder**, **Report a Problem…** and **Collect logs…** — the same set, for *this* machine's logs. |
+| **Quit** | Stop forwarding and close. |
+
+<Aside type="tip">
+  **The icon tells the two apps apart.** Both marks are a grid of keycaps whose unlit
+  keys spell a letter: **P** on the machine with the keyboard, **F** on a forwarder. If
+  you forward to your own desktop you will see both in the same tray, so it is worth
+  knowing which is which. The forwarder's mark also goes **grey when its reports are not
+  arriving**, and back to colour when they are.
+</Aside>
+
+### Pausing
+
+**Pause** stops this machine's window titles leaving it — useful when you are doing
+something on the remote machine that you would rather the other computer knew nothing
+about. Nothing is sent while it is paused, and the status line says so. Resuming sends
+the current window straight away, so the keycaps catch up without waiting for you to
+switch application.
+
+<Aside type="note">
+  Pause is per-machine and is not remembered across restarts. It also only affects
+  *this* forwarder — the keyboard keeps following whatever the keyboard machine, and
+  any other forwarder, reports.
+</Aside>
+
 ## Checking that it works
 
-Focus a window on the remote machine and watch the two logs.
+The forwarder's status line answers this before you open anything: it reads
+**Forwarding to &lt;address&gt;** when reports are landing and **Cannot reach
+&lt;address&gt;** when they are not, and the tray mark greys out to match.
+
+For the detail, focus a window on the remote machine and watch the two logs.
 
 The forwarder reports which window it saw:
 
@@ -130,6 +173,8 @@ legacy relay in the next section does not carry the URL.
 
 | What you see | What it means | Fix |
 |---|---|---|
+| Forwarder tray: **Cannot reach &lt;address&gt;**, icon grey | Reports are not arriving — the rows below say why | Open the forwarder's **Help & About → Log file…** for the reason |
+| Forwarder tray: **Forwarding paused** | Somebody pressed **Pause** on this machine | Click **Resume** |
 | Forwarder: `Window-report RPC to … failed: timed out` | Nothing is listening, or a firewall is dropping the connection | Confirm step 1 on the keyboard machine (`polyctl settings get window_report_network_enabled`), that it was restarted afterwards, and that port 50163 is allowed |
 | Forwarder: `Using this machine's local window-report authkey` | `--report-authkey-file` was omitted | Add it, pointing at the key copied in step 2 |
 | Forwarder: `control protocol mismatch … restart so versions match` | The two machines run incompatible PolyKybdHost versions | Update both to the same version |
@@ -138,9 +183,9 @@ legacy relay in the next section does not carry the URL.
 | Both logs look fine, keycaps do not change | The keyboard machine's focused window is not a `remote` mapping entry | Focus your remote-desktop client, and check it has a `remote: true` entry (see [Before you start](#before-you-start)) |
 | A forwarded browser matches its title but never a `urls-contains` entry | The URL is not reaching the keyboard machine | Check the extension is installed on the **remote** machine and its Options page reports *Connected*, and that the forwarder runs with `--report-rpc` (the legacy relay never carries the URL) |
 
-Collecting the evidence is one click on each side: the forwarder's tray menu has the
-same **Report a Problem…** and **Collect logs…** entries as the keyboard machine's, and
-a forwarder report says so on its first line. Because the two halves run on different
+Collecting the evidence is one click on each side: the forwarder's **Help & About**
+submenu has the same **Report a Problem…** and **Collect logs…** entries as the keyboard
+machine's, and a forwarder report says so on its first line. Because the two halves run on different
 computers, a bundle from one never contains the other's log — collect from **both**.
 See [Reporting a Problem](/software/reporting-problems/).
 
