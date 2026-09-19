@@ -10,12 +10,18 @@ was drawn by hand. For everything else — an in-house tool, a niche editor, the
 happen to use most — PolyKybd now works out what it can on its own, with nothing to
 install and nothing to configure.
 
-Two things happen, and they are independent:
+Two things happen together:
 
-- **The app's own icon appears on Escape**, on every modifier layer, so a glance tells you
-  which app the keyboard thinks you are in.
 - **Shortcuts the app advertises get an icon on their key** — Ctrl+S gets a floppy disk,
   Ctrl+B a bold *B* — read from the same accessibility information a screen reader uses.
+- **The app's own icon appears on Escape**, on every modifier layer, confirming which app
+  those icons belong to.
+
+<Aside type="note">
+**The Escape icon only appears when shortcut icons do.** On its own it would say the app
+was recognised, which reads as "this app has icons" — a promise the rest of the keyboard
+would not keep. So if nothing could be read from the app, the keyboard stays as it was.
+</Aside>
 
 <Aside type="note">
 This is a fall-back, not a replacement. Where a hand-made overlay exists it always wins, key
@@ -52,13 +58,14 @@ draws a small icon in the bottom-right corner of that key, clear of the key's ow
 <Aside type="caution">
 **On Linux this finds shortcuts only for apps with a classic menu bar.** An app whose menus
 live in a hamburger button generally publishes no shortcuts at all — GTK4 apps typically
-answer with nothing, so even an obvious `Ctrl+S` is invisible to us. Nothing breaks; those
-keys simply keep their normal legends.
+answer with nothing, so even an obvious `Ctrl+S` is invisible to us. Nothing breaks — the
+keyboard simply stays as it was, Escape included.
 </Aside>
 
 <Aside type="note">
-macOS harvests nothing today. The icon on Escape still works there — only the per-shortcut
-icons are missing.
+macOS finds nothing today, so the feature is silent there — no shortcut icons and, because
+the Escape icon only accompanies them, no Escape icon either. The same is true of a Linux
+app whose menus are in a hamburger button.
 </Aside>
 
 ### What gets an icon and what doesn't
@@ -86,8 +93,8 @@ running on and sent across as text, so a forwarded app gets the same icons a loc
 
 <Aside type="note">
 This needs PolyKybdHost updated on **both** machines. An older forwarder still relays the
-window title, so overlays and the Escape mark keep working — only the per-shortcut icons are
-missing until it is updated.
+window title, so hand-made overlays keep working — but it sends no shortcuts, so a forwarded
+app gets nothing generic until it is updated.
 </Aside>
 
 ## Settings
@@ -98,7 +105,7 @@ All four live in **Settings…** in the tray menu and are **on** by default.
 | --- | --- |
 | **Generic → Overlays Enabled** | The whole feature. Off: no Escape mark and no shortcut icons for any app. |
 | **Generic → Overlays Fill Gaps** | Whether generic icons also appear on apps that already have artwork, filling only the keys it leaves blank. |
-| **Shortcut → Icons Enabled** | Whether the focused app is read for its shortcuts at all. Off: the Escape mark still works. |
+| **Shortcut → Icons Enabled** | Whether the focused app is read for its shortcuts at all. Off: nothing generic is drawn, since the Escape icon only accompanies shortcut icons. |
 | **Shortcut → Icon Auto Fetch** | Whether the icon set may be downloaded. Off: icons already downloaded keep working; new ones are skipped. |
 
 They narrow as you go down the list, so turning off one above makes the ones below it moot.
