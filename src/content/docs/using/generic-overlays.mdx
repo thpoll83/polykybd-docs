@@ -53,7 +53,7 @@ draws a small icon in the bottom-right corner of that key, clear of the key's ow
 | --- | --- | --- |
 | **Windows** | UI Automation | Supported |
 | **Linux** | AT-SPI2 | Supported, with the limit below |
-| **macOS** | Accessibility API | Not implemented yet |
+| **macOS** | Accessibility API | Supported (host 1.1.0+), after a one-off permission |
 
 <Aside type="caution">
 **On Linux this finds shortcuts only for apps with a classic menu bar.** An app whose menus
@@ -62,10 +62,18 @@ answer with nothing, so even an obvious `Ctrl+S` is invisible to us. Nothing bre
 keyboard simply stays as it was, Escape included.
 </Aside>
 
-<Aside type="note">
-macOS finds nothing today, so the feature is silent there — no shortcut icons and, because
-the Escape icon only accompanies them, no Escape icon either. The same is true of a Linux
-app whose menus are in a hamburger button.
+<Aside type="caution">
+**macOS asks for permission once, and until you grant it PolyKybd sees nothing.** The
+Accessibility API hands back an empty menu for an app that has not been trusted — which
+looks exactly like an app with no shortcuts, so there is nothing on screen to tell you
+which it is. Grant it in **System Settings → Privacy & Security → Accessibility**, then
+restart PolyKybdHost.
+
+⚠️ **The grant is per binary.** A terminal you launched the app from and a packaged
+PolyKybd app are separate entries, so *"I already allowed it"* and *"this copy is
+allowed"* are different statements. PolyKybd never raises the permission dialog by
+itself — a keycap decoration should not interrupt you — so the trip to System Settings
+is yours to make.
 </Aside>
 
 ### What gets an icon and what doesn't
