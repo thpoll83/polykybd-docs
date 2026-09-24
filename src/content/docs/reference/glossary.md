@@ -53,8 +53,8 @@ A quick reference for terms used across the PolyKybd documentation, firmware, an
 **fontconvert**
 : The standalone tool (in the Adafruit-GFX repo) that converts TTF/OTF fonts into Adafruit GFX `.h` bitmap headers for the firmware.
 
-**EE_HANDS**
-: The QMK mechanism that stores a split half's handedness (left/right) in EEPROM for normal firmware. It sets the side only — not master/slave — and the HIL build ignores it.
+**Handedness stamp**
+: How each half knows which side it is — a record in a flash sector of its own, so it survives an EEPROM loss. It sets the side only, not which half talks to the computer. PolyKybd deliberately does *not* use QMK's `EE_HANDS`, which keeps the same marker in the emulated EEPROM: a torn write there clears the whole store, and a cleared byte reads as a confident `right`, so a half comes up on the wrong side with nothing reporting anything wrong.
 
 **Split sync**
 : The CRC32-validated UART transactions that synchronise state and overlay data between the two keyboard halves.

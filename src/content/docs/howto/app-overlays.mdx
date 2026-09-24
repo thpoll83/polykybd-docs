@@ -170,6 +170,29 @@ A few hard limits baked into the firmware — don't fight them:
    `urls-contains` are unaffected.
    </Aside>
 
+   <Aside type="caution" title="When the process is not the app">
+   Several Windows 11 apps do not run in a process named after themselves. Calculator and Sound
+   Recorder are both `ApplicationFrameHost.exe`; **Sticky Notes runs inside `ONENOTE.EXE`**. Key
+   such an entry on the host process and tell the windows apart by title — and add **`icon:`**,
+   which names the slug used to look up the generic mark on `ESC`:
+
+   ```yaml
+   onenote:
+     title: "^Sticky Notes"
+     icon: mdi:sticker-text
+     overlay: [stickynotes_template.mods.png, stickynotes_template.combo.mods.png]
+   ```
+
+   Without it the mark is looked up from the process name, which here means a **OneNote logo on a
+   Sticky Notes window** — a wrong icon rather than a missing one. `icon:` applies only to the
+   entry that declares it, so each title branch states its own. If your overlay bakes a
+   `program_icon:` into the PNG, that wins and `icon:` never draws.
+
+   One trap when several apps share a host process: the **parent entry must keep an `overlay:` of
+   its own**. An entry carrying neither `overlay:` nor `remote:` is rejected *before* its sub-maps
+   are tried, so a parent reduced to title branches alone makes every branch unreachable.
+   </Aside>
+
    If the app's shortcuts differ per platform, give it an `os:` branch. Sublime Text does exactly
    this — `Cmd` on macOS, `Ctrl` elsewhere:
 

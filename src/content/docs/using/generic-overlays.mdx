@@ -1,0 +1,137 @@
+---
+title: Apps With No Overlay
+description: What PolyKybd draws for an app nobody has made artwork for — its own icon on Escape, and an icon per shortcut it advertises.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+[Context-Aware Overlays](/using/overlays/) cover a long list of apps, and every one of them
+was drawn by hand. For everything else — an in-house tool, a niche editor, the app you
+happen to use most — PolyKybd now works out what it can on its own, with nothing to
+install and nothing to configure.
+
+Two things happen together:
+
+- **Shortcuts the app advertises get an icon on their key** — Ctrl+S gets a floppy disk,
+  Ctrl+B a bold *B* — read from the same accessibility information a screen reader uses.
+- **The app's own icon appears on Escape**, on every modifier layer, confirming which app
+  those icons belong to.
+
+<Aside type="note">
+**The Escape icon only appears when shortcut icons do.** On its own it would say the app
+was recognised, which reads as "this app has icons" — a promise the rest of the keyboard
+would not keep. So if nothing could be read from the app, the keyboard stays as it was.
+</Aside>
+
+<Aside type="note">
+This is a fall-back, not a replacement. Where a hand-made overlay exists it always wins, key
+by key — see [When an app already has artwork](#when-an-app-already-has-artwork).
+</Aside>
+
+## The icon on Escape
+
+PolyKybdHost asks three sources in order and takes the first that survives being reduced to
+a 1-bit 72×40 keycap:
+
+1. **The icon the app itself ships** — the executable's own icon on Windows, the
+   `.desktop` entry or icon theme on Linux, the bundle's icon on macOS. Exact by
+   construction, because it is the picture you already associate with that app.
+2. **[Simple Icons](https://simpleicons.org/)** (CC0), the real brand mark where one exists.
+3. **[Material Design Icons](https://pictogrammers.com/library/mdi/)** (Apache-2.0), which
+   covers the Microsoft family that Simple Icons does not carry at all.
+
+Detailed logos rarely survive the reduction, so the host measures each candidate and keeps
+the one that still reads at keycap size rather than the first that loads.
+
+## Icons for the app's shortcuts
+
+A well-behaved application already publishes its shortcuts — that is how a screen reader can
+announce them. PolyKybd reads the same information, matches each label to a concept, and
+draws a small icon in the bottom-right corner of that key, clear of the key's own legend.
+
+| Your platform | Where the shortcuts come from | Status |
+| --- | --- | --- |
+| **Windows** | UI Automation | Supported |
+| **Linux** | AT-SPI2 | Supported, with the limit below |
+| **macOS** | Accessibility API | Supported (host 1.1.0+), after a one-off permission |
+
+<Aside type="caution">
+**On Linux this finds shortcuts only for apps with a classic menu bar.** An app whose menus
+live in a hamburger button generally publishes no shortcuts at all — GTK4 apps typically
+answer with nothing, so even an obvious `Ctrl+S` is invisible to us. Nothing breaks — the
+keyboard simply stays as it was, Escape included.
+</Aside>
+
+<Aside type="caution">
+**macOS asks for permission once, and until you grant it PolyKybd sees nothing.** The
+Accessibility API hands back an empty menu for an app that has not been trusted — which
+looks exactly like an app with no shortcuts, so there is nothing on screen to tell you
+which it is. Grant it in **System Settings → Privacy & Security → Accessibility**, then
+restart PolyKybdHost.
+
+⚠️ **The grant is per binary.** A terminal you launched the app from and a packaged
+PolyKybd app are separate entries, so *"I already allowed it"* and *"this copy is
+allowed"* are different statements. PolyKybd never raises the permission dialog by
+itself — a keycap decoration should not interrupt you — so the trip to System Settings
+is yours to make.
+</Aside>
+
+### What gets an icon and what doesn't
+
+An icon is drawn only when the shortcut's label maps to a concept the icon set covers —
+Save, Copy, Paste, Find, Undo, Bold, Print and so on. A label the host cannot place
+confidently is left alone rather than guessed at, because a plausible but wrong icon is
+worse than none. Chords the operating system owns (Alt+Tab and friends) are skipped too.
+
+## When an app already has artwork
+
+If a hand-made overlay covers the app, it wins — but **per key**, not for the whole window.
+Every key the artwork draws keeps exactly what its author intended, and the generic icons
+fill only the keys it leaves blank.
+
+Turn that off (see below) and an app with artwork shows exactly what was drawn for it and
+nothing else. Both are reasonable: a blank key on a carefully made overlay may be a
+deliberate choice rather than a gap, which is why it is a switch rather than a rule.
+
+## Working on another computer
+
+In a [multi-machine setup](/using/multi-machine/) the app runs on one computer while the
+keyboard is plugged into another. The shortcuts are read on the machine the app is actually
+running on and sent across as text, so a forwarded app gets the same icons a local one does.
+
+<Aside type="note">
+This needs PolyKybdHost updated on **both** machines. An older forwarder still relays the
+window title, so hand-made overlays keep working — but it sends no shortcuts, so a forwarded
+app gets nothing generic until it is updated.
+</Aside>
+
+## Settings
+
+All four live in **Settings…** in the tray menu and are **on** by default.
+
+| Setting | What it controls |
+| --- | --- |
+| **Generic → Overlays Enabled** | The whole feature. Off: no Escape mark and no shortcut icons for any app. |
+| **Generic → Overlays Fill Gaps** | Whether generic icons also appear on apps that already have artwork, filling only the keys it leaves blank. |
+| **Shortcut → Icons Enabled** | Whether the focused app is read for its shortcuts at all. Off: nothing generic is drawn, since the Escape icon only accompanies shortcut icons. |
+| **Shortcut → Icon Auto Fetch** | Whether the icon set may be downloaded. Off: icons already downloaded keep working; new ones are skipped. |
+
+They narrow as you go down the list, so turning off one above makes the ones below it moot.
+
+<Aside type="tip">
+On a managed or offline machine the two you probably want are **Shortcut → Icons Enabled**
+(the only one that governs reading another program) and **Shortcut → Icon Auto Fetch** (the
+only one that reaches the network).
+</Aside>
+
+## Privacy
+
+Everything happens on your own computer. The host reads the focused app's shortcut labels
+locally and never sends them anywhere; the only network request is for the icon set itself,
+and it is cached after the first time. Nothing about which apps you use leaves the machine.
+
+<Aside type="note">
+Want an app to look exactly right rather than merely recognisable? A hand-made overlay is a
+template image plus a one-line mapping entry — [Create App Overlays](/howto/app-overlays/)
+walks through it, and it takes precedence over everything on this page.
+</Aside>

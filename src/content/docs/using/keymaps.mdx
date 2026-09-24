@@ -16,6 +16,31 @@ PolyKybd uses QMK's **dynamic keymap** with **8 host-remappable layers**, so rem
 to the keyboard at runtime without recompiling. Remapping is done with the keymap editor built into
 [PolyKybdHost](/software/overview/) — see [Keymap Editor](/using/keymap-editor/).
 
+## Reading a layer key
+
+<SupportedSince firmware="0.28.0" note="layer-key notation" />
+
+A layer key now says what pressing it will do. Every one draws the layer icon, and a mark
+beside it tells you how long the layer stays:
+
+![Three layer keycaps side by side: Fn with the layer icon alone, Util with the layer icon and a lightning bolt, and Nm with the layer icon and an exclamation mark](../../../assets/using/layer-key-notation.png)
+
+| Mark | The layer is | Example |
+|---|---|---|
+| *(none)* | active **only while you hold the key** | `Fn`, and the momentary `Nm` and `Util` |
+| bolt | **one-shot** — it applies to the next key you press, then drops | `Util` on the default keymap |
+| `!` | a **switch** — it stays on until you switch back | `Base`, and the `Nm` / `Util` keys bound to switch |
+
+Before this, `Fn`, `Nm` and `Util` looked alike whichever they were, so the only way to
+find out was to press one and watch. The same three keycaps can carry any of the three
+behaviours depending on how they are bound, which is exactly why the mark is on the key
+rather than in a table you have to remember.
+
+<Aside type="note">
+Both marks are built into the firmware rather than supplied by a font pack, so they draw on
+a keyboard that has never been connected to the host app.
+</Aside>
+
 ## The utility and settings layers
 
 Two layers hold the keyboard's own controls, and which one a thing lives on follows a single
