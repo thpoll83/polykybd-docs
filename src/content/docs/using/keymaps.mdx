@@ -16,6 +16,30 @@ PolyKybd uses QMK's **dynamic keymap** with **8 host-remappable layers**, so rem
 to the keyboard at runtime without recompiling. Remapping is done with the keymap editor built into
 [PolyKybdHost](/software/overview/) — see [Keymap Editor](/using/keymap-editor/).
 
+## Reading a layer key
+
+<SupportedSince firmware="0.28.0" note="unified layer-key marks" />
+
+A key that takes you to another layer now says **what pressing it will do**, with a small mark
+drawn after the layer's icon. Before this, `Fn`, `Nm` and `Util` looked alike whether they were
+held, tapped once, or switched to and stayed — the keycap named the destination but not the
+behaviour, so the only way to find out was to press it.
+
+| Mark | Means | Example |
+|---|---|---|
+| *(none)* | **Momentary** — the layer is active only while you hold the key. | `Fn`, `Nm`, `Util` |
+| ⚡ | **One-shot** — press and release, and the layer applies to the *next* key you press, then goes away. | the one-shot `Util` |
+| `!` | **Switch** — the layer stays on until you switch back. | the layout, base and settings keys |
+
+The mark describes the key you are looking at, not the layer it leads to: the same layer can be
+reached by a momentary key on one board and a switching key on another, and each keycap shows its
+own behaviour.
+
+<Aside type="note">
+Both marks are **built into the firmware** rather than coming from a font pack, so they draw on a
+board that has never been connected to [PolyKybdHost](/software/overview/).
+</Aside>
+
 ## The utility and settings layers
 
 Two layers hold the keyboard's own controls, and which one a thing lives on follows a single
