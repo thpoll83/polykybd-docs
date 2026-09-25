@@ -1,0 +1,67 @@
+---
+title: First Start & Tutorial
+description: The first time a PolyKybd starts, it plays its intro and then shows you around, one key at a time. How to skip it, and how to see it again.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import SupportedSince from '../../../components/SupportedSince.astro';
+
+<SupportedSince firmware="1.0.0" note="first-run tutorial" />
+
+The first time a PolyKybd starts, it plays the **Eden intro**: comets stream across the keys, the
+POLYKYBD letters form, and stars fall on the dark board. Then the keyboard shows you around. It
+lights the key it wants you to press, makes that key pulse, and circles it with a ring. The two
+status displays tell you what to do.
+
+## What it shows you
+
+The tutorial has ten steps. The top-right key counts them, `1/10` to `10/10`.
+
+| Step | What you do |
+|---|---|
+| Letters | Press three lit letter keys. |
+| Shift | Hold each **Shift**, first on the left, then on the right, and watch every legend change. |
+| The board | Every key lights up, starting at the Shift you just held: 72 screens, one keyboard. |
+| Languages | Greek, Arabic, Hebrew, Hindi, Thai, Japanese and Korean, then Elvish, runes, Aurebesh and Braille. The keys spell each name, in Latin on one half and in the language's own script on the other, and then show the whole layout. |
+| Language menu | Press the **Lang** key, then the region tabs, then **Base** to go back. |
+| Emoji | Press the emoji key, a few category tabs and the page key, then **Base**. |
+| Fn and Num | Hold **Fn**, then **Num**, and look at what each layer puts on the keys. |
+| Accents | Hold **Intl** to see each letter's accent. Then hold Intl, tap **Ctrl**, press the letter the tutorial lights and pick the accent it lights. Finally, hold Intl again and press that letter. |
+
+<Aside type="note" title="Nothing reaches your computer">
+The language step only changes what the **keys** show. Your computer keeps its own keyboard
+layout the whole time, and the tutorial never types anything into an open app.
+</Aside>
+
+The language step shows only the languages your keyboard can draw. Most of them come from the
+[font pack](/firmware/font-packs/), so on a keyboard whose font pack hasn't been installed yet,
+the tutorial skips that step.
+
+<Aside type="note" title="One setting is kept">
+The accent you pick in the last step stays picked for that letter afterwards. To change it, do
+what the tutorial showed you: hold **Intl**, tap **Ctrl**, press the letter, then press the
+accent you want. See
+[Choosing which accent a letter types](/using/languages/#choosing-which-accent-a-letter-types).
+</Aside>
+
+## Skipping it
+
+**Hold Esc for one second** at any point. The Esc key reads "Hold to skip..." for as long as
+the tutorial runs. A skipped tutorial counts as seen, so it won't come back on its own.
+
+## Seeing it again
+
+The tutorial plays once per keyboard. The keyboard remembers that it has played, even across
+firmware updates. To see it again, open the settings layer, tap **More…** and press the **Eden**
+key. The intro plays right away, followed by the tutorial. See
+[Keymaps & Layers](/using/keymaps/#more).
+
+<Aside type="caution" title="Updating from an earlier firmware">
+Keyboards updated to **1.0.0** from an earlier version have never recorded the tutorial as seen,
+so they show it **once** after the update. Hold Esc to skip it.
+</Aside>
+
+<Aside type="note">
+The tutorial runs on the **split72**. The split42 has no Eden intro, so it doesn't show the
+tutorial either.
+</Aside>
