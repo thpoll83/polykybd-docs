@@ -1,0 +1,97 @@
+---
+title: Flash from an Android Phone
+description: Update PolyKybd firmware from an Android phone over USB-C with the PolyKybd Flasher app.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+**PolyKybd Flasher** is a small Android app that updates the keyboard's firmware from a phone. It
+uses the same HID update path as [PolyKybdHost](/setup/flashing/): you connect the phone to the
+keyboard's master half with a USB-C cable, and the master passes the new firmware on to the other
+half over the split cable. One cable updates both halves.
+
+## What you need
+
+- An Android phone with USB-C and Android 8.0 or later. The phone must support USB host mode
+  (USB OTG); almost every current phone does.
+- A USB-C to USB-C cable, or an OTG adapter for your usual keyboard cable.
+- At least **20% phone battery**. The phone powers both halves during the update, and some phones
+  cut USB power when their battery runs low. The app refuses to start below 20%.
+
+In measurements the keyboard stayed below 500 mA, the minimum a phone supplies to a USB device, so
+no external power is needed.
+
+## Get the app
+
+The app is not in an app store yet, and there is no ready-made APK download. For now, build it from
+the `android/` folder of [PolyKybdHost](https://github.com/thpoll83/PolyKybdHost/tree/main/android)
+(its README has the commands), then install the APK on the phone. Android asks you to allow installs
+from the app you open the APK with.
+
+## Update the firmware
+
+<Steps>
+1. Connect the keyboard's **master half** to the phone.
+
+   Android asks whether to open PolyKybd Flasher. Choose the option to always open it for this USB
+   device (the wording differs between phones) before you confirm. The keyboard disconnects and
+   reconnects while it updates, and with that option set Android does not ask for USB access
+   again each time.
+
+2. Choose the firmware:
+
+   - **Get latest release (signed)** downloads the newest
+     [firmware release](https://github.com/thpoll83/qmk_firmware/releases) for your keyboard,
+     together with its signature. This is the normal choice.
+   - **Choose a .bin file (unsigned)** takes a `.bin` from the phone, for example a build of your
+     own. It is sent without a signature, so the keyboard asks you to confirm it (see below).
+
+3. Leave **Apply after it is verified** ticked, then tap **Flash**.
+
+4. The first time, the app asks how the update should run:
+
+   - **Keep this app open**: no notification. The screen stays on, and the update can stop if you
+     switch to another app.
+   - **Run in the background**: you can lock the phone or switch apps. Android requires apps
+     working in the background to show a notification, so a progress notification appears until the
+     update ends.
+
+   You can change this later on the main screen.
+
+5. Wait for the transfer. It takes a few minutes, and the progress bar shows how far it is.
+   The keyboard then installs the new firmware, reboots, and the app shows the version it now runs.
+</Steps>
+
+<Aside type="caution">
+With an **unsigned** image, the keyboard asks before it installs anything: every keycap goes dark
+except a big **A / ACCEPT** on the left half and **R / REJECT** on the right. Press **A** within a
+minute to continue. A release fetched with **Get latest release** is signed, so the keyboard
+installs it without asking.
+</Aside>
+
+<Aside type="tip">
+Interrupting the transfer is safe. The keyboard installs nothing until the whole image has arrived
+and its checksum and signature are verified. If the cable comes loose, reconnect and tap **Flash**
+again.
+</Aside>
+
+## Checks the app makes
+
+- **The right keyboard.** The app refuses a firmware built for the other model, such as a Split72
+  image on a Split42.
+- **An intact download.** Both release files must match the size and SHA-256 checksum that GitHub
+  lists for them.
+- **A valid image.** The file must be an RP2040 firmware image built for PolyKybd; a `.uf2` or an
+  unrelated `.bin` is refused before anything is sent.
+
+The signature check itself is done by the keyboard, not the app. See
+[Flashing the Firmware](/setup/flashing/) for how signed and unsigned images differ.
+
+## If something goes wrong
+
+- **"No PolyKybd found"**: connect the **master** half (the one normally plugged into the computer)
+  and check that the cable carries data, not only power.
+- **"Phone battery is at …%"**: charge the phone first.
+- **The keyboard does not come back after applying**: hold the BOOT button and flash the `.uf2`
+  from a computer, as described under
+  [UF2 bootloader drive](/setup/flashing/#fallback-uf2-bootloader-drive).
