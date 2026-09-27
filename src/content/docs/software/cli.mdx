@@ -30,6 +30,7 @@ import { Aside } from '@astrojs/starlight/components';
 | `keymap …` | Read/write the dynamic keymap |
 | `macro list\|get <id>\|set <id> …\|clear <id>` | Read and write the keyboard's [macros](/using/macros/) — `set` takes `--text` (plain characters) or `--script` (chords and pauses in [VIA's syntax](/using/macros/#writing-it-as-text)), plus `--label`, `--style` (`index`/`icon`/`text`/`icononly`) and `--icon`; `list` also reports how much of the shared store is in use |
 | `crash show [--slave] [--json]` / `crash clear` | Read (or forget) the keyboard's last [firmware crash record](/software/reporting-problems/#when-the-keyboard-firmware-crashes) — what it was doing when it faulted or hung, and where; `--slave` asks for the link-side half's record |
+| `handedness left\|right` | Tell the keyboard which half is which, when a half has come up on the wrong side. Name the side of the half the **USB cable is plugged into**; the other half becomes the opposite. Both halves save their [handedness stamp](/reference/glossary/) and restart onto it (about 10 s, no replug). Check the result on the keyboard: the command only confirms that the request was sent. Needs host 1.3.0 or later |
 | `commands` | List the keyboard's available one-off commands |
 | `fw version` | Report the keyboard's firmware version |
 | `fw flash <bin> [--apply]` | Flash a firmware `.bin` over HID (streams progress) |
