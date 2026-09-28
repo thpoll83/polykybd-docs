@@ -34,6 +34,10 @@ the version of each bundle it holds, and the host **flashes only the bundles tha
 out of date**. That's what the *"Updating fonts — do not unplug"* screen is: a font-pack bundle
 being written. It's quick, and it only happens when something is actually stale.
 
+While a bundle is being written, the keycap legends stay frozen. Shift, Caps Lock and layer
+keys still type correctly but do not repaint the keycaps. The legends catch up as soon as the
+bundle is written.
+
 <Aside type="tip">
 Because bundles are versioned, adding a new language flag or a new glyph script only reships the
 one bundle that changed — the rest are left untouched.

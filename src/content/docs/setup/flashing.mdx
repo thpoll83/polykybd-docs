@@ -46,6 +46,14 @@ The deliverable for HID flashing is a raw **`.bin`** image (not the `.uf2`).
   </TabItem>
 </Tabs>
 
+<Aside type="note">
+While the image transfers, the keycap legends stay frozen. Holding **Shift**, toggling **Caps Lock**
+or holding a layer key does not repaint them. The keys themselves still work, so you can keep
+typing. The freeze is deliberate. Redrawing the keycaps and syncing state between the halves takes
+50–100 ms each time, and that load starves the link between the halves that carries the image.
+After the transfer the keyboard reboots into the new firmware, so the legends are correct again.
+</Aside>
+
 <Aside type="tip">
 The HID flash path is gated on the device being *present* (answering identity queries), **not** on
 protocol compatibility — so this is the way to recover a keyboard that's on a mismatched protocol
