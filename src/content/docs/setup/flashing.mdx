@@ -49,9 +49,9 @@ The deliverable for HID flashing is a raw **`.bin`** image (not the `.uf2`).
 <Aside type="note">
 While the image transfers, the keycap legends stay frozen. Holding **Shift**, toggling **Caps Lock**
 or holding a layer key does not repaint them. The keys themselves still work, so you can keep
-typing. The freeze is deliberate. Redrawing the keycaps and syncing state between the halves takes
-50–100 ms each time, and that load starves the link between the halves that carries the image.
-After the transfer the keyboard reboots into the new firmware, so the legends are correct again.
+typing. The freeze is deliberate. The keycap redraw and the state sync between the halves would
+otherwise compete with the image for the link between the halves. The legends catch up when the
+transfer ends, and applying the image reboots the keyboard into the new firmware.
 </Aside>
 
 <Aside type="tip">
