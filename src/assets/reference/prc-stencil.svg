@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="608" height="364" viewBox="0 0 608 364">
 <rect width="608" height="364" fill="#15171c"/>
-<text x="40" y="30" fill="#e8e8e8" font-size="15" font-family="Inter, Helvetica, Arial, sans-serif">The 10 neighbours that predict pixel ?</text>
+<text x="40" y="30" fill="#e8e8e8" font-size="15" font-family="Inter, Helvetica, Arial, sans-serif">Causal context template: the 10 pixels that predict pixel ?</text>
 <rect x="40" y="50" width="64" height="64" fill="#1f2229" stroke="#2c3038" stroke-width="2"/>
 <rect x="104" y="50" width="64" height="64" fill="#1f2229" stroke="#2c3038" stroke-width="2"/>
 <rect x="168" y="50" width="64" height="64" fill="#284f9e" stroke="#2c3038" stroke-width="2"/>
@@ -39,4 +39,4 @@
 <text x="62" y="294" fill="#9aa0aa" font-size="13" font-family="Inter, Helvetica, Arial, sans-serif">decoded, not used</text>
 <rect x="40" y="304" width="14" height="14" fill="#15171c" stroke="#2c3038"/>
 <text x="62" y="316" fill="#9aa0aa" font-size="13" font-family="Inter, Helvetica, Arial, sans-serif">not decoded yet</text>
-<text x="40" y="344" fill="#e8e8e8" font-size="13" font-family="Inter, Helvetica, Arial, sans-serif">The table maps each context to a probability. Outside the box counts as empty.</text></svg>
+<text x="40" y="344" fill="#e8e8e8" font-size="13" font-family="Inter, Helvetica, Arial, sans-serif">The table maps each context to P(clear). Pixels outside the ROI count as clear.</text></svg>

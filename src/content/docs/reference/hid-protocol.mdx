@@ -53,7 +53,7 @@ source commonly uses it.
 | **SEND_OVERLAY** | `0x0A` | Plain overlay: each 360-byte keycap in 6 × 60-byte segments. (v11 packs modifier + segment into one header byte so a 60-byte segment fits the report exactly.) |
 | **START / SEND_COMPRESSED_OVERLAY** | `0x10` / `0x11` | RLE-compressed keycap in 1–2 packets; decompressed in firmware (optionally on RP2040 core1). The common case. |
 | **START / SEND_ROI_OVERLAY** | `0x12` / `0x13` | Partial refresh of a region of a keycap's display. |
-| **SEND_PRC_OVERLAY** | `0x29` (41) | **v19+.** [PRC-coded](#prc-predictive-range-coding) keycap images, several per report. A typical icon takes about a third of the bytes of the best older encoding. |
+| **SEND_PRC_OVERLAY** | `0x29` (41) | **v19+.** [PRC](#prc-predictive-range-coding)-coded keycap images, several records per report. A typical icon codes to about a third of the bytes of the best older encoding. |
 | **SEND_OVERLAY_MAPPING** | `0x15` (21) | Maps overlay pool slots to displays / usage bits, at a fixed 10 bits per index. **Silent since v3** (no per-chunk ACK). The only mapping command a pre-v12 keyboard understands. |
 | **SEND_OVERLAY_MAPPING_W** | `0x21` (33) | **v12+.** The same mapping stream, but a width byte says how many bits each index uses (8–11), so the host packs each group of pairs as tightly as it fits. Also silent. |
 | **OVERLAY_FLAGS on / off** | `0x0B` / `0x0C` | Enable/disable overlay rendering; enable force-syncs overlay state to the slave. |
@@ -143,91 +143,94 @@ The bulk overlay commands (`0x0A`, `0x10`/`0x11`, `0x12`/`0x13`, `0x29`, and map
 
 ## PRC: Predictive Range Coding
 
-Since **v19** the host has a fifth way to send a keycap image: **PRC**, short for
-*Predictive Range Coding*. It needs host and firmware both on v19 or later; with an older
-keyboard the host simply keeps using the four older encodings.
+Since **v19** the host has a fifth encoding for keycap images: **PRC**, short for
+*Predictive Range Coding*. Host and firmware must both be on v19 or later; with an older
+keyboard the host keeps using the four older encodings.
 
-- **Predictive.** Before a pixel is decoded, the 10 pixels around it that are already known
-  (two rows above, two to the left) predict how likely it is to be dark. Keycap icons are mostly
-  empty space and clean edges, so the prediction is nearly always right.
-- **Range coding.** An arithmetic coder spends a fraction of a bit on a pixel that matches the
-  prediction and more on one that does not. The probabilities come from a fixed 1 KB table,
-  trained once on the shipped overlay templates and compiled into the firmware.
+PRC is a context-model binary arithmetic coder, the scheme JBIG uses for fax images:
 
-![A grid around the pixel being decoded, marked with a question mark. Ten already-decoded neighbours are numbered: 6, 7, 8 two rows above; 9, 1, 2, 3, 10 one row above; 4 and 5 to the left](../../../assets/reference/prc-stencil.svg)
+- **Context model.** Before a pixel is decoded, 10 already-decoded pixels in a fixed causal
+  template (two rows above, two columns to the left) form a 10-bit context, 0–1023. A fixed
+  1 KB table maps each context to P(pixel is clear). Keycap icons are mostly clear area and
+  clean stroke edges, so for most pixels the table's prediction is near 0% or 100%.
+- **Range coding.** A binary range coder turns those probabilities into bits. A pixel's code
+  length is its information content, −log₂ p, where p is the probability the table gave its
+  actual value: a correctly predicted pixel costs a fraction of a bit, a mispredicted one
+  several bits. The table was trained once on the shipped overlay templates and is compiled
+  into the firmware.
 
-Only the box around the ink is coded. A typical icon comes out at about 28 bytes, against about
-87 for the best of the older encodings, so most icons need one report and two small ones share
-it. Across the 118 shipped templates, the image reports of a first switch to an app fall to 40%
-(4348 → 1753); a JetBrains IDE goes from 205 to 81.
+![The causal context template: the pixel being decoded, marked with a question mark, and the ten already-decoded pixels that form its context, numbered 6, 7, 8 two rows above; 9, 1, 2, 3, 10 one row above; 4 and 5 to the left](../../../assets/reference/prc-stencil.svg)
 
-The host decides per image: an image goes out as PRC only if its coded form fits one report,
-which is never more reports than an older encoding would take. Larger images keep the old path.
+Only the bounding box (ROI) of the set pixels is coded. A typical icon codes to about 28
+bytes, against about 87 for the best of the older encodings, so most icons need one report and
+two small ones share it. Across the 118 shipped templates, the image reports of an uncached app
+switch fall to 40% (4348 → 1753); a JetBrains IDE goes from 205 to 81.
+
+The host decides per image: an image goes out as PRC only if its record fits one report, which
+is never more reports than an older encoding would take. Larger images keep the old path.
 
 ### Worked example: a 10 × 10 square
 
-Take a solid 10 × 10 square. Only the box around the ink is coded, so there are 100 pixels, all
-of them ink. Stored raw, they take 100 bits (13 bytes). The coder walks them row by row, left to
-right. For each pixel, the table gives a probability from the 10 neighbours already decoded; a
-neighbour outside the box counts as empty. The cost of a pixel is −log₂ of the probability the
-table gave its actual value:
+Take a solid 10 × 10 square: a 100-pixel ROI with every pixel set. Uncoded, it takes 100 bits
+(13 bytes). The coder visits the pixels in raster order. Context pixels outside the ROI count
+as clear.
 
-| Pixel (row, column) | What the neighbours show | P(ink) from the table | Cost |
+| Pixel (row, column) | Context | P(set) from the table | Code length |
 |---|---|---|---|
-| (0, 0), first pixel | nothing: all 10 are outside the box | 1.6% | 6.0 bits |
-| (0, 1) | ink to the left | 86% | 0.21 bits |
-| (1, 0) | ink above, empty to the left | 80% | 0.31 bits |
-| (1, 5) | ink above and to the left | 99.6% | 0.006 bits |
-| (5, 5) | ink in all 10 | 95% | 0.075 bits |
-| (9, 9), last pixel | ink, but the edge of the box to the right | 80% | 0.32 bits |
+| (0, 0), first pixel | all 10 outside the ROI, so all clear | 1.6% | 6.0 bits |
+| (0, 1) | left neighbour set | 86% | 0.21 bits |
+| (1, 0) | row above set, left neighbours clear | 80% | 0.31 bits |
+| (1, 5) | row above and left neighbours set | 99.6% | 0.006 bits |
+| (5, 5) | all 10 set | 95% | 0.075 bits |
+| (9, 9), last pixel | set, but the upper-right context pixels lie outside the ROI | 80% | 0.32 bits |
 
-The figure shows all 100 pixels with their cost. Colour runs from dark blue (predicted, nearly
-free) to red (a surprise):
+The figure shows the code length of all 100 pixels. The colour scale runs from dark blue
+(predicted, near zero bits) to red (mispredicted):
 
-![A 10 by 10 grid, one cell per pixel of the square, each labelled with its cost in bits: 6.0 for the first pixel, about .2 along the top row, .31 to .39 down the left column, .006 along the second row and column, .08 in the interior, and .17 to .32 along the right edge](../../../assets/reference/prc-square-costs.svg)
+![A 10 by 10 grid, one cell per pixel of the square, each labelled with its code length in bits: 6.0 for the first pixel, about .2 along the top row, .31 to .39 down the left column, .006 along the second row and column, .08 in the interior, and .17 to .32 along the right edge](../../../assets/reference/prc-square-costs.svg)
 
-Only the first pixel is a surprise. Every later pixel matches the prediction and costs a fraction
-of a bit, so all 100 pixels together cost 19.2 bits. With the coder's start and flush bytes the
-payload is **6 bytes**, and the record 12.
+Only the first pixel is mispredicted. Every later pixel matches the prediction, so the 100
+pixels together carry 19.2 bits of information. The coder's initial and flush bytes bring the
+payload to **6 bytes**, and the record to 12.
 
-The table learned from real icons, which are mostly thin strokes. So a pixel with ink all around
-it (95%) is less certain than one continuing a stroke's edge (99.6%). A large filled area is
-rare in an icon, and the table prices it that way.
+The table was trained on real icons, which are mostly 1–2 px strokes. So a pixel whose whole
+context is set (95%) is predicted less confidently than one continuing a stroke edge (99.6%):
+large filled areas are rare in the training set.
 
 ### Worked example: a real icon
 
-VS Code's `Ctrl+P` (*Quick Open*) shows the Fluent *Document Search* icon. Its ink fits a
-27 × 31 box (orange) in the top-right corner of the 72 × 40 keycap:
+VS Code's `Ctrl+P` (*Quick Open*) shows the Fluent *Document Search* icon. Its set pixels fit a
+27 × 31 px ROI (orange) in the top-right corner of the 72 × 40 px keycap:
 
-![VS Code's Quick Open icon, a page with a folded corner and a magnifying glass, drawn in the top-right of a 72 by 40 pixel keycap grid; an orange rectangle marks the 27 by 31 pixel box that PRC codes](../../../assets/reference/prc-quick-open.png)
+![VS Code's Quick Open icon, a page with a folded corner and a magnifying glass, drawn in the top-right of a 72 by 40 pixel keycap grid; an orange rectangle marks the 27 by 31 pixel ROI that PRC codes](../../../assets/reference/prc-quick-open.png)
 
 | Encoding | Bytes | Reports |
 |---|---|---|
-| Plain (`0x0A`) | 360 | 5 (empty segments are skipped) |
+| Plain (`0x0A`) | 360 | 5 (all-clear segments are skipped) |
 | RLE, whole keycap (`0x10`/`0x11`) | 154 | 3 |
-| Box, raw (`0x12`/`0x13`) | 105 | 2 |
-| Box, RLE (`0x12`/`0x13`) | 139 | 3 |
+| ROI, uncompressed (`0x12`/`0x13`) | 105 | 2 |
+| ROI, RLE (`0x12`/`0x13`) | 139 | 3 |
 | **PRC** (`0x29`) | **26 + 6-byte header** | **shares one** |
 
-The best older encoding needs 2 reports. The PRC record is 32 bytes, so it fits in half a report,
-and the next icon rides in the other half. Before v19, 2 reports; with PRC, half of one.
+The best older encoding needs 2 reports. The PRC record is 32 bytes, so it fits in half a report
+and the next record fills the other half.
 
-Where do those 26 bytes go? The next figure colours each of the box's 837 pixels by what it
-cost, on the same scale as the square; ink pixels have a white outline:
+Where do the 26 bytes go? The next figure colours each of the ROI's 837 pixels by its code
+length, on the same scale as the square; set pixels have a white outline:
 
-![The Quick Open icon as a cost map. Most of the box is dark blue, meaning under 0.1 bit per pixel. Orange and red pixels sit where a stroke starts, stops or turns. Three pixels are circled: A, where the bottom edge of the page starts after the magnifier's handle, cost 6 bits; B, just past the end of the handle, cost 4.3 bits; C, inside the page's right edge, cost 0.01 bits](../../../assets/reference/prc-quick-open-costs.svg)
+![The Quick Open icon as a code-length map. Most of the ROI is dark blue, meaning under 0.1 bit per pixel. Orange and red pixels sit where a stroke starts, ends or turns. Three pixels are circled: A, where the page's bottom edge starts after the magnifier's handle, 6 bits; B, just past the end of the handle, 4.3 bits; C, inside the page's right edge, 0.01 bits](../../../assets/reference/prc-quick-open-costs.svg)
 
-- **A** is ink where the table gave ink only a 1.6% chance: the page's bottom edge starts again
-  after the gap for the magnifier's handle, and nothing above or to the left announced it. It
-  costs 6 bits, as much as the square's first pixel.
-- **B** is empty where the table gave ink a 94.9% chance: the neighbours looked like a stroke
-  continuing, but the handle ends there. 4.3 bits.
-- **C** sits inside the page's long right edge. Every neighbour agrees, the table gives ink a
-  99.2% chance, and it costs 0.01 bits.
+- **A** is set where the table gave P(set) = 1.6%: the page's bottom edge resumes after the gap
+  for the magnifier's handle, and no context pixel indicates it. 6 bits, the same as the
+  square's first pixel.
+- **B** is clear where the table gave P(set) = 94.9%: the context matches a continuing stroke,
+  but the handle ends there. 4.3 bits.
+- **C** lies inside the page's right edge. The context is unambiguous, P(set) = 99.2%, and the
+  pixel costs 0.01 bits.
 
-Most of the box behaves like C. 610 of the 837 pixels (73%) cost under 0.1 bit each, 18 bits
-together. 43 pixels (5%), the starts, ends and corners of strokes, take 61% of the 185.6 bits.
-That is why PRC gains the most on line icons: the lines are long and the surprises few.
+Most of the ROI behaves like C. 610 of the 837 pixels (73%) cost under 0.1 bit each, 18 bits
+in total. 43 pixels (5%), the stroke starts, ends and corners, carry 61% of the 185.6 bits.
+That is why PRC gains the most on line icons: long strokes, few stroke ends.
 
 **Report layout.** After `P` and `0x29`, the report carries records back to back. A keycode byte
 of 0 (the zero padding) ends the list.
@@ -236,11 +239,11 @@ of 0 (the zero padding) ends the list.
 |---|---|---|
 | keycode | 8 | Addresses the image like the other upload commands |
 | modifier | 4 | Modifier variant 0–15 |
-| top, left | 6, 7 | Top-left corner of the coded box |
-| height − 1, width − 1 | 6, 7 | Box size |
+| top, left | 6, 7 | Top-left corner of the ROI |
+| height − 1, width − 1 | 6, 7 | ROI size |
 | length | 6 | Payload bytes that follow |
 | reserved | 4 | Must be 0 |
-| payload | length × 8 | The coded pixels |
+| payload | length × 8 | The range-coded ROI |
 
 <Aside type="caution">
 The table is part of the format. Host and keyboard must use the identical 1 KB table, or the

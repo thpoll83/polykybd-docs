@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="580" height="690" viewBox="0 0 580 690">
 <rect width="580" height="690" fill="#15171c"/>
-<text x="30" y="30" fill="#e8e8e8" font-size="15" font-family="Inter, Helvetica, Arial, sans-serif">A solid 10 × 10 square: bits spent on each pixel</text>
+<text x="30" y="30" fill="#e8e8e8" font-size="15" font-family="Inter, Helvetica, Arial, sans-serif">A solid 10 × 10 square: code length of each pixel (bits)</text>
 <rect x="30" y="50" width="52" height="52" fill="#e4572e" stroke="#15171c" stroke-width="2"/>
 <text x="56.0" y="81.0" fill="#ffffff" font-size="14" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">6.0</text>
 <rect x="82" y="50" width="52" height="52" fill="#728095" stroke="#15171c" stroke-width="2"/>
@@ -201,7 +201,7 @@
 <text x="472.0" y="549.0" fill="#ffffff" font-size="14" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">.17</text>
 <rect x="498" y="518" width="52" height="52" fill="#979381" stroke="#15171c" stroke-width="2"/>
 <text x="524.0" y="549.0" fill="#ffffff" font-size="14" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">.32</text>
-<text x="30" y="600" fill="#e8e8e8" font-size="14" font-family="Inter, Helvetica, Arial, sans-serif">Total 19.2 bits for 100 pixels. Payload 6 bytes; the raw box takes 13.</text>
+<text x="30" y="600" fill="#e8e8e8" font-size="14" font-family="Inter, Helvetica, Arial, sans-serif">19.2 bits of information for 100 pixels. Payload 6 bytes; uncoded, 13.</text>
 <defs><linearGradient id="scale">
 <stop offset="0.0" stop-color="rgb(27, 31, 59)"/>
 <stop offset="0.35" stop-color="rgb(40, 90, 190)"/>
@@ -217,4 +217,4 @@
 <text x="404.3" y="670" fill="#9aa0aa" font-size="12" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">1 bit</text>
 <line x1="550.0" y1="652" x2="550.0" y2="657" stroke="#9aa0aa"/>
 <text x="550.0" y="670" fill="#9aa0aa" font-size="12" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">6 bits</text>
-<text x="30" y="632" fill="#9aa0aa" font-size="12" font-family="Inter, Helvetica, Arial, sans-serif">cost of a pixel (bits): predicted = cheap, surprise = expensive</text></svg>
+<text x="30" y="632" fill="#9aa0aa" font-size="12" font-family="Inter, Helvetica, Arial, sans-serif">code length per pixel (bits): predicted = short, mispredicted = long</text></svg>
