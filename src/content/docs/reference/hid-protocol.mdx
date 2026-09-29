@@ -147,7 +147,7 @@ Since **v19** the host has a fifth encoding for keycap images: **PRC**, short fo
 *Predictive Range Coding*. Host and firmware must both be on v19 or later; with an older
 keyboard the host keeps using the four older encodings.
 
-PRC is a context-model binary arithmetic coder, the scheme JBIG uses for fax images:
+PRC is a context-model binary arithmetic coder, the scheme of [JBIG](https://en.wikipedia.org/wiki/JBIG), the fax-image standard [ITU-T T.82](https://www.itu.int/rec/T-REC-T.82):
 
 - **Context model.** Before a pixel is decoded, 10 already-decoded pixels in a fixed causal
   template (3 pixels two rows up, 5 one row up, 2 to the left in the same row) form a
@@ -165,11 +165,12 @@ PRC is a context-model binary arithmetic coder, the scheme JBIG uses for fax ima
 **Where the template comes from.** Three decisions shape it, and only one of them was
 trained:
 
-- **Which 10 pixels: taken from JBIG, not measured.** The positions are JBIG's three-line
-  template (ITU-T T.82). JBIG lets the encoder move one of the five pixels in the row above,
-  the adaptive pixel; PRC keeps it at its default place, two columns right. No other set of
-  positions was compared on the keycap icons.
-- **The numbering 1–10: a convention.** It sets which neighbour is the context's most
+- **Which 10 pixels: taken from JBIG unchanged, not measured.** PRC uses the pixel pattern
+  of JBIG's three-line template, defined in [ITU-T T.82](https://www.itu.int/rec/T-REC-T.82).
+  JBIG lets the encoder move one of the five pixels in the row above, the adaptive pixel;
+  PRC keeps it at its default place, two columns right. No other set of positions was
+  compared on the keycap icons.
+- **The numbering 1–10: our own convention, not JBIG's.** It sets which neighbour is the context's most
   significant bit: the five nearest first, then the five farther ones. Any order gives the
   same compression, because reordering the bits only relabels the 1,024 contexts. Each
   context still collects the same pixels during training, so every probability and every
