@@ -154,6 +154,8 @@ keyboard the host simply keeps using the four older encodings.
   prediction and more on one that does not. The probabilities come from a fixed 1 KB table,
   trained once on the shipped overlay templates and compiled into the firmware.
 
+![A grid around the pixel being decoded, marked with a question mark. Ten already-decoded neighbours are numbered: 6, 7, 8 two rows above; 9, 1, 2, 3, 10 one row above; 4 and 5 to the left](../../../assets/reference/prc-stencil.svg)
+
 Only the box around the ink is coded. A typical icon comes out at about 28 bytes, against about
 87 for the best of the older encodings, so most icons need one report and two small ones share
 it. Across the 118 shipped templates, the image reports of a first switch to an app fall to 40%
@@ -178,6 +180,11 @@ table gave its actual value:
 | (1, 5) | ink above and to the left | 99.6% | 0.006 bits |
 | (5, 5) | ink in all 10 | 95% | 0.075 bits |
 | (9, 9), last pixel | ink, but the edge of the box to the right | 80% | 0.32 bits |
+
+The figure shows all 100 pixels with their cost. Colour runs from dark blue (predicted, nearly
+free) to red (a surprise):
+
+![A 10 by 10 grid, one cell per pixel of the square, each labelled with its cost in bits: 6.0 for the first pixel, about .2 along the top row, .31 to .39 down the left column, .006 along the second row and column, .08 in the interior, and .17 to .32 along the right edge](../../../assets/reference/prc-square-costs.svg)
 
 Only the first pixel is a surprise. Every later pixel matches the prediction and costs a fraction
 of a bit, so all 100 pixels together cost 19.2 bits. With the coder's start and flush bytes the
@@ -204,6 +211,23 @@ VS Code's `Ctrl+P` (*Quick Open*) shows the Fluent *Document Search* icon. Its i
 
 The best older encoding needs 2 reports. The PRC record is 32 bytes, so it fits in half a report,
 and the next icon rides in the other half. Before v19, 2 reports; with PRC, half of one.
+
+Where do those 26 bytes go? The next figure colours each of the box's 837 pixels by what it
+cost, on the same scale as the square; ink pixels have a white outline:
+
+![The Quick Open icon as a cost map. Most of the box is dark blue, meaning under 0.1 bit per pixel. Orange and red pixels sit where a stroke starts, stops or turns. Three pixels are circled: A, where the bottom edge of the page starts after the magnifier's handle, cost 6 bits; B, just past the end of the handle, cost 4.3 bits; C, inside the page's right edge, cost 0.01 bits](../../../assets/reference/prc-quick-open-costs.svg)
+
+- **A** is ink where the table gave ink only a 1.6% chance: the page's bottom edge starts again
+  after the gap for the magnifier's handle, and nothing above or to the left announced it. It
+  costs 6 bits, as much as the square's first pixel.
+- **B** is empty where the table gave ink a 94.9% chance: the neighbours looked like a stroke
+  continuing, but the handle ends there. 4.3 bits.
+- **C** sits inside the page's long right edge. Every neighbour agrees, the table gives ink a
+  99.2% chance, and it costs 0.01 bits.
+
+Most of the box behaves like C. 610 of the 837 pixels (73%) cost under 0.1 bit each, 18 bits
+together. 43 pixels (5%), the starts, ends and corners of strokes, take 61% of the 185.6 bits.
+That is why PRC gains the most on line icons: the lines are long and the surprises few.
 
 **Report layout.** After `P` and `0x29`, the report carries records back to back. A keycode byte
 of 0 (the zero padding) ends the list.
