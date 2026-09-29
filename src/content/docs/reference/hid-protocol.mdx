@@ -53,6 +53,7 @@ source commonly uses it.
 | **SEND_OVERLAY** | `0x0A` | Plain overlay: each 360-byte keycap in 6 × 60-byte segments. (v11 packs modifier + segment into one header byte so a 60-byte segment fits the report exactly.) |
 | **START / SEND_COMPRESSED_OVERLAY** | `0x10` / `0x11` | RLE-compressed keycap in 1–2 packets; decompressed in firmware (optionally on RP2040 core1). The common case. |
 | **START / SEND_ROI_OVERLAY** | `0x12` / `0x13` | Partial refresh of a region of a keycap's display. |
+| **SEND_PRC_OVERLAY** | `0x29` (41) | **v19+.** [PRC-coded](#prc-predictive-range-coding) keycap images, several per report. A typical icon takes about a third of the bytes of the best older encoding. |
 | **SEND_OVERLAY_MAPPING** | `0x15` (21) | Maps overlay pool slots to displays / usage bits, at a fixed 10 bits per index. **Silent since v3** (no per-chunk ACK). The only mapping command a pre-v12 keyboard understands. |
 | **SEND_OVERLAY_MAPPING_W** | `0x21` (33) | **v12+.** The same mapping stream, but a width byte says how many bits each index uses (8–11), so the host packs each group of pairs as tightly as it fits. Also silent. |
 | **OVERLAY_FLAGS on / off** | `0x0B` / `0x0C` | Enable/disable overlay rendering; enable force-syncs overlay state to the slave. |
@@ -137,7 +138,47 @@ PolyKybdHost before flashing an unsigned image.
 </Aside>
 
 <Aside type="note">
-The bulk overlay commands (`0x0A`, `0x10`/`0x11`, `0x12`/`0x13`, and mapping on v3) are **not** ACK'd per chunk — the host follows a burst with a `GET_ID` liveness check rather than waiting for replies.
+The bulk overlay commands (`0x0A`, `0x10`/`0x11`, `0x12`/`0x13`, `0x29`, and mapping on v3) are **not** ACK'd per chunk — the host follows a burst with a `GET_ID` liveness check rather than waiting for replies.
+</Aside>
+
+## PRC: Predictive Range Coding
+
+Since **v19** the host has a fifth way to send a keycap image: **PRC**, short for
+*Predictive Range Coding*. It needs host and firmware both on v19 or later; with an older
+keyboard the host simply keeps using the four older encodings.
+
+- **Predictive.** Before a pixel is decoded, the 10 pixels around it that are already known
+  (two rows above, two to the left) predict how likely it is to be dark. Keycap icons are mostly
+  empty space and clean edges, so the prediction is nearly always right.
+- **Range coding.** An arithmetic coder spends a fraction of a bit on a pixel that matches the
+  prediction and more on one that does not. The probabilities come from a fixed 1 KB table,
+  trained once on the shipped overlay templates and compiled into the firmware.
+
+Only the box around the ink is coded. A typical icon comes out at about 28 bytes, against about
+87 for the best of the older encodings, so most icons need one report and two small ones share
+it. Across the 118 shipped templates, the image reports of a first switch to an app fall to 40%
+(4348 → 1753); a JetBrains IDE goes from 205 to 81.
+
+The host decides per image: an image goes out as PRC only if its coded form fits one report,
+which is never more reports than an older encoding would take. Larger images keep the old path.
+
+**Report layout.** After `P` and `0x29`, the report carries records back to back. A keycode byte
+of 0 (the zero padding) ends the list.
+
+| Field | Bits | Content |
+|---|---|---|
+| keycode | 8 | Addresses the image like the other upload commands |
+| modifier | 4 | Modifier variant 0–15 |
+| top, left | 6, 7 | Top-left corner of the coded box |
+| height − 1, width − 1 | 6, 7 | Box size |
+| length | 6 | Payload bytes that follow |
+| reserved | 4 | Must be 0 |
+| payload | length × 8 | The coded pixels |
+
+<Aside type="caution">
+The table is part of the format. Host and keyboard must use the identical 1 KB table, or the
+keycaps show garbage and nothing reports an error. A retrained table would be a new protocol
+version, never a change to table v1.
 </Aside>
 
 ## Overlay addressing
@@ -189,6 +230,7 @@ Selected milestones:
 - **v16** — **CRASH_RECORD** (`0x27`): the firmware records a hardware fault, an unexpected exception or a watchdog restart, reboots through it, and announces it on its next boot — on the console (which the host turns into an alert) and over this command. See [when the keyboard firmware crashes](/software/reporting-problems/#when-the-keyboard-firmware-crashes).
 - **v17** — a **volatile** flag on `SET_UNICODE_MODE` (`0x14`): apply a unicode mode for this session only, without storing it. It exists for the Windows logon screen, where the host cannot yet tell *WinCompose is not installed* from *WinCompose has not started yet* — so it applies its first reading volatile and only writes the mode down once it can tell the two apart. Before this, every logon on a WinCompose machine stored `Windows` and then wrote `WinCompose` back over it.
 - **v18** — **IDLE_TIMEOUT** (`0x28`): how long the keyboard waits before it starts fading into the [idle style](/using/idle/#how-long-before-it-idles) becomes a setting — six presets from 15 seconds to 5 minutes — where it used to be fixed at 2 minutes when the firmware was built. 2 minutes stays the default, so a keyboard nobody touches behaves as it always did. Like the legend size and unlike the glyph script, the range is closed: a keyboard refuses a preset it doesn't know, because an accepted one would be stored and then silently resolved to some other duration.
+- **v19** — **SEND_PRC_OVERLAY** (`0x29`): [PRC](#prc-predictive-range-coding) (Predictive Range Coding), a fifth keycap-image encoding that packs a typical icon into about 28 bytes. The host uses it per image, only where it saves a report; the older encodings stay.
 
 <Aside type="note">
 Not every version number above is a separate feature listed here — the list highlights the

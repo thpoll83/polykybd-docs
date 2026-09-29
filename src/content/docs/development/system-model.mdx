@@ -74,6 +74,7 @@ newer features unavailable — rather than refusing to connect at all.
 | `10` / `0x0A` | SEND_OVERLAY | Plain 60-byte segment (6 per keycap). |
 | `16` / `17` | START / SEND_COMPRESSED_OVERLAY | RLE-compressed keycap in 1–2 packets → `core1` decompress. The common case. |
 | `18` / `19` | START / SEND_ROI_OVERLAY | Partial refresh of a keycap region. |
+| `41` / `0x29` | SEND_PRC_OVERLAY | **v19+.** [PRC](/reference/hid-protocol/#prc-predictive-range-coding)-coded keycaps, several per report; decoded on `core0`. |
 | `21` / `0x15` | SEND_OVERLAY_MAPPING | pool→display map: which slot each keycap draws. |
 | `11` / `12` | OVERLAY_FLAGS on / off | Enable/disable overlay rendering. |
 | `26` / `0x1A` | SAVE_MRU | Persist the keyboard's most-recently-used emoji / language picks. |
