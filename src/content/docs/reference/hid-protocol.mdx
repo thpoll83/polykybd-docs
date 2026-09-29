@@ -54,6 +54,7 @@ source commonly uses it.
 | **START / SEND_COMPRESSED_OVERLAY** | `0x10` / `0x11` | RLE-compressed keycap in 1–2 packets; decompressed in firmware (optionally on RP2040 core1). The common case. |
 | **START / SEND_ROI_OVERLAY** | `0x12` / `0x13` | Partial refresh of a region of a keycap's display. |
 | **SEND_PRC_OVERLAY** | `0x29` (41) | **v19+.** [PRC](#prc-predictive-range-coding)-coded keycap images, several records per report. A typical icon codes to about a third of the bytes of the best older encoding. |
+| **FILL_POOL_FROM_ICON** | `0x2A` (42) | **v20+.** Fills pool slots from the [icon library](#icon-library-fills) in the keyboard's flash: `(pool slot, icon id)` pairs instead of bitmaps. The one bulk overlay command that replies. |
 | **SEND_OVERLAY_MAPPING** | `0x15` (21) | Maps overlay pool slots to displays / usage bits, at a fixed 10 bits per index. **Silent since v3** (no per-chunk ACK). The only mapping command a pre-v12 keyboard understands. |
 | **SEND_OVERLAY_MAPPING_W** | `0x21` (33) | **v12+.** The same mapping stream, but a width byte says how many bits each index uses (8–11), so the host packs each group of pairs as tightly as it fits. Also silent. |
 | **OVERLAY_FLAGS on / off** | `0x0B` / `0x0C` | Enable/disable overlay rendering; enable force-syncs overlay state to the slave. |
@@ -138,7 +139,7 @@ PolyKybdHost before flashing an unsigned image.
 </Aside>
 
 <Aside type="note">
-The bulk overlay commands (`0x0A`, `0x10`/`0x11`, `0x12`/`0x13`, `0x29`, and mapping on v3) are **not** ACK'd per chunk — the host follows a burst with a `GET_ID` liveness check rather than waiting for replies.
+The bulk overlay commands (`0x0A`, `0x10`/`0x11`, `0x12`/`0x13`, `0x29`, and mapping on v3) are **not** ACK'd per chunk — the host follows a burst with a `GET_ID` liveness check rather than waiting for replies. `0x2A` is the exception: the host needs its answer to know which icons it still has to upload.
 </Aside>
 
 ## PRC: Predictive Range Coding
@@ -329,6 +330,50 @@ keycaps show garbage and nothing reports an error. A retrained table would be a 
 version, never a change to table v1.
 </Aside>
 
+## Icon library fills
+
+Since **v20** the icons that the app templates share live in the keyboard's flash, on both
+halves, as one more font-pack bundle: `icons.plyi`, bundle 8, a 256 KB slot. When the host
+switches app, it no longer uploads such an icon. It sends a pair instead: which pool slot to
+fill, and which icon to draw there. Each half draws the icon from its own flash.
+
+The host decides by exact pixels. It fills a slot only when the image it would upload is,
+byte for byte, a glyph in the bundle it shipped, and only when the keyboard reports that same
+bundle version. So the keycap shows exactly what an upload would have shown. Anything else
+(an app's own drawings, text labels, the ESC program mark) is uploaded as before, with PRC.
+
+**What it saves.** Counted through the host's own send path, for a cold switch into each app
+(nothing in the keyboard's image pool yet), on top of PRC:
+
+| App | Reports with PRC | With the icon library |
+|---|---|---|
+| JetBrains IDEs | 84 | 32 |
+| Calculator | 64 | 9 |
+| paint.net | 59 | 11 |
+| Photoshop | 46 | 15 |
+| All 60 template sets | 1,868 | 744 |
+
+**The report** uses the same packing as `SEND_OVERLAY_MAPPING_W`: byte 2 is the value width
+(8–16 bits), then 61 bytes of `(pool slot, icon id)` pairs, padded by repeating the last pair.
+At 10 bits that is 24 pairs per report.
+
+**The reply** is `P` `0x2A` `.` when every pair was applied on both halves. Otherwise it is
+`P` `0x2A` `!`, and byte 3 names the first pair the keyboard did not apply. The host uploads
+that image and every one after it the old way. A half without the icon bundle refuses the whole
+report, which reads as pair 0, so a keyboard that missed the bundle still shows every icon.
+
+**The bundle** has the font-pack layout with its own magic, `PlyI`, so the font loader can never
+take an icon for a character. Each icon is stored cropped to its set pixels, with its position on
+the 72 × 40 keycap. The icon ids are frozen: a new icon takes the next id, and an existing id
+never changes, because the id is the only thing on the wire. The host flashes the bundle like
+any other, over [BEGIN / CHUNK / COMMIT](#resource-flash-transport--begin--chunk--commit).
+
+<Aside type="note">
+Since v20 the GET_ID version block lists nine bundles and reports each one as the **lower** of
+the two halves' versions. A half that missed a flash therefore reads as behind, and the host
+flashes that bundle again.
+</Aside>
+
 ## Overlay addressing
 
 A keycap image is addressed by **90 keycap slots × 16 modifier variants**:
@@ -379,6 +424,7 @@ Selected milestones:
 - **v17** — a **volatile** flag on `SET_UNICODE_MODE` (`0x14`): apply a unicode mode for this session only, without storing it. It exists for the Windows logon screen, where the host cannot yet tell *WinCompose is not installed* from *WinCompose has not started yet* — so it applies its first reading volatile and only writes the mode down once it can tell the two apart. Before this, every logon on a WinCompose machine stored `Windows` and then wrote `WinCompose` back over it.
 - **v18** — **IDLE_TIMEOUT** (`0x28`): how long the keyboard waits before it starts fading into the [idle style](/using/idle/#how-long-before-it-idles) becomes a setting — six presets from 15 seconds to 5 minutes — where it used to be fixed at 2 minutes when the firmware was built. 2 minutes stays the default, so a keyboard nobody touches behaves as it always did. Like the legend size and unlike the glyph script, the range is closed: a keyboard refuses a preset it doesn't know, because an accepted one would be stored and then silently resolved to some other duration.
 - **v19** — **SEND_PRC_OVERLAY** (`0x29`): [PRC](#prc-predictive-range-coding) (Predictive Range Coding), a fifth keycap-image encoding that codes a typical icon to a payload of about 28 bytes. The host uses it per image, only where it saves a report; the older encodings stay.
+- **v20** — **FILL_POOL_FROM_ICON** (`0x2A`): the [icon library](#icon-library-fills). Icons the app templates share are stored in the keyboard's flash, and the host sends `(pool slot, icon id)` pairs instead of their bitmaps. A cold switch into a JetBrains IDE drops from 84 reports to 32. The GET_ID version block now reports the lower of the two halves' versions per bundle.
 
 <Aside type="note">
 Not every version number above is a separate feature listed here — the list highlights the
