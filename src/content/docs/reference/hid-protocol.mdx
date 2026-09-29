@@ -161,9 +161,10 @@ PRC is a context-model binary arithmetic coder, the scheme JBIG uses for fax ima
 
 ![The causal context template: the pixel being decoded, marked with a question mark, and the ten already-decoded pixels that form its context, numbered 6, 7, 8 two rows above; 9, 1, 2, 3, 10 one row above; 4 and 5 to the left](../../../assets/reference/prc-stencil.svg)
 
-Only the bounding box (ROI) of the set pixels is coded. A typical icon codes to about 28
-bytes, against about 87 for the best of the older encodings, so most icons need one report and
-two small ones share it. Across the 118 shipped templates, the image reports of an uncached app
+Only the bounding box (ROI) of the set pixels is coded. A typical icon's coded payload is about
+28 bytes, against about 87 for the best of the older encodings. Each record adds a 6-byte header,
+and a report carries 62 bytes after its `P` and command byte. So most icons need one report, and
+two records share one when together they fit in 62 bytes. Across the 118 shipped templates, the image reports of an uncached app
 switch fall to 40% (4348 → 1753); a JetBrains IDE goes from 205 to 81.
 
 The host decides per image: an image goes out as PRC only if its record fits one report, which
@@ -210,10 +211,11 @@ VS Code's `Ctrl+P` (*Quick Open*) shows the Fluent *Document Search* icon. Its s
 | RLE, whole keycap (`0x10`/`0x11`) | 154 | 3 |
 | ROI, uncompressed (`0x12`/`0x13`) | 105 | 2 |
 | ROI, RLE (`0x12`/`0x13`) | 139 | 3 |
-| **PRC** (`0x29`) | **26 + 6-byte header** | **shares one** |
+| **PRC** (`0x29`) | **26 + 6-byte header** | **1, with 30 bytes left** |
 
-The best older encoding needs 2 reports. The PRC record is 32 bytes, so it fits in half a report
-and the next record fills the other half.
+The best older encoding needs 2 reports. The PRC record is 32 bytes, which leaves 30 of the
+report's 62 bytes. The next record joins it if its whole record, header included, fits in those
+30 bytes; otherwise it starts a new report.
 
 Where do the 26 bytes go? The next figure colours each of the ROI's 837 pixels by its code
 length, on the same scale as the square; set pixels have a white outline:
@@ -300,7 +302,7 @@ Selected milestones:
 - **v16** — **CRASH_RECORD** (`0x27`): the firmware records a hardware fault, an unexpected exception or a watchdog restart, reboots through it, and announces it on its next boot — on the console (which the host turns into an alert) and over this command. See [when the keyboard firmware crashes](/software/reporting-problems/#when-the-keyboard-firmware-crashes).
 - **v17** — a **volatile** flag on `SET_UNICODE_MODE` (`0x14`): apply a unicode mode for this session only, without storing it. It exists for the Windows logon screen, where the host cannot yet tell *WinCompose is not installed* from *WinCompose has not started yet* — so it applies its first reading volatile and only writes the mode down once it can tell the two apart. Before this, every logon on a WinCompose machine stored `Windows` and then wrote `WinCompose` back over it.
 - **v18** — **IDLE_TIMEOUT** (`0x28`): how long the keyboard waits before it starts fading into the [idle style](/using/idle/#how-long-before-it-idles) becomes a setting — six presets from 15 seconds to 5 minutes — where it used to be fixed at 2 minutes when the firmware was built. 2 minutes stays the default, so a keyboard nobody touches behaves as it always did. Like the legend size and unlike the glyph script, the range is closed: a keyboard refuses a preset it doesn't know, because an accepted one would be stored and then silently resolved to some other duration.
-- **v19** — **SEND_PRC_OVERLAY** (`0x29`): [PRC](#prc-predictive-range-coding) (Predictive Range Coding), a fifth keycap-image encoding that packs a typical icon into about 28 bytes. The host uses it per image, only where it saves a report; the older encodings stay.
+- **v19** — **SEND_PRC_OVERLAY** (`0x29`): [PRC](#prc-predictive-range-coding) (Predictive Range Coding), a fifth keycap-image encoding that codes a typical icon to a payload of about 28 bytes. The host uses it per image, only where it saves a report; the older encodings stay.
 
 <Aside type="note">
 Not every version number above is a separate feature listed here — the list highlights the
