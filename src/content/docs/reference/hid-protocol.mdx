@@ -285,8 +285,8 @@ Read from left to right:
 - **Columns 16–18** continue the diagonal, predicted at 71.5–99.6%.
 - **Columns 19–26** lie right of the fold and are clear: 0.01–0.47 bits each.
 
-The 27 pixels carry 11.9 bits of information; uncoded they take 27. The two mispredicted
-pixels, columns 6 and 15, carry 7.8 of those 11.9 bits. The range coder emits no bits per
+The 27 pixels carry 11.9 bits of information; uncoded they take 27. The three mispredicted
+pixels, columns 2, 6 and 15, carry 9.2 of those 11.9 bits. The range coder emits no bits per
 pixel: it narrows one interval by each pixel's probability, so the payload follows the sum
 over the whole ROI. For this icon that is 185.6 bits, which the coder writes as 26 bytes,
 including its start and flush overhead.
