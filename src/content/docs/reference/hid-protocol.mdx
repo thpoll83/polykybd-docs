@@ -162,6 +162,49 @@ it. Across the 118 shipped templates, the image reports of a first switch to an 
 The host decides per image: an image goes out as PRC only if its coded form fits one report,
 which is never more reports than an older encoding would take. Larger images keep the old path.
 
+### Worked example: a 10 × 10 square
+
+Take a solid 10 × 10 square. Only the box around the ink is coded, so there are 100 pixels, all
+of them ink. Stored raw, they take 100 bits (13 bytes). The coder walks them row by row, left to
+right. For each pixel, the table gives a probability from the 10 neighbours already decoded; a
+neighbour outside the box counts as empty. The cost of a pixel is −log₂ of the probability the
+table gave its actual value:
+
+| Pixel (row, column) | What the neighbours show | P(ink) from the table | Cost |
+|---|---|---|---|
+| (0, 0), first pixel | nothing: all 10 are outside the box | 1.6% | 6.0 bits |
+| (0, 1) | ink to the left | 86% | 0.21 bits |
+| (1, 0) | ink above, empty to the left | 80% | 0.31 bits |
+| (1, 5) | ink above and to the left | 99.6% | 0.006 bits |
+| (5, 5) | ink in all 10 | 95% | 0.075 bits |
+| (9, 9), last pixel | ink, but the edge of the box to the right | 80% | 0.32 bits |
+
+Only the first pixel is a surprise. Every later pixel matches the prediction and costs a fraction
+of a bit, so all 100 pixels together cost 19.2 bits. With the coder's start and flush bytes the
+payload is **6 bytes**, and the record 12.
+
+The table learned from real icons, which are mostly thin strokes. So a pixel with ink all around
+it (95%) is less certain than one continuing a stroke's edge (99.6%). A large filled area is
+rare in an icon, and the table prices it that way.
+
+### Worked example: a real icon
+
+VS Code's `Ctrl+P` (*Quick Open*) shows the Fluent *Document Search* icon. Its ink fits a
+27 × 31 box (orange) in the top-right corner of the 72 × 40 keycap:
+
+![VS Code's Quick Open icon, a page with a folded corner and a magnifying glass, drawn in the top-right of a 72 by 40 pixel keycap grid; an orange rectangle marks the 27 by 31 pixel box that PRC codes](../../../assets/reference/prc-quick-open.png)
+
+| Encoding | Bytes | Reports |
+|---|---|---|
+| Plain (`0x0A`) | 360 | 5 (empty segments are skipped) |
+| RLE, whole keycap (`0x10`/`0x11`) | 154 | 3 |
+| Box, raw (`0x12`/`0x13`) | 105 | 2 |
+| Box, RLE (`0x12`/`0x13`) | 139 | 3 |
+| **PRC** (`0x29`) | **26 + 6-byte header** | **shares one** |
+
+The best older encoding needs 2 reports. The PRC record is 32 bytes, so it fits in half a report,
+and the next icon rides in the other half. Before v19, 2 reports; with PRC, half of one.
+
 **Report layout.** After `P` and `0x29`, the report carries records back to back. A keycode byte
 of 0 (the zero padding) ends the list.
 
