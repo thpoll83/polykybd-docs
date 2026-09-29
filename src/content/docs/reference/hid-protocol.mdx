@@ -150,7 +150,8 @@ keyboard the host keeps using the four older encodings.
 PRC is a context-model binary arithmetic coder, the scheme JBIG uses for fax images:
 
 - **Context model.** Before a pixel is decoded, 10 already-decoded pixels in a fixed causal
-  template (two rows above, two columns to the left) form a 10-bit context, 0–1023. A fixed
+  template (3 pixels two rows up, 5 one row up, 2 to the left in the same row) form a
+  10-bit context, 0–1023. A fixed
   1 KB table maps each context to P(pixel is clear). Keycap icons are mostly clear area and
   clean stroke edges, so for most pixels the table's prediction is near 0% or 100%.
 - **Range coding.** A binary range coder turns those probabilities into bits. A pixel's code
@@ -160,6 +161,23 @@ PRC is a context-model binary arithmetic coder, the scheme JBIG uses for fax ima
   into the firmware.
 
 ![The causal context template: the pixel being decoded, marked with a question mark, and the ten already-decoded pixels that form its context, numbered 6, 7, 8 two rows above; 9, 1, 2, 3, 10 one row above; 4 and 5 to the left](../../../assets/reference/prc-stencil.svg)
+
+**Where the template comes from.** Three decisions shape it, and only one of them was
+trained:
+
+- **Which 10 pixels: taken from JBIG, not measured.** The positions are JBIG's three-line
+  template (ITU-T T.82). JBIG lets the encoder move one of the five pixels in the row above,
+  the adaptive pixel; PRC keeps it at its default place, two columns right. No other set of
+  positions was compared on the keycap icons.
+- **The numbering 1–10: a convention.** It sets which neighbour is the context's most
+  significant bit: the five nearest first, then the five farther ones. Any order gives the
+  same compression, because reordering the bits only relabels the 1,024 contexts. Each
+  context still collects the same pixels during training, so every probability and every
+  code length stays the same. The order is frozen only because host and firmware must agree
+  on it.
+- **The table: trained.** For each of the 1,024 contexts, the training counted how often the
+  pixel is clear across the shipped overlay templates. This is the only part that comes from
+  the data.
 
 Only the bounding box (ROI) of the set pixels is coded. A typical icon's coded payload is about
 28 bytes, against about 87 for the best of the older encodings. Each record adds a 6-byte header,
