@@ -27,7 +27,10 @@ A quick reference for terms used across the PolyKybd documentation, firmware, an
 : PolyKybdHost running on a remote machine with no keyboard attached. It watches the active window there and relays it over the network to the host machine, so one keyboard can serve multiple computers.
 
 **Overlay**
-: The per-keycap image data shown on a key's OLED — 360 bytes per keycap, pushed from the host over HID (RLE-compressed).
+: The per-keycap image data shown on a key's OLED — 360 bytes per keycap, pushed from the host over HID (RLE- or PRC-compressed).
+
+**PRC**
+: Predictive Range Coding, the keycap-image encoding added in protocol v19. A context-model binary arithmetic coder: 10 already-decoded pixels form a context, a fixed 1 KB table maps it to a probability, and a range coder codes each pixel of the ROI against it, so a typical icon's coded payload is about 28 bytes, plus a 6-byte record header. See [PRC in the HID protocol reference](/reference/hid-protocol/#prc-predictive-range-coding).
 
 **MRU**
 : Most-Recently-Used overlay cache. A fast path that re-applies previously sent overlay sets when switching back to a recently used application.

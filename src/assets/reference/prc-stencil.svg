@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="608" height="364" viewBox="0 0 608 364">
+<rect width="608" height="364" fill="#15171c"/>
+<text x="40" y="30" fill="#e8e8e8" font-size="15" font-family="Inter, Helvetica, Arial, sans-serif">Causal context template: the 10 pixels that predict pixel ?</text>
+<rect x="40" y="50" width="64" height="64" fill="#1f2229" stroke="#2c3038" stroke-width="2"/>
+<rect x="104" y="50" width="64" height="64" fill="#1f2229" stroke="#2c3038" stroke-width="2"/>
+<rect x="168" y="50" width="64" height="64" fill="#284f9e" stroke="#2c3038" stroke-width="2"/>
+<text x="200.0" y="89.0" fill="#e8e8e8" font-size="20" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">6</text>
+<rect x="232" y="50" width="64" height="64" fill="#284f9e" stroke="#2c3038" stroke-width="2"/>
+<text x="264.0" y="89.0" fill="#e8e8e8" font-size="20" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">7</text>
+<rect x="296" y="50" width="64" height="64" fill="#284f9e" stroke="#2c3038" stroke-width="2"/>
+<text x="328.0" y="89.0" fill="#e8e8e8" font-size="20" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">8</text>
+<rect x="360" y="50" width="64" height="64" fill="#1f2229" stroke="#2c3038" stroke-width="2"/>
+<rect x="424" y="50" width="64" height="64" fill="#1f2229" stroke="#2c3038" stroke-width="2"/>
+<rect x="40" y="114" width="64" height="64" fill="#1f2229" stroke="#2c3038" stroke-width="2"/>
+<rect x="104" y="114" width="64" height="64" fill="#284f9e" stroke="#2c3038" stroke-width="2"/>
+<text x="136.0" y="153.0" fill="#e8e8e8" font-size="20" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">9</text>
+<rect x="168" y="114" width="64" height="64" fill="#284f9e" stroke="#2c3038" stroke-width="2"/>
+<text x="200.0" y="153.0" fill="#e8e8e8" font-size="20" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">1</text>
+<rect x="232" y="114" width="64" height="64" fill="#284f9e" stroke="#2c3038" stroke-width="2"/>
+<text x="264.0" y="153.0" fill="#e8e8e8" font-size="20" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">2</text>
+<rect x="296" y="114" width="64" height="64" fill="#284f9e" stroke="#2c3038" stroke-width="2"/>
+<text x="328.0" y="153.0" fill="#e8e8e8" font-size="20" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">3</text>
+<rect x="360" y="114" width="64" height="64" fill="#284f9e" stroke="#2c3038" stroke-width="2"/>
+<text x="392.0" y="153.0" fill="#e8e8e8" font-size="20" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">10</text>
+<rect x="424" y="114" width="64" height="64" fill="#1f2229" stroke="#2c3038" stroke-width="2"/>
+<rect x="40" y="178" width="64" height="64" fill="#15171c" stroke="#2c3038" stroke-width="2"/>
+<rect x="104" y="178" width="64" height="64" fill="#284f9e" stroke="#2c3038" stroke-width="2"/>
+<text x="136.0" y="217.0" fill="#e8e8e8" font-size="20" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">4</text>
+<rect x="168" y="178" width="64" height="64" fill="#284f9e" stroke="#2c3038" stroke-width="2"/>
+<text x="200.0" y="217.0" fill="#e8e8e8" font-size="20" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">5</text>
+<rect x="232" y="178" width="64" height="64" fill="#15171c" stroke="#ff8c00" stroke-width="3"/>
+<text x="264.0" y="219.0" fill="#ff8c00" font-size="26" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">?</text>
+<rect x="296" y="178" width="64" height="64" fill="#15171c" stroke="#2c3038" stroke-width="2"/>
+<rect x="360" y="178" width="64" height="64" fill="#15171c" stroke="#2c3038" stroke-width="2"/>
+<rect x="424" y="178" width="64" height="64" fill="#15171c" stroke="#2c3038" stroke-width="2"/>
+<rect x="40" y="260" width="14" height="14" fill="#284f9e" stroke="#2c3038"/>
+<text x="62" y="272" fill="#9aa0aa" font-size="13" font-family="Inter, Helvetica, Arial, sans-serif">decoded and used: the 10 values form the context 0-1023, neighbour 1 is the top bit</text>
+<rect x="40" y="282" width="14" height="14" fill="#1f2229" stroke="#2c3038"/>
+<text x="62" y="294" fill="#9aa0aa" font-size="13" font-family="Inter, Helvetica, Arial, sans-serif">decoded, not used</text>
+<rect x="40" y="304" width="14" height="14" fill="#15171c" stroke="#2c3038"/>
+<text x="62" y="316" fill="#9aa0aa" font-size="13" font-family="Inter, Helvetica, Arial, sans-serif">not decoded yet</text>
+<text x="40" y="344" fill="#e8e8e8" font-size="13" font-family="Inter, Helvetica, Arial, sans-serif">The table maps each context to P(clear). Pixels outside the ROI count as clear.</text></svg>
