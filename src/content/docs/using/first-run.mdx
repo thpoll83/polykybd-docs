@@ -8,10 +8,34 @@ import SupportedSince from '../../../components/SupportedSince.astro';
 
 <SupportedSince firmware="1.0.0" note="first-run tutorial" />
 
-The first time a PolyKybd starts, it plays the **Eden intro**: comets stream across the keys, the
-POLYKYBD letters form, and stars fall on the dark board. Then the keyboard shows you around. It
-lights the key it wants you to press, makes that key pulse, and circles it with a ring. The two
-status displays tell you what to do.
+The first time a PolyKybd starts, it plays the **Eden intro**: comets stream across the keys and
+gather into POLY KYBD and SPLIT 72, then the letters dissolve and stars twinkle on the dark
+board. Then the keyboard shows you around. It lights the key it wants you to press, makes that
+key pulse, and circles it with a ring. The two status displays tell you what to do.
+
+## The intro
+
+![The Eden intro on a split72: comets stream across all keycaps under a rainbow backlight, gather into POLY KYBD on the left half and SPLIT 72 on the right, then the letters dissolve and stars twinkle on the dark keys](/img/eden-intro.gif)
+
+The intro plays across every keycap at once. The letters are gone after about 13 seconds:
+
+1. **Comets.** Bright streaks stream from left to right over a faint haze of rings, while the
+   backlight runs a rainbow across the board.
+2. **Letters.** After about two and a half seconds the comets gather and the letters form: **POLY KYBD**
+   on the left half, **SPLIT 72** on the right. The rainbow fades out as they appear.
+3. **Hold.** The haze clears, and the letters stay up on their own for a few seconds. Then
+   every second line of each keycap goes dark, one key after another.
+4. **Fade.** The letters dissolve into black.
+
+From the moment the letters are solid until the tutorial starts, small stars appear on random
+keys, swell and fade again. When the tutorial follows, the keys stay dark with stars for about four
+more seconds while the status displays say **Welcome to PolyKybd**. Then the first step starts,
+about 17 seconds after the intro began.
+
+<Aside type="note" title="What the animation shows">
+The keycap images come from a simulation of the firmware's own drawing code. The backlight glow
+is drawn brighter than the keyboard shows it, so it stays visible in the animation.
+</Aside>
 
 ## What it shows you
 
