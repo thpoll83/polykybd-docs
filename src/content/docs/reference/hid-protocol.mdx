@@ -57,7 +57,7 @@ source commonly uses it.
 | **FILL_POOL_FROM_ICON** | `0x2A` (42) | **v20+.** Fills pool slots from the [icon library](#icon-library-fills) in the keyboard's flash: `(pool slot, icon id)` pairs instead of bitmaps. The one bulk overlay command that replies. |
 | **SEND_OVERLAY_MAPPING** | `0x15` (21) | Maps overlay pool slots to displays / usage bits, at a fixed 10 bits per index. **Silent since v3** (no per-chunk ACK). The only mapping command a pre-v12 keyboard understands. |
 | **SEND_OVERLAY_MAPPING_W** | `0x21` (33) | **v12+.** The same mapping stream, but a width byte says how many bits each index uses (8–11), so the host packs each group of pairs as tightly as it fits. Also silent. Since **v21** two bits of the width byte can also run the prepare and enable steps of an app switch; see [mapping flags](#mapping-flags). |
-| **OVERLAY_FLAGS on / off** | `0x0B` / `0x0C` | Enable/disable overlay rendering; enable force-syncs overlay state to the slave. From v21 the host sends these only when there is no mapping report to carry them as [flags](#mapping-flags). |
+| **OVERLAY_FLAGS on / off** | `0x0B` / `0x0C` | Enable/disable overlay rendering; enable force-syncs overlay state to the slave. From v21 the prepare and enable steps of an app switch can ride on the mapping reports as [flags](#mapping-flags) instead. The host still sends the prepare as its own report before any image upload, and sends both as their own reports when a switch has no mapping report. `off` is unchanged. |
 | **SAVE_MRU** | `0x1A` (26) | Persist the keyboard's most-recently-used emoji / language picks. Unrelated to the host's overlay cache. |
 
 ### Configuration & display
