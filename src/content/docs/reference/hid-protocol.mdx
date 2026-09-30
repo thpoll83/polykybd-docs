@@ -56,8 +56,8 @@ source commonly uses it.
 | **SEND_PRC_OVERLAY** | `0x29` (41) | **v19+.** [PRC](#prc-predictive-range-coding)-coded keycap images, several records per report. A typical icon codes to about a third of the bytes of the best older encoding. |
 | **FILL_POOL_FROM_ICON** | `0x2A` (42) | **v20+.** Fills pool slots from the [icon library](#icon-library-fills) in the keyboard's flash: `(pool slot, icon id)` pairs instead of bitmaps. The one bulk overlay command that replies. |
 | **SEND_OVERLAY_MAPPING** | `0x15` (21) | Maps overlay pool slots to displays / usage bits, at a fixed 10 bits per index. **Silent since v3** (no per-chunk ACK). The only mapping command a pre-v12 keyboard understands. |
-| **SEND_OVERLAY_MAPPING_W** | `0x21` (33) | **v12+.** The same mapping stream, but a width byte says how many bits each index uses (8–11), so the host packs each group of pairs as tightly as it fits. Also silent. |
-| **OVERLAY_FLAGS on / off** | `0x0B` / `0x0C` | Enable/disable overlay rendering; enable force-syncs overlay state to the slave. |
+| **SEND_OVERLAY_MAPPING_W** | `0x21` (33) | **v12+.** The same mapping stream, but a width byte says how many bits each index uses (8–11), so the host packs each group of pairs as tightly as it fits. Also silent. Since **v21** two bits of the width byte can also run the prepare and enable steps of an app switch; see [mapping flags](#mapping-flags). |
+| **OVERLAY_FLAGS on / off** | `0x0B` / `0x0C` | Enable/disable overlay rendering; enable force-syncs overlay state to the slave. From v21 the prepare and enable steps of an app switch can ride on the mapping reports as [flags](#mapping-flags) instead. The host still sends the prepare as its own report before any image upload, and sends both as their own reports when a switch has no mapping report. `off` is unchanged. |
 | **SAVE_MRU** | `0x1A` (26) | Persist the keyboard's most-recently-used emoji / language picks. Unrelated to the host's overlay cache. |
 
 ### Configuration & display
@@ -374,6 +374,41 @@ the two halves' versions. A half that missed a flash therefore reads as behind, 
 flashes that bundle again.
 </Aside>
 
+## Mapping flags
+
+Since **v21** (firmware 1.3.0, host 1.7.0) an app switch no longer needs its own reports to
+prepare and switch on the overlays. Two bits of `SEND_OVERLAY_MAPPING_W`'s width byte do it:
+
+| Bit | Value | Effect |
+|---|---|---|
+| 6 | `0x40` | **Prepare**, before the report's pairs are applied: clear the old mapping and usage bits, the same as `OVERLAY_FLAGS on` with the reset bits. |
+| 5 | `0x20` | **Enable**, after the pairs are applied: show the overlays, the same as `OVERLAY_FLAGS on` with the display bit. |
+
+The keyboard masks the width with `0x1F` before it decodes the pairs, so the value width is
+unchanged (8–16 bits). A report whose masked width is out of range is refused before either flag
+runs, so a malformed report changes nothing.
+
+The host puts the prepare flag on the first mapping report of a switch and the enable flag on the
+last. When the switch has to upload images first, the host still sends the prepare as its own
+report, just before the first image: an image written into a slot the old mapping still shows
+would otherwise appear on the old key for a moment.
+
+**What it saves.** Counted through the host's own send path over all 60 template sets:
+
+| Switch | Before v21 | v21 |
+|---|---|---|
+| Warm (every image already in the keyboard's pool) | 249 reports | 129 |
+| Cold (nothing in the pool yet) | 744 reports | 684 |
+
+A warm switch, the common case when you move between apps you use all the time, is now its
+mapping reports alone.
+
+<Aside type="note">
+A keyboard older than v21 would read a flagged width byte as a width above 16 and drop the
+report, so the host sets the flags only when the keyboard reports v21 or later. Older keyboards
+get the separate `OVERLAY_FLAGS on` reports as before.
+</Aside>
+
 ## Overlay addressing
 
 A keycap image is addressed by **90 keycap slots × 16 modifier variants**:
@@ -425,6 +460,7 @@ Selected milestones:
 - **v18** — **IDLE_TIMEOUT** (`0x28`): how long the keyboard waits before it starts fading into the [idle style](/using/idle/#how-long-before-it-idles) becomes a setting — six presets from 15 seconds to 5 minutes — where it used to be fixed at 2 minutes when the firmware was built. 2 minutes stays the default, so a keyboard nobody touches behaves as it always did. Like the legend size and unlike the glyph script, the range is closed: a keyboard refuses a preset it doesn't know, because an accepted one would be stored and then silently resolved to some other duration.
 - **v19** — **SEND_PRC_OVERLAY** (`0x29`): [PRC](#prc-predictive-range-coding) (Predictive Range Coding), a fifth keycap-image encoding that codes a typical icon to a payload of about 28 bytes. The host uses it per image, only where it saves a report; the older encodings stay.
 - **v20** — **FILL_POOL_FROM_ICON** (`0x2A`): the [icon library](#icon-library-fills). Icons the app templates share are stored in the keyboard's flash, and the host sends `(pool slot, icon id)` pairs instead of their bitmaps. A cold switch into a JetBrains IDE drops from 84 reports to 32. The GET_ID version block now reports the lower of the two halves' versions per bundle.
+- **v21** — [mapping flags](#mapping-flags) on **SEND_OVERLAY_MAPPING_W** (`0x21`): the prepare and enable steps of an app switch ride on the mapping reports instead of separate `OVERLAY_FLAGS` reports. A switch between apps whose images the keyboard already holds needs about half the reports.
 
 <Aside type="note">
 Not every version number above is a separate feature listed here — the list highlights the
