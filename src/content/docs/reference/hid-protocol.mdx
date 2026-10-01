@@ -77,7 +77,7 @@ source commonly uses it.
 | Command | ID | Notes |
 |---|---|---|
 | **SET_BRIGHTNESS** | `0x0D` (13) | Keycap OLED contrast; a flags byte selects volatile / host-auto (**v5+**). |
-| **KEYPRESS** | `0x0E` (14) | Host-injected key event. |
+| **KEYPRESS** | `0x0E` (14) | Host-injected key event. Refused (`!`) unless debug mode is on. |
 | **IDLE_STATE** | `0x0F` (15) | Start / stop the [idle](/using/idle/) animation. |
 | **SET_UNICODE_MODE** | `0x14` (20) | Select the OS unicode-input mode. Since **v17** a flag byte can apply it for this session only, leaving the stored mode alone. |
 | **DISPLAY_OFF** | `0x18` (24) | Blank the keycaps. |
@@ -188,7 +188,7 @@ little-endian. "—" means no payload.
 | `0x0B` OVERLAY_FLAGS on | `[2]` flags to set: bit 0 show overlays, 1 map all, 2 mirror to both halves, 5 reset buffers, 6 reset usage, 7 reset mapping | — |
 | `0x0C` OVERLAY_FLAGS off | `[2]` flags to clear, same bits | — |
 | `0x0D` SET_BRIGHTNESS | `[2]` level `0..50`; `[3]` flags: bit 0 volatile, bit 1 auto on, bit 2 auto off | — (`!` if level > 50) |
-| `0x0E` KEYPRESS | `[2..3]` keycode, **big-endian**; `[4]` `0` press, else release | — (`!` unless debug mode is on) |
+| `0x0E` KEYPRESS | `[2..3]` keycode, **big-endian**; `[4]` `0` press, else release | — (`!` unless debug mode is on, see below) |
 | `0x0F` IDLE_STATE | `[2]` `0` wake, else start idle | — |
 | `0x14` SET_UNICODE_MODE | `[2]` `0` Linux, `1` macOS, `2` Windows, `3` WinCompose, `4` BSD; `[3]` non-zero = this session only (v17) | — |
 | `0x17` BOOTLOADER | — | — then the keyboard enters the bootloader |
@@ -203,6 +203,11 @@ little-endian. "—" means no payload.
 | `0x22` GLYPH_SIZE | `[2]` `0xFF` query, or `0` small, `1` medium, `2` large | `[3]` size (`!` if out of range) |
 | `0x23` GET_LAYER_NAMES | — | See [Layer names](#layer-names--the-reply-format) |
 | `0x28` IDLE_TIMEOUT | `[2]` `0xFF` query, or preset `0..5` (15 s, 30 s, 45 s, 1 min, 2 min, 5 min) | `[3]` preset, `[4..5]` `u16` seconds (`!` if out of range) |
+
+`KEYPRESS` makes the keyboard type into whatever app has focus, so any program that can
+talk raw HID could use it to inject keystrokes. The firmware therefore refuses it unless
+debug mode is on. Debug mode is off at every boot and is switched on with the `DB_TOGG`
+key on the settings layer, which needs a hand on the keyboard.
 
 ### Macros and crash record
 
