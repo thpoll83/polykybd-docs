@@ -200,6 +200,28 @@ the distinctive attribute or class alone.
 Zoom trick: a small `--window-size` plus `--force-device-scale-factor=3` gives a
 crisp close-up of a fixed-position corner element without any cropping tool.
 
+⚠️ **Stop the server with `pkill -f "[h]ttp.server 4500"`, never the plain pattern.**
+`pkill -f "http.server 4500"` matches its OWN shell's command line, so it kills the
+shell that ran it (exit 144) and everything chained after it in that command, a
+`git commit` included (2026-10-01). The bracket keeps the pattern from matching itself.
+
+**A screenshot of ONE section:** a `#anchor` URL does not scroll a headless
+`--screenshot`, so it captures the top of the page. Use Playwright and clip between two
+headings. Playwright is installed globally, so an ES module must import it by absolute
+path; a bare `import 'playwright'` does not resolve:
+
+```js
+import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
+const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
+const p = await b.newPage({ viewport: { width: 1100, height: 900 }, colorScheme: 'light' });
+await p.goto('http://localhost:4500/development/system-model/', { waitUntil: 'networkidle' });
+await p.waitForTimeout(2500);                       // let Mermaid render
+const y = id => p.locator(id).evaluate(e => e.getBoundingClientRect().top + window.scrollY);
+const top = await y('#multicore-what-runs-on-core1'), end = await y('#where-to-go-next');
+await p.screenshot({ path: '/tmp/s.png', fullPage: true, clip: { x: 0, y: top - 20, width: 1100, height: end - top } });
+await b.close();
+```
+
 Three more traps from measuring image rendering, where Playwright
 (`executablePath: '/opt/pw-browsers/chromium'`) is the easier tool:
 
