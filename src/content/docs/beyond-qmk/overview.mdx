@@ -16,7 +16,7 @@ RP2040 keyboard.
 | [Firmware update over HID](/beyond-qmk/firmware-update/) | Update through the bootloader drive, one half at a time | The host streams the image to the running keyboard; both halves stage it, check it, install it and reboot together |
 | [Firmware signing](/beyond-qmk/signing/) | Installs whatever is flashed | Checks an Ed25519 signature before installing; your own builds need a keypress on the keyboard |
 | [Crash handler & watchdog](/beyond-qmk/crash-handler/) | A fault or hang leaves the board dead until replugged | Records the fault or hang, reboots, and reports it on the next boot |
-| [The second core](/beyond-qmk/core1/) | Second core idle | Decompresses overlay images, renders the screensaver and runs DOOM |
+| [The second core](/beyond-qmk/core1/) | Second core idle | Decompresses overlay images, renders the screensaver (from firmware 1.5.0) and runs DOOM |
 | [200 MHz system clock](/beyond-qmk/system-clock/) | Default clock | 200 MHz with the core voltage raised to match |
 | [Split link sync](/beyond-qmk/split-link/) | Syncs matrix, layers and a few feature states | CRC-checked transactions for display state, images, keymap edits, firmware and font packs |
 | [Main-loop profiler](/beyond-qmk/loop-profiler/) | None | Measures each main-loop pass and where the time goes, readable over HID |

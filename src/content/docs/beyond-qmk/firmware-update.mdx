@@ -22,7 +22,7 @@ the running firmware:
 | Range | Use |
 |---|---|
 | 0–2 MB | Running firmware. The linker caps the image at 2 MB, so a build that grows past it fails to link instead of overwriting the staging area. |
-| 2–4 MB | Staging: a 4 KB header, the staged image (at most `0x1F5000` bytes), and three sectors carved off the top: the apply log, the [crash archive](/beyond-qmk/crash-handler/) and the handedness stamp. |
+| 2–4 MB | Staging: a 4 KB header, the staged image (at most `0x1F5000` bytes), and three reserved regions carved off the top: the 32 KB apply log, the 4 KB [crash archive](/beyond-qmk/crash-handler/) and the 4 KB handedness stamp. |
 | 4–8 MB | [Font packs](/firmware/font-packs/) and other resources, with QMK's emulated EEPROM in the top 8 KB. |
 
 ## The commands

@@ -26,7 +26,7 @@ Signature enforcement is **on**, and the two ways an image can fail it are treat
 3. **Flash normally.** When a `.bin.sig` sits beside the `.bin`, PolyKybdHost sends the signature to the keyboard during the flash, so the firmware can verify it before applying.
 </Steps>
 
-For published releases this is automated end to end: the release CI signs the built `.bin` with the `FW_SIGNING_KEY` repository secret and attaches the `.bin.sig` alongside the `.bin`/`.uf2`, and PolyKybdHost's release-update flow downloads both — so a release installed from the tray menu is verified without anyone handling the signature. When the secret is unset the release is simply unsigned, so releases work before a key exists.
+For published releases this is automated end to end: the release CI signs the built `.bin` with the `FW_SIGNING_KEY` repository secret and attaches the `.bin.sig` alongside the `.bin`/`.uf2`, and PolyKybdHost's release-update flow downloads both — so a release installed from the tray menu is verified without anyone handling the signature. A release build fails when the secret is unset, so a fork must provision its key before it publishes (see [Rotating the key](#rotating-the-key)).
 
 ## Enforcing signatures
 
@@ -114,8 +114,10 @@ signed with the **old** private key.
 5. Retire the old private key.
 </Steps>
 
-Swapping the secret first would make every keyboard on the old firmware refuse the
-transition release and fall back to the manual prompt.
+Swapping the secret first would sign the transition release with a key the installed
+firmware does not know. That is an invalid signature, not a missing one, so every
+keyboard refuses it outright with no prompt. The way out is to re-sign the release with
+the old key, or to flash it over BOOTSEL/UF2.
 
 Two guards stop a misconfigured fork from shipping silently. A release build with no
 `FW_SIGNING_KEY` secret **fails**, because an unsigned release would teach every user to

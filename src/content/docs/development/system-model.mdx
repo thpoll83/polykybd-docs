@@ -274,7 +274,8 @@ fast transport CRC and defers the full reload to its main loop.
 
 The RP2040 has two cores. QMK runs on `core0`. `core1` runs a small service loop with no
 RTOS thread, no console and interrupts masked: `core0` hands it jobs over the inter-core
-FIFO, and it decompresses overlay images, renders the Eden screensaver and runs DOOM.
+FIFO, and it decompresses overlay images, renders the Eden screensaver (from firmware
+1.5.0) and runs DOOM.
 How it is started, who owns it when, and how to add a job of your own are on
 [The Second Core](/beyond-qmk/core1/).
 

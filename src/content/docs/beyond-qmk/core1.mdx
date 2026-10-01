@@ -19,7 +19,7 @@ burst of compressed keycap images does not stall the matrix scan.
 flowchart LR
   C0["core0 — QMK main loop<br/>USB · matrix · SPI · I2C"] -->|"CORE1_CMD_* (FIFO)"| C1["core1 — service loop<br/>IRQs masked"]
   C1 -->|"writes"| OV["overlays[] (RAM)"]
-  C1 -->|"writes"| EB["Eden keycap buffers (RAM)<br/>firmware 1.4.x"]
+  C1 -->|"writes"| EB["Eden keycap buffers (RAM)<br/>firmware 1.5.0+"]
   C1 -->|"done counter / sequence number"| C0
 ```
 
@@ -28,8 +28,8 @@ flowchart LR
 - During boot, `core0` launches `core1` with `multicore_launch_core1()` from the
   `polymod_core1` community module (`modules/polykybd/polymod_core1/`). The splash
   moves from step 4 to step 5 when it returns.
-- `core1` runs on its own static stack of `CORE1_STACK_SIZE` bytes: 384 B up to
-  firmware 1.4.0, and 512 B from the 1.4.x release that moves Eden onto `core1`.
+- `core1` runs on its own static stack of `CORE1_STACK_SIZE` bytes: 384 B before
+  firmware 1.5.0, and 512 B from 1.5.0, the release that moves Eden onto `core1`.
 - The first instruction `core1` executes is `cpsid i`, and `core1_entry()`
   (`keyboards/polykybd/multicore_exec.c`) masks interrupts again. They stay masked for
   the life of `core1`. ChibiOS's handler for the core1 FIFO interrupt ends by raising
@@ -48,7 +48,7 @@ flowchart LR
 | `CORE1_CMD_DECOMPRESS` | Compressed overlay upload (HID `16`/`17`) | RLE-decompresses one fragment into the overlay pool, and requests a display refresh when that overlay is on screen | `core1_decomp_count` catches up with `core0_decomp_count` |
 | `CORE1_CMD_ROI_UPDATE` | Region overlay upload (HID `18`/`19`) | Copies a rectangle into an overlay | Same counter |
 | `CORE1_CMD_RESET_BIT_IDX` | Start of a new upload | Resets the fragment position to 0 | Not tracked |
-| `CORE1_CMD_EDEN_KEY` + 1 argument word | Eden idle screensaver (firmware 1.4.x) | Computes one keycap's plasma, ripple and comet pixels into a 360 B buffer | The job writes its sequence number |
+| `CORE1_CMD_EDEN_KEY` + 1 argument word | Eden idle screensaver (firmware 1.5.0+) | Computes one keycap's plasma, ripple and comet pixels into a 360 B buffer | The job writes its sequence number |
 | `CORE1_CMD_CRASH_TEST` | `POLYKYBD_CRASH_TEST` builds only | Makes an unaligned store, to check that a `core1` fault is recorded | — |
 
 While `core1` is still working on a fragment, `raw_hid_pre_receive_kb()` leaves the next
@@ -59,7 +59,7 @@ handler, behind the same gate.
 ## Who owns core1, and when
 
 - **The overlay service**, from boot. This is the normal state.
-- **The Eden idle screensaver** (firmware 1.4.x). A keycap costs about 4.3 ms on
+- **The Eden idle screensaver** (firmware 1.5.0+). A keycap costs about 4.3 ms on
   `core0`, and 93 % of that is computing the pixels. `core1` now computes them, two
   keycaps at a time, while `core0` collects each finished keycap, cuts the legend out
   and pushes it over SPI.
@@ -81,8 +81,7 @@ handler, behind the same gate.
   working.
 
 <Aside type="note">
-Eden on `core1` ships in the first firmware release after 1.4.0. On 1.4.0 and earlier,
-the Eden screensaver renders entirely on `core0`, `core1` runs only the overlay service,
+Eden on `core1` shipped in firmware 1.5.0. On 1.3.1 and earlier, the Eden screensaver renders entirely on `core0`, `core1` runs only the overlay service,
 and its stack is 384 B.
 </Aside>
 
@@ -137,8 +136,11 @@ for this reason.
    push it as a second word, as `core1_eden_key()` does.
 
 3. **Handle it in `core1_entry()`.** Read the argument with `multicore_fifo_pop_blocking()`
-   if you sent one. Do the work, write the result, then publish completion: bump a
-   counter or write a sequence number, followed by `dmb()`.
+   if you sent one. Do the work and write the result. Then call `dmb()`, and only after
+   it publish completion by bumping a counter or writing a sequence number. On `core0`,
+   read the completion value first, call `dmb()`, then read the result. A barrier only
+   orders accesses on opposite sides of it, so a `dmb()` after the publish lets the
+   compiler or the bus move a result store past the completion store.
 
 4. **Never block `core0` on the result.** `core0` is the core that scans the key matrix,
    so a long wait there drops keystrokes. Use one of the two existing shapes:
@@ -183,8 +185,8 @@ typedef enum {
 case CORE1_CMD_MY_JOB: {
     uint32_t seq = multicore_fifo_pop_blocking();
     compute_into(my_job_out, seq);              // RAM only: no I/O, no printf
-    my_job_seq = seq;
-    dmb();
+    dmb();                                      // result stores land first...
+    my_job_seq = seq;                           // ...then completion is published
 } break;
 
 // called from core0:
@@ -193,8 +195,9 @@ void core1_my_job(uint32_t seq) {
     multicore_fifo_push_blocking(seq);
 }
 bool core1_my_job_done(uint32_t seq) {
-    dmb();
-    return my_job_seq == seq;
+    const bool done = (my_job_seq == seq);      // read completion first...
+    dmb();                                      // ...then the result reads may follow
+    return done;
 }
 ```
 

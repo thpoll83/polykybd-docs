@@ -110,9 +110,12 @@ Three things make a boot stall diagnosable anyway:
 
 ## Reading a record
 
-- **`pc` in `0x10……` is code in flash; `pc` in `0x20……` is RAM.** A `pc` in RAM means the
-  code jumped somewhere it should not have. `addr2line` will still print a symbol for it,
-  which looks like an answer and is not.
+- **`pc` in `0x10……` is code in flash; `pc` in `0x20……` is RAM.** Most code runs from
+  flash, but a few functions run from RAM on purpose, the firmware self-apply among them.
+  So look a RAM `pc` up in the linker map (`.build/*.map`) of the same build. If it falls
+  inside a function placed in RAM, that is the fault location. If it falls in data, such
+  as the overlay pool, the code jumped somewhere it should not have, and the symbol
+  `addr2line` prints for it is not an answer.
 - **`psr` bit 24 (`0x01000000`) set** means the fault happened while executing an
   instruction. **Clear** means the CPU faulted trying to enter ARM state, the result of a
   jump to an address with bit 0 clear.
