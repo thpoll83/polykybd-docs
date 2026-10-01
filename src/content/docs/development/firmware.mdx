@@ -33,7 +33,7 @@ keyboards/polykybd/
 ├── fill_overlay.c      — receives overlay segments, RLE decompress
 ├── split_sync.c        — CRC32-validated split-half synchronisation
 ├── state.c             — shared state structs (EEPROM-persisted)
-├── multicore_exec.c    — offloads RLE decompression to RP2040 core1
+├── multicore_exec.c    — core1 service loop: overlay decompression and region jobs
 ├── base/
 │   ├── overlay.c       — overlay image pool (600 × 360 B), addressed via
 │   │                     90 keys × 16 modifier variants
