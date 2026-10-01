@@ -1,0 +1,126 @@
+---
+title: Firmware Signing
+description: How the keyboard checks an Ed25519 signature before it installs a firmware image or loads the DOOM engine pack, the on-keycap ACCEPT/REJECT prompt for your own builds, and how to rotate the key.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+Stock QMK has no notion of an update it might refuse: it is flashed through the RP2040
+bootloader, and whoever holds the USB cable decides. PolyKybd also installs updates
+[over HID](/beyond-qmk/firmware-update/), from a running keyboard, which means any program
+on the host could send one. Signing closes that gap.
+
+The keyboard can **verify the authenticity** of a firmware image before applying it. A CRC32 (which the update protocol already checks) proves the bytes arrived intact, but not *who* produced them — so the firmware also checks an **Ed25519 signature** over the staged image against a **public key embedded in the firmware**. Only images signed with the matching private key are trusted.
+
+<Aside type="caution">
+Signature enforcement is **on**, and the two ways an image can fail it are treated differently. An image with **no signature at all** is a build you compiled yourself — the keyboard asks you to confirm it physically (below). An image whose signature is **present and does not verify** is not what it claims to be, so it is **refused outright, with no way through**. Released firmware is signed automatically, so normal updates are unaffected. Flashing over **BOOTSEL/UF2 is never affected**, so there is no way to lock yourself out.
+</Aside>
+
+**Verification is master-only** — the half connected over USB. The other half is reachable only through the internal bridge/UART connector, where UF2/BOOTSEL flashing is already easier, so signing defends the remote/HID surface, which the master check fully covers.
+
+## The workflow
+
+<Steps>
+1. **Generate a keypair** once with `keyboards/polykybd/tools/gen_signing_key.py`. It writes `base/fw_pubkey.h` (the **public** key, committed to the repo) and a **private** key you keep out of the repo. The shipped `fw_pubkey.h` is an all-zero placeholder until you do this.
+2. **Sign a build** with `keyboards/polykybd/tools/sign_firmware.py`, which produces a detached `<image>.bin.sig` (64 raw Ed25519 bytes) next to the `.bin`.
+3. **Flash normally.** When a `.bin.sig` sits beside the `.bin`, PolyKybdHost sends the signature to the keyboard during the flash, so the firmware can verify it before applying.
+</Steps>
+
+For published releases this is automated end to end: the release CI signs the built `.bin` with the `FW_SIGNING_KEY` repository secret and attaches the `.bin.sig` alongside the `.bin`/`.uf2`, and PolyKybdHost's release-update flow downloads both — so a release installed from the tray menu is verified without anyone handling the signature. A release build fails when the secret is unset, so a fork must provision its key before it publishes (see [Rotating the key](#rotating-the-key)).
+
+## Enforcing signatures
+
+Enforcement is enabled in `keyboards/polykybd/rules.mk`:
+
+```make
+OPT_DEFS += -DFW_REQUIRE_SIGNATURE
+```
+
+With it defined, the verification result is acted on instead of merely logged: an unsigned image raises the on-keycap confirmation, and a badly-signed one is rejected. Only enable this on a fork once your own key is provisioned **and** your releases are signed — otherwise every release you publish needs confirming by hand.
+
+## Flashing your own (unsigned) build
+
+A firmware you compiled yourself is unsigned, so the keyboard will not apply it without asking you first. Two ways through:
+
+<Steps>
+1. **Sign it**, exactly as the release pipeline does:
+
+   ```sh
+   arm-none-eabi-objcopy -O binary .build/polykybd_split72_default.elf out.bin
+   python3 keyboards/polykybd/tools/sign_firmware.py --privkey fw_signing_key.bin out.bin
+   ```
+
+2. **Or confirm it on the keyboard.** Just flash. PolyKybdHost tells you as soon as you pick the `.bin` that no `.sig` sits beside it, so the prompt does not arrive as a surprise. At the end of the transfer the keyboard **turns its keycaps into a dialog**: every key goes dark except one on each half — a big **A / ACCEPT** on the left home-row index key (`D`) and a big **R / REJECT** on the right one (`J`). The status OLED spells out the question (*"Unsigned firmware! — A = ACCEPT"* / *"R = REJECT"*), the backlight breathes orange, and the host shows *"Confirm on the KEYBOARD…"* while it waits. Press **A** to let the image through.
+
+   The prompt lasts **60 seconds** and a timeout counts as *reject*. It authorises only the image being flashed right then — the next unsigned flash asks again — and nothing about it survives a reboot. While it is up, all other keys are ignored: the whole board is the dialog.
+</Steps>
+
+<Aside type="note">
+The answer is a **keypress**, not a checkbox in the host app — deliberately. Signing protects against anything that can talk to the keyboard over HID, and a confirmation sent over that same channel could be sent by an attacker just as easily. A physical keypress cannot be produced remotely.
+
+For the same reason there is **no** confirmation for an image whose signature fails to verify. That is not "a build you made yourself", it is a file that is not what it claims to be — and inviting a keypress there would hand an attacker the one thing the physical gate exists to withhold: a user who has been told to press A. If the host reports that the signature does not match, re-download the `.bin` and `.sig` from the same release.
+</Aside>
+
+<Aside type="tip">
+Orange means **you cannot type**: it is the same cue the keyboard uses in bootloader mode and while a staged image is being applied. Cyan, by contrast, means a font pack or firmware is merely transferring and the keyboard still works normally.
+</Aside>
+
+Flashing over **BOOTSEL/UF2** skips signature checking altogether, so it always works as a recovery path. Full key-generation and rotation details are in `keyboards/polykybd/tools/SIGNING.md`.
+
+## Why only the master verifies
+
+The SHA-512 inside Ed25519 is too slow for the slave's split-transaction window of about
+20 ms. The slave's staged bytes are CRC-identical to the image the master verified, and
+the master decides whether the apply goes ahead. Reaching the slave directly needs a cable
+in the bridge connector, and anyone with that access can flash any image over BOOTSEL
+anyway. So a slave-side check would add risk to the link and remove no real threat.
+
+## The DOOM engine pack is signed too
+
+The `.plyx` engine pack is executable code that travels over the same HID transport as a
+font pack. It used to be checked with a CRC32 only before the firmware branched into it,
+so anyone who could talk raw HID could run their own code on the keyboard at the next idle.
+It now carries a 64-byte Ed25519 signature, made with the same key, directly after the
+image. The signature covers the pack header as well as the image. The header holds the
+entry offset and the RAM base, which are the two fields an attacker would edit to re-aim
+a signed image.
+
+The pack is checked when it is **loaded**, not when it is flashed, because flash can be
+rewritten after a successful COMMIT. An unsigned pack raises the same A / R prompt, but
+only when you start DOOM on purpose with the `IDDQD` key. As an idle screensaver, nobody
+is there to answer, so an unsigned pack is refused. A pack with an invalid signature is
+refused on every path. An accepted pack stays accepted until the next reboot, tied to the
+pack's CRC, and the slave honours that answer only for a pack with the same CRC.
+
+<Aside type="caution">
+Signing covers the firmware image and the `.plyx` pack. Font packs and the DOOM WAD
+(`.plyf`, `.whx`) use the same transport and are **not** signed. They are data rather
+than code, so the exposure is a bug in a parser, not direct code execution. Do not
+describe the keyboard as "signed, so a malicious flash is covered".
+</Aside>
+
+## Rotating the key
+
+A keyboard can only check a signature against the public key built into the firmware it
+is **currently** running. So the release that introduces a new public key must still be
+signed with the **old** private key.
+
+<Steps>
+1. Run `gen_signing_key.py` again and commit the new `base/fw_pubkey.h`.
+2. Leave the `FW_SIGNING_KEY` secret set to the **old** private key.
+3. Publish the transition release. Keyboards verify it against the key they already
+   trust, install it, and come up with the new public key.
+4. Once users have taken that release, set `FW_SIGNING_KEY` to the new private key.
+5. Retire the old private key.
+</Steps>
+
+Swapping the secret first would sign the transition release with a key the installed
+firmware does not know. That is an invalid signature, not a missing one, so every
+keyboard refuses it outright with no prompt. The way out is to re-sign the release with
+the old key, or to flash it over BOOTSEL/UF2.
+
+Two guards stop a misconfigured fork from shipping silently. A release build with no
+`FW_SIGNING_KEY` secret **fails**, because an unsigned release would teach every user to
+press A on sight. And if `fw_pubkey.h` is ever the all-zero placeholder, the firmware
+refuses every image: that key is a small-order curve point, so a signature against it
+could be forged.

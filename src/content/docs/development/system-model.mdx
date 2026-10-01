@@ -272,97 +272,16 @@ fast transport CRC and defers the full reload to its main loop.
 
 ### Multicore: what runs on core1
 
-The RP2040 has two cores. QMK runs on `core0`: USB, the matrix scan, the console, SPI to
-the keycap displays and I2C to the status OLED. `core1` runs a small service loop with no
-RTOS thread, no console and no interrupts. `core0` hands it jobs over the inter-core FIFO
-and `core1` computes into RAM. The CPU-heavy part of an overlay upload runs there, so a
-burst of compressed keycap images does not stall the matrix scan.
-
-```mermaid
-flowchart LR
-  C0["core0 — QMK main loop<br/>USB · matrix · SPI · I2C"] -->|"CORE1_CMD_* (FIFO)"| C1["core1 — service loop<br/>IRQs masked"]
-  C1 -->|"writes"| OV["overlays[] (RAM)"]
-  C1 -->|"writes"| EB["Eden keycap buffers (RAM)<br/>firmware 1.4.x"]
-  C1 -->|"done counter / sequence number"| C0
-```
-
-#### How core1 is started
-
-- During boot, `core0` launches `core1` with `multicore_launch_core1()` from the
-  `polymod_core1` community module (`modules/polykybd/polymod_core1/`). The splash
-  moves from step 4 to step 5 when it returns.
-- `core1` runs on its own static stack of `CORE1_STACK_SIZE` bytes: 384 B up to
-  firmware 1.4.0, and 512 B from the 1.4.x release that moves Eden onto `core1`.
-- The first instruction `core1` executes is `cpsid i`, and `core1_entry()`
-  (`keyboards/polykybd/multicore_exec.c`) masks interrupts again. They stay masked for
-  the life of `core1`. ChibiOS's handler for the core1 FIFO interrupt ends by raising
-  an NMI, and that NMI runs the RTOS context switch on a core that has no thread
-  state, which hung `core1`. `core1` polls the FIFO, so it never needs an interrupt to
-  wake.
-- `core1_entry()` sets `g_core1_entered`. The boot breadcrumbs record it, so a crash
-  record from a boot hang shows whether `core1` had started.
-- The consequence: anything that needs an interrupt stays on `core0`. That is SPI to
-  the keycaps, USB, I2C and the console. `core1` only computes into RAM.
-
-#### The commands
-
-| Command | Sent for | What core1 does | How core0 knows it is done |
-|---|---|---|---|
-| `CORE1_CMD_DECOMPRESS` | Compressed overlay upload (HID `16`/`17`) | RLE-decompresses one fragment into the overlay pool, and requests a display refresh when that overlay is on screen | `core1_decomp_count` catches up with `core0_decomp_count` |
-| `CORE1_CMD_ROI_UPDATE` | Region overlay upload (HID `18`/`19`) | Copies a rectangle into an overlay | Same counter |
-| `CORE1_CMD_RESET_BIT_IDX` | Start of a new upload | Resets the fragment position to 0 | Not tracked |
-| `CORE1_CMD_EDEN_KEY` + 1 argument word | Eden idle screensaver (firmware 1.4.x) | Computes one keycap's plasma, ripple and comet pixels into a 360 B buffer | The job writes its sequence number |
-| `CORE1_CMD_CRASH_TEST` | `POLYKYBD_CRASH_TEST` builds only | Makes an unaligned store, to check that a `core1` fault is recorded | — |
-
-While `core1` is still working on a fragment, `raw_hid_pre_receive_kb()` leaves the next
-HID packet in the USB driver's queue (4 packets) for that main-loop pass, so the matrix
-scan still runs. PRC overlays (HID `41`) are decoded on `core0`, inside the HID
-handler, behind the same gate.
-
-#### Who owns core1, and when
-
-- **The overlay service**, from boot. This is the normal state.
-- **The Eden idle screensaver** (firmware 1.4.x). A keycap costs about 4.3 ms on
-  `core0`, and 93 % of that is computing the pixels. `core1` now computes them, two
-  keycaps at a time, while `core0` collects each finished keycap, cuts the legend out
-  and pushes it over SPI.
-  - On the rig, `core0` spends 40 ms per Eden frame instead of 115 ms, and Eden runs
-    at 32 frames per 5 s instead of 25.
-  - The status OLED's idle screen draws every 75 ms instead of 150 ms while Eden runs
-    on `core1`.
-  - An overlay upload, a firmware write and a font-pack write all end the idle session
-    first, so they never share `core1` with Eden.
-  - If a keycap job does not finish within 100 ms, the rest of the session renders on
-    `core0`. Later sessions use `core1` again only once it has finished every job it
-    was handed, so a stalled `core1` can never fill the FIFO and block `core0`.
-- **DOOM.** `doom_enter()` resets `core1` through the power-state machine and hands it
-  to the engine, with a 4 KB stack carved from the overlay pool. The game renders on
-  `core1` alone; `core0` blits finished frames and passes keys through a ring buffer.
-  Eden never uses `core1` while DOOM runs. On exit, `core1` is reset and the overlay
-  service relaunched with a bounded handshake (100 ms, up to three tries). If that
-  fails, overlay decompression stays off until the next reboot, but the keyboard keeps
-  working.
-
-<Aside type="note">
-Eden on `core1` ships in the first firmware release after 1.4.0. On 1.4.0 and earlier,
-the Eden screensaver renders entirely on `core0`, `core1` runs only the overlay service,
-and its stack is 384 B.
-</Aside>
-
-#### Stack budget and diagnostics
-
-- The overlay and region jobs peak at about 164 B of `core1` stack. The Eden keycap job
-  is the deepest path: 300 B measured with `-fstack-usage`, plus about 96 B if a fault
-  is taken at that depth. That is why the stack grew to 512 B with it.
-- `OPT_DEFS += -DCORE1_STACK_HWM` in `rules.mk` fills the stack with a marker at launch
-  and logs the deepest point reached. Pass it that way, not as
-  `-e EXTRAFLAGS=-DCORE1_STACK_HWM`: a command-line `EXTRAFLAGS` replaces the flags
-  `rules.mk` adds, which drops the `-Wcast-align` guard and breaks DOOM builds.
-- After adding a `core1` command, measure the stack again and raise
-  `CORE1_STACK_SIZE` if the peak climbs.
+The RP2040 has two cores. QMK runs on `core0`. `core1` runs a small service loop with no
+RTOS thread, no console and interrupts masked: `core0` hands it jobs over the inter-core
+FIFO, and it decompresses overlay images, renders the Eden screensaver (from firmware
+1.5.0) and runs DOOM.
+How it is started, who owns it when, and how to add a job of your own are on
+[The Second Core](/beyond-qmk/core1/).
 
 ## Where to go next
 
 - [Firmware Development](/development/firmware/) — build the firmware and set up the toolchain.
 - [HID Protocol](/reference/hid-protocol/) — the full command reference.
 - [Display Graphics & Fonts](/development/display-graphics/) — how keycap images and fonts are generated.
+- [What PolyKybd Adds to QMK](/beyond-qmk/overview/) — firmware update, signing, the crash handler, core1 and the other features stock QMK does not have.

@@ -1,0 +1,144 @@
+---
+title: Crash Handler & Watchdog
+description: How the PolyKybd firmware records a HardFault, an unhandled interrupt or a hang, reboots, and reports it on the next boot — the crash record, the 8-second watchdog, the phase breadcrumb and the boot progress readout.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+On stock QMK for the RP2040, a HardFault lands in ChibiOS's default handler, which is an
+endless loop. The keyboard goes dead until it is unplugged, and nothing records why. A
+hang in the main loop looks the same.
+
+PolyKybd records all three cases, reboots, and reports the record on the next boot. The
+keyboard comes back by itself, and the record tells a maintainer where it stopped.
+What the user sees, the host's crash dialog, is described in
+[Reporting a Problem](/software/reporting-problems/#when-the-keyboard-firmware-crashes).
+This page covers the firmware side.
+
+## What gets recorded
+
+| Kind | Trigger | What the record holds |
+|---|---|---|
+| `hardfault` | A CPU fault on either core: an unaligned access, a jump into data, a bad pointer | The registers the CPU pushed (`pc`, `lr`, `psr`), the stack pointer, the active exception, which core |
+| `exception` | An interrupt with no handler | The same, through a separate entry point |
+| `watchdog` | The main loop did not come back within 8 s | The phase breadcrumb (below), since a hang has no fault frame |
+
+Every record also carries the uptime, the reset reason, a count of back-to-back crashes
+and the firmware version. On the next boot the firmware prints it as one console line:
+
+```text
+crash: side=master kind=hardfault core=0 pc=0x10012345 lr=0x1000abcd sp=0x20040ff0
+       psr=0x21000003 icsr=0x00000003 phase=3:0x0015 up=123456ms n=1 reason=0x22 fw=1.3.2
+```
+
+(one line on the wire, wrapped here). The host turns that line into a dialog.
+`polyctl crash show` reads the same record over HID command `39` at any time, and
+`--slave` reads the other half's. The record is 48 bytes; command `39` needs protocol 16
+or newer.
+
+## How a record survives a reboot
+
+The fault handler writes the record into a small RAM block that the startup code does not
+clear (a `NOLOAD` section), then reboots the chip with the watchdog. RAM keeps its contents
+across that reboot, so the next boot finds the record.
+
+RAM does not survive a power cycle, and recovering a dead board through BOOTSEL needs
+one. So early in every boot, before `core1` starts, the firmware copies a fresh record
+into a 4 KB flash sector at the top of the [staging area](/beyond-qmk/firmware-update/#the-flash-layout-that-makes-it-possible).
+It appends one page per record and erases the sector only when it is full or when you run
+`polyctl crash clear`.
+
+The slave has no USB connection. The master asks it for its record over the split link
+once per link-up and prints it as `side=slave`.
+
+## The watchdog and the phase breadcrumb
+
+The RP2040 watchdog is set to 8 seconds, close to its 8.3-second maximum. It is started at the end of boot
+and fed from the main loop's housekeeping and from the suspend loop. If the main loop
+stops for 8 seconds, the chip resets.
+
+A watchdog reset has no fault frame to show where the code was. So the firmware writes a
+**phase** into the same RAM block as it runs: which HID command it is handling, which
+split transaction it is waiting on, whether it is waiting on `core1`, writing flash,
+suspended or applying an update. A watchdog record reports the last phase written, for
+example `phase=3:0x0015` for HID command `0x15`.
+
+Two places turn the watchdog off on purpose: the jump to the bootloader, and the
+[firmware self-apply](/beyond-qmk/firmware-update/#applying-the-self-flash), which never
+returns to the main loop and must not be reset halfway through a copy.
+
+<Aside type="caution">
+If you add code that can block the main loop for more than 8 seconds, call
+`crash_watchdog_feed()` inside it. Otherwise it will produce a `kind=watchdog` record,
+which may be what you want, but decide it on purpose.
+</Aside>
+
+### Telling a real hang from a normal reboot
+
+After every BOOTSEL flash, the bootrom reboots the chip through the watchdog, so the
+reset-reason register reads "watchdog timeout" on the first boot after every UF2 copy.
+Reading that register alone would have shown a crash dialog after every recovery. The
+firmware uses the pico-sdk's `watchdog_enable_caused_reboot()` instead. It is true only
+when the watchdog the firmware armed ran out.
+
+### Crash loops
+
+A firmware that crashes every time it boots would otherwise reboot forever. After 5
+crashes in a row, the handler stops rebooting and halts the chip. BOOTSEL still recovers
+it, and the flash archive still holds the record. The counter goes back to 0 as soon as a
+boot completes, so occasional crashes weeks apart never add up to a halt.
+
+## Boot: the window the watchdog cannot cover
+
+The watchdog starts at the **end** of boot, because some boot steps can legitimately take
+seconds, and the hardware allows no more than about 8. A stall before that is permanent:
+no reset, no record and no console output. The console is only drained from the main
+loop, which boot has not reached yet.
+
+Three things make a boot stall diagnosable anyway:
+
+- **The status OLED shows the progress.** *Booting…* over a percentage (25, 38, 50, 63,
+  75, 88, 100), one value per boot step. A photo of a stuck board names the step.
+- **The breadcrumb covers boot.** Each boot step writes `phase=1:<step>`, and the final
+  keycap render writes the key it is drawing. If a later reset produces a record, it
+  says how far that boot got.
+- **A one-shot watchdog guards the last part of boot**, from step 5 (`core1` started)
+  through the end of initialisation. It turns a stall there into one reset and one record.
+  It is one-shot because a watchdog reset runs no code and so never reaches the crash-loop
+  halt. If the previous boot already died under the guard, the next boot does not arm it,
+  and the board stays on the stuck screen where it can be photographed.
+
+## Reading a record
+
+- **`pc` in `0x10……` is code in flash; `pc` in `0x20……` is RAM.** Most code runs from
+  flash, but a few functions run from RAM on purpose, the firmware self-apply among them.
+  So look a RAM `pc` up in the linker map (`.build/*.map`) of the same build. If it falls
+  inside a function placed in RAM, that is the fault location. If it falls in data, such
+  as the overlay pool, the code jumped somewhere it should not have, and the symbol
+  `addr2line` prints for it is not an answer.
+- **`psr` bit 24 (`0x01000000`) set** means the fault happened while executing an
+  instruction. **Clear** means the CPU faulted trying to enter ARM state, the result of a
+  jump to an address with bit 0 clear.
+- **`lr` is only meaningful when the fault is at a call.** The M0+ does not store a call
+  chain, so `lr` may be left over from an earlier call. If `addr2line lr` lands far from
+  `pc`'s function, ignore it.
+- **`reason` keeps a sticky power-on bit**, so a watchdog reboot can read as "power-on,
+  watchdog forced" on a board that was never unplugged.
+
+## Testing the handler
+
+A build with `-e POLYKYBD_CRASH_TEST=yes` adds deliberate faults. Hold
+**Ctrl + Shift + Alt** and press a digit:
+
+| Key | Fault |
+|---|---|
+| `1` | Unaligned word store on `core0` |
+| `2` | Jump to an address with bit 0 clear |
+| `3` | Main-loop hang, about 8 s until the watchdog |
+| `4` | Crash-loop halt |
+| `5` | An interrupt with no handler |
+| `6` | Unaligned store on `core1` (the record reads `core=1`) |
+| `7` | Fault on the slave half |
+
+A normal build compiles all of this to nothing. Triggers 1 and 2 have been confirmed on
+hardware: the record's `pc` pointed at the faulting line.

@@ -1,0 +1,55 @@
+---
+title: What PolyKybd Adds to QMK
+description: A map of the firmware features PolyKybd adds on top of stock QMK — updates over HID, signing, the crash handler, the second core, the 200 MHz clock, the split-link protocol and more — with links to the page for each.
+---
+
+PolyKybd's firmware is a QMK fork. Layers, tap-hold, combos, unicode input and the rest
+of the [QMK feature set](https://docs.qmk.fm/) work as documented upstream. This section
+covers what the fork adds that stock QMK does not have. Most of it exists because the
+keyboard has 72 displays and 8 MB of flash to look after, and some of it is useful to any
+RP2040 keyboard.
+
+## Pages in this section
+
+| Feature | What stock QMK does | What PolyKybd does |
+|---|---|---|
+| [Firmware update over HID](/beyond-qmk/firmware-update/) | Update through the bootloader drive, one half at a time | The host streams the image to the running keyboard; both halves stage it, check it, install it and reboot together |
+| [Firmware signing](/beyond-qmk/signing/) | Installs whatever is flashed | Checks an Ed25519 signature before installing; your own builds need a keypress on the keyboard |
+| [Crash handler & watchdog](/beyond-qmk/crash-handler/) | A fault or hang leaves the board dead until replugged | Records the fault or hang, reboots, and reports it on the next boot |
+| [The second core](/beyond-qmk/core1/) | Second core idle | Decompresses overlay images, renders the screensaver (from firmware 1.5.0) and runs DOOM |
+| [200 MHz system clock](/beyond-qmk/system-clock/) | Default clock | 200 MHz with the core voltage raised to match |
+| [Split link sync](/beyond-qmk/split-link/) | Syncs matrix, layers and a few feature states | CRC-checked transactions for display state, images, keymap edits, firmware and font packs |
+| [Main-loop profiler](/beyond-qmk/loop-profiler/) | None | Measures each main-loop pass and where the time goes, readable over HID |
+| [Community modules](/beyond-qmk/community-modules/) | Upstream modules only | Six reusable modules: core1 launcher, CRC32, RLE, Monocypher, OS action chords, LTR-559 driver |
+
+## Covered elsewhere in these docs
+
+- **Per-keycap displays and overlays.** Each key has its own 72×40 OLED, and the host
+  sends images for the application in focus. See
+  [Context-Aware Overlays](/using/overlays/) and
+  [Display Graphics & Fonts](/development/display-graphics/).
+- **Font packs in external flash.** Glyph bundles live in the 8 MB flash and are updated
+  separately from the firmware. See [Font Packs & Resources](/firmware/font-packs/).
+- **A version-gated HID command set.** More than 40 commands over raw HID, each enabled
+  only on firmware that supports it. The byte layout of every command and the RLE and
+  PRC image encodings are in [HID Protocol](/reference/hid-protocol/#message-formats).
+- **Keyboard languages and glyph scripts.** The legends follow the OS layout, for 160
+  layouts. See [Languages & Unicode Input](/using/languages/) and
+  [Glyph Scripts](/using/glyph-scripts/).
+- **Trackpad gestures.** Decided by PolyKybd's own firmware rather than the trackpad
+  chip. See [Trackpad](/using/trackpad/).
+- **Ambient-light brightness.** An optional LTR-559 sensor sets the display brightness.
+  See [Display Brightness](/using/brightness/).
+- **Hardware-in-the-loop testing.** Firmware pull requests are built, flashed onto real
+  keyboards and tested. See [Test Rig & CI](/development/test-rig/).
+
+## Smaller additions without their own page
+
+- **Handedness stored in its own flash sector.** Stock QMK's `EE_HANDS` keeps left/right
+  in the emulated EEPROM. QMK's wear levelling wipes that whole store when it finds it
+  damaged, and a zeroed byte reads as a valid "right", so a half could boot as the wrong
+  side. PolyKybd writes handedness to a dedicated 4 KB sector that only changes when the
+  side changes.
+- **Board state the host can see within a second.** The firmware keeps a counter that
+  goes up whenever a setting changes on the keyboard itself. It rides in the identity
+  reply the host already polls every second, so the host notices with no extra traffic.

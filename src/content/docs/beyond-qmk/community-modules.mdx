@@ -1,0 +1,81 @@
+---
+title: Community Modules
+description: The six QMK community modules PolyKybd maintains under modules/polykybd/ — core1 launcher, CRC32, RLE, Monocypher, OS action chords and the LTR-559 driver — what each does, and how to reuse one in another keyboard.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+QMK community modules are self-contained code packages that a keyboard turns on by
+listing them in its `keyboard.json`. PolyKybd keeps every part of its firmware that has no
+PolyKybd types and no display or protocol coupling in modules under
+`modules/polykybd/`. That keeps those parts separate from the keyboard code and usable on
+another QMK keyboard.
+
+## The modules
+
+| Module | What it does | Used by PolyKybd for | Tests |
+|---|---|---|---|
+| `polymod_core1` | Starts the RP2040's second core with its own stack, with a launch handshake that can time out; raw SIO FIFO helpers; an optional stack high-water probe (`CORE1_STACK_HWM`) | [The second core](/beyond-qmk/core1/) | none (RP2040 registers only) |
+| `polymod_crc32` | Table-driven CRC-32, the same checksum as zlib's `crc32()` | [Split link](/beyond-qmk/split-link/) request checks, staged image checks | none |
+| `polymod_rle` | Decoder for the [bit-run RLE](/reference/hid-protocol/#rle-overlay-encoding) overlay format; can resume mid-byte across reports | Compressed overlay uploads | none |
+| `polymod_monocypher` | [Monocypher](https://monocypher.org) 4.0.2, unmodified: Ed25519 signature check and SHA-512 | [Firmware signing](/beyond-qmk/signing/) | `make test:polymod_monocypher` (RFC 8032 test vectors) |
+| `polymod_os_actions` | One keycode per action ("Copy", "Lock", "Search"), sent as the right chord for the host OS: Windows, macOS, Linux, Android, or a Ctrl-based fallback | The OS-aware action keys | `make test:polymod_os_actions` |
+| `polymod_ltr559` | Driver for the LTR-559 ambient-light and proximity sensor on I2C address `0x23`; probes itself, gives up after a few tries when no sensor is fitted, keeps a rolling lux average | [Ambient-light brightness](/using/brightness/) | `make test:polymod_ltr559` (19 tests against a mock sensor and bus) |
+
+All six are licensed GPL-2.0-or-later, except Monocypher, which keeps its upstream
+BSD-2-Clause OR CC0-1.0 licence.
+
+The PolyKybd policy built on top of a module stays in the keyboard code. For example,
+`ltr559_policy.c` turns the lux reading into a display contrast and wakes the displays on
+proximity; the module only reads the sensor.
+
+## Using one in your own keyboard
+
+<Aside type="note">
+The modules live in the PolyKybd fork of QMK, not in upstream QMK. Copy the module
+directory into your own tree under the same `modules/polykybd/` path.
+</Aside>
+
+1. **List it** in your keyboard's `keyboard.json`:
+
+   ```json
+   "modules": [
+       "polykybd/polymod_crc32",
+       "polykybd/polymod_rle"
+   ]
+   ```
+
+   Listing a module is the whole enable. The build compiles `<name>/<name>.c`, and
+   defines `COMMUNITY_MODULE_<NAME>_ENABLE` (for example
+   `COMMUNITY_MODULE_POLYMOD_LTR559_ENABLE`). Gate your own code on that define rather
+   than inventing a second switch.
+
+2. **Include its header** (`polymod_crc32.h`, `polymod_rle.h`, …) where you call it.
+
+3. **Let self-driving modules run themselves.** `polymod_ltr559` probes the sensor in its
+   `keyboard_post_init` hook and reads it in its `housekeeping_task` hook. QMK runs module
+   hooks **before** the `_kb` and `_user` hooks, so by the time your
+   `keyboard_post_init_user()` runs, the probe is done, and each housekeeping pass already
+   has a fresh reading. Do not call the module's init or task functions yourself as well.
+
+`polymod_core1` only works on the RP2040. `polymod_ltr559` needs QMK's I2C driver. The
+other four are plain C.
+
+## Writing a new module
+
+A part of the firmware is worth moving into a module when it uses no PolyKybd types and
+does not touch the displays, the HID protocol or the overlay stack. `poly_keymap.c`,
+`hid_com.c` and the display code stay in `keyboards/polykybd/`.
+
+- The fork is on community module API 1.1.2. The hooks available are listed in
+  `data/constants/module_hooks/*.hjson`. API 1.1.2 adds split transactions owned by a
+  module (`SPLIT_TRANSACTION_IDS_MODULE_<MODULE>`).
+- If you define a module's top-level hook yourself (for example
+  `housekeeping_task_<module>()`), call `housekeeping_task_<module>_kb()` from it.
+  Otherwise the keyboard and keymap versions of that hook never run.
+- A source file other than `<name>.c` needs a `SRC +=` line in the module's own
+  `rules.mk`, as `polymod_monocypher` does.
+- Add a unit-test suite where the module has logic worth testing. Put
+  `TEST_LIST += <name>` in the module's `tests/testlist.mk` and include that file from
+  `builddefs/testlist.mk`. `make test:<name>` with an unregistered name exits 0 and prints
+  nothing, so read the `[  PASSED  ] N tests.` line rather than the exit code.

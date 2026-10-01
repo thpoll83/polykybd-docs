@@ -1,0 +1,90 @@
+---
+title: Main-Loop Profiler
+description: A compile-time profiler that measures how long each pass of the QMK main loop takes, splits the time between the split-link relay and the keycap render, and can be driven over HID command 32 for automated measurements.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+QMK scans the key matrix once per pass of its main loop. If one pass takes 50 ms, a key
+that is pressed and released inside those 50 ms is never seen. Stock QMK has no tool that
+tells you how long its passes take. PolyKybd has one, because switching applications
+uploads up to 72 keycap images and redraws the keycaps, and that work runs on the same
+loop.
+
+The profiler answers two questions:
+
+- How long does each main-loop pass take, and how many are long enough to drop a key?
+- When a pass is long, where does the time go: relaying data to the other half, redrawing
+  keycaps, or something else?
+
+## Turning it on
+
+```sh
+qmk compile -kb polykybd/split72 -km default -e POLYKYBD_LOOP_PROFILE=yes
+```
+
+In a normal build every profiler hook is an empty inline function, so the shipping
+firmware carries no code and does no timer reads for it. The profiler reads the RP2040's
+1 MHz timer directly; QMK's own `timer_read32()` counts milliseconds, which is too coarse.
+
+## Reading the console summary
+
+Every 8192 passes (a few seconds) the firmware prints a block like this on the HID
+console:
+
+```text
+LoopProf: iters=278528 ovl=206 worst=105ms(ovl br=5ms rn=67ms)
+  norm    <1=0 1-2=264900 2-5=13317 5-10=51 10-20=0 20-50=0 50+=54
+  ovl     <1=0 1-2=0     2-5=17    5-10=153 10-20=1 20-50=7 50+=28
+  ovltot  wall=3668ms bridge=783ms render=1927ms rest=956ms
+```
+
+- **Line 1**: passes since boot, how many of them handled an overlay upload (`ovl`), and
+  the single longest pass. `br` is the time that pass spent waiting on the split-link
+  relay, `rn` the time it spent redrawing keycaps.
+- **`norm` / `ovl`**: how many passes fell into each duration band, in milliseconds,
+  for ordinary passes and for passes that handled an overlay command. Anything in `50+`
+  is a pass long enough to miss a fast tap.
+- **`ovltot`**: the time summed over **all** overlay passes, split into relay
+  (`bridge`), keycap redraw (`render`) and the rest. This is the line that tells you
+  what to optimise.
+
+If `render` dominates, faster transfers will not help; the redraw is the cost. If
+`bridge` dominates, the relay to the other half is the bottleneck.
+
+<Aside type="tip">
+Set the idle style to *Pulse* while measuring. The Eden screensaver renders full frames
+while idle and fills the `norm 50+` band with passes that have nothing to do with typing.
+</Aside>
+
+## Driving it over HID (command 32)
+
+The console counters run from boot, so they cannot isolate one workload. HID command
+`32` can:
+
+| Sub-command | Name | Effect |
+|---|---|---|
+| `0` | `RESET` | Zero every counter. The pass handling this command is not counted. |
+| `1` | `READ` | Return a binary snapshot page: page 0 holds the totals and the worst pass, page 1 the two histograms. |
+| `2` | `LOG` | Print the console summary now. |
+
+One measurement is `RESET`, run the workload, `READ` pages 0 and 1. A version byte in the
+snapshot lets a reader refuse a layout it does not know.
+
+Command `32` exists only in a profiler build. A normal build answers it with a NACK, and
+that NACK is how a client tells "no profiler in this firmware" apart from "the profiler
+returned zeros". It does not change `PROTOCOL_VERSION`.
+
+## Automated runs on the test rig
+
+The [test rig](/development/test-rig/) uses command 32 to measure every workload in its
+own window: idle, overlay bursts, HID round-trip latency and time from boot to a
+responsive keyboard. It compares the result with a committed baseline and publishes a
+report. On a firmware pull request, add the `hil-perf` label, or put `[hil-perf]` in a
+pushed commit message, or start the workflow by hand with the `perf` tier.
+
+The job only reports. It never fails a pull request on a slower number, because
+wall-clock timings on shared hardware vary from run to run, and a check that fails at
+random teaches people to ignore it. The baseline is never updated automatically either,
+so a slow regression cannot creep in one run at a time.
+
