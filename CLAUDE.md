@@ -205,9 +205,10 @@ crisp close-up of a fixed-position corner element without any cropping tool.
 shell that ran it (exit 144) and everything chained after it in that command, a
 `git commit` included (2026-10-01). The bracket keeps the pattern from matching itself.
 
-**A screenshot of ONE section:** a `#anchor` URL does not scroll a headless
-`--screenshot`, so it captures the top of the page. Use Playwright and clip between two
-headings. Playwright is installed globally, so an ES module must import it by absolute
+**A screenshot of ONE section:** the CLI `--screenshot` of a `#anchor` URL does not
+give you that section. A 1100×3000 capture of `/development/system-model/#…` came back
+entirely white (2026-10-01), even with `--virtual-time-budget`. Use Playwright and clip
+between two headings. Playwright is installed globally, so an ES module must import it by absolute
 path; a bare `import 'playwright'` does not resolve:
 
 ```js
