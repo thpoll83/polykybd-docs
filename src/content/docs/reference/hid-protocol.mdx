@@ -15,18 +15,30 @@ configuration, resource flashing) and how they fit the wider system, see the
 
 ## Report format
 
-- **64-byte** raw HID reports.
-- **Byte 0** — Report ID
-- **Byte 1** — Command ID
-- **Byte 2+** — payload
+Every message is one 64-byte report on the keyboard's raw HID interface (usage page
+`0xFF61`, usage `0x62`). The host's HID library puts a report-ID byte `0x00` in front of
+each write; the offsets on this page are the 64 bytes the firmware sees, after that byte.
 
-Responses are prefixed with the command echo plus a status marker:
+| Offset | Request | Reply |
+|---|---|---|
+| `[0]` | `0x50` (`P`) | `0x50` (`P`) |
+| `[1]` | Command ID | Command ID, echoed |
+| `[2]` | First payload byte | Status: `.` (`0x2E`) accepted, `!` (`0x21`) refused |
+| `[3..63]` | Payload | Reply body |
 
-- `"P\xNN."` — **ACK** (success), where `NN` is the command ID
-- `"P\xNN!"` — **NACK** (rejected / unsupported / out of bounds)
+- Unused bytes are `0` in both directions.
+- PolyKybd's own multi-byte fields are **little-endian**. The QMK keymap commands
+  ([below](#qmk-keymap-commands)) keep QMK's big-endian order.
+- A report whose `[0]` is not `0x50` goes to the QMK keymap handler instead. (`0x09` in
+  `[0]` is also accepted as `P`, for historical reasons.)
+- An unknown command is answered with the request echoed back and `[2]` set to `!`.
+- The bulk overlay commands get no reply at all; see the note under
+  [Resource-flash transport](#resource-flash-transport).
 
-The main dispatcher lives in the firmware's `hid_com.c` (`raw_hid_receive()`); a separate range
-(`0x50`+) handles the resource-flash transport. The `PROTOCOL_VERSION`, reported inside the
+The main dispatcher lives in the firmware's `hid_com.c` (`raw_hid_receive()`); firmware
+update (`0x40`–`0x45`) is in `hid_fw_up.c` and the font-pack transport (`0x50`–`0x53`) in
+`hid_fontpack.c`. Exact byte layouts for every command are under
+[Message formats](#message-formats). The `PROTOCOL_VERSION`, reported inside the
 **GET_ID** identity string, tells the host which commands this keyboard understands, so each
 feature can be enabled or greyed out individually.
 
@@ -103,16 +115,25 @@ total already says where the names stop — so it can't be mistaken for a separa
 And a layer with **no** name is expressible: it is simply an empty entry, which stays
 distinguishable from that fill.
 
-### Resource-flash transport — BEGIN / CHUNK / COMMIT
+### Resource-flash transport
+
+Two command sets share one BEGIN / CHUNK / COMMIT flow and one staging code path in the
+firmware:
 
 | Command | ID | Notes |
 |---|---|---|
-| **FONTPACK_BEGIN** | `0x50` | Erase the target slot; a byte selects the target (font-pack bundle, firmware, resource pack). |
-| **FONTPACK_CHUNK** | `0x51` | Sequential data chunks; deferred sector erase; bridged to the slave. |
-| **FONTPACK_COMMIT** | `0x52` | Verify CRC32 and mark the slot present. |
+| **FW_UP_BEGIN** | `0x40` | Firmware image: size and CRC; both halves start erasing staging. |
+| **FW_UP_CHUNK** | `0x41` | 56 bytes at an offset; relayed to the slave. |
+| **FW_UP_COMMIT** | `0x42` | Check CRC and signature on both halves. |
+| **FW_UP_GET_VERSION** | `0x43` | Running version, size and CRC. |
+| **FW_UP_APPLY** | `0x44` | Install the staged image on both halves and reboot. |
+| **FW_UP_SIGNATURE** | `0x45` | Ed25519 signature, two 32-byte parts, before COMMIT. |
+| **FONTPACK_BEGIN** | `0x50` | Font-pack bundle, DOOM WAD or DOOM engine pack: size, CRC and target slot. |
+| **FONTPACK_CHUNK** | `0x51` | 56 bytes at an offset; relayed to the slave. |
+| **FONTPACK_COMMIT** | `0x52` | Check CRC on both halves and reload the fonts. No reboot. |
+| **FONTPACK_STATUS** | `0x53` | Whether a pack is present, its ABI, content version and font count. |
 
-The same three-command flow, with a different target byte, drives **firmware update**,
-**font-pack bundles**, and other resource packs.
+The whole update flow is described in [Firmware Update over HID](/beyond-qmk/firmware-update/).
 
 A firmware update may additionally carry an **Ed25519 image signature** (command `0x45`, sent
 before COMMIT) that the keyboard verifies against a key built into its firmware. It is **additive**
@@ -130,7 +151,7 @@ Enforcement gives the firmware COMMIT four status bytes rather than two:
 | `!` | Staged-CRC mismatch. |
 
 `?` and `S` are why the refusal reason is no longer guessed from a bare NACK. A COMMIT carrying
-`'x'` in `data[2]` **cancels** a pending prompt — safe to expose over HID because it can only ever
+`'x'` in `[2]` **cancels** a pending prompt — safe to expose over HID because it can only ever
 deny, whereas accepting stays a keypress on the board.
 
 <Aside type="caution">
@@ -142,6 +163,163 @@ PolyKybdHost before flashing an unsigned image.
 <Aside type="note">
 The bulk overlay commands (`0x0A`, `0x10`/`0x11`, `0x12`/`0x13`, `0x29`, and mapping on v3) are **not** ACK'd per chunk — the host follows a burst with a `GET_ID` liveness check rather than waiting for replies. `0x2A` is the exception: the host needs its answer to know which icons it still has to upload.
 </Aside>
+
+## Message formats
+
+Offsets are into the 64-byte report (see [Report format](#report-format)). `[0]` is always
+`0x50` and `[1]` the command ID, so the tables start at `[2]`. A reply's `[2]` is the
+status byte (`.` / `!`) unless the table says otherwise. `u16` and `u32` are
+little-endian. "—" means no payload.
+
+### Identity and language
+
+| ID | Request `[2..]` | Reply `[3..]` |
+|---|---|---|
+| `0x06` GET_ID | — | Status `[2]` is `*` instead of `.` on the first GET_ID after a boot. ASCII `<board> <fw version> P<protocol> HW<hw version> `, NUL; then `V`, `n`, `n × u16` font-pack bundle versions; then `G`, `u16` state generation. A block that does not fit is left out whole. |
+| `0x07` GET_LANG | — | `[3..6]` language code, 4 ASCII (`deDE`) |
+| `0x09` CHANGE_LANG | `[2..5]` language code, 4 ASCII | — (`!` if unknown) |
+| `0x16` GET_DEFAULT_LAYER | — | `[3]` default layer |
+| `0x1B` GET_LANG_LIST_PACKED | — | Several replies, each `[3..63]` up to 61 bytes. Joined: `count`, then `count ×` (ISO 639-1 index, ISO 3166-1 index), indices into the frozen table `iso_lang_country.py`. |
+
+### Settings
+
+| ID | Request `[2..]` | Reply `[3..]` |
+|---|---|---|
+| `0x0B` OVERLAY_FLAGS on | `[2]` flags to set: bit 0 show overlays, 1 map all, 2 mirror to both halves, 5 reset buffers, 6 reset usage, 7 reset mapping | — |
+| `0x0C` OVERLAY_FLAGS off | `[2]` flags to clear, same bits | — |
+| `0x0D` SET_BRIGHTNESS | `[2]` level `0..50`; `[3]` flags: bit 0 volatile, bit 1 auto on, bit 2 auto off | — (`!` if level > 50) |
+| `0x0E` KEYPRESS | `[2..3]` keycode, **big-endian**; `[4]` `0` press, else release | — (`!` unless debug mode is on) |
+| `0x0F` IDLE_STATE | `[2]` `0` wake, else start idle | — |
+| `0x14` SET_UNICODE_MODE | `[2]` `0` Linux, `1` macOS, `2` Windows, `3` WinCompose, `4` BSD; `[3]` non-zero = this session only (v17) | — |
+| `0x17` BOOTLOADER | — | — then the keyboard enters the bootloader |
+| `0x18` DISPLAY_OFF | — | — |
+| `0x19` SET_HANDEDNESS | `[2]` `0` = the USB half is left, else right | — then both halves reboot |
+| `0x1A` SAVE_MRU | — | — (writes unsaved settings to EEPROM) |
+| `0x1C` IDLE_STYLE | `[2]` `0xFF` query, or `0` pulse, `1` jitter, `2` DOOM demo, `3` Eden | `[3]` style |
+| `0x1D` SET_OS | `[2]` `0xFF` query, `0xFE` auto, or OS: `0` unknown, `1` Windows, `2` macOS, `3` Linux, `4` Android, `6` GNOME, `7` KDE; `[3]` bit 0 = pin (manual) | `[3]` active OS, `[4]` `1` if auto |
+| `0x1E` GLYPH_SCRIPT | `[2]` `0xFF` query, or script `0..0xFE` (any value accepted) | `[3]` script |
+| `0x1F` REPLAY_ANIM | — | — |
+| `0x20` PROFILER | `[2]` `0` reset, `1` read, `2` log; `[3]` page (read) | `[3]` page, `[4..]` snapshot. Profiler builds only; others answer `!`. See [Main-Loop Profiler](/beyond-qmk/loop-profiler/). |
+| `0x22` GLYPH_SIZE | `[2]` `0xFF` query, or `0` small, `1` medium, `2` large | `[3]` size (`!` if out of range) |
+| `0x23` GET_LAYER_NAMES | — | See [Layer names](#layer-names--the-reply-format) |
+| `0x28` IDLE_TIMEOUT | `[2]` `0xFF` query, or preset `0..5` (15 s, 30 s, 45 s, 1 min, 2 min, 5 min) | `[3]` preset, `[4..5]` `u16` seconds (`!` if out of range) |
+
+### Macros and crash record
+
+| ID | Request `[2..]` | Reply `[3..]` |
+|---|---|---|
+| `0x24` MACRO_INFO | — | `[3]` macro count, `[4]` max label length, `[5..6]` `u16` buffer capacity, `[7..8]` `u16` bytes used, `[9]` keycap styles drawn |
+| `0x25` MACRO_BODY | `[2]` `0` read, `1` write; `[3..4]` `u16` offset; `[5]` count (≤ 58); `[6..]` bytes (write) | Read: `[3]` count, `[6..]` bytes. Write: status only. |
+| `0x26` MACRO_LABEL | `[2]` macro id; `[3]` `0xFF` query, else caption length; `[4]` style; `[5..8]` `u32` icon code point; `[9..]` caption, ASCII | Same layout from `[3]`: length, style, icon, caption |
+| `0x27` CRASH_RECORD | `[2]` `0` this half, `1` other half, `2` clear | `[3]` flags: bit 0 present, bit 1 fresh; `[4..51]` record (below) |
+
+The 48-byte crash record, from `[4]`:
+
+| Offset | Type | Field |
+|---|---|---|
+| `+0` | `u32` | magic |
+| `+4` | `u8` × 4 | kind (`1` HardFault, `2` unhandled interrupt, `3` watchdog, `4` halt), core, consecutive count, reset reason |
+| `+8` | `u32` × 6 | `pc`, `lr`, `sp`, `xpsr`, `icsr`, uptime in ms |
+| `+32` | `u16` × 2 | phase, phase argument |
+| `+36` | 8 chars | firmware version, NUL-padded |
+| `+44` | `u32` | CRC-32 of the 44 bytes before it |
+
+### Overlay uploads
+
+No reply, except `0x2A`. A keycap image is 72 × 40 pixels, **360 bytes**: row-major,
+9 bytes per row, most significant bit = leftmost pixel, `1` = lit. `keycode` is the HID
+usage of the key (`KC_A` … `KC_RGUI`); `mod` is the modifier variant `0..15` from
+[Overlay addressing](#overlay-addressing).
+
+| ID | Report layout |
+|---|---|
+| `0x0A` SEND_OVERLAY | `[2]` keycode; `[3]` bits 0–3 mod, bits 4–7 segment `0..5`; `[4..63]` bytes `60 × segment` to `60 × segment + 59` of the image |
+| `0x10` START_COMPRESSED | `[2]` keycode; `[3]` mod; `[4..63]` first 60 bytes of the [RLE](#rle-overlay-encoding) stream |
+| `0x11` SEND_COMPRESSED | `[2..63]` next 62 bytes of the RLE stream |
+| `0x12` START_ROI | `[2]` keycode; `[3..6]` ROI header (below); `[7..63]` first 57 bytes of ROI data |
+| `0x13` SEND_ROI | `[2..63]` next 62 bytes of ROI data |
+| `0x15` SEND_OVERLAY_MAPPING | `[2..63]` 10-bit values, packed least significant bit first |
+| `0x21` SEND_OVERLAY_MAPPING_W | `[2]` bits 0–4 width `8..16`, bit 5 show after, bit 6 prepare before ([mapping flags](#mapping-flags)); `[3..63]` values of that width, packed least significant bit first |
+| `0x29` SEND_PRC_OVERLAY | `[2..63]` [PRC records](#prc-predictive-range-coding) |
+| `0x2A` FILL_POOL_FROM_ICON | As `0x21`, values are (pool slot, icon id). Reply: `.` if every pair applied, else `!` and `[3]` = index of the first pair the host must upload as a bitmap. |
+
+The mapping values come in pairs: an overlay index, then the pool slot it shows. A report
+that has fewer pairs than it holds is padded by repeating the last pair.
+
+ROI header, `[3..6]` of `0x12`. `top`/`left` are the first row and column, `bottom`/`right`
+the row and column one past the end:
+
+| Byte | Bits 7–4 | Bits 3–2 | Bits 1–0 |
+|---|---|---|---|
+| `[3]` | `top` bits 5–2 | `mod` bits 3–2 | `mod` bits 1–0 |
+| `[4]` | `bottom` bits 5–2 | `bottom` bits 1–0 | `top` bits 1–0 |
+| `[5]` | `left` (bits 6–0) | | |
+| `[6]` | bit 7: data is RLE-coded; bits 6–0: `right` | | |
+
+ROI data is the rectangle's pixels, row-major, packed with no padding between rows,
+most significant bit first.
+
+### Firmware update and font packs
+
+| ID | Request `[2..]` | Reply |
+|---|---|---|
+| `0x40` FW_UP_BEGIN | `[2..5]` `u32` image size; `[6..9]` `u32` CRC-32 (zlib) | `[2]` `.` ready, `~` still erasing (send again), `!` invalid size |
+| `0x41` FW_UP_CHUNK | `[2..5]` `u32` offset; `[6..61]` 56 bytes | `.`, or `!` and `[3..6]` `u32` offset to resume from |
+| `0x45` FW_UP_SIGNATURE | `[2]` part `0` or `1`; `[3..34]` 32 signature bytes | status |
+| `0x42` FW_UP_COMMIT | `[2]` `x` cancels a pending prompt, else `0` | `[2]` `.` accepted, `?` waiting for the keypress (send again), `S` not validly signed, `!` CRC mismatch |
+| `0x43` FW_UP_GET_VERSION | — | `[3..18]` version, ASCII, NUL-padded; `[19..22]` `u32` size; `[23..26]` `u32` CRC |
+| `0x44` FW_UP_APPLY | — | `.` then both halves install and reboot; `!` nothing valid staged |
+| `0x50` FONTPACK_BEGIN | `[2..5]` `u32` size; `[6..9]` `u32` CRC-32; `[10]` target: bundle slot `0..8`, `0x7F` DOOM WAD, `0x7E` DOOM engine pack | `[2]` `.` / `~` / `!`, as `0x40` |
+| `0x51` FONTPACK_CHUNK | As `0x41` | As `0x41` |
+| `0x52` FONTPACK_COMMIT | — | `[2]` `.` both halves done, `R` rejected, `L` the other half did not confirm (send again); `[3..4]` `u16` content version (font bundles) |
+| `0x53` FONTPACK_STATUS | — | `[3]` `1` if a pack is present, `[4]` ABI version, `[5..6]` `u16` content version, `[7]` font count |
+
+### QMK keymap commands
+
+These follow QMK's dynamic-keymap protocol: there is no `P`, `[0]` is the command, and
+multi-byte values are **big-endian**. The reply is the request echoed back, with read
+data filled in. Commands not listed get no reply.
+
+| `[0]` | Command | Request | Reply |
+|---|---|---|---|
+| `0x05` | set keycode | `[1]` layer, `[2]` row, `[3]` column, `[4..5]` keycode | echo |
+| `0x06` | reset keymap | — | echo |
+| `0x11` | get layer count | — | `[1]` count of remappable layers |
+| `0x12` | get buffer | `[1..2]` byte offset, `[3]` size (≤ 60) | `[4..]` keymap bytes |
+| `0x13` | set buffer | `[1..2]` byte offset, `[3]` size (≤ 60), `[4..]` bytes | echo |
+
+The keymap buffer is `layer × rows × columns` keycodes, 2 bytes each, big-endian, as in
+upstream QMK.
+
+## RLE overlay encoding
+
+The compressed uploads (`0x10`/`0x11`, and `0x12`/`0x13` with the RLE bit) use a bit-run
+encoding: each byte describes one run of identical pixels.
+
+- **Input**: the image read as a bit stream, most significant bit of each byte first. For
+  a whole keycap that is all 2880 pixels; for an ROI, the rectangle's pixels.
+- **One byte per run.** Bit 7 is the pixel value of the run, bits 0–6 its length,
+  `0..127`. A run longer than 127 is split: 300 lit pixels are `FF FF AE`.
+- **The stream starts with a run of unlit pixels.** An image whose first pixel is lit
+  begins with `00`, an empty run.
+- **Empty runs decode to nothing.** That is why the zero fill after the last data byte of
+  the final report needs no length field: every `00` is a run of no pixels.
+
+Example, 16 pixels `0000 0111 1111 1000`: 5 unlit, 8 lit, 3 unlit, coded as `05 88 03`.
+
+The firmware decoder is `rle_decompress()` in the
+[`polymod_rle`](/beyond-qmk/community-modules/) module. It takes the bit position to
+continue from, so each report is decoded on arrival without buffering the whole stream,
+and it stops at the end of the 360-byte image whatever the stream says. For a whole
+keycap it runs on [core1](/beyond-qmk/core1/) where available. For an ROI, the firmware
+decodes one run byte at a time (at most 127 pixels) and places the pixels into the
+rectangle row by row.
+
+The host encoder is `polyhost/util/rle_util.py`. RLE pays off on large uniform areas and
+loses on detailed or dithered images, where runs are 1–2 pixels and each costs a byte
+that plain data would spread over 8 pixels. The host therefore sizes each image in every
+encoding (plain, RLE, ROI, ROI with RLE, and [PRC](#prc-predictive-range-coding) from
+v19) and sends the one that needs the fewest reports.
 
 ## PRC: Predictive Range Coding
 

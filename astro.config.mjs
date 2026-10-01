@@ -179,6 +179,7 @@ export default defineConfig({
             { label: '200 MHz System Clock', slug: 'beyond-qmk/system-clock' },
             { label: 'Split Link Sync', slug: 'beyond-qmk/split-link' },
             { label: 'Main-Loop Profiler', slug: 'beyond-qmk/loop-profiler' },
+            { label: 'Community Modules', slug: 'beyond-qmk/community-modules' },
           ],
         },
         {
