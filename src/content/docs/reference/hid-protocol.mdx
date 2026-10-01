@@ -117,7 +117,8 @@ The same three-command flow, with a different target byte, drives **firmware upd
 A firmware update may additionally carry an **Ed25519 image signature** (command `0x45`, sent
 before COMMIT) that the keyboard verifies against a key built into its firmware. It is **additive**
 — older hosts simply never send it, so there is no `PROTOCOL_VERSION` bump — and it is now
-**enforced**. See [Firmware signing](/development/firmware/#firmware-signing).
+**enforced**. See [Firmware Signing](/beyond-qmk/signing/) and
+[Firmware Update over HID](/beyond-qmk/firmware-update/).
 
 Enforcement gives the firmware COMMIT four status bytes rather than two:
 

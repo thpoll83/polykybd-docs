@@ -169,6 +169,19 @@ export default defineConfig({
           ],
         },
         {
+          label: 'Beyond Stock QMK',
+          items: [
+            { label: 'What PolyKybd Adds', slug: 'beyond-qmk/overview' },
+            { label: 'Firmware Update over HID', slug: 'beyond-qmk/firmware-update' },
+            { label: 'Firmware Signing', slug: 'beyond-qmk/signing' },
+            { label: 'Crash Handler & Watchdog', slug: 'beyond-qmk/crash-handler' },
+            { label: 'The Second Core (core1)', slug: 'beyond-qmk/core1' },
+            { label: '200 MHz System Clock', slug: 'beyond-qmk/system-clock' },
+            { label: 'Split Link Sync', slug: 'beyond-qmk/split-link' },
+            { label: 'Main-Loop Profiler', slug: 'beyond-qmk/loop-profiler' },
+          ],
+        },
+        {
           label: 'Hardware',
           items: [
             { label: 'Electronics & Schematics', slug: 'hardware/electronics' },

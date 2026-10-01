@@ -39,14 +39,14 @@ idle/suspend, split synchronisation — lives in `poly_keymap.c` and is compiled
 
 PolyKybd is **custom hardware**, not a stock board:
 
-- **MCU**: Raspberry Pi **RP2040** — dual-core ARM Cortex-M0+, running at **200 MHz** since firmware v0.11.0 (the operating point Raspberry Pi certified for the chip; earlier firmware ran at 125 MHz). QMK runs on core 0; core 1 decompresses overlay images and runs DOOM while you play it. See [what runs on core1](/development/system-model/#multicore-what-runs-on-core1). See [System clock](/development/firmware/#system-clock).
+- **MCU**: Raspberry Pi **RP2040** — dual-core ARM Cortex-M0+, running at **200 MHz** since firmware v0.11.0 (the operating point Raspberry Pi certified for the chip; earlier firmware ran at 125 MHz). QMK runs on core 0; core 1 decompresses overlay images and runs DOOM while you play it. See [The Second Core](/beyond-qmk/core1/) and [200 MHz System Clock](/beyond-qmk/system-clock/).
 - **Flash**: **8 MB external QSPI flash** (not the stock 2 MB), partitioned into:
   - **0–2 MB** — the running firmware
   - **2–4 MB** — firmware-update staging
   - **4–6 MB** — the [font pack](/firmware/font-packs/) (independently-versioned glyph bundles)
   - **6–8 MB** — additional resource packs
 - **Displays**: up to **72 per-keycap OLEDs** (72×40 px monochrome, SPI-driven) plus a status OLED.
-- **Split**: a left + right half connected over UART, with CRC32-validated state and overlay sync.
+- **Split**: a left + right half connected over UART, with CRC32-validated state and overlay sync. See [Split Link Sync](/beyond-qmk/split-link/).
 
 There are two hardware variants, **split72** and **split42**, sharing one firmware codebase — see [Keyboard Variants](/firmware/variants/).
 
@@ -55,8 +55,8 @@ There are two hardware variants, **split72** and **split42**, sharing one firmwa
 The firmware talks to the host application ([PolyKybdHost](/software/overview/)) over a
 custom **64-byte raw HID report protocol**. Each report is `[report id, command id, payload…]`, and
 responses are prefixed `P\xNN.` (ACK) or `P\xNN!` (NACK). A `PROTOCOL_VERSION` reported in the
-device's identity string gates host features, and the host connects only on an **exact** version
-match. See the [HID Protocol Reference](/reference/hid-protocol/) for the command surface and the
+device's identity string gates host features: the host connects to any firmware from protocol 2
+on and enables each feature only when the firmware's protocol supports it. See the [HID Protocol Reference](/reference/hid-protocol/) for the command surface and the
 per-version feature history.
 
 ## Further reading
@@ -67,4 +67,5 @@ per-version feature history.
 - [Keymaps & Layers](/using/keymaps/)
 - [Languages & Unicode Input](/using/languages/)
 - [Firmware Development](/development/firmware/)
+- [What PolyKybd Adds to QMK](/beyond-qmk/overview/)
 - [QMK official documentation](https://docs.qmk.fm/)

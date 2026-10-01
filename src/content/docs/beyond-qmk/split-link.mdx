@@ -1,0 +1,102 @@
+---
+title: Split Link Sync
+description: How PolyKybd keeps both halves in step over the split UART — CRC32-checked custom transactions, retries, error-tolerant reply codes, and the rules for adding a synced field.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Stock QMK's split support moves the key matrix, layer and modifier state, and a handful
+of feature states (RGB, OLED, WPM) between halves. PolyKybd sends much more: the full
+display state, every overlay image the host uploads, keymap edits, font packs and
+firmware images, the confirmation prompts, and crash records travelling back from the
+slave. It does that through QMK's user RPC transactions, with its own integrity check on
+top.
+
+## The wire
+
+The halves are joined by a **full-duplex two-wire UART** (TX on `GP5`, RX on `GP4`) at
+460800 baud, driven by the RP2040's PIO. `SERIAL_USART_PIN_SWAP` crosses TX and RX on the
+master at runtime, so one firmware image works on either half. The steady-state error rate
+measured after the move to full duplex is zero.
+
+## The transactions
+
+PolyKybd registers its own transaction IDs with `transaction_register_rpc()` in
+`poly_keymap.c`. The main ones:
+
+| Transaction | Carries |
+|---|---|
+| `USER_SYNC_POLY_DATA` | Display and keyboard state: language, brightness, idle style, flags, the confirm prompt |
+| `USER_SYNC_LAYER_DATA` | Layer and modifier state for the slave's legends |
+| `USER_SYNC_OVERLAY_DATA` / `_COMPRESSED_DATA` / `_ROI_DATA` | Overlay images, as the host sent them |
+| `USER_SYNC_OVERLAY_MAP_DATA` | Which overlay goes on which key |
+| `USER_SYNC_DYNAMIC_KEYMAP_DATA` | Keymap edits from the layout editor |
+| `USER_SYNC_FLASH_STAGE` | Firmware and font-pack streams: begin, chunk, commit, status |
+| `USER_SYNC_RESET` | Reboot, bootloader, and "apply the staged firmware" |
+| `USER_SYNC_SLAVE_DATA` | The slave answering: ambient-light sensor readings, its crash record |
+
+Only the master starts a transaction. The slave answers each one with a one-byte verdict.
+
+## Integrity: CRC32 on the request, distance on the reply
+
+QMK's transport checks a one-byte handshake token and nothing else. So every PolyKybd
+request starts with a CRC32 over the rest of the struct, and the slave checks it before
+acting. A mismatch is answered with a "bad frame" verdict and the master retries.
+Each call site sets its own limit, from 1 to 20 tries: most use 10, and the firmware
+apply hand-off uses 20 and then repeats the whole round once.
+
+The one-byte reply has no CRC of its own. Instead the six possible values are chosen so
+that any two differ in at least 4 bits, and `0x00` / `0xFF`, which a stuck or floating
+line reads as, are not used:
+
+| Verdict | Byte | Meaning | Master's response |
+|---|---|---|---|
+| `SYNC_ACK` | `0xCA` | Done | Move on |
+| `SYNC_ACK_SIG` | `0x4D` | Done, with a signal (for example "erase started") | Move on, keep polling |
+| `SYNC_CRC32_ERR` | `0x35` | The request arrived damaged | Retry |
+| `SYNC_NACK_REFUSED` | `0xB2` | Processed, and the answer is no | Do not retry |
+| `SYNC_BUSY` | `0x1B` | Not ready yet | Poll again |
+| `SYNC_GIVEUP` | `0xE4` | No answer at all after every retry | Retry later |
+
+A single flipped bit cannot turn one verdict into another. A unit test
+(`SyncAckTest.AckValuesStayHammingSpaced`) fails if a new value breaks the spacing.
+
+## Diff-based state sync
+
+The state transactions are not sent on a timer. The master keeps a copy of what it last
+sent successfully and compares it with the current state on each housekeeping pass. If
+they differ, it sends, and only a successful send updates the copy. A failed send leaves
+the difference in place, so the next pass sends again. The difference **is** the retry
+queue.
+
+Overlay mapping chunks are the exception. They are one-shot, so a lost chunk arms a
+repair that the master sends from housekeeping later, from its own authoritative tables.
+
+## Link health
+
+The master counts frames sent, damaged frames, transport failures and give-ups. A
+periodic `Split link: …` console line reports them, with `err%` counting only real link
+faults (a `SYNC_BUSY` during a flash erase is a normal answer, not a fault). On the
+slave all counters are zero, because the slave never starts a transaction.
+
+## Rules for adding a synced field
+
+<Aside type="caution">
+`RPC_M2S_BUFFER_SIZE` (96 bytes) is a silent ceiling. A struct bigger than that is not
+sent at all, and the overlay path discards the result, so the master applies the change
+and the slave never hears of it, with nothing in the log. Add a
+`static_assert(sizeof(your_struct) <= RPC_M2S_BUFFER_SIZE)` for any struct that can grow.
+</Aside>
+
+- **Put a new `uint32_t` in `poly_sync_t` directly after `crc32`.** The CRC covers every
+  byte of the struct, padding included. A 4-byte field dropped into the run of `uint8_t`
+  fields adds padding inside the checked range. It happens to be zero on both halves, so
+  testing will not show the mistake.
+- **Classify a send's result with `sync_succeeded()`**, never with `if (!send_to_bridge(…))`.
+  Every verdict byte is non-zero, so the bare test treats a give-up as success.
+- **A slave handler runs on the split-protocol thread**, at the same time as the slave's
+  main loop. It must not touch the keycap SPI bus, the shift registers, or anything else
+  the main loop may be using. Record the request and let housekeeping act on it.
+- **Do no heavy work in a handler.** The master waits about 20 ms for the answer. A
+  handler that re-checks a whole font pack, or writes EEPROM, makes the master report a
+  failure for a request that succeeded.
