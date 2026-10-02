@@ -1,0 +1,220 @@
+---
+title: PRC Image Decoder
+description: The polymod_prc community module — the decoder behind PolyKybd's PRC keycap images, its C API, the exact bitstream, the frozen table v1, and how to train a table and encode images for your own keyboard.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+`polymod_prc` is the [community module](/beyond-qmk/community-modules/) that decodes
+PRC-coded 1-bit images. PRC (Predictive Range Coding) predicts each pixel from 10
+already-decoded neighbours and range-codes it against a fixed 1 KB probability table. On
+PolyKybd's 72×40 keycap icons it needs about 26–30 bytes per icon, so most icons fit one
+64-byte HID report. The best older encoding needs about 87 bytes.
+
+The module holds three things:
+
+- the decoder, `polymod_prc.c` / `polymod_prc.h`;
+- PolyKybd's table v1, `prc_table_v1.h`;
+- `tools/prc_tool.py`, which trains a table from your own images and encodes images.
+
+This page covers the module: its API, the exact bitstream, the tables, and the tool.
+Why the coder works and how much each pixel costs are shown on worked examples in
+[HID Protocol → PRC](/reference/hid-protocol/#prc-predictive-range-coding). That page also
+has the 6-byte record header that HID command `0x29` puts in front of each image. The
+header is PolyKybd's wire format, so it is not part of the module. It lives in
+`keyboards/polykybd/base/prc_record.c`.
+
+## The C API
+
+```c
+#include "polymod_prc.h"
+#include "prc_table_v1.h"
+
+// PolyKybd's keycap: the frame size is PRC_FRAME_W x PRC_FRAME_H (72 x 40 by default)
+bool prc_decode_roi(uint8_t *overlay, uint8_t top, uint8_t left,
+                    uint8_t height, uint8_t width,
+                    const uint8_t *payload, uint16_t len, const uint8_t *table);
+
+// Any frame up to 255 x 255, given at run time
+bool prc_decode_roi_in(uint8_t *frame, uint8_t frame_w, uint8_t frame_h,
+                       uint8_t top, uint8_t left, uint8_t height, uint8_t width,
+                       const uint8_t *payload, uint16_t len, const uint8_t *table);
+```
+
+- **Frame layout.** Row-major, most significant bit first, rows packed back to back with
+  no padding. Pixel (x, y) is bit `y * frame_w + x`. The frame holds
+  `(frame_w * frame_h + 7) / 8` bytes; for 72×40 that is 360, `PRC_FRAME_BYTES`.
+- **The ROI.** The payload codes only the rectangle at (`top`, `left`) of size
+  `height` × `width`. The decoder clears the whole frame first, so every pixel outside
+  the rectangle ends up 0.
+- **Refusals.** Both functions return `false` and leave the frame untouched when the
+  rectangle is empty or does not fit inside the frame. Otherwise they return `true`.
+- **Short payloads.** Reading past `len` yields 0 bytes. The encoder drops trailing zero
+  bytes because of this, so a payload is often shorter than the decoder reads.
+- **No allocation, no globals.** Apart from the frame, the decoder uses a few words of
+  stack. It includes no QMK headers, which is why it runs in the googletest suite.
+
+`prc_decode_roi()` passes the frame size as constants, and the compiler folds them into the
+loop. In the split72 build it is 372 bytes of code. `prc_decode_roi_in()` is a second copy
+that reads the size at run time; the linker drops it when nothing calls it, as on PolyKybd.
+Table v1 is 1,024 bytes of flash. Listing the module also adds QMK's weak stubs for each
+module hook, about 450 bytes.
+
+To change the default frame at build time, define `PRC_FRAME_W` and `PRC_FRAME_H` before
+the header is included, for example in your `config.h`.
+
+## The bitstream, exactly
+
+An encoder in another language must match these steps bit for bit. The reference
+implementations are the C decoder, the `decode()` function in `prc_tool.py`, and
+PolyKybdHost's `polyhost/util/prc_codec.py`.
+
+**Pixel order.** Raster order over the ROI: row 0 left to right, then row 1, and so on.
+
+**Context.** For each pixel, read these 10 neighbours, in this order, as offsets
+(dy, dx) from the pixel. Each one shifts into the context from the right, so neighbour 1
+ends up as bit 9, the most significant:
+
+| Neighbour | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| dy | −1 | −1 | −1 | 0 | 0 | −2 | −2 | −2 | −1 | −1 |
+| dx | −1 | 0 | +1 | −2 | −1 | −1 | 0 | +1 | −2 | +2 |
+
+A neighbour outside the ROI counts as 0. All 10 are decoded before the pixel itself, so
+the encoder and decoder see the same context.
+
+**Probability.** `p0 = table[context]`, 1–255, is P(pixel is 0) × 256.
+
+**Decoder state.** Two unsigned 32-bit values. `range` starts at `0xFFFFFFFF`. `code`
+starts as the first 4 payload bytes read big-endian.
+
+**Per pixel:**
+
+```c
+bound = (range >> 8) * p0;
+if (code < bound) { range = bound;                  pixel = 0; }
+else              { code -= bound; range -= bound; pixel = 1; }
+while (range < (1u << 24)) {           // renormalise
+    range <<= 8;
+    code = (code << 8) | next_byte();  // 0 past the end of the payload
+}
+```
+
+**Encoder.** An LZMA-style range encoder with the same `bound`. It keeps a 33-bit `low`
+and a carry cache, and flushes with five shifts at the end. That always produces a first
+byte of `0x00`, which the decoder never reads, so the encoder drops it. It also drops
+trailing `0x00` bytes. `_Encoder` in `prc_tool.py`, about 40 lines, is the reference.
+
+### Trace: the first pixels of a 10×10 square
+
+A solid 10×10 square codes to 6 bytes with table v1: `ff ff e5 12 e9 15`. The decoder
+starts with `code = 0xFFFFE512`, the first four bytes.
+
+| Pixel | Context | p0 | range | code | bound | Pixel value |
+|---|---|---|---|---|---|---|
+| (0, 0) | 0 | 252 | `FFFFFFFF` | `FFFFE512` | `FBFFFF04` | 1, since code ≥ bound |
+| (0, 1) | 32 (neighbour 5, the left pixel) | 35 | `040000FB` | `03FFE60E` | `008C0000` | 1 |
+| (0, 2) | 96 (neighbours 4 and 5) | 39 | `037400FB` | `0373E60E` | `0086AC00` | 1 |
+| (0, 3) | 96 | 39 | `02ED54FB` | `02ED3A0E` | `007227CC` | 1 |
+
+After pixel (0, 0), range is `0x040000FB`, still above `0x01000000`, so no byte is read.
+The first pixel is the expensive one: the table predicted 0 with p0 = 252/256, and the
+pixel is 1. It shrinks the range by a factor of 64, which is 6 bits.
+
+## Tables
+
+A table is 1,024 bytes, one per context. Each byte is P(pixel is 0) × 256, rounded and
+clamped to 1–255, so neither value is ever impossible.
+
+**Table v1** was trained once on 937 keycap icons from PolyKybd's overlay templates. Its
+bytes are part of HID protocol v19: the host's `res/prc_table_v1.bin` and the firmware's
+`prc_table_v1.h` must be identical. The byte sum is 135,654; the module's tests check it.
+v1 is frozen. The templates have grown to 1,007 icons since, and a table trained on them
+would differ, but a new table would mean a new protocol version.
+
+<Aside type="caution">
+The encoder and the decoder must use the same table. A decoder given a different table
+draws garbage and reports no error. Treat a table that has shipped as frozen, and give a
+retrained one a new id.
+</Aside>
+
+### Training a table for your images
+
+Table v1 suits small line icons. Images of a different kind compress better with a table
+trained on them, for example text, thin line art, or dithered pictures.
+
+```sh
+pip install pillow
+cd modules/polykybd/polymod_prc
+# One table from a folder of icons; --cell splits sprite sheets into WxH tiles
+python3 tools/prc_tool.py train icons/*.png --cell 32x16 \
+    --table-id 2 --header prc_table_v2.h --bin prc_table_v2.bin
+```
+
+- **Input.** Any image Pillow reads. A pixel at grey level 128 or above counts as lit;
+  `--threshold` changes the level and `--invert` lights the dark pixels instead.
+- **Formula.** For each context, count the 0 pixels `n0` and the 1 pixels `n1` across all
+  images, each cropped to its ROI first. Then
+  `p0 = round(256 × (n0 + 0.5) / (n0 + n1 + 1))`, clamped to 1–255. A context never seen
+  gets 128.
+- **Determinism.** Empty images and duplicates are skipped, and the result does not
+  depend on the order of the images. The tool prints the table's SHA-256.
+- **Frozen tables.** The tool refuses to overwrite an existing `.h` or `.bin` that holds
+  a different table, unless you pass `--force`. Use `--force` only for a table that never
+  shipped.
+
+The generated header defines `prc_table_v2[1024]`, ready to pass as `table`.
+
+### Encoding images
+
+```sh
+python3 tools/prc_tool.py encode icon.png --cell 32x16 --table prc_table_v2.h
+```
+
+For each cell with lit pixels, `encode` prints the ROI's `top`, `left`, `height` ×
+`width` and the payload in hex. It decodes every payload again and stops if the round trip
+fails. `--table` accepts a generated `.h` or a raw `.bin`.
+
+The tool needs only the Python standard library, plus Pillow to read image files. Its
+`encode()`, `decode()`, `train()` and `crop_to_roi()` functions can be imported, for a
+host program that sends images to your keyboard.
+
+## Using it in your keyboard
+
+1. List the module in your `keyboard.json`. Listing it is the whole enable:
+
+   ```json
+   "modules": ["polykybd/polymod_prc"]
+   ```
+
+2. Decode into your frame buffer:
+
+   ```c
+   #include "polymod_prc.h"
+   #include "prc_table_v2.h"
+
+   static uint8_t frame[(32 * 16 + 7) / 8];
+
+   if (!prc_decode_roi_in(frame, 32, 16, top, left, height, width,
+                          payload, len, prc_table_v2)) {
+       // the box does not fit the frame: refuse the image
+   }
+   ```
+
+3. Send `top`, `left`, `height`, `width` and the payload length alongside the payload.
+   How you frame them is up to your protocol. PolyKybd packs them into a 6-byte header,
+   [described on the HID protocol page](/reference/hid-protocol/#prc-predictive-range-coding).
+
+The module lives in the PolyKybd fork of QMK. Copy `modules/polykybd/polymod_prc/` into
+your tree under the same path.
+
+## Tests
+
+| What | Command | Checks |
+|---|---|---|
+| Decoder | `make test:polymod_prc` | 8 tests: golden vectors from the host's encoder decoded byte for byte, table v1's sum, refused boxes, custom frame sizes, a 571-byte payload |
+| Tool | `python3 -m unittest keyboards/polykybd/tools/tests/prc_tool_test.py` | 8 tests: the encoder reproduces the host's golden payloads, the trainer follows the formula, a generated header loads back |
+| On the keyboard | HIL suite | The master stays responsive while it decodes cmd 41 records, and it refuses a malformed record |
+
+The golden vectors were generated by PolyKybdHost's encoder. So a passing decoder test
+also shows the firmware decodes what the host sends.

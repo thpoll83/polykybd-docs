@@ -181,6 +181,7 @@ export default defineConfig({
             { label: 'Split Link Sync', slug: 'beyond-qmk/split-link' },
             { label: 'Main-Loop Profiler', slug: 'beyond-qmk/loop-profiler' },
             { label: 'Community Modules', slug: 'beyond-qmk/community-modules' },
+            { label: 'PRC Image Decoder', slug: 'beyond-qmk/prc-decoder' },
           ],
         },
         {
