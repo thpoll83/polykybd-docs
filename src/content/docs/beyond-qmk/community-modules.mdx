@@ -18,7 +18,7 @@ another QMK keyboard.
 | `polymod_core1` | Starts the RP2040's second core with its own stack, with a launch handshake that can time out; raw SIO FIFO helpers; an optional stack high-water probe (`CORE1_STACK_HWM`) | [The second core](/beyond-qmk/core1/) | none (RP2040 registers only) |
 | `polymod_crc32` | Table-driven CRC-32, the same checksum as zlib's `crc32()` | [Split link](/beyond-qmk/split-link/) request checks, staged image checks | none |
 | `polymod_rle` | Decoder for the [bit-run RLE](/reference/hid-protocol/#rle-overlay-encoding) overlay format; can resume mid-byte across reports | Compressed overlay uploads | none |
-| `polymod_prc` | Decoder for [PRC](/reference/hid-protocol/#prc-predictive-range-coding)-coded 1-bit images: each pixel is predicted from its 10 decoded neighbours and range-coded against a fixed table. Ships PolyKybd's table v1 and `tools/prc_tool.py`, which trains a table from your own images and encodes images for the decoder | PRC overlay uploads (HID `0x29`) | `make test:polymod_prc` (golden vectors from the host's encoder) |
+| `polymod_prc` | Decoder for [PRC](/reference/hid-protocol/#prc-predictive-range-coding)-coded 1-bit images: each pixel is predicted from its 10 decoded neighbours and range-coded against a fixed table. Ships PolyKybd's table v1 and a [tool to train your own](/beyond-qmk/prc-decoder/#training-a-table-for-your-images) | PRC overlay uploads (HID `0x29`) | `make test:polymod_prc` (golden vectors from the host's encoder) |
 | `polymod_monocypher` | [Monocypher](https://monocypher.org) 4.0.2, unmodified: Ed25519 signature check and SHA-512 | [Firmware signing](/beyond-qmk/signing/) | `make test:polymod_monocypher` (RFC 8032 test vectors) |
 | `polymod_os_actions` | One keycode per action ("Copy", "Lock", "Search"), sent as the right chord for the host OS: Windows, macOS, Linux, Android, or a Ctrl-based fallback | The OS-aware action keys | `make test:polymod_os_actions` |
 | `polymod_ltr559` | Driver for the LTR-559 ambient-light and proximity sensor on I2C address `0x23`; probes itself, gives up after a few tries when no sensor is fitted, keeps a rolling lux average | [Ambient-light brightness](/using/brightness/) | `make test:polymod_ltr559` (19 tests against a mock sensor and bus) |
@@ -64,29 +64,9 @@ other five are plain C.
 
 ### Training a PRC table for your images
 
-PolyKybd's table v1 was trained on its 72×40 keycap icons. Images of a different
-kind (text, thin line art, dithered pictures) compress better with a table trained on
-them. `polymod_prc/tools/prc_tool.py` builds one; it needs Pillow to read images.
-
-```sh
-pip install pillow
-# One table from a folder of icons; --cell splits sprite sheets into WxH tiles
-python3 modules/polykybd/polymod_prc/tools/prc_tool.py train icons/*.png --cell 32x16 \
-    --table-id 2 --header prc_table_v2.h --bin prc_table_v2.bin
-# Encode an image and print each tile's box and payload
-python3 modules/polykybd/polymod_prc/tools/prc_tool.py encode icon.png --cell 32x16 --table prc_table_v2.h
-```
-
-Then pass `prc_table_v2` to `prc_decode_roi_in()`, which takes the frame size at run
-time (`prc_decode_roi()` uses the compile-time `PRC_FRAME_W` × `PRC_FRAME_H`, 72×40 by
-default).
-
-<Aside type="caution">
-The encoder and the decoder must use the same table. A decoder given a different table
-draws garbage and reports no error. Treat a table that has shipped as frozen and give a
-retrained one a new id; the tool refuses to overwrite an existing table with different
-bytes unless you pass `--force`.
-</Aside>
+`polymod_prc` ships `tools/prc_tool.py`, which trains a probability table from your own
+images and encodes images for the decoder. The API, the exact bitstream and the tool are
+on [PRC Image Decoder](/beyond-qmk/prc-decoder/).
 
 ## Writing a new module
 
