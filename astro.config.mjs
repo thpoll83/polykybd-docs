@@ -142,6 +142,7 @@ export default defineConfig({
             { label: 'Display Brightness', slug: 'using/brightness' },
             { label: 'RGB Lighting', slug: 'using/rgb-lighting' },
             { label: 'Idle & Burn-in Protection', slug: 'using/idle' },
+            { label: 'Demo Mode', slug: 'using/demo-mode' },
             { label: 'Keymaps & Layers', slug: 'using/keymaps' },
             { label: 'Keymap Editor', slug: 'using/keymap-editor' },
             { label: 'Trackpad', slug: 'using/trackpad' },

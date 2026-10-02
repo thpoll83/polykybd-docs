@@ -1,0 +1,70 @@
+---
+title: Demo Mode
+description: A 15-minute loop for a booth or a shop window. The keyboard types, opens its menus, tours languages and glyph scripts, and rests in its idle animation, until someone holds Esc.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import SupportedSince from '../../../components/SupportedSince.astro';
+
+<SupportedSince firmware="1.5.0" note="demo mode" />
+
+Demo mode turns the keyboard into its own display piece. It plays a loop of about
+**15 minutes** and then starts over, until someone **holds Esc for two seconds**.
+
+## Start and stop
+
+The demo needs no computer: it also runs with the keyboard on a USB charger or a power bank.
+
+1. Open the [settings layer](/using/keymaps/#the-utility-and-settings-layers) and tap
+   [`More…`](/using/keymaps/#more).
+2. Tap **`Demo Mode`**. On split72 it is on the row that appears. On split42 it appears on the
+   top row of the settings layer, beside the glyph-script key.
+
+To stop, **hold Esc for two seconds**. The keyboard goes back to your base layout and your own
+language. A short tap on Esc, or any other key, does nothing, so visitors can press keys without
+ending the demo.
+
+The status displays say how to stop it: every 12 seconds they show **Demo mode / Hold Esc to
+exit** for 4 seconds. The rest of the time they show the usual layer, language and typing speed.
+
+<Aside type="caution">
+While the demo runs, **no key reaches the computer**. Every key press is ignored, so the keyboard
+seems dead to anyone who does not know about the Esc hold. That is why the key sits behind
+`More…`, where a stray tap does not reach it.
+</Aside>
+
+## What the loop shows
+
+Seven blocks of activity, each followed by about a minute of rest:
+
+| Block | What happens on the keycaps |
+|---|---|
+| Typing | Sentences typed key by key. Each key lights up as it is pressed, and Shift flips every legend to upper case. Fn and Num are held for a few seconds each. |
+| Languages | Short words with the keycaps in Greek, Russian, Arabic, Hebrew, Hindi, Thai, Japanese, Korean, Georgian and Armenian. |
+| Menus | The [language menu](/using/languages/) and the emoji picker page through their tabs, then the Intl, utility and settings layers. |
+| Glyph scripts | Tengwar, runes, Cirth, Aurebesh, the Standard Galactic Alphabet, IBM VGA, C64, Amiga and Braille. See [Glyph Scripts](/using/glyph-scripts/). |
+| Code | A few lines of C and a `git` command, with brackets and symbols on Shift. |
+| European languages | German and French, each followed by the Intl layer with its accented letters, then Ukrainian and the emoji picker. |
+| Plain typing | A longer stretch of text, the language menu once more, the settings layer. |
+
+The rest between blocks is your own [idle style](/using/idle/): the keycaps fade over
+10 seconds, then the style you picked runs for about a minute. The demo then wakes the
+keyboard and the next block starts.
+
+The typing follows **your base layout**. On Colemak or Neo the demo presses the keys that carry
+each letter on that layout.
+
+## What it does not change
+
+- **Your language.** The language tour is a preview on the keycaps only. The host app keeps
+  seeing your real language, and nothing is saved.
+- **Your settings.** Brightness, idle style, glyph script and layout stay as they were.
+- **Across a restart.** Demo mode is not saved. Unplug the keyboard and it comes back normal.
+
+A language or glyph script needs its font on the keyboard. Without the [font pack](/firmware/font-packs/)
+those steps show your own language instead of blank keys.
+
+<Aside type="note">
+If the computer goes to sleep, the demo pauses with the displays and continues where it was when
+the computer wakes. A firmware or font update stops the demo.
+</Aside>
