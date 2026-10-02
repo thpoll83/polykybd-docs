@@ -118,9 +118,9 @@ A few hard limits baked into the firmware — don't fight them:
    | Key | Matches on | How |
    | --- | --- | --- |
    | `urls-contains:` | the focused tab's URL | plain substring |
-   | `titles-startswith:` | the **first word** of the title | whole word |
-   | `titles-endswith:` | the **last word** of the title | whole word |
-   | `titles-contains:` | **any word** in the title | whole word |
+   | `titles-startswith:` | the **first word(s)** of the title | whole words |
+   | `titles-endswith:` | the **last word(s)** of the title | whole words |
+   | `titles-contains:` | **any word, or run of adjacent words**, in the title | whole words |
 
    ```yaml
    chrome,google-chrome,chromium:
@@ -134,14 +134,16 @@ A few hard limits baked into the firmware — don't fight them:
    See the existing Chrome and JetBrains entries for the full pattern.
 
    <Aside type="caution">
-   The title maps are **word-based, not substring-based** — the title is split on whitespace and
-   each key is compared against a whole word. Two consequences catch people out:
+   The title maps are **word-based, not substring-based**: the title is split on whitespace and
+   each key is compared against whole words. Two consequences catch people out:
 
    - `titles-contains: Doc` matches `My Doc here` but **not** `My Docs here`.
-   - A key containing a space (`titles-contains: My Doc`) can never match, because no single word
-     ever equals it.
+   - A key of several words (`titles-contains: Google Docs`) matches only when those words stand
+     next to each other in the title. When keys of different lengths fit at the same place, the
+     longest wins, whatever the YAML order, so `Claude Code` beats `Claude`. This needs
+     **PolyKybdHost 1.13 or newer**. On 1.12.x and older, a key containing a space never matches.
 
-   `titles-startswith` is likewise the whole first *word*, not an arbitrary prefix string.
+   `titles-startswith` is likewise the whole first *word(s)*, not an arbitrary prefix string.
    For anything finer, use `title:` — but note it works differently from the four maps above
    (see below).
    </Aside>
