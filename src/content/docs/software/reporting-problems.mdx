@@ -87,9 +87,9 @@ window, and look at the file before you attach it.
 
 A keyboard half that hits a hardware fault or stops responding no longer just sits
 there until you replug it: the firmware records what it was doing, restarts itself,
-and reports the crash on its next boot. PolyKybdHost watches the keyboard's console for
-that report and **pops up an alert** the moment it sees one — so you find out about a
-crash without ever opening a log.
+and keeps a record of the crash. Each time the keyboard boots, PolyKybdHost reads that
+record from both halves and **pops up an alert** for any crash it has not shown you
+before, so you find out about a crash without ever opening a log.
 
 The dialog says which half crashed, what kind of crash it was (a fault, an unexpected
 exception, or a watchdog restart after a hang), what the firmware was doing at the time
@@ -100,17 +100,40 @@ and how long it had been running, and offers two ways to pass it on:
 | **Report on GitHub…** | Opens *Report a Problem* with the crash already written into the description — the log bundle and the pre-filled issue work exactly as above. |
 | **Copy to Clipboard** | Copies the crash details plus the host diagnostics as plain text, to paste into a chat, an e-mail or an existing issue. |
 
-**Dismiss** only closes the alert; it does not clear the record. The record stays on the
-keyboard and in the console log, and `polyctl crash show` reads it back at any time the
-host daemon is running (`--slave` for the link-side half, `crash clear` to forget it). The keyboard keeps working meanwhile; the alert is
-information, not an error you have to act on.
+**Dismiss** only closes the alert; it does not clear the record. To read it again later,
+choose **Help & About → Read keyboard crash record**: it reads both halves, shows what
+they hold, older records included, and copies the text to the clipboard for a bug report.
+From a terminal, `polyctl crash show` does the same while the host daemon is running
+(`--slave` for the link-side half, `crash clear` to forget it). The keyboard keeps working
+meanwhile; the alert is information, not an error you have to act on.
 
 <Aside type="note">
-The firmware only records crashes from protocol 16 on, and the host only alerts once it
-sees the keyboard's console line. If the host was flashing the keyboard at the moment of
-the report, the line is missed — the record is still on the board, so `polyctl crash
-show` (or the next reboot) still surfaces it.
+The firmware records crashes from protocol 16 on. Reading the record on every keyboard
+boot needs PolyKybdHost 1.14.0 or later. Older versions only noticed a crash from the
+keyboard's console, so one the keyboard recovered from on its own could go unreported.
 </Aside>
+
+## Catching a crash that only happens now and then
+
+<SupportedSince protocol={22} note="host 1.15.0+" />
+
+Some problems show up only at startup, and only once in a while: the keyboard stops on
+its boot screen and recovers by itself a few seconds later. Waiting for that to happen
+again is slow. The **boot-loop test** makes it happen on purpose.
+
+Turn on [developer mode](/software/usage/#developer-mode) (**Settings → Developer →
+Mode**) and choose **Developer → Firmware → Boot-loop test…**. Pick a
+number of rounds (up to 9999) and start it. The app reboots the keyboard, waits for it to
+come back and reads its crash record, then does it again. It stops at the first boot that
+left a crash record, at a boot that does not come back within a minute, or after the last
+round. Each round takes a few seconds, and the keyboard does not type while the test runs.
+
+From a terminal, `polyctl bootloop --rounds 200` does the same, and `polyctl bootloop
+--cancel` stops it. `polyctl reboot` restarts both halves once. A reboot saves nothing,
+so a long run does not wear out the keyboard's settings storage.
+
+When the test stops on a crash, attach its result to your [report](#report-a-problem): it
+names the round and carries the crash record.
 
 ## Collect logs
 

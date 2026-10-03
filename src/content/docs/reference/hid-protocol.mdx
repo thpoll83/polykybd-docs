@@ -91,6 +91,7 @@ source commonly uses it.
 | **MACRO_LABEL** | `0x26` (38) | **v15+.** Get/set one macro's label — the short text the keycap spells out along its bottom edge. |
 | **CRASH_RECORD** | `0x27` (39) | **v16+.** Read the keyboard's last [crash record](/software/reporting-problems/#when-the-keyboard-firmware-crashes) — `0` this half, `1` the link-side half (pulled over the split link), `2` clears it. The reply is a flags byte (present / fresh) and the 48-byte record: crash kind, core, the faulting `pc`/`lr`/`sp`, what the firmware was doing, uptime and firmware version. |
 | **IDLE_TIMEOUT** | `0x28` (40) | **v18+.** Get/set how long the keyboard waits before it starts [fading into the idle style](/using/idle/#how-long-before-it-idles) — a preset index (0 = 15 sec … 5 = 5 min), or `0xFF` to query. A closed range like `GLYPH_SIZE`: anything else NACKs. The reply carries both the preset **and** its duration in seconds, so a host older than the keyboard can still label a preset it has never heard of. |
+| **REBOOT** | `0x2B` (43) | **v22+.** Restart both halves and save nothing. The keyboard answers before it resets. It exists for the host's [boot-loop test](/software/reporting-problems/#catching-a-crash-that-only-happens-now-and-then), which reboots hundreds of times. |
 | **BOOTLOADER / HANDEDNESS** | `0x17` / `0x19` | Enter bootloader; set which half is which. |
 
 ### Layer names — the reply format
@@ -645,6 +646,7 @@ Selected milestones:
 - **v19** — **SEND_PRC_OVERLAY** (`0x29`): [PRC](#prc-predictive-range-coding) (Predictive Range Coding), a fifth keycap-image encoding that codes a typical icon to a payload of about 28 bytes. The host uses it per image, only where it saves a report; the older encodings stay.
 - **v20** — **FILL_POOL_FROM_ICON** (`0x2A`): the [icon library](#icon-library-fills). Icons the app templates share are stored in the keyboard's flash, and the host sends `(pool slot, icon id)` pairs instead of their bitmaps. A cold switch into a JetBrains IDE drops from 84 reports to 32. The GET_ID version block now reports the lower of the two halves' versions per bundle.
 - **v21** — [mapping flags](#mapping-flags) on **SEND_OVERLAY_MAPPING_W** (`0x21`): the prepare and enable steps of an app switch ride on the mapping reports instead of separate `OVERLAY_FLAGS` reports. A switch between apps whose images the keyboard already holds needs about half the reports.
+- **v22** — **REBOOT** (`0x2B`): restart both halves without saving anything, so the host's [boot-loop test](/software/reporting-problems/#catching-a-crash-that-only-happens-now-and-then) can reboot the keyboard hundreds of times to catch a rare startup crash. Changing the handedness also reboots, but it writes the settings storage on every call.
 
 <Aside type="note">
 Not every version number above is a separate feature listed here — the list highlights the
