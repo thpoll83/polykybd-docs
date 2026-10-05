@@ -28,9 +28,43 @@ The status displays say how to stop it: every 12 seconds they show **Demo mode /
 exit** for 4 seconds. The rest of the time they show the usual layer, language and typing speed.
 
 <Aside type="caution">
-While the demo runs, **no key reaches the computer**. Every key press is ignored, so the keyboard
+While the demo runs, **no key you press reaches the computer**. Every key press is ignored, so the keyboard
 seems dead to anyone who does not know about the Esc hold. That is why the key sits behind
 `More…`, where a stray tap does not reach it.
+</Aside>
+
+## Key demo: type into a text editor
+
+<SupportedSince firmware="1.7.3" note="key demo" />
+
+**`Key Demo`** sits next to `Demo Mode` and plays the same loop. The difference: every
+sentence the demo types also reaches the computer, one key press at a time, with an Enter
+after each line. Open a text editor, start the key demo, and the editor fills with the
+demo's text for as long as the loop runs. Use it as a typing test for a long session, or
+to check that every key press arrives.
+
+The key demo **never sends a modifier**. No Shift, Ctrl, Alt or Windows/Command key, no
+Tab and no layer key ever reaches the computer, so the run cannot switch to another
+window, close a tab or start a shortcut. The keycaps still show Shift for capitals, but the
+computer receives the unshifted key:
+
+| The demo types | The editor receives |
+|---|---|
+| `Hello, I am PolyKybd.` | `hello, i am polykybd.` |
+| `printf("Hello, world!\n");` | `printf9'hello, world1\n'0;` |
+
+The keys arrive as key positions on a US layout. If the computer uses another layout,
+those positions produce that layout's characters: on a German layout `y` and `z` swap,
+and the punctuation differs. During the language and glyph-script tour the keycaps show
+other alphabets, but the computer still receives the same Latin key positions.
+
+Start, stop and the status-display hint work as for the normal demo. On split72 the key is
+the last one on the row that `More…` reveals; on split42 it is beside `Demo Mode` on the
+top row. Keys you press are still ignored, and holding Esc for two seconds ends the run.
+
+<Aside type="caution">
+Click into the editor **before** you open the settings layer. The key demo types into
+whatever window has focus.
 </Aside>
 
 ## What the loop shows
@@ -55,6 +89,8 @@ The typing follows **your base layout**. On Colemak or Neo the demo presses the 
 each letter on that layout.
 
 ## What it does not change
+
+These hold for both the demo and the key demo.
 
 - **Your language.** The language tour is a preview on the keycaps only. The host app keeps
   seeing your real language, and nothing is saved.
