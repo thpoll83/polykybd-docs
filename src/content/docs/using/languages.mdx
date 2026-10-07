@@ -219,6 +219,46 @@ whose smaller key count leaves no obvious home for it — you can add it yoursel
 10-slot picker row and its page arrows.
 </Aside>
 
+## The IME key: Korean and Japanese
+
+<Aside type="caution" title="Needs firmware 1.7.7 or later">
+Older firmware has a plain Non-US Backslash key in this position.
+</Aside>
+
+Korean and Japanese are typed through an input method (IME), and the IME has its own on/off
+mode. On the split72 keymap, the key that is Non-US Backslash on other layouts switches that mode
+for you. The keyboard picks the stroke from the active language and the OS:
+
+| Language | Windows, Linux, Android | macOS |
+|---|---|---|
+| ko-KR | 한/영: switches between Hangul and Latin | Ctrl+Space (previous input source) |
+| ja-JP, tap | IME off ↔ hiragana | 英数 ↔ かな |
+| ja-JP, Shift+tap | katakana | katakana (Ctrl+Shift+K) |
+| any other language | Non-US Backslash, as before | Non-US Backslash, as before |
+
+On Korean the keycap reads **IME / Han/A**, and on Japanese **IME / Kana**. On every other
+language it shows that layout's Non-US Backslash legend.
+
+The keyboard cannot see which mode the IME is in. For Korean that is no problem, because 한/영 is
+a toggle on every OS. For Japanese the keyboard remembers which mode it last selected and sends the
+next one by name, never as a toggle. If you change the mode with the mouse, the next press can
+select the mode you are already in. Press once more and the key is back in step.
+
+<Aside type="note" title="Windows: one Microsoft IME setting for Japanese">
+The keyboard turns the Japanese IME off with the 無変換 (Muhenkan) key. Microsoft IME treats that
+key as "IME off" only when you choose so. Right-click the **あ** / **A** indicator in the taskbar,
+choose **Settings**, open **Key and touch customization** (キーとタッチのカスタマイズ), and set
+**無変換キー** to **IME-オフ**.
+Without it, the tap that should switch the IME off does something else.
+</Aside>
+
+<Aside type="note" title="A keyboard with a saved keymap keeps the old key">
+The base layouts live in the keyboard's memory once you have saved a keymap, and the saved copy
+wins over new firmware. To get the IME key there, set its position in the
+[keymap editor](/using/keymap-editor/), or write keycode `0x7FA8` with
+`polyctl keymap set <layer> <row> <col> 0x7FA8`.
+</Aside>
+
 ## Emoji layer
 
 PolyKybd also has a dedicated **emoji layer** that turns the keycaps into a visual emoji picker —
