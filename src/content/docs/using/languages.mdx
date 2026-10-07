@@ -219,7 +219,7 @@ whose smaller key count leaves no obvious home for it — you can add it yoursel
 10-slot picker row and its page arrows.
 </Aside>
 
-## The IME key: Korean and Japanese
+## The IME key: Korean, Japanese and US English
 
 <Aside type="caution" title="Needs firmware 1.7.7 or later">
 Older firmware has a plain Non-US Backslash key in this position.
@@ -227,17 +227,22 @@ Older firmware has a plain Non-US Backslash key in this position.
 
 Korean and Japanese are typed through an input method (IME), and the IME has its own on/off
 mode. On the split72 keymap, the key that is Non-US Backslash on other layouts switches that mode
-for you. The keyboard picks the stroke from the active language and the OS:
+for you. On the US-style English layouts, where Non-US Backslash only repeats the Backslash key,
+it becomes a second Alt key on the right-hand side. The keyboard picks the stroke from the active
+language and the OS:
 
 | Language | Windows, Linux, Android | macOS |
 |---|---|---|
 | ko-KR | 한/영: switches between Hangul and Latin | Ctrl+Space (previous input source) |
 | ja-JP, tap | IME off ↔ hiragana | 英数 ↔ かな |
 | ja-JP, Shift+tap | katakana | katakana (Ctrl+Shift+K) |
+| en-US, en-CA, en-AU, en-NZ, en-IN, en-PH, en-SG | Right Alt | Right Alt, swapped like the keyboard's Alt key (acts as Cmd) |
 | any other language | Non-US Backslash, as before | Non-US Backslash, as before |
 
 The keycap carries the label a Korean or Japanese keyboard prints on the key: **한/영** on
-Korean, and **英数** over **かな** on Japanese. These labels are built into the firmware, so they
+Korean, and **英数** over **かな** on Japanese, which changes to **カナ** while you hold Shift.
+On the US-style English layouts it shows the same Alt legend as the Alt key. On Windows that Right Alt
+is also the compose key of [WinCompose](/software/wincompose/). These labels are built into the firmware, so they
 show even without a font pack. On every other language the key shows that layout's Non-US
 Backslash legend.
 
