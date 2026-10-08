@@ -42,8 +42,10 @@ indexed by the `poly_glyph_script` enum) maps a script to its block base; letter
 1. **Pick a license-clean font.** The glyph *shapes* must be embeddable and redistributable
    (OFL, Apache, CC0, permissive). Keep user-facing script names generic where a script is a
    trademark, even though the fonts themselves are fine to embed. Check the font file as well
-   as the repository: with no license the font is all rights reserved, and an OS/2 `fsType` other
-   than `0` forbids embedding even when a license allows it. Add the source to the font
+   as the repository. With no license, the font is all rights reserved. The project also asks
+   for an OS/2 `fsType` of `0` (installable). The other values restrict embedding to documents:
+   `2` forbids it, `4` allows preview and print only, and `8` allows editable documents. A font
+   converted to bitmaps and flashed onto a keyboard is none of those. Add the source to the font
    downloader (`fonts/dl-fonts.sh`), pinned to a commit or release tag.
 
 2. **Add the enum value.** Append to `enum poly_glyph_script` in `state.h` — it is **append-only**
