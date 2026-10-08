@@ -10,10 +10,12 @@ the host app [`../PolyKybdHost/CLAUDE.md`](../PolyKybdHost/CLAUDE.md). The
 — in particular: start each piece of work on a fresh branch cut from the updated
 default (**`main`**), and never keep committing to a branch whose PR has merged.
 
-- ⚠️ **CodeRabbit does NOT auto-review this repo** — it is under GitHub's 10-star
-  threshold, so every review must be asked for (`@coderabbitai review`). See the
-  code-review section of `PolyKybdHost/CLAUDE.md` for that and the other ways a
-  PR can look reviewed without having been.
+- ⚠️ **CodeRabbit does NOT auto-review this repo**, so every review must be asked
+  for (`@coderabbitai review`). The 10-star threshold was the first explanation, but
+  by 2026-10-08 auto-review was off on all four PolyKybd repos, set in the
+  CodeRabbit org UI. See the code-review section of `PolyKybdHost/CLAUDE.md` and
+  `docs/review-conventions.md` there for that and the other ways a PR can look
+  reviewed without having been.
 - ⚠️ **An on-demand Claude reviewer was tried here and REMOVED (2026-08-20) —
   don't rebuild it.** `.github/workflows/claude-review.yml` + `claude-mention.yml`
   were ported from the host repo to close exactly the gap above. Across three
