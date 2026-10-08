@@ -81,7 +81,7 @@ source commonly uses it.
 | **IDLE_STATE** | `0x0F` (15) | Start / stop the [idle](/using/idle/) animation. |
 | **SET_UNICODE_MODE** | `0x14` (20) | Select the OS unicode-input mode. Since **v17** a flag byte can apply it for this session only, leaving the stored mode alone. |
 | **DISPLAY_OFF** | `0x18` (24) | Blank the keycaps. |
-| **IDLE_STYLE** | `0x1C` (28) | **v4+.** Get/set the idle style (pulse / jitter). |
+| **IDLE_STYLE** | `0x1C` (28) | **v4+.** Get/set the idle style (pulse, jitter, IDDQD, Eden). |
 | **SET_OS** | `0x1D` (29) | Active host OS → modifier legends. |
 | **GLYPH_SCRIPT** | `0x1E` (30) | **v9+.** Get/set the [glyph-script](/using/glyph-scripts/) override (open-ended index since v10). |
 | **GLYPH_SIZE** | `0x22` (34) | **v13+.** Get/set the [legend size](/using/legend-size/) — how large a key's main legend is drawn. A closed range (0 small / 1 medium / 2 large); anything else NACKs. |
