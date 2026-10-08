@@ -69,7 +69,7 @@ A quick reference for terms used across the PolyKybd documentation, firmware, an
 : A cosmetic override that redraws the keycap letter/digit legends in an alternative script (Tengwar, runes, Aurebesh, C64, Braille, …) without changing what the keys type. See [Glyph Scripts](/using/glyph-scripts/).
 
 **Idle style**
-: The anti-burn-in animation the keycaps run while idle — **pulse** (per-key breathing) or **jitter** (legends migrate to fresh spots). See [Idle & Burn-in Protection](/using/idle/).
+: The anti-burn-in animation the keycaps run while idle — **Eden** (a comet-field screensaver, the split72 default), **pulse** (per-key breathing, the split42 default), **jitter** (legends migrate to fresh spots) or **IDDQD** (an attract-demo screensaver). See [Idle & Burn-in Protection](/using/idle/).
 
 **Protocol version**
 : The `PROTOCOL_VERSION` the firmware reports in its GET_ID string. The versions need not match — the host connects to any keyboard from v2 on and gates each feature individually, so a mismatch costs you only the newer features. Firmware and host are still released in lockstep. See the [HID Protocol Reference](/reference/hid-protocol/).
