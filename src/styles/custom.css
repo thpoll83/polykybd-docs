@@ -205,6 +205,18 @@
   margin-block: 0 2rem;
 }
 
+/* A video fills the column: at the 55% thumbnail width the keycap screens are
+   too small to read, and a video has no click-to-enlarge (its own controls
+   offer full screen). Used for the Eden intro on the First run page. */
+.sl-markdown-content video.pk-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-block: 0.9rem;
+  border-radius: 0.4rem;
+  background: #000;
+}
+
 /* Full-screen lightbox, created on click by public/js/photo-zoom.js. */
 .photo-zoom-lightbox {
   position: fixed;
