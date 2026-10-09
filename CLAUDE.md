@@ -206,6 +206,11 @@ crisp close-up of a fixed-position corner element without any cropping tool.
 `pkill -f "http.server 4500"` matches its OWN shell's command line, so it kills the
 shell that ran it (exit 144) and everything chained after it in that command, a
 `git commit` included (2026-10-01). The bracket keeps the pattern from matching itself.
+⚠️ **The bracket protects only the pkill argument.** Any other text in the SAME shell
+command that contains the literal still matches: `pkill -f "[r]im_e"` beside
+`ls $S/rim_e*.png` killed its own shell (exit 144, 2026-10-09), so the steps chained
+after it never ran and a render it was meant to stop kept going. Run the pkill as its
+own command, or `pgrep -af` first and `kill` the PID.
 
 **A screenshot of ONE section:** the CLI `--screenshot` of a `#anchor` URL does not
 give you that section. A 1100×3000 capture of `/development/system-model/#…` came back
