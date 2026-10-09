@@ -5,6 +5,10 @@ description: The first time a PolyKybd starts, it plays its intro and then shows
 
 import { Aside } from '@astrojs/starlight/components';
 import SupportedSince from '../../../components/SupportedSince.astro';
+import { getImage } from 'astro:assets';
+import edenPosterSrc from '../../../assets/using/eden-intro-poster.jpg';
+
+export const edenPoster = await getImage({ src: edenPosterSrc, format: 'webp', quality: 82 });
 
 <SupportedSince firmware="1.0.0" note="first-run tutorial" />
 
@@ -15,7 +19,7 @@ key pulse, and circles it with a ring. The two status displays tell you what to 
 
 ## The intro
 
-<video class="pk-video" poster="/img/eden-intro-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="The Eden intro on a split72: comets stream across all keycaps under a rainbow backlight, gather into POLY KYBD on the left half and SPLIT 72 on the right, then the letters dissolve into the dark keys">
+<video class="pk-video" poster={edenPoster.src} autoplay muted loop playsinline controls preload="metadata" aria-label="The Eden intro on a split72: comets stream across all keycaps under a rainbow backlight, gather into POLY KYBD on the left half and SPLIT 72 on the right, then the letters dissolve into the dark keys">
   <source src="/video/eden-intro.webm" type="video/webm" />
   <source src="/video/eden-intro.mp4" type="video/mp4" />
 </video>
