@@ -52,15 +52,43 @@ draws a small icon in the bottom-right corner of that key, clear of the key's ow
 | Your platform | Where the shortcuts come from | Status |
 | --- | --- | --- |
 | **Windows** | UI Automation | Supported |
-| **Linux** | AT-SPI2 | Supported, with the limit below |
+| **Linux** | AT-SPI2 | Supported; depends on the app's toolkit, see below |
 | **macOS** | Accessibility API | Supported (host 1.1.0+), after a one-off permission |
 
-<Aside type="caution">
-**On Linux this finds shortcuts only for apps with a classic menu bar.** An app whose menus
-live in a hamburger button generally publishes no shortcuts at all — GTK4 apps typically
-answer with nothing, so even an obvious `Ctrl+S` is invisible to us. Nothing breaks — the
-keyboard simply stays as it was, Escape included.
+### Linux: which apps work
+
+What an app publishes depends on its toolkit, so on Linux it varies by app family:
+
+| App family | Example | What PolyKybd gets |
+| --- | --- | --- |
+| **GTK3** with a menu bar | Mousepad | Every shortcut in the menu bar |
+| **GTK4**, version 4.18 or newer | — | The shortcuts its menus show (host 1.16.6+; not yet confirmed on a real desktop) |
+| **GTK4**, older than 4.18 | Ubuntu 24.04's GTK 4.14 | Nothing: these versions report every shortcut as blank |
+| **Qt / KDE** | Kate | The shortcuts in its menus (host 1.16.6+) |
+
+Nothing breaks when an app publishes nothing — the keyboard simply stays as it was,
+Escape included.
+
+<Aside type="note">
+**Qt and KDE apps only publish shortcuts while the desktop's accessibility switch is on**, and
+KDE Plasma leaves it off unless a screen reader is running. So PolyKybdHost turns it on the
+first time it reads an app (setting **Shortcut → Enable Accessibility**, on by default). It
+does not start a screen reader, and the switch stays on until you log out.
+
+If an app was already open when PolyKybdHost started and its keys stay plain, restart the
+app once.
 </Aside>
+
+<Aside type="tip">
+**Shortcuts that appear later are picked up too** (host 1.16.8+). Some apps only add items
+like Save, Undo and Copy once a document is open — Kate's welcome page has none of them.
+PolyKybdHost reads the app again whenever its window title changes, which is exactly when a
+document opens, and keeps the old icons on screen until the new ones are ready. An app that
+changes its title constantly, like a terminal or a browser, is re-read at most every two
+minutes once nothing new turns up.
+</Aside>
+
+### macOS: one permission first
 
 <Aside type="caution">
 **macOS asks for permission once, and until you grant it PolyKybd sees nothing.** The
@@ -82,6 +110,10 @@ An icon is drawn only when the shortcut's label maps to a concept the icon set c
 Save, Copy, Paste, Find, Undo, Bold, Print and so on. A label the host cannot place
 confidently is left alone rather than guessed at, because a plausible but wrong icon is
 worse than none. Chords the operating system owns (Alt+Tab and friends) are skipped too.
+
+One app gets at most **48** shortcut icons. Most apps never reach that, but a big editor
+can: Kate with a document open publishes over a hundred. When an app goes over, the
+matches PolyKybd is surest of are kept and the rest stay plain.
 
 ## When an app already has artwork
 
@@ -107,7 +139,7 @@ app gets nothing generic until it is updated.
 
 ## Settings
 
-All four live in **Settings…** in the tray menu and are **on** by default.
+All five live in **Settings…** in the tray menu and are **on** by default.
 
 | Setting | What it controls |
 | --- | --- |
@@ -115,8 +147,10 @@ All four live in **Settings…** in the tray menu and are **on** by default.
 | **Generic → Overlays Fill Gaps** | Whether generic icons also appear on apps that already have artwork, filling only the keys it leaves blank. |
 | **Shortcut → Icons Enabled** | Whether the focused app is read for its shortcuts at all. Off: nothing generic is drawn, since the Escape icon only accompanies shortcut icons. |
 | **Shortcut → Icon Auto Fetch** | Whether the icon set may be downloaded. Off: icons already downloaded keep working; new ones are skipped. |
+| **Shortcut → Enable Accessibility** | Linux only. Whether PolyKybdHost may turn on the desktop's accessibility switch so Qt and KDE apps publish their shortcuts. Off: only apps that publish anyway (GTK) are read. |
 
-They narrow as you go down the list, so turning off one above makes the ones below it moot.
+The first four narrow as you go down the list, so turning off one above makes the ones below
+it moot.
 
 <Aside type="tip">
 On a managed or offline machine the two you probably want are **Shortcut → Icons Enabled**
