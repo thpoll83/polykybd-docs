@@ -106,7 +106,9 @@ the Mac artwork.
 <Aside type="tip">
 Browsers are a special case: many web apps share one browser process, so matching on the app
 name alone isn't enough. [Website-Aware Overlays](/using/website-detection/) match the overlay
-to the focused tab's **URL** instead, so Jira, GitHub and Miro each get their own layer.
+to the focused tab's **URL** instead, so Jira, GitHub and Miro each get their own layer. The
+website's layer sits [on top of the browser's](/using/website-detection/#the-browsers-shortcuts-stay-underneath),
+so the browser's own shortcuts stay on the keys the website doesn't use.
 </Aside>
 
 <Aside type="note">

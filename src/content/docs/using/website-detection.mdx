@@ -97,6 +97,34 @@ Because a URL identifies a web app far more reliably than its title, an SPA rout
 navigating within Jira) can swap overlays even when the window title doesn't change.
 </Aside>
 
+## The browser's shortcuts stay underneath
+
+A web app runs inside the browser, so the browser's own shortcuts still work on every site:
+new tab, reload, find, zoom, switching tabs. Since **host 1.16.0** a website's overlay is drawn
+**on top of** the browser's instead of replacing it:
+
+- A key the website's overlay draws shows the **website's** shortcut.
+- Every other key keeps the **browser's** shortcut.
+
+So with GitHub open, `Ctrl` still shows new tab on `T` and the address bar on `L`, next to
+GitHub's own keys. Before 1.16.0 a website match replaced the browser's overlay, and those keys
+went blank. Nothing changes in your mapping file: the browser entry's `overlay` is the bottom
+layer, and the matched `urls-contains` or `titles-contains` entry goes on top.
+
+### Browser keys are drawn dimmed
+
+With **firmware 1.8.3 and host 1.16.2** or later, the keys that still show the browser's
+shortcut under a website's overlay are drawn **dimmed**: the keyboard lights a quarter of the
+icon's pixels, every other row and every other column. The website's own shortcuts stay at full
+strength, so they stand out, and the browser's are still readable.
+
+- Only the icon is dimmed. The key's letter and its Shift and AltGr previews stay at full
+  brightness.
+- The program icon on **Esc** is never dimmed.
+- With no website match, the browser's overlay is drawn at full strength as before.
+
+With an older keyboard or host, everything is drawn at full strength.
+
 ## Across two machines
 
 Website detection also works for a computer you are *forwarding* from — see
