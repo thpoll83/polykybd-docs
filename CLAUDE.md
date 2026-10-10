@@ -1,317 +1,103 @@
-# CLAUDE.md — polykybd-docs
+# CLAUDE.md: polykybd-docs (www.polykybd.org)
 
-This file provides guidance to Claude Code (claude.ai/code) when working in the
-**polykybd-docs** repo — the public documentation site published at
-<https://www.polykybd.org>.
+The public documentation site, Astro 7 + Starlight 0.42.
 
-For the firmware see [`../qmk_firmware/CLAUDE.md`](../qmk_firmware/CLAUDE.md), for
-the host app [`../PolyKybdHost/CLAUDE.md`](../PolyKybdHost/CLAUDE.md). The
-**code-review conventions** and **branching rules** in the host file apply here too
-— in particular: start each piece of work on a fresh branch cut from the updated
-default (**`main`**), and never keep committing to a branch whose PR has merged.
-
-- ⚠️ **CodeRabbit does NOT auto-review this repo** — it is under GitHub's 10-star
-  threshold, so every review must be asked for (`@coderabbitai review`). See the
-  code-review section of `PolyKybdHost/CLAUDE.md` for that and the other ways a
-  PR can look reviewed without having been.
-- ⚠️ **An on-demand Claude reviewer was tried here and REMOVED (2026-08-20) —
-  don't rebuild it.** `.github/workflows/claude-review.yml` + `claude-mention.yml`
-  were ported from the host repo to close exactly the gap above. Across three
-  summonses it never published a single review: every run went green, and the
-  result JSON showed `permission_denials_count` 2, then 1 after widening the
-  `Bash(git:*)` grant, with nothing posted either time. ~$1.30 of subscription
-  spend for zero findings, and the remaining denial was not identifiable — the
-  action logs `full output hidden for security` and uploads no artifact. The
-  workflows, the `CLAUDE_CODE_OAUTH_TOKEN` secret and the tracking notes are all
-  gone. **The review posture here is: ask CodeRabbit by hand** (`@coderabbitai
-  review`), and treat the local `npm run build` as the only gate.
+**Rules for all PolyKybd repos** (review, branching, releases, web session limits) are
+in `../polykybd-claude/CLAUDE.md`, with the shared skills. If that repo is not attached,
+ask the user to attach `thpoll83/polykybd-claude`. Documenting a firmware or host feature
+is the `update-polykybd-docs` skill (feature→page map, section list, docs-PR flow).
+Headless verification recipes, analytics details and the photo workflow:
+[`MAINTAINING.md`](MAINTAINING.md).
 
 ## Commands
 
 ```bash
-./preview.sh                  # live-reloading dev server (default)
-./preview.sh build            # build + serve the real production output
-./preview.sh --port 8080      # …on another port
-npm ci --no-audit --no-fund   # plain `npm ci` works; sharp installs fine
-npm run build                 # -> dist/ ; expect "N page(s) built"
+./preview.sh                  # live-reloading dev server (./preview.sh build serves the real output)
+npm ci --no-audit --no-fund   # plain npm ci works; sharp installs fine
+npm run build > /tmp/build.log 2>&1   # -> dist/, expect "N page(s) built"
 ```
 
-⚠️ **Never build with the `--ignore-scripts` + `passthroughImageService` fallback on
-a change involving images.** That path (documented in `update-polykybd-docs`) skips
-`sharp`, so resize and WebP conversion do not happen: the build stops reflecting what
-the site actually serves, and any size check silently measures the *source* file
-instead. Plain `npm ci` installs `sharp` fine here, so the fallback is not needed.
+- ⚠️ **Node 22.12+ is required** (Astro 7 on Vite 8; `deploy.yml` pins 22).
+- ⚠️ **Never pipe the build into `head`.** SIGPIPE kills it partway and leaves `dist/`
+  half written, which looks like broken image handling.
+- ⚠️ **Never use the `--ignore-scripts` + `passthroughImageService` fallback on an image
+  change.** It skips `sharp`, so the build stops reflecting what the site serves.
 
-## ⚠️ There is NO CI on pull requests — the local build is the only gate
+## No CI on pull requests
 
-`.github/workflows/deploy.yml` is the **only** workflow, and it triggers on
-`push: [main]` + `workflow_dispatch`. Nothing builds a PR. So a broken build is
-not caught by review, by a check, or by anything else — it first appears when the
-change is already on `main` and the Pages deploy runs.
+`deploy.yml` is the only workflow and runs on `push: [main]` and `workflow_dispatch`.
+Nothing builds a PR, and CodeRabbit must be asked by hand. **Run `npm run build` before
+pushing and grep `dist/` for what you changed.** A green PR can have had zero checks
+compile the site (#48).
 
-**Always `npm run build` before pushing**, and grep the built `dist/` for whatever
-you changed rather than trusting the source. A PR here can be fully green with
-zero checks having compiled the site (#48, 2026-08-17: the only check was a
-CodeRabbit status).
+- ⚠️ **An on-demand Claude reviewer was tried and removed (2026-08-20). Don't rebuild
+  it.** Three summonses, every run green, zero reviews posted (`permission_denials_count`
+  1–2, output hidden), ~$1.30 spent.
 
-⚠️ **Never pipe the build into `head`.** `npm run build | head -60` closes the
-pipe, the build dies on SIGPIPE partway through, and `dist/` is left half
-written — HTML pointing at WebP files the image step never emitted. That reads
-exactly like broken image handling and cost a false diagnosis. Redirect to a log
-file (`npm run build > /tmp/build.log 2>&1`) and grep that instead.
+## Merging a page ships it
 
-## ⚠️ Merging a page SHIPS it — a host feature ships on a RELEASE
-
-`deploy.yml` runs on `push: [main]`, so a merged docs PR is live within minutes.
-The host app is the opposite: a merged PR only bumps the version in `main`, and
-users keep running the last **published release** until someone cuts a new one.
-
-That asymmetry is a trap in both directions, and this repo has now been caught by
-each of them within one day:
-
-- **Docs lagging code** — PolyKybdHost gated the plaintext window relay off by
-  default in 0.10.5 and nothing updated the Multi-Machine page, which went on
-  recommending the dead path for six weeks until a user hit it (docs#51,
-  2026-08-17).
-- **Docs leading code** — the same page's follow-up (docs#52) described browser-URL
-  forwarding, which existed only in `main`. Merging it put the live site ahead of
-  the newest release (0.12.3 in `main` vs v0.11.10 published), so a reader running
-  the released host would again be following steps that cannot work.
-
-**So: a docs PR that describes new host/firmware behaviour waits for the release
-that carries it, not merely for the code PR to merge.** Say so in the PR body when
-you open it — nothing else will catch it, since there is no CI here and the deploy
-is automatic. When a page must land early anyway, name the required version in the
-page itself rather than leaving the reader to find out.
+A merged docs PR is live within minutes; host and firmware features reach users only on
+a release. Both directions have bitten: the Multi-Machine page kept recommending a path
+the host had gated off for six weeks (docs#51), and its follow-up described a feature
+that existed only in `main` (docs#52). **A page describing new behaviour waits for the
+release that carries it.** Say so in the PR body, or name the required version on the
+page.
 
 ## Architecture
 
-Astro **Starlight**. Pages are Markdown/MDX under
-`src/content/docs/<section>/<page>.{md,mdx}`; the file path is the URL
-(`using/glyph-scripts.mdx` → `/using/glyph-scripts/`).
+- **Pages** are `src/content/docs/<section>/<page>.{md,mdx}`; the path is the URL.
+  Collection config: `src/content.config.ts` (Astro 6+ refuses the legacy
+  `src/content/config.ts`).
+- **The sidebar is hand-curated** in `astro.config.mjs`. A page without an entry is
+  invisible.
+- **`redirects:`** in the same file emit meta-refresh stubs (7 today) that are not
+  Starlight pages, so nothing from `head` reaches them. "Every HTML file in `dist/`" and
+  "every page" (65 content pages today) are different counts.
+- **`routeMiddleware: './src/starlightRouteData.ts'`** clears `toc`, so there is no
+  right-hand table of contents and the right side of the viewport is free.
+- ⚠️ **Starlight's CSS is in `@layer starlight.*`, and an unlayered rule beats every
+  layered one.** A `:root` token override in `src/styles/custom.css` also wins in the
+  light theme. Give every token override a `:root[data-theme='light']` value too, and
+  check the light theme (Playwright `colorScheme: 'light'`). The failure is silent.
 
-- **The sidebar is hand-curated** in `astro.config.mjs` (`sidebar: [...]`, by
-  `slug`). A new page without an entry there is invisible.
-- **`redirects:`** in the same file keeps old URLs alive when a page moves.
-  ⚠️ These emit **meta-refresh stub HTML that is not a Starlight page**, so
-  nothing from `head` reaches them — a site-wide script lands on the 45 real
-  pages, not on the 7 stubs. That is usually what you want (the stub bounces and
-  the destination does the work), but it means "every HTML file in `dist/`" and
-  "every page" are different counts.
-- **`routeMiddleware: './src/starlightRouteData.ts'`** clears `toc`, so there is
-  **no right-hand table of contents** and the content takes the freed width. The
-  practical consequence: the right side of the viewport carries no chrome, while
-  the left has the nav sidebar.
-- The **feature → page map**, the section list and the docs-PR flow live in the
-  `update-polykybd-docs` skill; use it when a firmware/host feature needs
-  documenting.
+## Site-wide `<head>` scripts and analytics
 
-## Astro 7 / Starlight 0.42 (upgraded 2026-09-10)
-
-- **Node 22.12+ is required** — Astro 7 runs on Vite 8. `deploy.yml` pins
-  `node-version: 22`; anything older fails the build outright.
-- The collection config is **`src/content.config.ts`**. Astro 6 removed the
-  legacy `src/content/config.ts` path and refuses to build when it finds one.
-- ⚠️ **Starlight ships its CSS inside `@layer starlight.*`, and an unlayered
-  rule beats every layered one whatever its specificity.** So a bare
-  `:root { --sl-color-gray-*: … }` in `src/styles/custom.css` now also wins
-  under `:root[data-theme='light']`, which painted the light theme's dark text
-  on the dark background — the fix is a light-mode value in the
-  `:root[data-theme='light']` block for **every** token the `:root` block sets.
-  Give any new token override both blocks. The failure is silent: the build is
-  green, dark mode is fine, and only the light theme breaks — check it with
-  Playwright's `colorScheme: 'light'`, or by reading `--sl-color-bg` off the
-  page, before believing a theme change is safe.
-
-## Site-wide `<head>` scripts
-
-A script that must run on every page goes in the Starlight **`head:` array** in
-`astro.config.mjs`. The established split — set by `photo-zoom.js` and followed by
-`consent.js` — is:
-
-- **behaviour** → a plain IIFE in `public/js/<name>.js`, guarded by a
-  `window.__polyX` flag so a double-include is harmless;
-- **styling** → `src/styles/custom.css`, using Starlight's `--sl-color-*` tokens
-  so both themes work without a second rule set.
-
-⚠️ **The dev server renders the same `<head>`.** Anything injected there also runs
-under `./preview.sh` — which for an analytics tag meant local previews reporting
-into the live property (found 2026-08-17 by fetching the dev server, not by
-reading the config). Gate anything that must not run locally on the Astro CLI
-command:
-
-```js
-const isProductionBuild = process.argv.slice(2)[0] === 'build';
-// …then spread it in: ...(isProductionBuild ? tags : [])
-```
-
-**Verify a gate in both directions** — present after `npm run build`, absent from
-the dev server. One direction alone passes for the wrong reason.
-
-## Analytics & cookie consent
-
-GA4 (`G-8JB88YY4E5`), added 2026-08-17 (#48). The shape is deliberate:
-
-- **Google Consent Mode v2, denied by default.** `gtag('consent','default',…)` is
-  queued into `dataLayer` **before** the `gtag.js` loader — Consent Mode requires
-  that ordering. Until the visitor accepts, GA sets no cookies and sends only
-  cookieless pings.
-- `ad_storage` / `ad_user_data` / `ad_personalization` are **denied permanently**
-  and never granted; accepting flips `analytics_storage` and nothing else.
-- The 🍪 chip sits **bottom-right** (the left would cover the nav sidebar; the
-  right is free because the route middleware drops the TOC). Its label links to
-  `/reference/website-analytics/`.
-- The choice lives in `localStorage` under **`pk-analytics-consent`**, replayed by
-  the inline snippet on later visits, so the chip appears once.
-- **Consent is withdrawable** — `/reference/website-analytics/` carries a live
-  control (`[data-pk-consent-control]`, hydrated by `consent.js`) that toggles both
-  ways and **deletes the `_ga*` cookies** on revoke. Consent that cannot be
-  withdrawn as easily as it was given is the defect this closed; don't remove it.
-- The tag is **build-only** (see the gate above), so previews never report.
-
-## Verifying rendered output (and behaviour) headlessly
-
-Chromium is available in the dev/remote container — **look at the page rather than
-reasoning about the markup**, the same rule the other repos apply to glyphs and
-icons.
-
-```bash
-(cd dist && python3 -m http.server 4500 &)          # serve the real build
-# screenshot (add --blink-settings=preferredColorScheme=0 for dark)
-/opt/pw-browsers/chromium --headless --no-sandbox --disable-gpu --hide-scrollbars \
-  --window-size=1100,800 --screenshot=/tmp/p.png http://localhost:4500/
-# DOM *after* scripts have run — this is how you check JS actually did something
-/opt/pw-browsers/chromium --headless --no-sandbox --disable-gpu \
-  --virtual-time-budget=4000 --dump-dom http://localhost:4500/ > /tmp/dom.html
-```
-
-To exercise an interaction, drop a throwaway harness page into `dist/` (it is
-gitignored) that stubs any global the script calls (`window.gtag`), clicks the
-element, and writes the outcome into a node — then `--dump-dom` and grep the
-result. That is how the consent accept/revoke round-trip and the `_ga` cookie
-deletion were confirmed.
-
-⚠️ **Grep the attribute, not the tag + class order.** Chromium serialises
-`<div data-pk-consent-control="true" class="pk-consent-control">`, so a grep for
-`<div class="pk-consent-control"` finds nothing and reads as "the script didn't
-run" — it cost a false diagnosis before the DOM was actually inspected. Match on
-the distinctive attribute or class alone.
-
-Zoom trick: a small `--window-size` plus `--force-device-scale-factor=3` gives a
-crisp close-up of a fixed-position corner element without any cropping tool.
-
-⚠️ **Stop the server with `pkill -f "[h]ttp.server 4500"`, never the plain pattern.**
-`pkill -f "http.server 4500"` matches its OWN shell's command line, so it kills the
-shell that ran it (exit 144) and everything chained after it in that command, a
-`git commit` included (2026-10-01). The bracket keeps the pattern from matching itself.
-
-**A screenshot of ONE section:** the CLI `--screenshot` of a `#anchor` URL does not
-give you that section. A 1100×3000 capture of `/development/system-model/#…` came back
-entirely white (2026-10-01), even with `--virtual-time-budget`. Use Playwright and clip
-between two headings. Playwright is installed globally, so an ES module must import it by absolute
-path; a bare `import 'playwright'` does not resolve:
-
-```js
-import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
-const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
-const p = await b.newPage({ viewport: { width: 1100, height: 900 }, colorScheme: 'light' });
-await p.goto('http://localhost:4500/development/system-model/', { waitUntil: 'networkidle' });
-await p.waitForTimeout(2500);                       // let Mermaid render
-const y = id => p.locator(id).evaluate(e => e.getBoundingClientRect().top + window.scrollY);
-const top = await y('#multicore-what-runs-on-core1'), end = await y('#where-to-go-next');
-await p.screenshot({ path: '/tmp/s.png', fullPage: true, clip: { x: 0, y: top - 20, width: 1100, height: end - top } });
-await b.close();
-```
-
-Three more traps from measuring image rendering, where Playwright
-(`executablePath: '/opt/pw-browsers/chromium'`) is the easier tool:
-
-- ⚠️ **Serve the built site WITHOUT `-s`.** `npx serve -s dist` enables SPA mode and
-  silently returns `index.html` for *every* route — screenshots of three different
-  pages came back as three copies of the landing page. Use `npx serve dist -l <port>`
-  (or the `http.server` line above).
-- **Measure rendered images in the browser rather than reading the CSS.** Walk
-  `.sl-markdown-content img` and compare each `getBoundingClientRect().width` against
-  the container's: expect 55% everywhere and 100% only for `landing-showcase`.
-- ⚠️ `naturalWidth === 0` in such a measurement means the image is **lazy-loaded below
-  the fold**, not broken — confirm by checking `dist/_astro/` for the emitted asset
-  before reporting a problem.
-- **Check both themes.** A dark photo against the light theme reads very differently;
-  Playwright's `colorScheme` option covers it.
+- **A script for every page goes in Starlight's `head:` array.** Behaviour is a plain
+  IIFE in `public/js/<name>.js` guarded by a `window.__polyX` flag; styling goes in
+  `custom.css` with `--sl-color-*` tokens.
+- ⚠️ **The dev server renders the same `<head>`.** Gate anything that must not run
+  locally on `process.argv.slice(2)[0] === 'build'`, and verify the gate both ways:
+  present after the build, absent from the dev server.
+- **GA4 (`G-8JB88YY4E5`) runs under Consent Mode v2, denied by default**, set before the
+  loader. Accepting grants `analytics_storage` only; ad storage is never granted. The
+  choice is withdrawable on `/reference/website-analytics/`, and revoking deletes the
+  `_ga*` cookies. Don't remove that control. Details: `MAINTAINING.md`.
 
 ## Images
 
-- **Every non-SVG image in the page body renders at 55% of the column, centred, with
-  click-to-enlarge.** The rule lives in `src/styles/custom.css`
-  (`.sl-markdown-content img:not([src$='.svg'])`), and the lightbox is
-  `public/js/photo-zoom.js`, wired in globally from `astro.config.mjs`. You get this for
-  free by writing plain markdown `![alt](../../../assets/<section>/<file>)` — there is no
-  wrapper component to remember. SVG wordmarks/badges are excluded and keep their natural
-  size.
-- **Full width is an opt-out, not a choice per image.** `img.landing-showcase` is the one
-  escape hatch (100% width), used for the landing page's lead photo. Keep it to one per
-  page at most.
-- **Assets live in `src/assets/<section>/`** mirroring the docs sections (`assembly/`,
-  `using/`, `firmware/`, `hardware/`, `howto/`, `overlays/`, `schematics/`, `landing/`).
-  Astro fingerprints and re-encodes them to WebP at build.
-- **Size photos at ~1400px on the long edge** (quality ~82). That matches the images
-  already in the repo (1024–1400px) and is still ~2.5× the 551px render size, so the
-  lightbox stays sharp. 2000px was tried and reverted — it is ~3.6× oversampling and
-  roughly doubles page weight for no visible gain.
-- ⚠️ **A photo in the Starlight splash hero is capped at about 305px wide** — *narrower*
-  than a body image at 55%. A dark, detailed photo is wasted there. Keep the badge in the
-  hero slot and put the photo in the body as a `landing-showcase`.
+- **Write plain markdown `![alt](../../../assets/<section>/<file>)`.** Every non-SVG body
+  image renders at 55% of the column (82% under 50rem), centred, click-to-enlarge
+  (`custom.css`, `public/js/photo-zoom.js`). `img.landing-showcase` is the one full-width
+  opt-out, at most one per page.
+- **Assets live in `src/assets/<section>/`** (`assembly`, `firmware`, `hardware`,
+  `howto`, `landing`, `overlays`, `reference`, `schematics`, `software`, `using`).
+  Astro re-encodes them to WebP.
+- **Size photos ~1400 px on the long edge, quality ~82.** 2000 px was tried and reverted.
+- ⚠️ **The splash hero caps a photo at ~305 px.** Keep the badge there and put the photo
+  in the body.
+- ⚠️ **Check what the keycap displays show.** One merge-ready photo was a debug render
+  with keycode numbers beside every legend. When one photo of a session is unusable,
+  check its siblings.
 
-### Vetting a photo before it ships
+## Looking at the result
 
-The subject of most of these photos is a keyboard whose keys are displays, so **check what
-the displays are showing, not just the composition.** One shot that looked perfect turned
-out to be a debug render — every keycap showed its keycode number beside the legend
-(`7 302`, `y 290`). It reached a merge-ready PR before anyone noticed.
+Chromium and Playwright are installed; look at the built page rather than reasoning
+about markup. Recipes (screenshots, `--dump-dom`, section clips, interaction harnesses):
+`MAINTAINING.md`.
 
-When one photo from a shooting session turns out to be unusable, **check its siblings** —
-they are usually the same state. Conversely, when a photo *is* good, prefer one where the
-displays carry meaningful content (a real layout, AltGr symbols, a named layout on the
-status OLED); that is what makes a PolyKybd photo worth more than a product shot.
-
-## Getting photos out of Google Drive
-
-Photos usually arrive as a Drive folder link. The path that works:
-
-1. **Google Photos album URLs are a dead end** — `photos.google.com/album/...` redirects to
-   `accounts.google.com/ServiceLogin`. Ask for the files in Drive instead.
-2. **The Drive connector can list but not deliver.** `search_files` is fine for
-   enumerating, but `download_file_content` returns base64 *into the conversation* (a 5 MB
-   photo is millions of characters — unusable for more than a file or two), and
-   `read_file_content` returns an empty string for `image/jpeg`.
-3. **Ask the owner to set the folder to "Anyone with the link → Viewer"**, then fetch from
-   the shell:
-
-   ```bash
-   curl -sSL -o "$name" "https://drive.google.com/uc?export=download&id=$id"
-   file "$name"          # ALWAYS verify
-   ```
-
-   ⚠️ Without sharing, curl returns Google's **sign-in page as HTML** under your `.jpg`
-   filename — `file` is what catches it. (Files over ~25 MB add a virus-scan interstitial
-   that needs a confirm token; ordinary photos do not.)
-
-⚠️ **`search_files` pagination repeats the first page.** Feeding the returned
-`nextPageToken` back returned the *identical* 50 files with a fresh token. Page with a
-timestamp cursor instead:
-
-```
-parentId = '<folder id>' and createdTime < '<oldest createdTime seen so far>'
-```
-
-This is not cosmetic: a folder that reported 47 files actually held 87, and the missing
-half contained the photos the user actually wanted. **Confirm you have the whole folder
-before proposing anything based on its contents.**
-
-### Cataloguing a large drop
-
-Reading dozens of full-size photos individually is slow and burns context. Build labelled
-contact sheets instead (Pillow; `pip install pillow`) — a 4×3 grid of ~460px thumbnails per
-sheet, each cell captioned with an index and the filename's timestamp — then read the
-sheets. That is enough to identify subjects and pick candidates; only open the shortlist at
-full size. Remember `ImageOps.exif_transpose()`, or phone photos come out rotated.
+- ⚠️ **Serve `dist/` without SPA mode** (`npx serve dist -l <port>` or
+  `python3 -m http.server`). `serve -s` returns the landing page for every route.
+- ⚠️ **Stop the server with `pkill -f "[h]ttp.server 4500"` as its own command.**
+  The plain pattern, or the literal anywhere else in the same shell command, kills the
+  shell running it.
+- ⚠️ **Grep Chromium's DOM by attribute, not tag + class order.** It reorders attributes.

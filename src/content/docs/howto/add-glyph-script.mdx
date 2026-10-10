@@ -41,22 +41,33 @@ indexed by the `poly_glyph_script` enum) maps a script to its block base; letter
 
 1. **Pick a license-clean font.** The glyph *shapes* must be embeddable and redistributable
    (OFL, Apache, CC0, permissive). Keep user-facing script names generic where a script is a
-   trademark, even though the fonts themselves are fine to embed. Add the source to the font
-   downloader (`fonts/dl-fonts.sh`).
+   trademark, even though the fonts themselves are fine to embed. Check the font file as well
+   as the repository. With no license, the font is all rights reserved. The project also asks
+   for an OS/2 `fsType` of `0` (installable). The other values restrict embedding to documents:
+   `2` forbids it, `4` allows preview and print only, and `8` allows editable documents. A font
+   converted to bitmaps and flashed onto a keyboard is none of those. Add the source to the font
+   downloader (`fonts/dl-fonts.sh`), pinned to a commit or release tag.
 
 2. **Add the enum value.** Append to `enum poly_glyph_script` in `state.h` — it is **append-only**
    and byte-identical to the host's `GlyphScript` enum. Add a matching row to
-   `glyph_script_blocks[]` in `poly_keymap.c` with the next free 0x40-spaced block base.
+   `glyph_script_blocks[]` in `poly_keymap.c` with the next free 0x40-spaced block base, and the
+   script's short name (five characters at most) to the settings-key labels in
+   `keycode_helper.c`. A static assert fails the build if that label is missing.
 
 3. **Generate the font into its block.** Add a `fonts.yaml` entry that emits the font at the new
    PUA block using fontconvert's sequence remap, so `a..z` (and digits, if the script has them)
-   land at `base+0..`. Regenerate the headers, then rebuild the `fantasy` bundle and bump its
-   `content_version` so the host re-flashes it on connect.
+   land at `base+0..`. Put the entry at the **end** of the `fonts:` list, not next to the other
+   glyph scripts: a font's position in that list is its index in the font table, so an entry in
+   the middle shifts every later font and forces other bundles to be reshipped too. Regenerate the
+   headers, then rebuild the `fantasy` bundle and bump its `content_version` so the host
+   re-flashes it on connect.
 
 4. **Wire the host.** In [PolyKybdHost](https://github.com/thpoll83/PolyKybdHost): add the same
    value to the `GlyphScript` enum (`command_ids.py`) and a label to `GLYPH_SCRIPT_LABELS`
-   (`host.py`). That automatically adds it to the tray **Glyph Script** submenu and the
-   `polyctl glyph-script <name>` choices — see the [Command Line](/software/cli/) page.
+   (`host.py`). The tray's **Keycap Script** submenu lists scripts in the order of that label
+   list, so add the label where it belongs: the C64 keycap script sits right after the C64 screen
+   font. A test fails if a script has no label. The `polyctl glyph-script <name>` choices come
+   from the enum — see the [Command Line](/software/cli/) page.
 
 5. **Reship the bundle.** Copy the regenerated `fantasy.plyf` into
    `polyhost/res/fontpack/` and update `bundles.json` with the new size, hash and version so the
@@ -72,8 +83,9 @@ indexed by the `poly_glyph_script` enum) maps a script to its block base; letter
 
 <Aside type="tip">
 Because the index is open-ended, you do **not** bump `PROTOCOL_VERSION` or the host `__protocol__`
-for a new script — that would needlessly reject every current keyboard at the connect gate. The
-protocol only changed once (v9→v10) to establish the open-ended contract; adding faces stays inside it.
+for a new script. The firmware already accepts any script index, so the protocol number would
+move for nothing. It only changed once (v9→v10) to establish the open-ended contract; adding faces
+stays inside it.
 </Aside>
 
 See [Contributing](/development/contributing/) for how to open the pull requests, and the

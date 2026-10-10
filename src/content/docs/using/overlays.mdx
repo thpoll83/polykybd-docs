@@ -12,7 +12,7 @@ keycaps re-label themselves to that app's shortcuts, with no action from you.
 Overlays are driven by [PolyKybdHost](/software/overview/) — the keyboard on its own shows the
 static legends baked into the firmware; the host is what makes them dynamic.
 
-![The per-key OLEDs showing app shortcut icons in the bottom-right of each key, next to the key's letter in the top-left](../../../assets/using/overlay-icons-on-keys.jpg)
+![Close-up of the left half's keycaps with GIMP's overlay active: each key shows its letter in the top-left and that key's GIMP tool in the bottom-right, rendered from the KiCad models](../../../assets/using/overlay-icons-on-keys.jpg)
 
 ## How it works
 
@@ -106,7 +106,9 @@ the Mac artwork.
 <Aside type="tip">
 Browsers are a special case: many web apps share one browser process, so matching on the app
 name alone isn't enough. [Website-Aware Overlays](/using/website-detection/) match the overlay
-to the focused tab's **URL** instead, so Jira, GitHub and Miro each get their own layer.
+to the focused tab's **URL** instead, so Jira, GitHub and Miro each get their own layer. The
+website's layer sits [on top of the browser's](/using/website-detection/#the-browsers-shortcuts-stay-underneath),
+so the browser's own shortcuts stay on the keys the website doesn't use.
 </Aside>
 
 <Aside type="note">
