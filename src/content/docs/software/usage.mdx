@@ -25,7 +25,7 @@ normal use, and nothing else:
 | **Configure Keymap** | Remap keys without reflashing — see [Keymap Editor](/using/keymap-editor/). |
 | **Updates** | Host app, keyboard firmware, keyboard fonts, and [WinCompose](/software/wincompose/) (Windows). |
 | **Maintenance** | Fix left/right sides, reset overlays or the keymap, flash a firmware file, enter the bootloader. |
-| **Settings** | Brightness, unicode mode, daemon mode and the rest. |
+| **Settings** | Interface language, brightness, unicode mode, daemon mode and the rest. |
 | **Help & About** | About, the log viewer, **Open config folder**, and — when something goes wrong — **Report a Problem…** and **Collect logs…** (see [Reporting a Problem](/software/reporting-problems/)). |
 | **Quit** | Close the tray app. The daemon keeps running, so the keyboard stays live. |
 
@@ -64,6 +64,48 @@ The screenshots on this page are rendered from the app itself, so they show the 
 labels and order. Your desktop draws its own menu style, and a couple of entries are
 conditional — "Quit && stop background daemon" appears when a daemon owns the keyboard
 (the default), and the in-process-only debugging entries are absent in that mode.
+</Aside>
+
+## Interface language
+
+PolyKybdHost 1.17.0 and later show their menus and dialogs in your operating system's
+language. It reads the language you set for the system's interface, not your keyboard
+layout or your date and number format. Twenty languages are available:
+
+| | | | |
+|---|---|---|---|
+| English | Deutsch | Français | Español |
+| Português (Brasil) | 日本語 | 简体中文 | 繁體中文 |
+| 한국어 | Italiano | Polski | Русский |
+| Українська | العربية | فارسی | Türkçe |
+| Tiếng Việt | Bahasa Indonesia | Nederlands | Čeština |
+
+If your system language is not in the list, the app uses English. A regional variant
+uses its base language: Austrian German gets German, and European Portuguese gets the
+Brazilian translation. Chinese follows the script your system uses, so Taiwan and Hong
+Kong get Traditional Chinese.
+
+To pick a language yourself, open **Settings → Ui → Language**. Each language is listed
+in its own name, so you can find yours even after picking one you cannot read.
+**Automatic** goes back to following the system and shows which language that resolves
+to. A change asks to restart the tray app. The restart keeps the keyboard connected,
+because the background daemon owns it.
+
+In Arabic and Persian the whole interface is laid out right to left. The keymap editor's
+drawing of the keyboard stays the right way round, because the hardware does not flip.
+
+Some text stays English on purpose:
+
+- **Logs and problem reports**, so whoever reads them can understand them.
+- **[`polyctl`](/software/cli/)**, because scripts read its output.
+- **Messages that come from the keyboard itself**, shown inside a translated sentence.
+
+<Aside type="note">
+  The translations are new and were drafted by machine, so some wording will read
+  oddly. If something is wrong or unclear in your language, please
+  [open an issue](https://github.com/thpoll83/PolyKybdHost/issues) with the text you
+  saw and what it should say. Corrections are welcome as pull requests too: each
+  language is one file, `polyhost/res/locale/<code>.po`.
 </Aside>
 
 ## What the app drives
