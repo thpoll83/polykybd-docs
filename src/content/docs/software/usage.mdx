@@ -88,8 +88,10 @@ Kong get Traditional Chinese.
 To pick a language yourself, open **Settings → Ui → Language**. Each language is listed
 in its own name, so you can find yours even after picking one you cannot read.
 **Automatic** goes back to following the system and shows which language that resolves
-to. A change asks to restart the tray app. The restart keeps the keyboard connected,
-because the background daemon owns it.
+to. A change asks to restart the tray app. In the default daemon mode the restart keeps
+the keyboard connected, because the background daemon owns it. When the app runs
+without a daemon (`--no-daemon`, or when the daemon could not start), the restart
+reconnects to the keyboard after a few seconds.
 
 In Arabic and Persian the whole interface is laid out right to left. The keymap editor's
 drawing of the keyboard stays the right way round, because the hardware does not flip.
