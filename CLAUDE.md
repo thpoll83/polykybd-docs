@@ -88,6 +88,11 @@ page.
 - ⚠️ **Check what the keycap displays show.** One merge-ready photo was a debug render
   with keycode numbers beside every legend. When one photo of a session is unusable,
   check its siblings.
+- ⚠️ **Before replacing a photo with a render, read off which half and which revision
+  the photo shows** (the silkscreen says "Left Side / Right Side - RevX"). The Rev.2 PCB
+  photo was of the right half; a left-half render took three rounds of camera previews
+  before that was noticed. Match the photo's colours and angle, not its features: Rev.2
+  slots were unplated, rev3.3 slots are plated.
 
 ## Looking at the result
 
