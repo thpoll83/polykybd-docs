@@ -219,6 +219,37 @@ whose smaller key count leaves no obvious home for it — you can add it yoursel
 10-slot picker row and its page arrows.
 </Aside>
 
+## Japanese: ja-JP and ja-US
+
+Most Japanese typists use romaji input: they type `k` `a` and the IME turns it into か. So both
+Japanese layouts show the Latin legend first, and each key's kana small in the lower right, the way
+a printed JIS keycap does.
+
+The two layouts differ only in punctuation, because the OS turns a key into a character with its
+own keyboard layout setting. Pick the one that matches it:
+
+- **ja-JP** is for the Japanese (JIS, 106/109-key) layout: Shift+2 is `"`, `@` sits next to P, and
+  `:` is on the key right of `;`. The `` ` `` key is 半角/全角 there, an IME toggle, and shows
+  **英数** over **かな**.
+- **ja-US** is for the US (101-key) layout, with the US punctuation on the 14 keys where JIS
+  differs. The letters, digits and kana are the same as on ja-JP.
+
+Where the OS keeps that setting:
+
+| OS | JIS → ja-JP | US → ja-US |
+|---|---|---|
+| Windows | Hardware keyboard layout "Japanese keyboard (106/109 key)" | "English keyboard (101/102 key)" |
+| macOS | Keyboard type JIS | Keyboard type ANSI |
+| Linux | Keyboard layout `jp` | Keyboard layout `us` |
+
+On Windows the setting is under **Settings → Time & language → Language & region → Japanese →
+Language options → Hardware keyboard layout**, and a change needs a restart. A Japanese edition of
+Windows starts on 106/109; Japanese added to an English Windows stays on 101. macOS asks for the
+keyboard type the first time it sees a keyboard it cannot identify. The keyboard cannot read any of
+these settings, so the choice is yours.
+
+In the language layer the two sit side by side under Asia, both with Japan's flag.
+
 ## The IME key: Korean, Japanese and US English
 
 <Aside type="caution" title="Needs firmware 1.7.7 or later">
@@ -231,34 +262,34 @@ for you. On the US-style English layouts, where Non-US Backslash only repeats th
 it becomes a second Alt key on the right-hand side. The keyboard picks the stroke from the active
 language and the OS:
 
-| Language | Windows, Linux, Android | macOS |
-|---|---|---|
-| ko-KR | 한/영: switches between Hangul and Latin | Ctrl+Space (previous input source) |
-| ja-JP, tap | IME off ↔ hiragana | 英数 ↔ かな |
-| ja-JP, Shift+tap | katakana | katakana (Ctrl+Shift+K) |
-| en-US, en-CA, en-AU, en-NZ, en-IN, en-PH, en-SG | Right Alt | Right Option (⌥), for typing accented letters and symbols |
-| any other language | Non-US Backslash, as before | Non-US Backslash, as before |
+| Language | Windows | Linux, Android | macOS |
+|---|---|---|---|
+| ko-KR | 한/영: switches between Hangul and Latin | 한/영 | Ctrl+Space (previous input source) |
+| ja-JP | Caps Lock, which is 英数 on a JIS layout; Shift+Caps Lock is Caps Lock | Caps Lock, as on Windows | tap: 英数 ↔ かな; Shift+tap: katakana (Ctrl+Shift+K) |
+| ja-US, tap | IME off ↔ hiragana (Shift+Caps Lock / Ctrl+Caps Lock) | 無変換 ↔ カタカナひらがな | 英数 ↔ かな |
+| ja-US, Shift+tap | katakana (Alt+Caps Lock) | katakana (Shift+カタカナひらがな) | katakana (Ctrl+Shift+K) |
+| en-US, en-CA, en-AU, en-NZ, en-IN, en-PH, en-SG | Right Alt | Right Alt | Right Option (⌥), for typing accented letters and symbols |
+| any other language | Non-US Backslash, as before | Non-US Backslash, as before | Non-US Backslash, as before |
+
+On ja-JP the key is a plain Caps Lock on Windows and Linux, because a JIS layout already has the
+IME keys: Caps Lock is 英数 and the `` ` `` key is 半角/全角. macOS treats Caps Lock as Caps Lock
+even on a JIS keyboard type, so there ja-JP keeps the 英数/かな key. On ja-US, Windows uses Microsoft
+IME's Caps Lock shortcuts, which need no IME setting and work on the 101-key layout.
 
 The keycap carries the label a Korean or Japanese keyboard prints on the key: **한/영** on
 Korean, and **英数** over **かな** on Japanese, which changes to **カナ** while you hold Shift.
-On the US-style English layouts it shows the Alt legend, or ⌥ on macOS. On Windows that Right Alt
-is also the compose key of [WinCompose](/software/wincompose/). On macOS the key is Right Option,
-not a second Cmd, because Option is the macOS key that types characters (⌥E for an accent, ⌥2 for ™). These labels are built into the firmware, so they
-show even without a font pack. On every other language the key shows that layout's Non-US
-Backslash legend.
+Where the key is Caps Lock it shows the Caps Lock legend. On the US-style English layouts it shows
+the Alt legend, or ⌥ on macOS. On Windows that Right Alt is also the compose key of
+[WinCompose](/software/wincompose/). On macOS the key is Right Option, not a second Cmd, because
+Option is the macOS key that types characters (⌥E for an accent, ⌥2 for ™). These labels are built
+into the firmware, so they show even without a font pack. On every other language the key shows
+that layout's Non-US Backslash legend.
 
 The keyboard cannot see which mode the IME is in. For Korean that is no problem, because 한/영 is
 a toggle on every OS. For Japanese the keyboard remembers which mode it last selected and sends the
-next one by name, never as a toggle. If you change the mode with the mouse, the next press can
-select the mode you are already in. Press once more and the key is back in step.
-
-<Aside type="note" title="Windows: one Microsoft IME setting for Japanese">
-The keyboard turns the Japanese IME off with the 無変換 (Muhenkan) key. Microsoft IME treats that
-key as "IME off" only when you choose so. Right-click the **あ** / **A** indicator in the taskbar,
-choose **Settings**, open **Key and touch customization** (キーとタッチのカスタマイズ), and set
-**無変換キー** to **IME-オフ**.
-Without it, the tap that should switch the IME off does something else.
-</Aside>
+next one by name, never as a toggle. If you change the mode another way, with the mouse, Alt+` or
+a Caps Lock shortcut, the next press can select the mode you are already in. Press once more and
+the key is back in step.
 
 <Aside type="note" title="A keyboard with a saved keymap keeps the old key">
 The base layouts live in the keyboard's memory once you have saved a keymap, and the saved copy
