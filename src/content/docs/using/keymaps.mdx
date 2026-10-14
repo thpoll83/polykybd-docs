@@ -50,9 +50,26 @@ rule: **how often you reach for it.**
 [legend size](/using/legend-size/), mute, scroll lock. Nothing here changes how the keyboard is
 set up; it all changes what it is doing right now.
 
-**Settings** is set-once or destructive — pinning the [OS](/using/shortcut-hints/#how-the-keyboard-knows-your-os), picking a base
+**Settings** is set-once or destructive — pinning the [OS](#the-operating-system), picking a base
 layout, [RGB](/using/rgb-lighting/), and the keys that reboot the board. Its everyday half is
 visible as soon as you open the layer: the OS pins and the five layout picks.
+
+### The operating system
+
+The keyboard needs to know which operating system it is typing into, mostly for the **GUI
+key** (Win, Cmd or Super):
+
+- **Its icon** follows the OS: the Windows logo, the Linux penguin, the GNOME foot, the KDE
+  logo or the Android head. With no OS known it shows ❖.
+- **On macOS the GUI and Alt keys swap**, so the modifier row reads Ctrl, Option, Command as on
+  a Mac keyboard. The keycaps show ⌥ and ⌘, and each key sends what its keycap shows.
+- The same OS picks the [shortcut hints](/using/shortcut-hints/) and what the
+  [IME key](/using/languages/#the-ime-key-korean-japanese-and-us-english) sends.
+
+PolyKybdHost reports the OS on its own. On the split72 you can pin one instead: the settings
+layer's second row has **Auto**, **Windows**, **macOS**, **Linux** and **Android**, and the
+active key shows a lit switch. A pinned OS stays until you press **Auto**, whatever the host
+reports.
 
 ### More…
 
