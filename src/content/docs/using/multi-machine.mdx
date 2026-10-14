@@ -33,8 +33,11 @@ Two things are easy to miss, and each one on its own makes the whole setup look 
 ```yaml
 nxplayer:
   remote: true
-  title: .*NoMachine.*
+  title: ' - NoMachine$'
 ```
+
+The title pattern matches a session window, which NoMachine titles `<host> - NoMachine`. The
+connection chooser, titled `NoMachine` alone, is not a remote session and does not match.
 
 Add an entry the same way for whichever client you use. While that window has focus, the keycaps follow the app focused *inside* the remote session; when you switch back to a local window, they follow that local window again.
 

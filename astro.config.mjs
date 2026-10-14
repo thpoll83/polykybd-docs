@@ -135,6 +135,7 @@ export default defineConfig({
             { label: 'Context-Aware Overlays', slug: 'using/overlays' },
             { label: 'Website-Aware Overlays', slug: 'using/website-detection' },
             { label: 'Apps With No Overlay', slug: 'using/generic-overlays' },
+            { label: 'Shortcut Hints', slug: 'using/shortcut-hints' },
             { label: 'Languages & Unicode Input', slug: 'using/languages' },
             { label: 'Glyph Scripts', slug: 'using/glyph-scripts' },
             { label: 'Legend Size', slug: 'using/legend-size' },
