@@ -128,7 +128,10 @@ run and can switch off under **Settings → Telemetry** — see
 
 You can flash new firmware directly from the tray: **Updates → Check for keyboard firmware
 update…** fetches the latest release for you, and **Maintenance → Flash firmware file
-(.bin)…** takes a `.bin` you already have. Flashing works over HID and is available even when the keyboard is on a protocol version the rest of PolyKybdHost doesn't fully support, so a mismatched keyboard can always be updated. The same operation is available from the command line with `polyctl fw flash` — see [Command Line](/software/cli/) and [Flashing Firmware](/setup/flashing/).
+(.bin)…** takes a `.bin` you already have. If the keyboard does not report its firmware
+version, the check still offers the newest release and shows the installed version as
+"unknown". Without a connected keyboard, it says so instead of waiting. This needs
+PolyKybdHost 1.17.18 or later. Flashing works over HID and is available even when the keyboard is on a protocol version the rest of PolyKybdHost doesn't fully support, so a mismatched keyboard can always be updated. The same operation is available from the command line with `polyctl fw flash` — see [Command Line](/software/cli/) and [Flashing Firmware](/setup/flashing/).
 
 ## Installing WinCompose (Windows)
 
