@@ -81,6 +81,20 @@ are actually diagnosed from — and the titles themselves are replaced with plac
 Untick it only when the problem *is* the wrong overlay appearing for a particular
 window, and look at the file before you attach it.
 
+## When the app notices a problem itself
+
+PolyKybdHost watches the keyboard's console for known failure messages and its own log for
+errors. The first time one turns up in a session, it shows a dialog that offers
+**Report a Problem**. Nothing is sent unless you send it.
+
+Three settings control it, under **Settings → Problem**:
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| **Scan Keyboard Console** | on | Watch the keyboard's console. |
+| **Scan Host Logs** | on | Watch this app's own log. |
+| **Scan Level** | Errors | *Errors and warnings* also counts warnings. |
+
 ## When the keyboard firmware crashes
 
 <SupportedSince protocol={16} />

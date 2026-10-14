@@ -24,8 +24,8 @@ normal use, and nothing else:
 | **Keycap Script** | Theme the letter legends — see [Glyph Scripts](/using/glyph-scripts/). |
 | **Configure Keymap** | Remap keys without reflashing — see [Keymap Editor](/using/keymap-editor/). |
 | **Updates** | Host app, keyboard firmware, keyboard fonts, and [WinCompose](/software/wincompose/) (Windows). |
-| **Maintenance** | Fix left/right sides, reset overlays or the keymap, flash a firmware file, enter the bootloader. |
-| **Settings** | Interface language, brightness, unicode mode, daemon mode and the rest. |
+| **Maintenance** | Fix left/right sides, reset overlays or the keymap, flash a firmware file, enter the bootloader. See [below](#maintenance). |
+| **Settings** | Interface language, theme, brightness, unicode mode, daemon mode and the rest. The [Settings Reference](/software/settings/) explains each one a user may want to change. |
 | **Help & About** | About, the log viewer, **Open config folder**, and — when something goes wrong — **Report a Problem…** and **Collect logs…** (see [Reporting a Problem](/software/reporting-problems/)). |
 | **Quit** | Close the tray app. The daemon keeps running, so the keyboard stays live. |
 
@@ -47,6 +47,16 @@ fully know yet (click it to choose how to handle that).
 bundles named in its tooltip. See [Font Packs](/firmware/font-packs/).
 </Aside>
 
+### Maintenance
+
+| Entry | What it does |
+| --- | --- |
+| **Fix Left/Right Side** | Tells the keyboard which half the USB cable is plugged into, when a half came up on the wrong side. Both halves restart onto it. Same as `polyctl handedness`. |
+| **Reset overlays** | Clears the overlay images the keyboard holds. |
+| **Reset keymap to default…** | Puts layers 0 to 7 back to the firmware's default keymap, encoders included, and **deletes every [macro](/using/macros/)**. It asks first. There is no undo. |
+| **Flash firmware file (.bin)…** | Installs a firmware `.bin` over USB. See [Firmware updates](#firmware-updates). |
+| **Activate bootloader…** | Restarts the keyboard into its USB bootloader, for flashing a `.uf2` by hand. See [Flashing the Firmware](/setup/flashing/). |
+
 ### Developer mode
 
 Diagnostic and power-user tools — overlay resets, font-pack inspection, staged
@@ -55,6 +65,18 @@ default. Turn it on in **Settings → Developer → Mode** (then restart the app
 with `--dev` for one session.
 
 ![The Developer submenu: Change System Input Language, Inspect Font Packs, Refresh unicode input mode, Save MRU cache now, then Overlays, Idle, Keymap, Font Pack and Firmware submenus, and Run command file](../../../assets/software/tray-developer-submenu.png)
+
+Beyond what the screenshot shows:
+
+- **Inspect MRU Cache…** shows the host's overlay cache: which images it believes the keyboard
+  already holds. It is missing when the tray app is a client of the daemon, the default.
+- **Mock Keyboard…** shows the keycaps of the simulated keyboard the host runs with no
+  keyboard attached (`dev_mock_enabled`).
+- **Overlays**, **Idle**, **Keymap**, **Font Pack** and **Firmware** hold one-off device
+  commands: switch overlays on or off, reset the overlay buffers or mapping, start or stop
+  idle, print the layer count or dump the keymap to the log, show the per-bundle font-pack
+  status, sync, re-flash or wipe the bundles, and stage a firmware file without applying it
+  (then apply it later).
 
 Switching it on **only adds** the Developer submenu; nothing else in the menu moves,
 so you can leave it on without relearning where things are.

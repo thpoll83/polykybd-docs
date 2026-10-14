@@ -36,6 +36,16 @@ irradiance for your position and time of day and drifts the brightness up during
 down in the evening. Enable it under **Settings → Brightness**. It refreshes roughly every ten
 minutes.
 
+It uses two online lookups, each with its own switch under **Settings → Brightness**:
+
+- **Allow Online Location Lookup** finds your approximate location from your IP address
+  (`ip-api.com`). Without a location, the brightness follows the hour of the day.
+- **Allow Online Irradiance Request** asks `open-meteo.com` for this hour's sunlight at that
+  location, clouds included. Without it, the host computes the sunlight of a cloudless sky.
+
+If the curve does not suit your room, **Gamma** and the **Irradiance** values reshape it; see
+the [Settings Reference](/software/settings/#brightness).
+
 ## On-board light sensor (optional)
 
 ![The Pimoroni LTR-559 light and proximity sensor breakout, roughly a fingertip across](../../../assets/using/ltr559-breakout.jpg)

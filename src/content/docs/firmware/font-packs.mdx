@@ -34,6 +34,9 @@ the version of each bundle it holds, and the host **flashes only the bundles tha
 out of date**. That's what the *"Updating fonts — do not unplug"* screen is: a font-pack bundle
 being written. It's quick, and it only happens when something is actually stale.
 
+To manage the pack yourself instead, turn off **Settings → Fontpack → Auto Flash**
+(`fontpack_auto_flash`). The host then flashes bundles only when you ask.
+
 While a bundle is being written, the keycap legends stay frozen. Shift, Caps Lock and layer
 keys still type correctly but do not repaint the keycaps. The legends catch up as soon as the
 bundle is written.
@@ -61,7 +64,7 @@ polyctl fontpack flash <id>    # force-flash one bundle
 polyctl fontpack wipe [id]     # empty one bundle (or all)
 ```
 
-Wiping a bundle is harmless — the host re-flashes it on the next connect. The same
+Wiping a bundle is harmless while **Auto Flash** is on: the host re-flashes it on the next connect. With it off, restore the bundle yourself with `polyctl fontpack sync`. The same
 per-bundle view and a wipe are available in the tray under **Developer → Font Pack**
 (see [developer mode](/software/usage/#developer-mode)).
 
