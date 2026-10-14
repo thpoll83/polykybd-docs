@@ -3,7 +3,7 @@ title: Context-Aware Overlays
 description: How PolyKybd re-labels every key for the app you're using — the keyboard's headline feature.
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { Aside, Steps } from '@astrojs/starlight/components';
 
 The signature PolyKybd feature: every key's OLED shows an image ("overlay") that matches
 **whatever app you're currently in**. Switch from your browser to your editor and all 72
@@ -57,14 +57,15 @@ configure.
 
 | | Apps |
 | --- | --- |
-| **Browsers** | Chrome, Chromium, Edge, Brave, Vivaldi, Opera, Arc |
+| **Browsers** | Chrome, Chromium, Edge, Brave, Vivaldi, Opera, Arc, Firefox |
 | **Web apps** (by URL) | GitHub, GitLab, Jira, Confluence, Bitbucket, Google Docs, Miro, Notion, Outlook on the web, Claude (claude.ai), Claude Code on the web, ChatGPT |
 | **Office & documents** | Word, Excel, PowerPoint, Outlook, LibreOffice Writer / Calc / Impress |
-| **Creative** | Photoshop, Illustrator, After Effects, Premiere Pro, DaVinci Resolve, GIMP, Krita, Inkscape, Figma |
-| **Development** | VS Code, Visual Studio, JetBrains IDEs (IntelliJ, PyCharm, CLion), Sublime Text, Notepad++, KiCad PCB Editor |
+| **Creative** | Photoshop, Illustrator, After Effects, Premiere Pro, DaVinci Resolve, GIMP, Krita, Inkscape, Figma, [Blender](#blender-overlays-that-follow-the-mode) |
+| **ArtCraft** | All 13 Crafting Apps: PhotoCraft, VectorCraft, DesignCraft, FigCraft, LightCraft, EffectCraft, FilmCraft, SoundCraft, DeckCraft, WordCraft, GridCraft, PDFCraft, CADCraft |
+| **Development** | VS Code, Visual Studio, JetBrains IDEs (IntelliJ, PyCharm, CLion), Sublime Text, Notepad++, KiCad PCB Editor, Cursor, Windsurf / Devin Desktop, Zed |
 | **Notes** | Obsidian, Notion |
 | **Communication** | Slack, Discord, Teams, Zoom |
-| **AI assistants** | Claude desktop app (Chat and Code tabs), ChatGPT desktop app, Codex desktop app |
+| **AI assistants** | Claude desktop app (Chat and Code tabs), ChatGPT desktop app, Codex desktop app, LM Studio, Jan |
 | **System** (Windows) | Explorer, Task Manager, Notepad, Calculator, Paint, Paint.NET, WordPad, Sticky Notes, Photos, Snipping Tool, Sound Recorder, the lock screen |
 | **Terminals & transfer** | PuTTY, WinSCP |
 
@@ -74,8 +75,12 @@ version are matched separately. The Claude desktop app shows the Code tab's shor
 its tabs, since the two share one window. **Sound Recorder** also answers to its Windows 10 name, *Voice Recorder* — same app,
 same keycaps.
 
+Firefox, Blender, the ArtCraft apps, Cursor, Windsurf, Zed, LM Studio and Jan need
+**PolyKybdHost 1.17.18 or later**.
+
 <Aside type="tip">
-Sublime Text ships a macOS-specific set alongside the default one — see
+Sublime Text, Firefox, Cursor, Windsurf, Zed, LM Studio, Jan and the ArtCraft apps ship a
+macOS-specific set alongside the default one. Cursor, Windsurf and Zed also have a Linux set. See
 [Same app, different platform](#same-app-different-platform) below.
 </Aside>
 
@@ -88,6 +93,43 @@ PolyKybdHost. Adding an app yourself is a template image plus one mapping entry.
 **An app that isn't listed is no longer a blank.** PolyKybd works out what it can on its
 own — the app's own icon on Escape, and an icon on each shortcut the app advertises. See
 [Apps With No Overlay](/using/generic-overlays/).
+</Aside>
+
+## Blender: overlays that follow the mode
+
+Blender's shortcuts depend on the mode you are in and on the editor under the mouse. `Ctrl+R`
+is Loop Cut in Edit Mode, Sculpt Mode has its own brush keys, and the Node Editor binds a
+different set again. With the **PolyKybd Context Reporter** add-on, the keycaps follow along:
+there are 14 shortcut sets, from Object and Edit Mesh to Sculpt, Pose, the paint modes, Node,
+UV, Dope Sheet and Graph Editor.
+
+Without the add-on, Blender still gets an overlay, but only with the keys every 3D View mode
+shares.
+
+<Steps>
+
+1. **Build the add-on.** In a PolyKybdHost checkout, run `./build.sh` in the `blender-addon/`
+   folder. It writes `dist/polykybd_context_reporter-<version>.zip`.
+
+2. **Install it in Blender 4.2 or later.** Open *Edit → Preferences → Get Extensions*, then the
+   drop-down at the top right, *Install from Disk…*, and pick the zip. On Blender 3.6–4.1, use
+   *Edit → Preferences → Add-ons → Install…* and tick *PolyKybd Context Reporter*. That older
+   path is untested.
+
+3. **Keep PolyKybdHost running.** The add-on reports to the same local receiver as the
+   [browser extension](/using/website-detection/), which is on by default. Nothing else needs
+   configuring.
+
+</Steps>
+
+The add-on sends only the mode and the editor name, and only to `127.0.0.1` on this computer.
+It sends no file names, object or scene data, and no window title. The host uses a report only
+while Blender is the focused app, so a Blender in the background never changes the keycaps of
+the app in front. You can pause reporting in the add-on's preferences without uninstalling it.
+
+<Aside type="note">
+If you set a `browser_report_token` in PolyKybdHost, enter the same value as *Token* in the
+add-on's preferences. The default port, 50164, matches the host's default.
 </Aside>
 
 ## Same app, different platform
