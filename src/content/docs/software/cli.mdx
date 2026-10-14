@@ -26,14 +26,17 @@ import { Aside } from '@astrojs/starlight/components';
 | `glyph-script [standard\|tengwar\|…]` | Get or set the [glyph-script](/using/glyph-scripts/) legend override |
 | `glyph-size [small\|medium\|large]` | Get or set the [legend size](/using/legend-size/) — how large a key's main legend is drawn |
 | `fontpack status\|sync\|flash <id>\|wipe [id]` | Inspect and manage the [font-pack](/firmware/font-packs/) bundles |
-| `overlay …` | Inspect and manage key overlays |
-| `keymap …` | Read/write the dynamic keymap |
+| `overlay send <file…>\|enable\|disable\|reset` | Send overlay image files to the keyboard, switch overlays on or off, or clear the ones it holds |
+| `keymap layer-count\|layer-names\|default-layer\|buffer` / `keymap set <layer> <row> <col> <keycode>` | Read the dynamic keymap, or write one key without touching the rest (the keycode is decimal or `0x` hex) |
 | `macro list\|get <id>\|set <id> …\|clear <id>` | Read and write the keyboard's [macros](/using/macros/) — `set` takes `--text` (plain characters) or `--script` (chords and pauses in [VIA's syntax](/using/macros/#writing-it-as-text)), plus `--label`, `--style` (`index`/`icon`/`text`/`icononly`) and `--icon`; `list` also reports how much of the shared store is in use |
 | `crash show [--slave] [--json]` / `crash clear` | Read (or forget) the keyboard's last [firmware crash record](/software/reporting-problems/#when-the-keyboard-firmware-crashes) — what it was doing when it faulted or hung, and where; `--slave` asks for the link-side half's record |
 | `reboot` | Restart both keyboard halves. Nothing is saved. Needs firmware protocol 22 (firmware 1.7.0) or later |
 | `bootloop [--rounds N]` / `bootloop --cancel` | Reboot the keyboard up to N times (default 50, at most 9999) and stop at the first boot that left a [crash record](/software/reporting-problems/#catching-a-crash-that-only-happens-now-and-then) or did not come back within a minute. Needs firmware protocol 22 |
 | `handedness left\|right` | Tell the keyboard which half is which, when a half has come up on the wrong side. Name the side of the half the **USB cable is plugged into**; the other half becomes the opposite. Both halves save their [handedness stamp](/reference/glossary/) and restart onto it (about 10 s, no replug). Check the result on the keyboard: the command only confirms that the request was sent. Needs host 1.3.0 or later |
-| `commands` | List the keyboard's available one-off commands |
+| `commands <file>` | Run device commands from a file, one command per line |
+| `newer-policy ignore\|safe` | Choose what the host does with a keyboard whose firmware is newer than the host knows. `ignore` connects fully; `safe` allows only firmware update and debugging |
+| `replay-anim` | Replay the one-time [startup animation](/using/idle/) on the keycaps |
+| `doom install <whx>` / `doom install-pack <plyx>` | Install the DOOM game data, or the engine pack, on both halves. The engine pack must match the firmware build |
 | `fw version` | Report the keyboard's firmware version |
 | `fw flash <bin> [--apply]` | Flash a firmware `.bin` over HID (streams progress) |
 | `pause` / `resume` | Suspend or resume the daemon's device I/O |
@@ -42,7 +45,7 @@ import { Aside } from '@astrojs/starlight/components';
 | `update check` / `update install` | Check for and install host updates (streams progress) |
 | `telemetry status\|preview\|enable\|disable\|send` | Inspect or turn off the anonymous [usage report](/software/telemetry/) — `preview` prints the exact report that would be sent |
 | `unicode-mode` | Re-detect the host's unicode input method ([WinCompose](/software/wincompose/) vs native) and push it to the keyboard |
-| `logs bundle\|show\|paths\|clear` | Collect the log files — write a support `.zip`, print recent lines, list what was found, or empty them all (`clear` asks first; `-y` skips the prompt). **Works with the host stopped** — see [Reporting a Problem](/software/reporting-problems/) |
+| `logs bundle\|show\|paths` | Collect the log files: write a support `.zip`, print recent lines, or list what was found. **Works with the host stopped**. See [Reporting a Problem](/software/reporting-problems/) |
 | `window report` | Report the current active window to the daemon |
 | `watch` | Stream live events from the daemon to the terminal |
 | `shutdown` | Stop the daemon |
@@ -77,8 +80,6 @@ polyctl watch
 # Collect a support bundle (this one works even if the host is not running)
 polyctl logs bundle --since 2h
 
-# Start from a clean slate before reproducing something (asks for confirmation)
-polyctl logs clear
 
 # Adopt the daemon-by-default startup model
 polyctl settings set daemon_mode true

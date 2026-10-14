@@ -1,0 +1,115 @@
+---
+title: Shortcut Hints
+description: The icons a keycap shows while you hold a modifier, for the operating system's own shortcuts such as Win+L, Win+V or Cmd+Tab.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Hold a modifier and some keycaps show an icon on their right half: what that chord is about
+to do. Hold Win and the `L` key shows a padlock, `V` shows the clipboard history, `D` shows
+the desktop. The legend stays on the left half of the key.
+
+These hints cover the **operating system's own shortcuts**: locking the screen, switching
+windows, snapping, virtual desktops, screenshots. They come from the firmware, so they work
+with the host app closed. When an [app overlay](/using/overlays/) has its own image for a key
+and modifier, the overlay wins and the hint stays hidden.
+
+<Aside type="note">
+**App shortcuts are not hints.** `Ctrl+S`, `Ctrl+C` or `Alt+F` mean whatever the focused
+program says they mean, and some programs have no save at all. Those keys are left to the
+program's [app overlay](/using/overlays/), which draws them per program. On macOS the same
+holds for `Cmd` plus a letter or digit.
+</Aside>
+
+## Which chords show a hint
+
+A hint shows only for the **exact** set of modifiers held. Win+Ctrl+Left shows "previous
+desktop", but Win+Ctrl+Shift+Left shows nothing. Left and right modifiers count the same.
+
+### Windows
+
+| Chord | Hint |
+| --- | --- |
+| Win+L | Lock |
+| Win+D | Show desktop |
+| Win+P | Display / project |
+| Win+Up / Win+Down | Maximize / minimize |
+| Win+Left / Win+Right | Snap window left / right |
+| Win+Home | Minimize all but the active window |
+| Win+M | Minimize all |
+| Win+Tab | Task View |
+| Win+S | Search |
+| Win+E | File Explorer |
+| Win+I | Settings |
+| Win+A | Quick Settings |
+| Win+B | System tray |
+| Win+C | Copilot |
+| Win+F | Feedback Hub |
+| Win+G | Xbox Game Bar |
+| Win+H | Dictation |
+| Win+K | Cast |
+| Win+Q | Click to Do (text recognition) |
+| Win+R | Run |
+| Win+T | Cycle taskbar apps |
+| Win+U | Accessibility settings |
+| Win+V | Clipboard history |
+| Win+X | Quick link menu |
+| Win+, | Peek at desktop |
+| Win+. / Win+; | Emoji panel |
+| Win+`+` / Win+`-` | Magnifier zoom in / out |
+| Win+Pause | System properties |
+| Win+PrtScn | Screenshot |
+| Win+Shift+S | Snipping Tool |
+| Win+Alt+R | Start / stop screen recording |
+| Win+Ctrl+D | New virtual desktop |
+| Win+Ctrl+Left / Right | Previous / next virtual desktop |
+| Win+Ctrl+F4 | Close virtual desktop |
+| Win+Ctrl+F | Find computers on the network |
+| Win+Ctrl+N | Narrator settings |
+| Win+Ctrl+Q | Quick Assist |
+| Win+Ctrl+S | Speech recognition |
+| Win+Ctrl+V | Volume mixer |
+| Win+Ctrl+Shift+B | Restart the graphics driver |
+| Alt+Tab | Switch apps |
+| Alt+F4 | Close |
+| Ctrl+Left / Ctrl+Right | Word left / right |
+
+### Linux
+
+Linux desktops get the Super-key chords they share with Windows: Super+L lock, Super+P
+display, Super+Up / Down maximize / minimize, plus Alt+Tab, Alt+F4 and Ctrl+Left / Right.
+A few depend on the desktop:
+
+| Chord | GNOME | KDE and other desktops |
+| --- | --- | --- |
+| Super+D | No hint (GNOME has no show-desktop chord) | Show desktop |
+| Super+Tab | Switch apps | No hint (the switcher is Alt+Tab) |
+
+The Windows-only chords (Win+V, Win+S, Win+E and the rest) show nothing on Linux.
+
+### macOS
+
+| Chord | Hint |
+| --- | --- |
+| Cmd+Tab | Switch apps |
+| Cmd+`` ` `` | Switch windows of the app |
+| Cmd+Space | Spotlight |
+| Cmd+Left / Cmd+Right | Line start / end |
+| Option+Left / Option+Right | Word left / right |
+| Ctrl+Cmd+Q | Lock |
+| Ctrl+Cmd+F | Full screen |
+
+## How the keyboard knows your OS
+
+PolyKybdHost tells the keyboard which operating system it runs on, and updates it on its own.
+In a [multi-machine setup](/using/multi-machine/) it follows the machine you are working on:
+while a forwarded window has focus, the keycaps show that machine's hints. Until the host has
+reported an OS, the keyboard uses the Windows set.
+
+## What you need
+
+- **The `symbol` [font pack](/firmware/font-packs/).** The hint icons are drawn from it. A
+  keyboard without the pack shows no hints, and each key keeps its plain legend.
+  PolyKybdHost flashes the pack on connect.
+- **Firmware 1.8.4 or later** for the icon set described here: one family of 34×34 icons,
+  and no hints on app shortcuts.

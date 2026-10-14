@@ -52,47 +52,78 @@ combinations are addressable now, so an overlay can cover them.
 
 ## Which apps are covered
 
-These ship with PolyKybdHost and work as soon as it is running — nothing to install or
+These ship with PolyKybdHost and work as soon as it is running. Nothing to install or
 configure.
 
-| | Apps |
-| --- | --- |
-| **Browsers** | Chrome, Chromium, Edge, Brave, Vivaldi, Opera, Arc, Firefox |
-| **Web apps** (by URL) | GitHub, GitLab, Jira, Confluence, Bitbucket, Google Docs, Miro, Notion, Outlook on the web, Claude (claude.ai), Claude Code on the web, ChatGPT |
-| **Office & documents** | Word, Excel, PowerPoint, Outlook, LibreOffice Writer / Calc / Impress |
-| **Creative** | Photoshop, Illustrator, After Effects, Premiere Pro, DaVinci Resolve, GIMP, Krita, Inkscape, Figma, [Blender](#blender-overlays-that-follow-the-mode) |
-| **ArtCraft** | All 13 Crafting Apps: PhotoCraft, VectorCraft, DesignCraft, FigCraft, LightCraft, EffectCraft, FilmCraft, SoundCraft, DeckCraft, WordCraft, GridCraft, PDFCraft, CADCraft |
-| **Development** | VS Code, Visual Studio, JetBrains IDEs (IntelliJ, PyCharm, CLion), Sublime Text, Notepad++, KiCad PCB Editor, Cursor, Windsurf / Devin Desktop, Zed |
-| **Notes** | Obsidian, Notion |
-| **Communication** | Slack, Discord, Teams, Zoom |
-| **AI assistants** | Claude desktop app (Chat and Code tabs), ChatGPT desktop app, Codex desktop app, LM Studio, Jan |
-| **System** (Windows) | Explorer, Task Manager, Notepad, Calculator, Paint, Paint.NET, WordPad, Sticky Notes, Photos, Snipping Tool, Sound Recorder, the lock screen |
-| **Terminals & transfer** | PuTTY, WinSCP |
+Every app has a default set, drawn with `Ctrl` shortcuts. A ✓ under macOS or Linux means
+the app also has its own set for that platform, which the host picks there instead (see
+[Same app, different platform](#same-app-different-platform)). An empty cell means that
+platform gets the default set, if the app runs there at all.
 
-A few entries are narrower than the app name suggests: KiCad covers the **PCB Editor** window
-specifically, and Notion, Claude and ChatGPT appear twice because the desktop app and the web
-version are matched separately. The Claude desktop app shows the Code tab's shortcuts in both of
-its tabs, since the two share one window. **Sound Recorder** also answers to its Windows 10 name, *Voice Recorder* — same app,
-same keycaps.
+| | App | macOS | Linux | Notes |
+| --- | --- | :---: | :---: | --- |
+| **Browsers** | Chrome, Chromium, Edge, Brave, Vivaldi, Opera, Arc | ✓ | | |
+| | Firefox | ✓ | ✓ | |
+| **Web apps** | GitHub | ✓ | | Matched by the tab's URL, in any browser above. See [Website-Aware Overlays](/using/website-detection/) |
+| | GitLab | ✓ | | |
+| | Jira | ✓ | | |
+| | Confluence | ✓ | | Whiteboards get their own set |
+| | Bitbucket | ✓ | | |
+| | Google Docs | ✓ | | |
+| | Miro | ✓ | | |
+| | Notion | ✓ | | |
+| | Outlook on the web | ✓ | | |
+| | Claude (claude.ai) | ✓ | | |
+| | Claude Code on the web | ✓ | | |
+| | ChatGPT | ✓ | | Codex in a tab gets the browser's set |
+| **Office & documents** | Word, Excel, PowerPoint, Outlook | ✓ | | |
+| | LibreOffice Writer, Calc, Impress | ✓ | | Told apart by window title; Draw, Base and Math get a shared LibreOffice set |
+| **Creative** | Photoshop, Illustrator, After Effects, Premiere Pro | ✓ | | |
+| | DaVinci Resolve | ✓ | | |
+| | GIMP, Krita | ✓ | | |
+| | Inkscape | | | |
+| | Figma | ✓ | | |
+| | [Blender](#blender-overlays-that-follow-the-mode) | ✓ | | 14 sets that follow the mode, with the add-on |
+| **ArtCraft** | PhotoCraft, VectorCraft, DesignCraft, FigCraft, LightCraft, EffectCraft, FilmCraft, SoundCraft, DeckCraft, WordCraft, GridCraft, PDFCraft, CADCraft | ✓ | | |
+| **Development** | VS Code | ✓ | ✓ | |
+| | Visual Studio | | | |
+| | JetBrains IDEs: IntelliJ IDEA, PyCharm, CLion, WebStorm, GoLand, Rider, PhpStorm, RubyMine, DataGrip, RustRover, Android Studio | ✓ | ✓ | Linux has separate GNOME and KDE sets |
+| | Sublime Text | ✓ | ✓ | |
+| | Notepad++ | | | |
+| | KiCad | | | PCB Editor window only |
+| | Cursor, Windsurf / Devin Desktop, Zed | ✓ | ✓ | |
+| **Notes** | Obsidian, Notion desktop app | ✓ | | |
+| **Communication** | Slack, Discord, Teams, Zoom | ✓ | | |
+| **AI assistants** | Claude desktop app | ✓ | | Shows the Code tab's shortcuts in both tabs, which share one window |
+| | ChatGPT desktop app, Codex desktop app | ✓ | | |
+| | LM Studio, Jan | ✓ | | |
+| **Windows** | Explorer, Task Manager, Notepad, Calculator, Paint, Paint.NET, WordPad, Photos, Snipping Tool, the lock screen | | | Windows only |
+| | Sticky Notes | | | |
+| | Sound Recorder | | | Also matches its Windows 10 name, *Voice Recorder* |
+| | Windows Terminal, 7-Zip | | | |
+| **Linux** | GNOME Files (Nautilus) | | | Linux only |
+| **Terminals & transfer** | PuTTY, WinSCP | | | |
+
+Notion, Claude and ChatGPT appear twice because the desktop app and the web version are
+matched separately.
 
 Firefox, Blender, the ArtCraft apps, Cursor, Windsurf, Zed, LM Studio and Jan need
 **PolyKybdHost 1.17.18 or later**.
 
-<Aside type="tip">
-Sublime Text, Firefox, Cursor, Windsurf, Zed, LM Studio, Jan and the ArtCraft apps ship a
-macOS-specific set alongside the default one. Cursor, Windsurf and Zed also have a Linux set. See
-[Same app, different platform](#same-app-different-platform) below.
-</Aside>
-
 <Aside type="note">
-This is what ships today; the authoritative list is `overlay-mapping.poly.yaml` in
+This is what ships today. The authoritative list is `overlay-mapping.poly.yaml` in
 PolyKybdHost. Adding an app yourself is a template image plus one mapping entry.
 </Aside>
 
 <Aside type="tip">
 **An app that isn't listed is no longer a blank.** PolyKybd works out what it can on its
-own — the app's own icon on Escape, and an icon on each shortcut the app advertises. See
+own: the app's own icon on Escape, and an icon on each shortcut the app advertises. See
 [Apps With No Overlay](/using/generic-overlays/).
+</Aside>
+
+<Aside type="note">
+The icons for the operating system's own chords, such as Win+L or Cmd+Tab, are not part of an
+app overlay. The firmware draws them for every app. See [Shortcut Hints](/using/shortcut-hints/).
 </Aside>
 
 ## Blender: overlays that follow the mode
