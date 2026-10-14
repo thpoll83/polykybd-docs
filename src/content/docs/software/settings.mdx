@@ -1,6 +1,6 @@
 ---
 title: Settings Reference
-description: Every PolyKybdHost setting, where it sits in the Settings dialog, its default and what it changes.
+description: The PolyKybdHost settings a user may want to change, where each sits in the Settings dialog, its default and what it changes.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
@@ -47,7 +47,10 @@ refresh.
 | **Shortcut → Icons Enabled** | `shortcut_icons_enabled` | on | Whether the focused app is read for its shortcuts at all. |
 | **Shortcut → Icon Auto Fetch** | `shortcut_icon_auto_fetch` | on | Whether missing icons may be downloaded. |
 | **Shortcut → Enable Accessibility** | `shortcut_enable_accessibility` | on | Linux only: whether the host may turn on the desktop's accessibility switch so Qt and KDE apps publish their shortcuts. |
-| **Browser → Url Detection** and the other **Browser** entries | `browser_*` | detection on | Matching an overlay to the focused tab's website. See [Website-Aware Overlays](/using/website-detection/). |
+| **Browser → Url Detection** | `browser_url_detection` | on | Matching an overlay to the focused tab's website. Off, browser overlays match on the window title only. See [Website-Aware Overlays](/using/website-detection/). |
+| **Browser → Report Local Enabled** | `browser_report_local_enabled` | on | The receiver the browser extension reports to. It listens on `127.0.0.1` only. |
+| **Browser → Report Port** | `browser_report_port` | `50164` | The receiver's port. It must match the extension's *Host port*. |
+| **Browser → Report Token** | `browser_report_token` | empty | A shared secret. When set, the extension must send the same token. |
 
 ## Keyboard and connection
 
