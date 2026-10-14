@@ -156,6 +156,7 @@ export default defineConfig({
           items: [
             { label: 'What is PolyKybdHost?', slug: 'software/overview' },
             { label: 'Using the Tray App', slug: 'software/usage' },
+            { label: 'Settings Reference', slug: 'software/settings' },
             { label: 'Daemon & Client Model', slug: 'software/architecture' },
             { label: 'Command Line (polyctl)', slug: 'software/cli' },
             { label: 'WinCompose', slug: 'software/wincompose' },

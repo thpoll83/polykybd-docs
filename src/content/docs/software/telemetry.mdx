@@ -108,8 +108,9 @@ report is ever queued or stored elsewhere.
 - **One report per install, not per window.** In the usual
   [daemon setup](/software/architecture/) the background daemon sends the report, so
   restarting the tray app does not produce extra reports.
-- **Nothing is sent until we are ready.** Builds ship with no collector address
-  configured, which disables sending entirely.
+- **You can point it elsewhere.** *Settings → Telemetry → Endpoint* (`telemetry_endpoint`)
+  is the address the report goes to, for running your own collector. An empty address sends
+  nothing.
 
 ## Related commands
 

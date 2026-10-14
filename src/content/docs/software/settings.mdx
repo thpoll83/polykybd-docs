@@ -1,0 +1,89 @@
+---
+title: Settings Reference
+description: Every PolyKybdHost setting, where it sits in the Settings dialog, its default and what it changes.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Open **Settings…** in the tray menu. The dialog groups each setting under the first word of
+its key, so `brightness_gamma` appears as **Brightness → Gamma**. From the command line, read
+or change a setting by its key:
+
+```sh
+polyctl settings get problem_scan_level
+polyctl settings set ui_theme dark
+```
+
+The tables list the settings a user may want to change. The rest are developer and
+transport tuning knobs; see [the end of this page](#not-listed-here).
+
+## Appearance and language
+
+| Dialog | Key | Default | What it changes |
+| --- | --- | --- | --- |
+| **Ui → Theme** | `ui_theme` | `auto` | The tray menu and dialogs: *Automatic* follows the desktop's light or dark setting, *Light* and *Dark* pin one. A desktop that does not report its setting gets the dark theme. |
+| **Ui → Language** | `ui_language` | `auto` | The language of the menus and dialogs. Applies when the tray app restarts. See [Interface language](/software/usage/#interface-language). |
+
+## Brightness
+
+| Dialog | Key | Default | What it changes |
+| --- | --- | --- | --- |
+| **Brightness → Set Daylight Dependent** | `brightness_set_daylight_dependent` | on | [Adaptive brightness](/using/brightness/#adaptive-daylight): the host sets the keycap brightness from the sunlight at your location, every ten minutes. |
+| **Brightness → Allow Online Location Lookup** | `brightness_allow_online_location_lookup` | on | Looks up your approximate location from your IP address (`ip-api.com`), once per run. Off, or with no answer, the brightness follows the hour of the day instead. |
+| **Brightness → Allow Online Irradiance Request** | `brightness_allow_online_irradiance_request` | on | Asks `open-meteo.com` for the sunlight at that location this hour, which includes cloud cover. Off, the host computes a cloudless-sky value from the location and time. |
+| **Brightness → Gamma** | `brightness_gamma` | `1.0` | Shapes the daylight curve between darkest and brightest. Above 1 the middle of the day gets dimmer; below 1 it gets brighter. The end points do not move. |
+| **Irradiance → Min** / **Max** | `irradiance_min` / `irradiance_max` | `1.8` / `5.2` | The sunlight values that map to the dimmest and the brightest level. Lower *Max* to reach full brightness on a cloudy day. |
+| **Irradiance → Prescaler** | `irradiance_prescaler` | `0.75` | Multiplies the sunlight value before *Min* and *Max* apply. |
+
+A change to any of these is applied straight away, without waiting for the next ten-minute
+refresh.
+
+## Overlays and shortcut icons
+
+| Dialog | Key | Default | What it changes |
+| --- | --- | --- | --- |
+| **Generic → Overlays Enabled** | `generic_overlays_enabled` | on | [Icons for apps with no overlay](/using/generic-overlays/): the app's mark on Escape and an icon per shortcut. |
+| **Generic → Overlays Fill Gaps** | `generic_overlays_fill_gaps` | on | Generic icons also fill the keys an app's own overlay leaves blank. |
+| **Shortcut → Icons Enabled** | `shortcut_icons_enabled` | on | Whether the focused app is read for its shortcuts at all. |
+| **Shortcut → Icon Auto Fetch** | `shortcut_icon_auto_fetch` | on | Whether missing icons may be downloaded. |
+| **Shortcut → Enable Accessibility** | `shortcut_enable_accessibility` | on | Linux only: whether the host may turn on the desktop's accessibility switch so Qt and KDE apps publish their shortcuts. |
+| **Browser → Url Detection** and the other **Browser** entries | `browser_*` | detection on | Matching an overlay to the focused tab's website. See [Website-Aware Overlays](/using/website-detection/). |
+
+## Keyboard and connection
+
+| Dialog | Key | Default | What it changes |
+| --- | --- | --- | --- |
+| **Unicode → Send Composition Mode** | `unicode_send_composition_mode` | on | Tells the keyboard how this computer takes Unicode input (for example [WinCompose](/software/wincompose/) or the native method), on connect and whenever it changes. Off, the keyboard keeps the mode it has stored. |
+| **Fontpack → Auto Flash** | `fontpack_auto_flash` | on | Flashes missing or outdated [font-pack](/firmware/font-packs/) bundles when the keyboard connects. Off, you update them yourself from **Updates → Keyboard fonts** or with `polyctl fontpack sync`. |
+| **Fontpack → Path** | `fontpack_path` | empty | A `.plyf` file to flash instead of the pack that ships with the app. Empty uses the shipped pack. |
+| **Daemon → Mode** | `daemon_mode` | on | Runs the keyboard connection in a background daemon that the tray app attaches to. See [Daemon & Client Model](/software/architecture/). |
+| **Window → Report Network Enabled** | `window_report_network_enabled` | off | Accepts window reports from a forwarder on another computer. Applies after a restart. See [Multi-Machine Setup](/using/multi-machine/). |
+
+## Problem reports and usage data
+
+| Dialog | Key | Default | What it changes |
+| --- | --- | --- | --- |
+| **Problem → Scan Keyboard Console** | `problem_scan_keyboard_console` | on | Watches the keyboard's console for known failure messages. |
+| **Problem → Scan Host Logs** | `problem_scan_host_logs` | on | Watches this app's own log. |
+| **Problem → Scan Level** | `problem_scan_level` | `errors` | What counts as a problem: *Errors*, or *Errors and warnings*. |
+| **Telemetry → Enabled** | `telemetry_enabled` | on | The anonymous [daily usage report](/software/telemetry/). |
+| **Telemetry → Endpoint** | `telemetry_endpoint` | the project's collector | Where that report goes. Empty sends nothing, like turning it off. |
+| **Telemetry → Install Id** | `telemetry_install_id` | generated | The random ID of this installation. See [the random ID](/software/telemetry/#the-random-id). |
+
+When a scan finds a problem, the tray shows one dialog per session that offers
+[Report a Problem](/software/reporting-problems/#report-a-problem). Nothing is sent unless you
+send it.
+
+## Not listed here
+
+- **Developer → Mode** (`developer_mode`) shows the [Developer submenu](/software/usage/#developer-mode).
+  The `dev_*` settings below it only matter with it on.
+- **Max → Hid Message Before Delay**, **Delay → Time After Max Hid Messages** and
+  **Hid → Reconnect Retries** tune the USB transport. Leave them at their defaults unless
+  you are asked to change them while reporting a problem.
+
+<Aside type="note">
+The tray app and the background daemon both write the settings file. Each saves only the
+settings it changed, so a change made in the dialog and one made with `polyctl settings set`
+do not overwrite each other.
+</Aside>
