@@ -11,7 +11,7 @@ to install an official release, see [Flash the Firmware](/setup/flashing/) inste
 a toolchain for that.
 
 The firmware is a customised QMK build on the [qmk_firmware fork](https://github.com/thpoll83/qmk_firmware)
-(branch `PolyKybd`); the PolyKybd sources live under `keyboards/polykybd/`. Two variants share one
+(branch `PolyKybd`); the PolyKybd sources are in `keyboards/polykybd/`. Two variants share one
 codebase — **`split72`** and **`split42`** (see [Keyboard Variants](/firmware/variants/)).
 
 ## Steps
@@ -24,7 +24,7 @@ codebase — **`split72`** and **`split42`** (see [Keyboard Variants](/firmware/
    sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi
    ```
 
-2. **Install the QMK CLI** (a venv avoids system-pip quirks) and point it at the fork:
+2. **Install the QMK CLI** (a venv avoids conflicts with system pip packages) and point it at the fork:
 
    ```sh
    pip install qmk
@@ -33,7 +33,7 @@ codebase — **`split72`** and **`split42`** (see [Keyboard Variants](/firmware/
    ```
 
    <Aside type="note">
-   The PyPI `qmk` package is only the bootstrapper. The full CLI for this fork lives in
+   The PyPI `qmk` package is only the bootstrapper. The full CLI for this fork is in
    `lib/python` inside the repo — that's why `QMK_HOME` matters.
    </Aside>
 
@@ -52,11 +52,11 @@ codebase — **`split72`** and **`split42`** (see [Keyboard Variants](/firmware/
    qmk compile -kb polykybd/split42 -km default
    ```
 
-   The `.uf2` lands in the repo root and `.build/`.
+   The `.uf2` is written to the repo root and `.build/`.
 
    <Aside type="tip">
    The firmware runs in a **2 MB flash partition**. A build that exceeds it fails to *link*
-   rather than silently overflowing — that's intentional. A default build currently uses under
+   rather than overflowing without an error. This is intentional. A default build currently uses under
    1 MB.
    </Aside>
 
@@ -72,7 +72,7 @@ codebase — **`split72`** and **`split42`** (see [Keyboard Variants](/firmware/
    <Tabs>
      <TabItem label="Over HID (recommended)">
        Flash the `.bin` through PolyKybdHost without touching the bootloader — the keyboard keeps
-       running, both halves update, and it survives a protocol mismatch:
+       running, both halves update, and it works even when the host and firmware protocol versions differ:
 
        ```sh
        polyctl fw flash split72.bin --apply
@@ -90,8 +90,8 @@ codebase — **`split72`** and **`split42`** (see [Keyboard Variants](/firmware/
 </Steps>
 
 <Aside type="caution">
-The `.bin` is the deliverable for HID flashing; the `.uf2` is only for manual bootloader-drive
-recovery. Don't hand the `.uf2` to `polyctl fw flash`.
+The `.bin` is the file for HID flashing; the `.uf2` is only for manual bootloader-drive
+recovery. Don't pass the `.uf2` to `polyctl fw flash`.
 </Aside>
 
 ## Next steps
@@ -104,5 +104,5 @@ recovery. Don't hand the `.uf2` to `polyctl fw flash`.
 After a firmware change the **`firmware-size-diff`** skill builds the
 image twice — at `HEAD` and with your working-tree changes — and reports the flash/RAM deltas and
 whether the compiled `.text` is byte-for-byte identical, so you can tell a refactor from a real
-size change at a glance.
+size change quickly.
 </AiSkill>

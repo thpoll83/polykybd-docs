@@ -12,7 +12,7 @@ overlay set for an application **by hand**, the same way the shipped overlays we
 
 An overlay is just an **image** you paint in an editor like [GIMP](https://www.gimp.org/), plus a
 one-line entry telling the host which app it belongs to. The editable source files for every
-built-in overlay live in the host repo under
+built-in overlay are in the host repo under
 [`polyhost/res/overlays/src/`](https://github.com/thpoll83/PolyKybdHost/tree/main/polyhost/res/overlays) —
 a great starting point (and `template.xcf` there is a blank grid). The authoritative format spec is
 `polyhost/res/overlay_specification.md`.
@@ -40,12 +40,12 @@ So one RGBA image holds four layers of the same keyboard at once — you can see
 (non-premultiplied) RGBA** — a transparent pixel must still carry its R/G/B bytes, because those
 channels are the Ctrl/Alt/Shift variants, independent of alpha (see the export step below).
 
-A few hard limits baked into the firmware — don't fight them:
+The firmware has these fixed limits:
 
 - **All sixteen modifier combinations work**, every mix of Ctrl, Shift, Alt and GUI. Draw the GUI
   chords in the `extra` and `GUI combos` files above.
-- Repeating the **same icon across several variants is free**: the host spots byte-identical
-  images and stores them once on the keyboard, so only genuinely different artwork costs space.
+- Repeating the **same icon across several variants uses no extra space**: the host detects byte-identical
+  images and stores them once on the keyboard, so only different artwork uses space.
 - Cells are **72×40, 1-bit monochrome** on the OLED — draw simple, high-contrast icons.
 - Only the **90 mapped keys** carry a cell (`A`–`Z`, `0`–`9`, `F1`–`F12`, punctuation, the nav
   cluster, modifiers). Keypad and media keys have none.
@@ -73,8 +73,8 @@ A few hard limits baked into the firmware — don't fight them:
 
 3. **Draw an icon per shortcut.** For each shortcut, place a small, clear icon into that key's cell,
    on the channel for its modifier (Ctrl → red, Alt → green, Shift → blue, no-modifier → alpha).
-   Keep it bottom-right. Reuse of the app's own iconography reads best; simple monochrome art
-   survives the 1-bit OLED far better than a detailed logo.
+   Keep it bottom-right. The app's own icons are the easiest to recognise; simple monochrome art
+   stays readable on the 1-bit OLED far better than a detailed logo.
 
 4. **Export the PNG(s).** Export the image to `polyhost/res/overlays/<app>_template.mods.png` as
    720×360 RGBA. Add each further tier **only if you drew for it** — `<app>_template.combo.mods.png`
@@ -86,7 +86,7 @@ A few hard limits baked into the firmware — don't fight them:
 
    <Aside type="caution">
    In GIMP's *Export Image as PNG* dialog, set the format to **8bpc RGBA** and **tick "Save color
-   values from transparent pixels"** — otherwise GIMP throws away the R/G/B bytes under transparent
+   values from transparent pixels"** — otherwise GIMP discards the R/G/B bytes under transparent
    pixels and your Ctrl/Alt/Shift channels come out blank.
 
    ![GIMP's Export Image as PNG dialog with "Save color values from transparent pixels" ticked and 8bpc RGBA selected](../../../assets/overlays/overlay-gimp-export.png)
@@ -109,7 +109,7 @@ A few hard limits baked into the firmware — don't fight them:
    ```
 
    When one process serves many contexts (a browser hosting several web apps, an IDE), narrow it
-   with a sub-map. The host tries them in a fixed order and the first match wins:
+   with a sub-map. The host tries them in a fixed order and uses the first match:
 
    | Key | Matches on | How |
    | --- | --- | --- |
@@ -131,12 +131,12 @@ A few hard limits baked into the firmware — don't fight them:
 
    <Aside type="caution">
    The title maps are **word-based, not substring-based**: the title is split on whitespace and
-   each key is compared against whole words. Two consequences catch people out:
+   each key is compared against whole words. Note these two consequences:
 
    - `titles-contains: Doc` matches `My Doc here` but **not** `My Docs here`.
    - A key of several words (`titles-contains: Google Docs`) matches only when those words stand
      next to each other in the title. When keys of different lengths fit at the same place, the
-     longest wins, whatever the YAML order, so `Claude Code` beats `Claude`. This needs
+     longest is used, whatever the YAML order, so `Claude Code` takes priority over `Claude`. This needs
      **PolyKybdHost 1.13 or newer**. On 1.12.x and older, a key containing a space never matches.
 
    `titles-startswith` is likewise the whole first *word(s)*, not an arbitrary prefix string.
@@ -149,22 +149,22 @@ A few hard limits baked into the firmware — don't fight them:
    selects a nested entry with its own overlay. `title:` (a regex over the whole title, and its
    sibling `url:`) instead acts as a **constraint on the entry that declares it**, checked only
    *after* every sub-map above has been tried: if the regex does not match, that entry is rejected
-   outright and matching moves on. So it can veto an entry, never redirect to a different overlay.
+   outright and matching moves on. So it can reject an entry, but never redirect to a different overlay.
 
-   Use `title:` to stop an entry firing on the wrong window, and the maps in the table to pick
-   between overlays. One wrinkle worth knowing: when the title is empty or unknown, a `title:`
+   Use `title:` to prevent an entry from matching the wrong window, and the maps in the table to pick
+   between overlays. Note: when the title is empty or unknown, a `title:`
    regex is skipped rather than treated as a failure, so the entry still applies.
    </Aside>
 
    <Aside type="note">
-   **A known URL outranks the title.** `urls-contains` is checked first because a URL identifies a
+   **A known URL takes priority over the title.** `urls-contains` is checked first because a URL identifies a
    web app far more reliably than a window title. For an entry that declares `urls-contains`, the
    `titles-contains` map is a fallback for when the URL is *unknown* (no browser extension
    reporting, or a non-browser window) — not merely when it matched no key.
 
    So while the extension is reporting, searching Google for "jira" keeps the plain browser
-   overlay: the URL is positive evidence that this is not Jira, and a stray word in the title
-   must not overrule it. `titles-startswith` / `titles-endswith` and entries with no
+   overlay: the URL is positive evidence that this is not Jira, and a single word in the title
+   does not override it. `titles-startswith` / `titles-endswith` and entries with no
    `urls-contains` are unaffected.
    </Aside>
 
@@ -184,9 +184,9 @@ A few hard limits baked into the firmware — don't fight them:
    Without it the mark is looked up from the process name, which here means a **OneNote logo on a
    Sticky Notes window** — a wrong icon rather than a missing one. `icon:` applies only to the
    entry that declares it, so each title branch states its own. If your overlay bakes a
-   `program_icon:` into the PNG, that wins and `icon:` never draws.
+   `program_icon:` into the PNG, that icon is used and `icon:` is ignored.
 
-   One trap when several apps share a host process: the **parent entry must keep an `overlay:` of
+   Note: when several apps share a host process, the **parent entry must keep an `overlay:` of
    its own**. An entry carrying neither `overlay:` nor `remote:` is rejected *before* its sub-maps
    are tried, so a parent reduced to title branches alone makes every branch unreachable.
    </Aside>
@@ -215,7 +215,7 @@ A few hard limits baked into the firmware — don't fight them:
 
    ### One file for both platforms: `CMDCTRL`
 
-   Writing the two sets by hand means maintaining the same shortcut list twice, and they drift.
+   Writing the two sets by hand means maintaining the same shortcut list twice, and the two lists become different over time.
    Instead, a binding file for `scripts/generate_app_overlays.py` can use **`CMDCTRL`** — the
    OS-relative command modifier, `Ctrl` on Windows/Linux and `Cmd` on macOS:
 
@@ -224,7 +224,7 @@ A few hard limits baked into the firmware — don't fight them:
      - { key: P, mods: [CMDCTRL, SHIFT], icon: palette.png, label: command palette }
    ```
 
-   One spec, two artwork sets: the generator renders `<output>.*` with `CMDCTRL` as Ctrl and
+   From one spec, the generator renders `<output>.*` with `CMDCTRL` as Ctrl and
    `<output>_mac.*` with it as Cmd, then emits the `os: macos:` branch selecting between them.
    Spellings `CMDCTRL`, `CMD_OR_CTRL` and `CMDORCTRL` all work — GTK calls the same idea
    `<Primary>` and Electron calls it `CmdOrCtrl`.
@@ -233,10 +233,10 @@ A few hard limits baked into the firmware — don't fight them:
    Ctrl chords of its own, and apps do too. Both spellings coexist in one file.
 
    <Aside type="caution" title="It swaps a modifier — it cannot remap a shortcut">
-   Reach for `CMDCTRL` when an app's macOS keymap is its Windows keymap with a different modifier.
+   Use `CMDCTRL` when an app's macOS keymap is its Windows keymap with a different modifier.
    Scope the individual binding ([below](#when-one-platform-diverges-only--except)) when only a
-   shortcut or two diverges. Hand-author two specs when it is genuinely a *different* keymap. All
-   three shapes ship in the repo:
+   shortcut or two diverges. Write two specs by hand when it is a *different* keymap. All
+   three approaches are in the repository:
 
    - **VS Code — one spec.** It registers most chords as `KeyMod.CtrlCmd`, so 22 bindings are
      `CMDCTRL` and 3 stay literal Ctrl (macOS keeps `⌃G`, `` ⌃` ``, `⌃F5`). Eight genuinely
@@ -245,13 +245,13 @@ A few hard limits baked into the firmware — don't fight them:
      `Cmd+Shift+[`/`]` is fold/unfold on Windows but *cycle tab* on macOS — so it would draw a
      confident, wrong icon on a real key.
 
-   A missing overlay is a blank keycap; a wrong one actively misleads.
+   A missing overlay is a blank keycap; a wrong one shows the user incorrect information.
    </Aside>
 
    ### When one platform diverges: `only:` / `except:`
 
    `CMDCTRL` splits Windows from macOS — but **Windows and Linux share one PNG**, so an action an
-   app remaps on only *one* of them has nowhere to go. Two optional keys scope a binding to the
+   app remaps on only *one* of them cannot be represented. Two optional keys scope a binding to the
    platforms it is actually correct on:
 
    ```yaml
@@ -267,7 +267,7 @@ A few hard limits baked into the firmware — don't fight them:
    Valid platforms are `windows`, `macos` and `linux`. A binding with neither key applies
    everywhere. Use `only:` **or** `except:`, never both.
 
-   VS Code's **Show Output** is the real case: Linux moves it to the chord `Ctrl+K Ctrl+H`, which
+   VS Code's **Show Output** is an example: Linux moves it to the chord `Ctrl+K Ctrl+H`, which
    a keycap cannot draw. Scoping it out leaves Linux a blank key, and Windows and macOS keep the
    icon.
 
@@ -275,7 +275,7 @@ A few hard limits baked into the firmware — don't fight them:
    when a binding treats Linux differently from the default. `CMDCTRL` alone never triggers it.
 
    <Aside type="note">
-   Every key the mapping file understands — and the traps, like app names being an exact match and
+   Every key the mapping file understands — and the common mistakes, like app names being an exact match and
    the title maps comparing whole words — is documented in
    [`polyhost/res/overlay-mapping.md`](https://github.com/thpoll83/PolyKybdHost/blob/main/polyhost/res/overlay-mapping.md).
    </Aside>
@@ -287,7 +287,7 @@ A few hard limits baked into the firmware — don't fight them:
 
 <Aside type="tip">
 **Commit your editable source, not just the exported PNG.** The shipped overlays keep their GIMP
-`.xcf` in `polyhost/res/overlays/src/` so anyone can tweak them later — do the same with yours.
+`.xcf` in `polyhost/res/overlays/src/` so anyone can change them later — do the same with yours.
 </Aside>
 
 See [Contributing](/development/contributing/) for how to open the pull request, and
@@ -298,5 +298,5 @@ device.
 Prefer to automate it? The **`generate-app-overlays`** skill produces the same channel-packed PNGs
 without an image editor — it researches the app's shortcuts, sources a licensed icon per shortcut
 (committing each one for reproducibility), packs them via `scripts/generate_app_overlays.py`, and
-writes the `overlay-mapping.poly.yaml` entry. Handy for bulk or AI-assisted overlay generation.
+writes the `overlay-mapping.poly.yaml` entry. Useful for bulk or AI-assisted overlay generation.
 </AiSkill>

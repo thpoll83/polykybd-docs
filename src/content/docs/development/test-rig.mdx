@@ -24,7 +24,7 @@ The station:
 
 A workflow in `qmk_firmware` builds the firmware on cloud runners, then hands the resulting images to the station, which flashes both halves and runs the HIL test suite over Raw HID — identity/fresh-boot, language get/list (including the packed list), default layer, ACK/NACK error paths, overlay round-trips, and liveness checks. Each test reports as its own line in the job's Step Summary, with pass/fail/skip/xfail markers and an annotation per failure.
 
-Tests can carry gate markers (e.g. `min_protocol`, `min_fw`, `xfail`) so a check that depends on firmware not yet deployed is **skipped or tolerated** rather than failing the run, and un-skips itself automatically once a firmware that satisfies it is flashed.
+Tests can carry gate markers (e.g. `min_protocol`, `min_fw`, `xfail`) so a check that depends on firmware not yet deployed is **skipped or tolerated** rather than failing the run, and runs again automatically once a firmware that satisfies it is flashed.
 
 ## Forcing master / slave on the rig
 
@@ -41,10 +41,10 @@ This is dev-infrastructure for maintainers — you do not need the rig to build 
 
 ## Self-deploying
 
-The rig keeps itself current: a systemd timer fetches the tracked branch every few minutes and, when it gains commits **and the rig is idle**, fast-forwards, reinstalls dependencies if needed, and restarts the station — never interrupting an in-progress flash or test run. An **UPDATE** badge in the touch UI can also trigger this on demand.
+The rig keeps itself current: a systemd timer fetches the tracked branch every few minutes and, when new commits arrive **and the rig is idle**, fast-forwards, reinstalls dependencies if needed, and restarts the station — never interrupting an in-progress flash or test run. An **UPDATE** badge in the touch UI can also trigger this on demand.
 
 <AiSkill name="diagnose-hil-failure">
-When the **HIL test** check goes red on a firmware PR, the
+When the **HIL test** check fails on a firmware PR, the
 **`diagnose-hil-failure`** skill triages it — stale-rig-code, no-enumeration, boot-burst flake,
-stale-rig-test or a real firmware bug — and drives it to green or a correct root-cause diagnosis.
+stale-rig-test or a real firmware bug — and continues until the check passes or the root cause is found.
 </AiSkill>

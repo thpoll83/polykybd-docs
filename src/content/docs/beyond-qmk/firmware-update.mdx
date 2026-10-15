@@ -22,7 +22,7 @@ the running firmware:
 | Range | Use |
 |---|---|
 | 0–2 MB | Running firmware. The linker caps the image at 2 MB, so a build that grows past it fails to link instead of overwriting the staging area. |
-| 2–4 MB | Staging: a 4 KB header, the staged image (at most `0x1F5000` bytes), and three reserved regions carved off the top: the 32 KB apply log, the 4 KB [crash archive](/beyond-qmk/crash-handler/) and the 4 KB handedness stamp. |
+| 2–4 MB | Staging: a 4 KB header, the staged image (at most `0x1F5000` bytes), and three reserved regions at the top: the 32 KB apply log, the 4 KB [crash archive](/beyond-qmk/crash-handler/) and the 4 KB handedness stamp. |
 | 4–8 MB | [Font packs](/firmware/font-packs/) and other resources, with QMK's emulated EEPROM in the top 8 KB. |
 
 ## The commands
@@ -37,7 +37,7 @@ the running firmware:
 | `0x44` | `FW_UP_APPLY` | Installs the staged image on both halves and reboots them. |
 
 The firmware-update commands are not gated on `PROTOCOL_VERSION`. A host can always update
-a keyboard, even one whose protocol it does not otherwise support. That is the way out of
+a keyboard, even one whose protocol it does not otherwise support. This is how a user fixes
 a mismatch, so the host gates these actions only on "a device is present".
 
 ## Staging: both halves at once
@@ -67,7 +67,7 @@ The master writes each chunk into its own staging area and relays it to the slav
 split transaction (`USER_SYNC_FLASH_STAGE`). The slave never talks to the host.
 
 **The erase is deferred.** Erasing a 4 KB sector blocks the flash for tens of
-milliseconds, and erasing all of staging in one go would starve the split link. So each
+milliseconds, and erasing all of staging at once would starve the split link. So each
 half erases one sector per main-loop pass, at a limited rate, and the master polls the
 slave until it reports ready. QMK's `SPLIT_MAX_CONNECTION_ERRORS` is raised to 200 so the
 erase does not make QMK declare the link lost.
@@ -113,7 +113,7 @@ next one, so its console line goes out and a log shows which stage stopped.
 
 Two halves that run new firmware boot together, as after a replug. A master that reboots
 alone would wait on the boot splash for a slave still running the old code, which is why
-the slave hand-off is retried so hard.
+the slave hand-off is retried so many times.
 
 ### What the board shows
 
@@ -155,10 +155,10 @@ is expected.
 
 ## Design notes for contributors
 
-- **The copy buffer is `uint32_t page_buf[]`, and the type is the fix.** It was once a
+- **The copy buffer is `uint32_t page_buf[]`, and this type prevents the bug.** It was once a
   `uint8_t` array copied with word instructions. An unrelated change moved it to an odd
   address, and the unaligned store HardFaulted the core with interrupts off, in a function
-  that never returns. Boards were bricked until reflashed over BOOTSEL. Declaring the
+  that never returns. Boards did not boot until they were reflashed over BOOTSEL. Declaring the
   buffer as words means no later edit can reintroduce it.
 - **Nothing in the copy may call into flash.** The routine erases the code it would
   call. GCC turns a fill loop into a call to `memset` and a compare loop into `memcmp`,

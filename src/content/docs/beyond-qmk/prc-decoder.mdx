@@ -134,7 +134,7 @@ would differ, but a new table would mean a new protocol version.
 
 <Aside type="caution">
 The encoder and the decoder must use the same table. A decoder given a different table
-draws garbage and reports no error. Treat a table that has shipped as frozen, and give a
+draws wrong pixels and reports no error. Treat a table that has shipped as frozen, and give a
 retrained one a new id.
 </Aside>
 
@@ -181,7 +181,7 @@ host program that sends images to your keyboard.
 
 ## Using it in your keyboard
 
-1. List the module in your `keyboard.json`. Listing it is the whole enable:
+1. List the module in your `keyboard.json`. Listing it enables it:
 
    ```json
    "modules": ["polykybd/polymod_prc"]

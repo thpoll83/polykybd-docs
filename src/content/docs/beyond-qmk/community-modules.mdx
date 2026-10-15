@@ -46,14 +46,14 @@ directory into your own tree under the same `modules/polykybd/` path.
    ]
    ```
 
-   Listing a module is the whole enable. The build compiles `<name>/<name>.c`, and
+   Listing a module enables it. The build compiles `<name>/<name>.c`, and
    defines `COMMUNITY_MODULE_<NAME>_ENABLE` (for example
    `COMMUNITY_MODULE_POLYMOD_LTR559_ENABLE`). Gate your own code on that define rather
    than inventing a second switch.
 
 2. **Include its header** (`polymod_crc32.h`, `polymod_rle.h`, …) where you call it.
 
-3. **Let self-driving modules run themselves.** `polymod_ltr559` probes the sensor in its
+3. **Let modules with their own hooks run on their own.** `polymod_ltr559` probes the sensor in its
    `keyboard_post_init` hook and reads it in its `housekeeping_task` hook. QMK runs module
    hooks **before** the `_kb` and `_user` hooks, so by the time your
    `keyboard_post_init_user()` runs, the probe is done, and each housekeeping pass already

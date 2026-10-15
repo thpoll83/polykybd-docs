@@ -82,14 +82,14 @@ slave all counters are zero, because the slave never starts a transaction.
 ## Rules for adding a synced field
 
 <Aside type="caution">
-`RPC_M2S_BUFFER_SIZE` (96 bytes) is a silent ceiling. A struct bigger than that is not
+`RPC_M2S_BUFFER_SIZE` (96 bytes) is a size limit that reports no error. A struct bigger than that is not
 sent at all, and the overlay path discards the result, so the master applies the change
-and the slave never hears of it, with nothing in the log. Add a
+and the slave never receives it, and nothing is logged. Add a
 `static_assert(sizeof(your_struct) <= RPC_M2S_BUFFER_SIZE)` for any struct that can grow.
 </Aside>
 
 - **Put a new `uint32_t` in `poly_sync_t` directly after `crc32`.** The CRC covers every
-  byte of the struct, padding included. A 4-byte field dropped into the run of `uint8_t`
+  byte of the struct, padding included. A 4-byte field placed between the `uint8_t`
   fields adds padding inside the checked range. It happens to be zero on both halves, so
   testing will not show the mistake.
 - **Classify a send's result with `sync_succeeded()`**, never with `if (!send_to_bridge(…))`.
@@ -97,6 +97,6 @@ and the slave never hears of it, with nothing in the log. Add a
 - **A slave handler runs on the split-protocol thread**, at the same time as the slave's
   main loop. It must not touch the keycap SPI bus, the shift registers, or anything else
   the main loop may be using. Record the request and let housekeeping act on it.
-- **Do no heavy work in a handler.** The master waits about 20 ms for the answer. A
+- **Do no slow work in a handler.** The master waits about 20 ms for the answer. A
   handler that re-checks a whole font pack, or writes EEPROM, makes the master report a
   failure for a request that succeeded.

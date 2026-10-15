@@ -149,9 +149,9 @@ Only one pointing device can be installed per half.
 |---|---|---|
 | Light + proximity sensor | Pimoroni LTR-559 breakout | Plus a 5-pin 2.54mm pin header. Solders to the sensor's own labelled `3-6V / SDA / SCL / INT / GND` footprint on the Split72 PCB — a separate connector from the encoder and pointing-device connectors in the same expansion slot. |
 
-With the sensor fitted, the keyboard drives keycap brightness from the measured light level and
+With the sensor fitted, the keyboard sets keycap brightness from the measured light level and
 wakes the displays when your hand approaches — see [Display Brightness](/using/brightness/). It is
-optional in firmware (a clean no-op when absent) and side-agnostic. Split72 only — the Split42 has
+optional in firmware (the firmware works normally without it) and works on either half. Split72 only — the Split42 has
 no expansion port.
 
 <Aside type="caution">
