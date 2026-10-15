@@ -5,7 +5,7 @@ description: What this documentation site measures with Google Analytics, what i
 
 import { Aside } from '@astrojs/starlight/components';
 
-_Last updated: 2026-08-17_
+_Last updated: 2026-10-15_
 
 This documentation site uses **Google Analytics 4** to count visits, so we can see which
 pages people actually read and which ones nobody can find. It is **off until you say yes** —
@@ -69,6 +69,15 @@ Advertising features are switched off outright: `ad_storage`, `ad_user_data` and
 `ad_personalization` are denied and are never granted, whatever you choose here. Accepting
 enables `analytics_storage` and nothing else.
 </Aside>
+
+## The video on the home page
+
+The home page embeds a video from YouTube. Until you accept, it is a plain link: your
+browser contacts YouTube only if you click it. Once you accept, the video starts muted as
+soon as the home page opens, unless your system asks for reduced motion. The player loads
+from `youtube-nocookie.com`, and YouTube's own
+[privacy policy](https://policies.google.com/privacy) covers what it receives.
+Turning analytics off returns the video to a plain link.
 
 ## Where the data goes
 

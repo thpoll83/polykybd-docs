@@ -80,6 +80,9 @@
       clearGaCookies();
     }
     refreshControl();
+    // youtube-embed.js listens, so a video on this page can start as soon as
+    // the visitor accepts.
+    window.dispatchEvent(new CustomEvent('pk-consent', { detail: value }));
   }
 
   /* ---------------------------------------------------------------- chip -- */
