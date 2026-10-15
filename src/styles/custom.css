@@ -227,7 +227,7 @@
   aspect-ratio: 16 / 9;
   margin-block: 0 2rem;
   border: 0;
-  border-radius: 0.4rem;
+  border-radius: 0.8rem;
   background: #000;
   color: #fff;
   text-decoration: none;
@@ -276,7 +276,7 @@
 .pk-strip .pk-strip__track > img:not([src$='.svg']) {
   display: block;
   flex: none;
-  border-radius: 0.4rem;
+  border-radius: 0.8rem;
   cursor: zoom-in;
   width: auto;
   height: var(--pk-tile-h);
