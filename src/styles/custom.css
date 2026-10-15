@@ -92,6 +92,23 @@
 .hero .hero-html svg {
   filter: drop-shadow(0 0 28px rgba(47, 123, 246, 0.35));
 }
+/* Narrow screens stack the badge above the title at about 250px, which pushes
+   the landing strip to the bottom of a phone screen. 6rem (~77px) keeps the
+   title, buttons and strip in view together. */
+@media (max-width: 50rem) {
+  .hero > img {
+    width: 6rem;
+    height: auto;
+  }
+}
+/* Beside the title on wide screens Starlight sizes it to about 305px; two
+   thirds of that. */
+@media (min-width: 50rem) {
+  .hero > img {
+    width: 203px;
+    height: auto;
+  }
+}
 
 /* Landing hero: the four entry-point buttons as a 2×2 block.
    Starlight lays the actions out as a wrapping flex row, and the splash hero's
