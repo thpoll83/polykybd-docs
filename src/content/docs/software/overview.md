@@ -18,17 +18,13 @@ Without PolyKybdHost, the keyboard works as a standard QMK keyboard — all keys
 
 ## Daemon and client model
 
-As of the latest version, PolyKybdHost runs as two cooperating parts. The **operational core** — which owns the HID device, tracks the active window, and handles reconnects — runs in a background **daemon** process. The familiar **tray GUI** attaches to that daemon as a **client** over a local control socket; if no daemon is running, launching the GUI spawns one automatically.
-
-This means the GUI can come and go (quit it, restart it, run it on demand) without ever dropping the keyboard connection or losing reconnect state — the daemon keeps the device alive. A small stdlib-only command-line tool, [`polyctl`](/software/cli/), talks to the same daemon, so you can script the keyboard or drive it without any GUI at all.
-
-For development you can opt out with `--no-daemon` (everything runs in-process). See [Daemon & Client Model](/software/architecture/) for the full picture.
+PolyKybdHost runs in two parts. A background **daemon** owns the keyboard connection and tracks the active window. The **tray app** attaches to it as a client, and starts it if it is not running. You can quit and reopen the tray app without dropping the keyboard. The [`polyctl`](/software/cli/) command-line tool talks to the same daemon, so you can script the keyboard without the tray app. See [Daemon & Client Model](/software/architecture/).
 
 ## Operating modes
 
 **Normal mode (default):** PolyKybdHost runs on the machine the keyboard is physically plugged into. It owns the HID device, tracks the active window, and pushes overlay, icon, and keymap updates directly to the keyboard.
 
-**Forwarder mode:** PolyKybdHost can also run on a remote machine that has no keyboard attached. In this configuration, a `PolyForwarder` instance watches the active window on the remote machine and relays the window title and app info over TCP to the normal-mode instance on the keyboard machine. This lets a single keyboard serve multiple computers — the displays always reflect what is focused on whichever machine the user is currently working at.
+**Forwarder mode:** PolyKybdHost runs on a second computer with no keyboard attached and sends that computer's active window over TCP to the instance the keyboard is plugged into. One keyboard then serves several computers. See [Multi-Machine](/using/multi-machine/).
 
 See [Multi-Machine Setup](/using/multi-machine/) for details.
 

@@ -9,8 +9,7 @@ Once PolyKybdHost is running, it lives in your system tray (Windows) or menu bar
 
 ## System tray menu
 
-Right-click the tray icon. The menu is deliberately short — everything you need for
-normal use, and nothing else:
+Right-click the tray icon:
 
 ![The PolyKybdHost tray menu: a status line naming the connected Split72 and its firmware, then Pause, Selected Language, Brightness, Idle Display, Keycap Script, Configure Keymap, Updates, Maintenance, Settings, Help & About and Quit](../../../assets/software/tray-menu.png)
 
@@ -78,14 +77,12 @@ Beyond what the screenshot shows:
   status, sync, re-flash or wipe the bundles, and stage a firmware file without applying it
   (then apply it later).
 
-Switching it on **only adds** the Developer submenu; nothing else in the menu moves,
-so you can leave it on without relearning where things are.
+Switching it on **only adds** the Developer submenu. Nothing else in the menu moves.
 
 <Aside type="note">
-The screenshots on this page are rendered from the app itself, so they show the real
-labels and order. Your desktop draws its own menu style, and a couple of entries are
-conditional — "Quit && stop background daemon" appears when a daemon owns the keyboard
-(the default), and the in-process-only debugging entries are absent in that mode.
+The screenshots are rendered from the app. Your desktop draws its own menu style.
+"Quit && stop background daemon" appears when a daemon owns the keyboard, which is the
+default.
 </Aside>
 
 ## Interface language
@@ -110,10 +107,8 @@ Kong get Traditional Chinese.
 To pick a language yourself, open **Settings → Ui → Language**. Each language is listed
 in its own name, so you can find yours even after picking one you cannot read.
 **Automatic** goes back to following the system and shows which language that resolves
-to. A change asks to restart the tray app. In the default daemon mode the restart keeps
-the keyboard connected, because the background daemon owns it. When the app runs
-without a daemon (`--no-daemon`, or when the daemon could not start), the restart
-reconnects to the keyboard after a few seconds.
+to. A change asks to restart the tray app. The keyboard stays connected, or reconnects
+within a few seconds when the app runs without the daemon.
 
 In Arabic and Persian the whole interface is laid out right to left. The keymap editor's
 drawing of the keyboard stays the right way round, because the hardware does not flip.
@@ -148,12 +143,13 @@ run and can switch off under **Settings → Telemetry** — see
 
 ## Firmware updates
 
-You can flash new firmware directly from the tray: **Updates → Check for keyboard firmware
-update…** fetches the latest release for you, and **Maintenance → Flash firmware file
-(.bin)…** takes a `.bin` you already have. If the keyboard does not report its firmware
-version, the check still offers the newest release and shows the installed version as
-"unknown". Without a connected keyboard, it says so instead of waiting. This needs
-PolyKybdHost 1.17.18 or later. Flashing works over HID and is available even when the keyboard is on a protocol version the rest of PolyKybdHost doesn't fully support, so a mismatched keyboard can always be updated. The same operation is available from the command line with `polyctl fw flash` — see [Command Line](/software/cli/) and [Flashing Firmware](/setup/flashing/).
+You can flash new firmware from the tray. **Updates → Check for keyboard firmware
+update…** fetches the latest release, and **Maintenance → Flash firmware file
+(.bin)…** takes a `.bin` you already have. From PolyKybdHost 1.17.18 the check also
+works when the keyboard does not report its version. Flashing works even when the
+keyboard's protocol does not match this app. From the command line, use
+`polyctl fw flash`. See [Command Line](/software/cli/) and
+[Flashing Firmware](/setup/flashing/).
 
 ## Installing WinCompose (Windows)
 
@@ -163,10 +159,8 @@ running, the tray menu offers **Install WinCompose…**: it downloads PolyKybd's
 from GitHub and starts the installer (Windows asks you to confirm the elevation).
 
 The entry appears only on Windows, and only while WinCompose is not running — it
-disappears by itself once WinCompose is up. At that point the keyboard is switched to
-compose mode straight away; the unicode input mode is otherwise only sent when the
-keyboard connects, so no replug is needed. `polyctl unicode-mode` does the same
-re-detection from the command line.
+disappears by itself once WinCompose is up, and the keyboard switches to compose mode
+straight away, with no replug. `polyctl unicode-mode` does the same from the command line.
 
 ## Debug logging
 

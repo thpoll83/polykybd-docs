@@ -179,9 +179,8 @@ That's it: the Split72 is assembled.
 
 ## Optional components
 
-All four are **fully optional** — the firmware treats each as a clean no-op when it isn't fitted,
-and it is auto-detected (there is no option to enable). They are **Split72 only**; the Split42 has
-no expansion port.
+The firmware detects each part on its own, so there is nothing to enable. They are **Split72
+only**; the Split42 has no expansion port.
 
 As noted in step 1, each half has a single physical expansion slot that takes **one** of these
 parts, so only one fits per half (a different one on each half is fine). Fit them at the points
@@ -262,8 +261,7 @@ Prepare the trackpad before the plate goes on, then mount it once the plate is i
 
 <Aside type="caution">
 **Fit the trackpad on the RIGHT half.** The firmware reads the pad on the right half only
-(`POINTING_DEVICE_RIGHT`), and the gesture zones — the right-click corner and the dial ring — were
-measured on a right-hand mount, skew included. A left-mounted pad is not read at all. See
+(`POINTING_DEVICE_RIGHT`). A left-mounted pad is not read at all. See
 [Trackpad](/using/trackpad/) for what the gestures do.
 </Aside>
 
@@ -278,9 +276,6 @@ on the **back** of the keyboard PCB, not next to the slot itself — and lock it
 Verify pin 1 alignment.
 
 ![Insert the trackpad](../../../assets/assembly/insert_cirque.jpg)
-
-Either pad size needs a [3D-printed holder](/assembly/parts-list/#pointing-devices-choose-one) —
-see the Parts List for the STLs, and for why the 35mm pad is the one to buy.
 
 Once it is built and flashed, [Trackpad](/using/trackpad/) covers the gestures: tap to click,
 tap-and-drag, the top-right right-click corner and the rotary dial for scrolling.

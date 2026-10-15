@@ -31,8 +31,7 @@ the `PolyCorne Split42` rev1.0 left side):
 ![KiCad 3D render of the split42 left PCB, silkscreened "PolyCorne Split42, rev1.0"](../../../assets/firmware/split42-pcb-render.jpg)
 
 <Aside>
-**split42 was renamed from `corne42` in 2026-06.** Same hardware, PID and `LAYOUT_crkbd`; the old
-`corne42` paths are gone. If you see `corne42` referenced anywhere, read it as `split42`.
+**split42 was called `corne42` before 2026-06.** If you see `corne42` anywhere, read it as `split42`.
 </Aside>
 
 ## One shared keymap
@@ -58,8 +57,7 @@ Variant differences resolve at **compile time**: `polykybd.h` includes the activ
 `POINTING_DEVICE_ENABLE` guard the RGB and trackpad code paths.
 
 <Aside type="tip">
-Because the logic is shared, the two keyboards can't silently drift apart in language support or
-features. When customising, edit the per-variant `keymap.c` for *data*, and `poly_keymap.c` for
+When customising, edit the per-variant `keymap.c` for *data*, and `poly_keymap.c` for
 *behaviour*.
 </Aside>
 

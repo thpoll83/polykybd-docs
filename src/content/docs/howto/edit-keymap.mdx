@@ -16,12 +16,9 @@ and how deep it goes:
 Background on layers and the dynamic keymap is on [Keymaps & Layers](/using/keymaps/).
 
 <Aside type="caution">
-There is **no QMK Configurator or `keymap.json` route for PolyKybd.** The online
-[Configurator](https://config.qmk.fm) only lists keyboards in mainline QMK, and PolyKybd is a fork,
-so it isn't there. The `keymap.json` workflow doesn't work either: `qmk c2json` can't parse the
-firmware's custom keycodes and layer names, and a JSON-built image would drop the per-variant
-`g_led_config` (RGB matrix) and `encoder_map` that live in the keymap. Use one of the two routes
-below.
+There is **no QMK Configurator or `keymap.json` route for PolyKybd.** The
+[Configurator](https://config.qmk.fm) lists only mainline QMK keyboards, and `qmk c2json` cannot
+parse the firmware's custom keycodes. Use one of the two routes below.
 </Aside>
 
 ## Route 1 — PolyKybdHost Layout Editor (runtime)
@@ -33,20 +30,16 @@ key at a time (`ID_DYNAMIC_KEYMAP_SET_KEYCODE`) and the change persists across p
 Full walkthrough and limitations: [Keymap Editor](/using/keymap-editor/).
 
 <Aside type="note">
-\* The Layout Editor writes to the keyboard's **EEPROM**, which lives in a separate flash region
-from the firmware image — so your remaps persist across power cycles **and** survive a normal
-firmware reflash. The only time they revert to the compiled defaults is when a firmware update
-changes the on-keyboard EEPROM layout, or you explicitly clear the EEPROM. Reach for route 2 when
-you want the change to *be* the firmware default, or when you need behaviour beyond remapping single
-keys (new layers, macros, encoder logic).
+\* The Layout Editor writes to the keyboard's **EEPROM**, which is separate from the firmware
+image, so remaps survive a normal reflash. They revert to the compiled defaults only when a
+firmware update changes the EEPROM layout or you clear the EEPROM.
 </Aside>
 
 ## Route 2 — QMK firmware source
 
-Editing the firmware directly is the most powerful route: it does **much more than remap keys** —
-new layers, macros, tap-dance, encoder behaviour, and any custom QMK logic. It's also the way to
-make your change the compiled default that *ships* with the firmware (rather than living only in the
-keyboard's EEPROM), so it's there on a fresh board and is what you share or upstream.
+Editing the firmware does **much more than remap keys**: new layers, macros, tap-dance, encoder
+behaviour and any custom QMK logic. It also makes your change the compiled default, so it is on a
+fresh board and is what you share or upstream.
 
 The keymap *data* — the `keymaps[]` array, `g_led_config`, and `encoder_map[]` — lives per-variant:
 

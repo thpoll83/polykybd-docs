@@ -16,19 +16,11 @@ emoji.
 
 ## Why PolyKybd maintains a fork
 
-WinCompose was written by **Sam Hocevar**, who has maintained it since 2013. That
-original project is no longer actively developed — its own issue tracker carries a
-notice to that effect, and the last release predates Windows 11's taskbar changes.
-
-Because unicode input on Windows is a hard dependency for PolyKybd, we maintain a
-fork so the tool keeps working for PolyKybd users. It is a fork, not a replacement:
-essentially all of the code, all of the compose sequence data, and the design are
-Sam's work.
-
-<Aside type="note">
-  The PolyKybd fork exists to keep a dependency healthy. If the original project
-  becomes active again, our changes are intended to go back upstream.
-</Aside>
+WinCompose was written by **Sam Hocevar**. The original project is no longer actively
+developed, and unicode input on Windows is a hard dependency for PolyKybd, so we
+maintain a fork. Nearly all of the code, the compose sequence data and the design are
+Sam's work. If the original project becomes active again, our changes are meant to go
+back upstream.
 
 ## What the PolyKybd fork changes
 
@@ -36,16 +28,13 @@ The fork builds on [ell1010's fork](https://github.com/ell1010/wincompose), whic
 had already modernised the UI and retargeted the project to .NET Framework 4.8.1.
 On top of that we fixed:
 
-- **The tray tooltip never updated.** A change notification was raised under the
-  wrong property name, so the tooltip silently stayed empty.
-- **The tray icon stopped reflecting state.** The composing indicator and the
-  update marker had been dropped from the icon update path, and the "hide icon"
-  setting did nothing at all.
-- **Settings dialog styling.** Text and controls were sized well above native
-  Windows dialogs, tabs wrapped onto a second row, and the window could not be
-  resized or scrolled.
-- **The update check** no longer polls the original project's server over plain
-  HTTP for versions that do not correspond to this fork's builds.
+- **The tray tooltip** now updates.
+- **The tray icon** shows the composing state and the update marker again, and the
+  "hide icon" setting works.
+- **The settings dialog** matches native Windows sizing, keeps its tabs on one row, and
+  can be resized and scrolled.
+- **The update check** no longer asks the original project's server, over plain HTTP,
+  about versions that are not this fork's builds.
 
 ## Installing
 
@@ -62,8 +51,7 @@ any folder; the installer registers WinCompose to start with Windows.
 <Aside type="caution">
   Our builds are not code-signed yet, so Windows SmartScreen will warn that the
   publisher is unrecognised. Choose **More info → Run anyway** if you are happy to
-  proceed. Signing is planned, and is waiting on a registered business entity —
-  the certificate has to be issued to one.
+  proceed. Signing is planned.
 </Aside>
 
 ### Verifying your download

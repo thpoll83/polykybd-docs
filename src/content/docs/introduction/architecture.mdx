@@ -5,7 +5,7 @@ description: How the PolyKybd hardware, firmware, host software and tooling fit 
 
 import { Aside, Card, CardGrid } from '@astrojs/starlight/components';
 
-PolyKybd is not a single program — it is a small stack of open-source projects that each own one layer of the system. Understanding how they connect makes the rest of these docs easier to navigate.
+PolyKybd is a small stack of open-source projects, each owning one layer of the system.
 
 ## The big picture
 
@@ -22,10 +22,8 @@ flowchart TB
 The two keyboard halves run the **same firmware image**; which half is master is decided at runtime (the half with USB power). They stay in sync over a CRC32-validated full-duplex serial link.
 
 <Aside type="tip">
-Want the deeper version? [System Model & Data Flow](/development/system-model/) expands this
-picture with the full HID command surface, the 8 MB flash map, and diagrams of the key
-runtime processes — boot & split-link establishment, the overlay data path on an app switch,
-display power states, resource flashing, and the core0/core1 offload.
+For more depth, [System Model & Data Flow](/development/system-model/) covers the HID commands,
+the flash map and the main runtime processes.
 </Aside>
 
 ## The repositories
