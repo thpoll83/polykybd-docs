@@ -1,6 +1,6 @@
 ---
 title: Mines
-description: A mine sweeper hidden in the idle screen. Every keycap is one cell, nothing reaches the computer, and one key hands the board back to the idle animation.
+description: A mine sweeper hidden in the idle screen. Every keycap is one cell, nothing reaches the computer, and one key returns to the idle animation.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
@@ -12,7 +12,7 @@ Mines is a mine sweeper played on the keycaps. Each key above the thumb row is o
 the keyboard is the screen and the controller at once. It sits behind the idle screen, it is
 quiet to play, and one key puts the idle animation back.
 
-![The Mines board on a split72 mid-game: opened cells show numbers or stay dark, hidden cells are dotted squares, two cells carry flags, and the thumb row shows Hide, the flag counter, the level and New](../../../assets/using/mines-board.png)
+![The Mines board on a split72 mid-game: opened cells show numbers or stay dark, hidden cells are dotted squares, two cells show flags, and the thumb row shows Hide, the flag counter, the level and New](../../../assets/using/mines-board.png)
 
 ## Start a game
 
@@ -26,7 +26,7 @@ On the default split72 layout, Hyper is the key left of `Y`. The split42's defau
 no Hyper key; give one a key with the [Keymap Editor](/using/keymap-editor/) to play there.
 
 <Aside type="note">
-The IDDQD attract demo is not a start point. Pick Pulse, Jitter or Eden as your
+You cannot start Mines from the IDDQD demo. Pick Pulse, Jitter or Eden as your
 [idle style](/using/idle/#idle-styles) to play Mines.
 </Aside>
 
@@ -44,7 +44,7 @@ counts as next to the inner edge of the right half, as if the gap were not there
 |---|---|
 | Open a cell | Tap it. |
 | Place or remove a flag | Hold the key for about a third of a second. The flag appears while you still hold it; letting go then does nothing. |
-| Open all neighbours of a number | Tap the number once its neighbours carry that many flags. A wrong flag loses the game. |
+| Open all neighbours of a number | Tap the number once its neighbours have that many flags. A wrong flag loses the game. |
 
 The first tap of a game never hits a mine: it always opens at least the 3 × 3 area around
 the key. When a tap opens an empty area, the keys open one after another, outward from the
@@ -56,7 +56,7 @@ The thumb row holds the controls:
 
 | Key (split72) | Shows | Does |
 |---|---|---|
-| Left thumb row, outermost | `Hide` | Back to the idle animation. The board waits for you. |
+| Left thumb row, outermost | `Hide` | Back to the idle animation. The game is kept. |
 | Next to it | A flag and a number | Mines minus the flags you placed. |
 | Right thumb row, second from the end | `Lv 1`, `Lv 2`… or `Boom` | The level, or that you hit a mine. |
 | Right thumb row, outermost | `New`, or `Next` after a win | A new board. |
@@ -81,8 +81,8 @@ split42, the most that still leaves the first tap a free 3 × 3 area.
 
 ## Hide and resume
 
-Tap **`Hide`** and the normal legends come back for a moment, then the idle animation takes
-over again. If you type something in that moment, the keyboard stays awake for typing. After
+Tap **`Hide`** and the normal legends come back for a moment, then the idle animation
+starts again. If you type something in that moment, the keyboard stays awake for typing. After
 **two minutes** without a key press the game hides itself the same way.
 
 Hold Hyper on the idle screen again to resume:
@@ -91,7 +91,7 @@ Hold Hyper on the idle screen again to resume:
 - a cleared board goes on to the next level;
 - a lost board starts again at level 1.
 
-The board lives in the keyboard's memory only. Unplugging the keyboard or restarting it ends
+The game is stored only in the keyboard's working memory. Unplugging the keyboard or restarting it ends
 the game.
 
 <Aside type="caution">

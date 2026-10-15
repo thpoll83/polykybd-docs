@@ -3,7 +3,7 @@ title: What is PolyKybdHost?
 description: Overview of the PolyKybdHost application that drives the per-key displays.
 ---
 
-**PolyKybdHost** is the Python application that runs on your computer and brings the PolyKybd's per-key displays to life.
+**PolyKybdHost** is the Python application that runs on your computer and controls the PolyKybd's per-key displays.
 
 Without PolyKybdHost, the keyboard works as a standard QMK keyboard — all keys function normally, but the displays show only the static labels from the firmware. With PolyKybdHost running, the displays update dynamically based on context.
 
@@ -18,7 +18,7 @@ Without PolyKybdHost, the keyboard works as a standard QMK keyboard — all keys
 
 ## Daemon and client model
 
-PolyKybdHost runs in two parts. A background **daemon** owns the keyboard connection and tracks the active window. The **tray app** attaches to it as a client, and starts it if it is not running. You can quit and reopen the tray app without dropping the keyboard. The [`polyctl`](/software/cli/) command-line tool talks to the same daemon, so you can script the keyboard without the tray app. See [Daemon & Client Model](/software/architecture/).
+PolyKybdHost runs in two parts. A background **daemon** owns the keyboard connection and tracks the active window. The **tray app** attaches to it as a client, and starts it if it is not running. You can quit and reopen the tray app without losing the keyboard connection. The [`polyctl`](/software/cli/) command-line tool talks to the same daemon, so you can script the keyboard without the tray app. See [Daemon & Client Model](/software/architecture/).
 
 ## Operating modes
 

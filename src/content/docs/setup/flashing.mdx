@@ -15,7 +15,7 @@ PolyKybdHost sends the firmware image to the keyboard over its normal USB connec
 button is needed, and it works **even when the keyboard's protocol version does not match the
 host**, so a keyboard on incompatible firmware can still be updated.
 
-The deliverable for HID flashing is a raw **`.bin`** image (not the `.uf2`).
+HID flashing uses a raw **`.bin`** image (not the `.uf2`).
 
 <Tabs>
   <TabItem label="From the tray app">
@@ -46,9 +46,9 @@ The deliverable for HID flashing is a raw **`.bin`** image (not the `.uf2`).
 </Tabs>
 
 <Aside type="note">
-While the image transfers, the keycap legends stay frozen. Holding **Shift**, toggling **Caps Lock**
+While the image transfers, the keycap legends do not change. Holding **Shift**, toggling **Caps Lock**
 or holding a layer key does not repaint them. The keys themselves still work, so you can keep
-typing. The legends catch up when the
+typing. The legends update when the
 transfer ends, and applying the image reboots the keyboard into the new firmware.
 </Aside>
 
@@ -62,7 +62,7 @@ can't be fetched. If you download a release **by hand** instead, take the `.bin.
 in the same folder as the `.bin`**: the host looks for it right there, and without it the keyboard
 treats the image as unsigned.
 
-An unsigned image is not rejected, but it is not applied silently either: the keyboard blanks its
+An unsigned image is not rejected, but it is also not applied without asking: the keyboard blanks its
 keycaps except a big **A / ACCEPT** on the left half and **R / REJECT** on the right, states the
 question on the status OLED, and waits up to a minute for you to press one. That is expected for a
 firmware you built yourself. If the host instead reports that the signature *does not match*, the

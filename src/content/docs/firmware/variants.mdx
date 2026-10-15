@@ -6,7 +6,7 @@ description: The two PolyKybd hardware variants — split72 and split42 — and 
 import { Aside } from '@astrojs/starlight/components';
 
 PolyKybd ships in two hardware variants. They run **one firmware codebase**, so a feature added to
-the keyboard lands on both at once.
+the keyboard applies to both at once.
 
 ## split72 vs split42
 
@@ -36,9 +36,9 @@ the `PolyCorne Split42` rev1.0 left side):
 
 ## One shared keymap
 
-All behaviour lives in the keyboard-level **`poly_keymap.c`** (compiled for both variants via
+All behaviour is in the keyboard-level **`poly_keymap.c`** (compiled for both variants via
 `rules.mk`'s `SRC`): rendering, HID/overlay handling, language selection, idle/suspend, split-sync
-glue, the firmware-update state machine, and the QMK `*_user` / `*_kb` callbacks.
+code, the firmware-update state machine, and the QMK `*_user` / `*_kb` callbacks.
 
 Each variant's default keymap file is **data only** — it holds the `keymaps[]` array, the
 `encoder_map[]`, and (on RGB variants) the LED config:

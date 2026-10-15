@@ -54,13 +54,13 @@ Three buttons in the top-right corner of the editor decide what a key shows —
   modifier and arrow symbols, the PolyKybd setting keys, and your macros with their
   labels.
 - **Real** puts that same picture through a simulation of the OLED: the cool white the
-  panels actually emit, on true black, with the slight bloom of lit pixels.
+  panels actually emit, on true black, with the slight glow around lit pixels.
 
 ![The same six keys drawn three times: as keycodes, as keycap previews, and through the OLED simulation](../../../assets/using/layout-editor-modes.png)
 
 Preview makes a layer far easier to read at a glance, and it shows you what a remap
-will actually look like on the key **before** you commit it. Real answers a narrower
-question — how legible a legend will be on the hardware — and the difference only shows
+will actually look like on the key **before** you apply it. Real shows one more detail:
+how legible a legend will be on the hardware. The difference only shows
 up close, as above; across the whole board the two look much the same.
 
 <SupportedSince label="Host 0.18.0+"
@@ -68,22 +68,22 @@ up close, as above; across the whole board the two look much the same.
                 note="Symbol / Preview / Real; previews alone since 0.14.11" />
 
 <Aside type="note">
-Coverage is not total. A handful of keys are drawn by the firmware at the moment you
+Not every key has a preview. A few keys are drawn by the firmware at the moment you
 press them rather than from a fixed legend, so the editor cannot know them in advance —
-those keep their keycode text, mixed in among the previewed keys. Two more are left
-alone on purpose: a transparent key (it shows whatever the layer below it has), and the
+those keep their keycode text, mixed in among the previewed keys. Two more are not previewed
+on purpose: a transparent key (it shows whatever the layer below it has), and the
 two inner keys that have no display behind them.
 </Aside>
 
 If a button is greyed out, hover it — the tooltip says what could not be loaded. It
-also names where the legends were read from, which is worth a look if a preview ever
-disagrees with the physical key.
+also names where the legends were read from, which helps if a preview ever
+differs from the physical key.
 
 ## Dual-function keys (tap one thing, hold another)
 
 The keycode browser has a **behaviour** section for keys that do two different things depending on how long you press them — a *mod-tap* (`MT`) taps a normal key but acts as a modifier when held, and a *layer-tap* (`LT`) taps a key but switches layer when held. Pick the behaviour from the dropdown, tick the modifiers (or choose the layer), pick which key it taps, and choose whether the modifier is the left or the right one.
 
-A classic use is turning a home-row key into a modifier you never have to reach for: `MT` + Shift + `A` gives you `a` on a tap and Shift on a hold.
+A common use is turning a home-row key into a modifier, so you do not need to move your hand to press it: `MT` + Shift + `A` gives you `a` on a tap and Shift on a hold.
 
 ### What the keycap shows
 
@@ -100,14 +100,14 @@ If you assign more than one modifier, the marks fill a small grid that grows up 
 ![The same key with one, two, three and four modifiers: the marks fill the bottom-right, then the bottom row, then a second row above it](../../../assets/using/mod-tap-badge-stacking.png)
 
 <Aside type="note">
-The marks are drawn at half size, so a four-modifier key (`HYPR`) is a busy keycap. One or two modifiers is where this reads best — which is also how mod-taps are normally used.
+The marks are drawn at half size, so a four-modifier key (`HYPR`) is crowded. One or two modifiers are easiest to read — which is also how mod-taps are normally used.
 </Aside>
 
 ## How it works
 
 PolyKybdHost uses the QMK `ID_DYNAMIC_KEYMAP_SET_KEYCODE` protocol to write individual key assignments directly to the keyboard. It does not write a full layer — only the changed key is updated, making it instant.
 
-The dynamic keymap stored in the keyboard persists across power cycles **and across a normal firmware reflash** — it lives in the keyboard's EEPROM, a separate flash region from the firmware image. It only reverts to the compiled defaults if a firmware update changes the on-keyboard EEPROM layout, or you explicitly clear the EEPROM. To make a remap the *shipped* default, edit the firmware source — see [Edit the Keymap](/howto/edit-keymap/).
+The dynamic keymap stored in the keyboard persists across power cycles **and across a normal firmware reflash** — it is stored in the keyboard's EEPROM, a separate flash region from the firmware image. It only reverts to the compiled defaults if a firmware update changes the on-keyboard EEPROM layout, or you explicitly clear the EEPROM. To make a remap the *shipped* default, edit the firmware source — see [Edit the Keymap](/howto/edit-keymap/).
 
 ## Limitations
 

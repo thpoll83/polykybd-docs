@@ -5,30 +5,30 @@ description: The icons a keycap shows while you hold a modifier, for the operati
 
 import { Aside } from '@astrojs/starlight/components';
 
-Hold a modifier and some keycaps show an icon on their right half: what that chord is about
-to do. Hold Win and the `L` key shows a padlock, `V` shows the clipboard history, `D` shows
+Hold a modifier and some keycaps show an icon on their right half: what that key combination will
+do. Hold Win and the `L` key shows a padlock, `V` shows the clipboard history, `D` shows
 the desktop. The legend stays on the left half of the key.
 
 These hints cover the **operating system's own shortcuts**: locking the screen, switching
 windows, snapping, virtual desktops, screenshots. They come from the firmware, so they work
 with the host app closed. When an [app overlay](/using/overlays/) has its own image for a key
-and modifier, the overlay wins and the hint stays hidden.
+and modifier, the overlay takes priority and the hint stays hidden.
 
 <Aside type="note">
-**App shortcuts are not hints.** `Ctrl+S`, `Ctrl+C` or `Alt+F` mean whatever the focused
-program says they mean, and some programs have no save at all. Those keys are left to the
+**App shortcuts are not hints.** `Ctrl+S`, `Ctrl+C` or `Alt+F` do what the focused
+program defines, and some programs have no save at all. Those keys are handled by the
 program's [app overlay](/using/overlays/), which draws them per program. On macOS the same
 holds for `Cmd` plus a letter or digit.
 </Aside>
 
-## Which chords show a hint
+## Which shortcuts show a hint
 
 A hint shows only for the **exact** set of modifiers held. Win+Ctrl+Left shows "previous
 desktop", but Win+Ctrl+Shift+Left shows nothing. Left and right modifiers count the same.
 
 ### Windows
 
-| Chord | Hint |
+| Shortcut | Hint |
 | --- | --- |
 | Win+L | Lock |
 | Win+D | Show desktop |
@@ -76,20 +76,20 @@ desktop", but Win+Ctrl+Shift+Left shows nothing. Left and right modifiers count 
 
 ### Linux
 
-Linux desktops get the Super-key chords they share with Windows: Super+L lock, Super+P
+Linux desktops get the Super-key shortcuts they share with Windows: Super+L lock, Super+P
 display, Super+Up / Down maximize / minimize, plus Alt+Tab, Alt+F4 and Ctrl+Left / Right.
 A few depend on the desktop:
 
-| Chord | GNOME | KDE and other desktops |
+| Shortcut | GNOME | KDE and other desktops |
 | --- | --- | --- |
-| Super+D | No hint (GNOME has no show-desktop chord) | Show desktop |
+| Super+D | No hint (GNOME has no show-desktop shortcut) | Show desktop |
 | Super+Tab | Switch apps | No hint (the switcher is Alt+Tab) |
 
-The Windows-only chords (Win+V, Win+S, Win+E and the rest) show nothing on Linux.
+The Windows-only shortcuts (Win+V, Win+S, Win+E and the rest) show nothing on Linux.
 
 ### macOS
 
-| Chord | Hint |
+| Shortcut | Hint |
 | --- | --- |
 | Cmd+Tab | Switch apps |
 | Cmd+`` ` `` | Switch windows of the app |
@@ -101,12 +101,12 @@ The Windows-only chords (Win+V, Win+S, Win+E and the rest) show nothing on Linux
 
 ## How the keyboard knows your OS
 
-PolyKybdHost tells the keyboard which operating system it runs on, and updates it on its own.
+PolyKybdHost tells the keyboard which operating system it runs on, and updates it automatically.
 In a [multi-machine setup](/using/multi-machine/) it follows the machine you are working on:
 while a forwarded window has focus, the keycaps show that machine's hints. Until the host has
 reported an OS, the keyboard uses the Windows set.
 
-On the split72 you can [pin an OS](/using/keymaps/#the-operating-system) on the settings layer
+On the split72 you can [set an OS by hand](/using/keymaps/#the-operating-system) on the settings layer
 instead. The same setting also decides the GUI key's icon, and on macOS swaps GUI and Alt.
 
 ## What you need
