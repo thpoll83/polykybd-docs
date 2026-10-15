@@ -87,6 +87,12 @@ export default defineConfig({
           tag: 'script',
           attrs: { src: '/js/youtube-embed.js', defer: true },
         },
+        // The landing page's photo/video strip: one row where it fits, moved
+        // sideways by vertical scrolling where it does not.
+        {
+          tag: 'script',
+          attrs: { src: '/js/showcase-strip.js', defer: true },
+        },
         // Google Analytics, consent-gated and build-only — see the tag list at
         // the top of this file. Spread so a dev run injects nothing at all.
         ...(isProductionBuild ? googleAnalyticsTags : []),

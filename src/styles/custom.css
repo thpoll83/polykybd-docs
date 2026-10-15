@@ -196,15 +196,6 @@
   }
 }
 
-/* Opt-out of the 55% thumbnail rule for a showcase photo — the landing page's
-   lead image, which is meant to fill the column rather than sit inside it.
-   Everything else about the treatment (centering, radius, click-to-enlarge) is
-   inherited from the rule above. Use sparingly: one per page at most. */
-.sl-markdown-content img.landing-showcase {
-  width: 100%;
-  margin-block: 0 2rem;
-}
-
 /* A video fills the column: at the 55% thumbnail width the keycap screens are
    too small to read, and a video has no click-to-enlarge (its own controls
    offer full screen). Used for the Eden intro on the First run page. */
@@ -222,8 +213,8 @@
    one gets 360p. YouTube needs at least 200px of height, which 16:9 drops below
    on a column narrower than 356px; min-height keeps it there and YouTube
    letterboxes the rest. Before it loads, .pk-embed is a click-to-play link
-   (public/js/youtube-embed.js swaps in the iframe). Used under the landing
-   page's lead image. */
+   (public/js/youtube-embed.js swaps in the iframe). Used in the landing
+   page's strip (.pk-strip). */
 .sl-markdown-content .pk-embed {
   display: flex;
   flex-direction: column;
@@ -255,6 +246,59 @@
 .pk-embed__note {
   font-size: var(--sl-text-sm);
   opacity: 0.8;
+}
+
+/* Landing page strip: the lead photo, the video and three renders in one row.
+   Every tile has the same height and keeps its own aspect ratio, so nothing is
+   cropped. The height is that of a 720px-wide 16:9 tile (405px), reduced so a
+   16:9 tile fits the viewport width minus 32px and the strip fits under the
+   header. A tile is never wider than the viewport minus 32px.
+   public/js/showcase-strip.js widens the panel to the full viewport. Where
+   all tiles fit, they sit centred in one row. Where they do not, the panel
+   sticks under the header and vertical scrolling moves the row from left to
+   right; once the last tile is in view the page scrolls on. Without
+   JavaScript the strip stays in the column and scrolls sideways on its own. */
+.sl-markdown-content .pk-strip {
+  margin-block: 0 2rem;
+}
+.sl-markdown-content .pk-strip__panel {
+  container-type: inline-size;
+  overflow-x: auto;
+}
+.sl-markdown-content .pk-strip__track {
+  --pk-tile-h: min(405px, (100cqw - 32px) * 9 / 16, 100svh - 120px);
+  display: flex;
+  gap: 16px;
+  width: max-content;
+  margin: 0;
+}
+.sl-markdown-content .pk-strip__track > img:not([src$='.svg']) {
+  flex: none;
+  width: auto;
+  height: var(--pk-tile-h);
+  max-width: calc(100cqw - 32px);
+  object-fit: contain;
+  margin: 0;
+}
+.sl-markdown-content .pk-strip__track > .pk-embed {
+  flex: none;
+  width: calc(var(--pk-tile-h) * 16 / 9);
+  height: var(--pk-tile-h);
+  min-height: 0;
+  margin: 0;
+}
+.sl-markdown-content .pk-strip.is-js .pk-strip__panel {
+  overflow: hidden;
+}
+.sl-markdown-content .pk-strip.is-scrolling .pk-strip__panel {
+  position: sticky;
+}
+.sl-markdown-content .pk-strip.is-row .pk-strip__track {
+  margin-inline: auto;
+}
+.sl-markdown-content .pk-strip.is-scrolling .pk-strip__track {
+  padding-inline: 16px;
+  will-change: transform;
 }
 
 /* Full-screen lightbox, created on click by public/js/photo-zoom.js. */
