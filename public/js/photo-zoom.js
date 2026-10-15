@@ -13,7 +13,9 @@
   if (window.__polyPhotoZoom) return;
   window.__polyPhotoZoom = true;
 
-  var SELECTOR = '.sl-markdown-content img';
+  // .pk-strip: the landing page strip, which showcase-strip.js may move out of
+  // the markdown block.
+  var SELECTOR = '.sl-markdown-content img, .pk-strip img';
 
   function zoomable(img) {
     if (!img) return false;

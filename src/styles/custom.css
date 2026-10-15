@@ -215,7 +215,7 @@
    letterboxes the rest. Before it loads, .pk-embed is a click-to-play link
    (public/js/youtube-embed.js swaps in the iframe). Used in the landing
    page's strip (.pk-strip). */
-.sl-markdown-content .pk-embed {
+.pk-embed {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -227,7 +227,7 @@
   aspect-ratio: 16 / 9;
   margin-block: 0 2rem;
   border: 0;
-  border-radius: 0.4rem;
+  border-radius: 0.8rem;
   background: #000;
   color: #fff;
   text-decoration: none;
@@ -255,50 +255,63 @@
    header. A tile is never wider than the viewport minus 32px.
    public/js/showcase-strip.js widens the panel to the full viewport. Where
    all tiles fit, they sit centred in one row. Where they do not, the panel
-   sticks under the header and vertical scrolling moves the row from left to
-   right; once the last tile is in view the page scrolls on. Without
+   and the hero above it stick under the header together, and vertical
+   scrolling moves the row from left to right; once the last tile is in view
+   the page scrolls on. Without
    JavaScript the strip stays in the column and scrolls sideways on its own. */
-.sl-markdown-content .pk-strip {
+.pk-strip {
   margin-block: 0 2rem;
 }
-.sl-markdown-content .pk-strip__panel {
+.pk-strip .pk-strip__panel {
   container-type: inline-size;
   overflow-x: auto;
 }
-.sl-markdown-content .pk-strip__track {
+.pk-strip .pk-strip__track {
   --pk-tile-h: min(405px, (100cqw - 32px) * 9 / 16, 100svh - 120px);
   display: flex;
   gap: 16px;
   width: max-content;
   margin: 0;
 }
-.sl-markdown-content .pk-strip__track > img:not([src$='.svg']) {
+.pk-strip .pk-strip__track > img:not([src$='.svg']) {
+  display: block;
   flex: none;
+  border-radius: 0.8rem;
+  cursor: zoom-in;
   width: auto;
   height: var(--pk-tile-h);
   max-width: calc(100cqw - 32px);
   object-fit: contain;
   margin: 0;
 }
-.sl-markdown-content .pk-strip__track > .pk-embed {
+.pk-strip .pk-strip__track > .pk-embed {
   flex: none;
   width: calc(var(--pk-tile-h) * 16 / 9);
   height: var(--pk-tile-h);
   min-height: 0;
   margin: 0;
 }
-.sl-markdown-content .pk-strip.is-js .pk-strip__panel {
+.pk-strip.is-js .pk-strip__panel {
   overflow: hidden;
 }
-.sl-markdown-content .pk-strip.is-scrolling .pk-strip__panel {
-  position: sticky;
-}
-.sl-markdown-content .pk-strip.is-row .pk-strip__track {
+.pk-strip.is-row .pk-strip__track {
   margin-inline: auto;
 }
-.sl-markdown-content .pk-strip.is-scrolling .pk-strip__track {
+.pk-strip.is-scrolling .pk-strip__track {
   padding-inline: 16px;
   will-change: transform;
+}
+/* Built by showcase-strip.js when the row needs to scroll: the hero and the
+   strip in one block that sticks under the header (its top is set inline),
+   with a trimmed hero padding so both fit the viewport together. */
+.pk-stage {
+  position: sticky;
+}
+.pk-stage .hero {
+  padding-block: 2rem;
+}
+.pk-stage .pk-strip {
+  margin-block: 0 1.5rem;
 }
 
 /* Full-screen lightbox, created on click by public/js/photo-zoom.js. */
