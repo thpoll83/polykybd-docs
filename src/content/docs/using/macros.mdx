@@ -19,8 +19,7 @@ one it is**. A macro key shows a short label along its bottom edge, so the row r
 <Aside type="note" title="You need the release that carries them">
 Macros arrived after the **v0.15.14** firmware / **v0.13.16** host release. If the Keymap Editor
 has no **Macros** tab, one of the two is older than that: update the host app from the tray
-(**Updates → Check for updates**), then the keyboard from the same menu. The tab and the
-keyboard's macro keys arrive together — there is no half-working state to diagnose.
+(**Updates → Check for updates**), then the keyboard from the same menu.
 </Aside>
 
 ## Where they already are
@@ -41,8 +40,7 @@ second bank stops.
 <Aside type="caution" title="F13–F24 no longer have a home">
 That row used to be **F13** through **F24**. If you use them, put them back from the Keymap
 Editor — they are still perfectly ordinary keycodes, they just are not on the default keymap any
-more. Almost nothing sends them, and this is the only row on the board where sixteen macros are
-reachable without the host app at all.
+more.
 </Aside>
 
 ## Writing one
@@ -64,19 +62,16 @@ The label field shows the keycap exactly as it will look, next to a meter of how
 72-pixel-wide display the label uses. Both update as you type.
 
 <Aside type="tip" title="The meter counts pixels, not letters">
-The keycap face is proportional, so the number of letters that fit depends entirely on which
-letters they are — and on which face the keyboard picks. A label that fits gets the **larger of
-two faces**, which is why `push` and `work mail` are drawn half again as big as a long one; past
-that width the keyboard drops to the small face and keeps every character rather than trimming
-one to stay large. About **nine characters** at the large face, **twelve** at the small one.
+The keycap face is proportional, so how many letters fit depends on which letters they are. A
+short label gets the larger of two faces. A longer one drops to the smaller face and keeps every
+character. That is about **nine characters** at the large face and **twelve** at the small one.
 Anything past the edge is not drawn, and the meter turns amber before you save.
 </Aside>
 
 ## Putting one behind a modifier
 
-A macro takes a whole key — it cannot be folded into a modifier the way `Ctrl+C` or a
-tap-hold key is. That is a QMK limit rather than a choice: `MT()`, `LT()` and `Ctrl+`*key*
-all carry the key they wrap in a single byte, and a macro keycode does not fit in one.
+A macro takes a whole key. It cannot be combined with a modifier the way `Ctrl+C` or a
+tap-hold key is.
 
 Use a **layer** instead, which is how the keyboard expresses "modifier + key" for anything
 that is not a plain keystroke:
@@ -202,22 +197,13 @@ per macro from the **Keycap** dropdown in the editor:
 | **Label only, as large as it fits** | No mark at all — the label gets the whole key, at the largest face it fits on. |
 | **Icon only, filling the key** | The icon alone, at full size across the whole key. The label is kept but not drawn, so switching back does not lose it. |
 
-The label sits along the bottom edge, in the largest of two faces that fits it whole — short
-labels are noticeably bigger than long ones, and a label too wide for the larger face keeps all
-its characters at the smaller one rather than losing any to stay large. A macro
-with no label shows just the mark, centred — so an unlabelled macro is still identifiable, it
-just does not say what it does.
+The label sits along the bottom edge. A macro with no label shows just the mark, centred.
 
 ### Before you write one
 
 A macro you have never touched is not blank. Each of the sixteen starts with the **Mayan numeral
 for its own number** over the caption `Macro` — a shell for zero, then dots and bars up to
 fifteen.
-
-They are numerals rather than pictures on purpose: a slot nobody has written yet has no purpose,
-so a gear or an envelope would be a wrong label rather than a neutral one. The numeral carries
-the number so the caption does not have to, and unlike a row of identical keys it tells you at a
-glance which one your finger is on.
 
 Anything you set replaces it and is kept — the stock look only ever fills a slot that has no
 macro **and** no look of its own. Clearing a macro hands its keycap the numeral back.
@@ -240,10 +226,8 @@ the font packs already on it, so what you see in the picker is what the key can 
 scripts included. Filter by typing a character or a codepoint (`1F4E7`, `U+2699`). **Clear** goes
 back to no icon.
 
-A chosen icon is drawn at half size when the label leaves it no room at full size, which is most
-of the time: the icons are drawn at nearly the full height of the key, and a label takes about a
-quarter of it. That is why an icon looks smaller beside a label than it does under **Icon only,
-filling the key** — or on a key with no label at all — where it gets the whole face.
+Next to a label, the icon is usually drawn at half size. Under **Icon only, filling the key**, or
+on a key with no label, it gets the whole face.
 
 <Aside type="note" title="An icon the keyboard cannot draw falls back to the number">
 The picker only offers glyphs the keyboard has, so this is rare — but if a font pack is

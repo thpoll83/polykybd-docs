@@ -208,6 +208,3 @@ The forwarder then needs no extra flags — plain `--host <IP>` uses it. In the 
   Anything that can reach port 50162 on the keyboard machine can inject window reports, and there is no way to restrict who. Prefer the authenticated setup above; use this only on a network you trust, and as a stepping stone rather than a destination.
 </Aside>
 
-## Use case
-
-A common setup: a desktop (with the keyboard) and a laptop, with the laptop on screen through a remote-desktop client. As you move between applications in that session, the forwarder on the laptop reports each focus change to the desktop, and the keycaps show the overlays for the app you are actually working in — all while the keyboard stays physically on the desk connected to the desktop.

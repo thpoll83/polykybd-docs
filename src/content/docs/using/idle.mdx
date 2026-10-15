@@ -36,8 +36,7 @@ settings layer. Its switch shows on the keycap, and it is off by default.
 How long the keyboard waits before it starts fading is a setting on the board — one of six
 fixed choices: **15 sec · 30 sec · 45 sec · 1 min · 2 min · 5 min**.
 
-**2 minutes is the default**, and it is what every keyboard did before this setting existed —
-so a board you never touch behaves exactly as it always has.
+**2 minutes is the default.**
 
 Set it in any of three places:
 
@@ -66,17 +65,8 @@ sooner.
 | **Jitter** | Keeps the breathing, but each key also relocates its legend to a fresh random spot whenever its own pulse dims it to black. The lit pixels migrate per key, so no pixel stays lit in one place. |
 | **IDDQD** | An attract-demo screensaver that plays across the keycaps at your normal brightness until the displays switch off. A keyboard that cannot play it falls back to Pulse. |
 
-Pulse and jitter keep the dimmed legend readable so you can glance down and resume typing;
-jitter adds stronger burn-in protection by moving the lit pixels. Eden trades that
-glanceability for a full moving picture — it's a screensaver, so the pixels never rest in
-one place. Any key press dismisses it instantly.
-
 Holding **Hyper** for a second during Pulse, Jitter or Eden starts [Mines](/using/mines/), a mine
 sweeper on the keycaps, instead of waking the keyboard.
-
-Eden dims its drifting legend by lighting every other row rather than every row. Since firmware
-**0.17.3** that stripe pattern shifts as the legend moves, so the dimming itself no longer favours
-one set of rows for the life of the board.
 
 <Aside type="caution" title="Eden is split72 only">
 The Eden screensaver is drawn by code that only the **split72** carries. On the split42 you can
@@ -107,14 +97,7 @@ plays the [tutorial](/using/first-run/) after the intro; the host's replay plays
 Your choice is saved on the keyboard and persists across reboots.
 
 <Aside type="note" title="Split72 owners updating from an older firmware">
-Eden became the split72 default in **v0.17.0**. Earlier firmware could not tell *"I picked
-Pulse"* apart from *"I never picked anything"* — both were stored as the same value — so a
-split72 that had never been switched to Jitter or Eden comes up in **Eden** once after the
-update. Set it back from any of the three places above and it stays put from then on.
+Eden became the split72 default in **v0.17.0**. A split72 that was on Pulse before that update
+comes up in **Eden** once. Set it back from any of the three places above and it stays put from then on.
 </Aside>
 
-<Aside type="note">
-Each half runs its own idle animation on its own keys — only the *style* (pulse, jitter
-or Eden) crosses the split link. See [Display power states](/development/system-model/#display-power-states)
-for the full state machine.
-</Aside>

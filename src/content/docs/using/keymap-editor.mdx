@@ -29,16 +29,14 @@ which is the more useful of the two while you are remapping.
                 note="the case plates and status panels" />
 
 <Aside type="note">
-The plate is the real case contour, exported from the hardware design rather than
-drawn by hand — which is also why it is split72 only. On another board the keys are
-laid out as before, with no plate behind them.
+The case plate exists for split72 only. On another board the keys have no plate behind them.
 </Aside>
 
 ## Using the editor
 
 1. Select a layer using the layer tabs at the top of the editor window. All key labels update to reflect the selected layer.
 
-   The tab labels come from the keyboard itself, so they name what each layer actually is — `Qwerty`, `ColemkDH`, `Fn`, `Numpad` and so on. Older firmware doesn't report them, and the editor then falls back to a list shipped with the host, which shows the shorter internal names instead.
+   The tab labels come from the keyboard: `Qwerty`, `ColemkDH`, `Fn`, `Numpad` and so on. Older firmware does not report them, so the editor shows shorter built-in names instead.
    <SupportedSince protocol={14} note="layer names reported by the keyboard" />
 2. Click a key to select it. The key is highlighted.
 3. Choose a new keycode from the keycode browser panel.
@@ -119,6 +117,3 @@ The dynamic keymap stored in the keyboard persists across power cycles **and acr
   other keycode; see [Macros](/using/macros/)
 - The behaviour picker covers the common composed keycodes — layer switching, mod-tap, layer-tap, one-shot modifiers, modified keys. Anything outside that set can still be entered as a raw keycode
 
-<Aside type="tip">
-To make permanent changes that survive firmware reflashing, edit `keymap.c` directly. See [Keymaps & Layers](/using/keymaps/) for instructions.
-</Aside>
