@@ -1,6 +1,17 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import mermaid from 'astro-mermaid';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+
+// URL for a script in public/, with a hash of its content as ?v=. GitHub Pages
+// lets browsers cache public/ files for 10 minutes under the same URL, so
+// without it a visitor can run an old script against the new (hashed) CSS for
+// that long after a deploy. That happened with showcase-strip.js after #125.
+function versioned(path) {
+  const body = readFileSync(new URL(`./public${path}`, import.meta.url));
+  return `${path}?v=${createHash('sha256').update(body).digest('hex').slice(0, 8)}`;
+}
 
 // Google Analytics (GA4), emitted ONLY for a real `astro build`.
 //
@@ -45,7 +56,7 @@ gtag('config', '${GA_MEASUREMENT_ID}');`,
   },
   {
     tag: 'script',
-    attrs: { src: '/js/consent.js', defer: true },
+    attrs: { src: versioned('/js/consent.js'), defer: true },
   },
 ];
 
@@ -78,20 +89,20 @@ export default defineConfig({
       head: [
         {
           tag: 'script',
-          attrs: { src: '/js/photo-zoom.js', defer: true },
+          attrs: { src: versioned('/js/photo-zoom.js'), defer: true },
         },
         // Click-to-play YouTube embeds that autoplay only after analytics
         // consent. Not build-gated: in a dev run it reads the same stored
         // choice, and with no consent.js loaded it simply stays click-to-play.
         {
           tag: 'script',
-          attrs: { src: '/js/youtube-embed.js', defer: true },
+          attrs: { src: versioned('/js/youtube-embed.js'), defer: true },
         },
         // The landing page's photo/video strip: one row where it fits, moved
         // sideways by vertical scrolling where it does not.
         {
           tag: 'script',
-          attrs: { src: '/js/showcase-strip.js', defer: true },
+          attrs: { src: versioned('/js/showcase-strip.js'), defer: true },
         },
         // Google Analytics, consent-gated and build-only — see the tag list at
         // the top of this file. Spread so a dev run injects nothing at all.
