@@ -135,12 +135,14 @@ app gets nothing generic until it is updated.
 
 ## Settings
 
-All five live in **Settings…** in the tray menu and are **on** by default.
+All six live in **Settings…** in the tray menu. All are **on** by default except
+**Generic → Overlays Fill Shortcuts**.
 
 | Setting | What it controls |
 | --- | --- |
 | **Generic → Overlays Enabled** | The whole feature. Off: no Escape mark and no shortcut icons for any app. |
-| **Generic → Overlays Fill Gaps** | Whether generic icons also appear on apps that already have artwork, filling only the keys it leaves blank. |
+| **Generic → Overlays Fill Gaps** | Whether an app that already has artwork also gets its mark on Escape, when the artwork leaves Escape blank. |
+| **Generic → Overlays Fill Shortcuts** | Off by default. Whether such an app is also read for its shortcuts, with icons on the keys its artwork leaves blank. Reading a large app (a browser with a long page open) can take minutes, and its artwork already shows its main shortcuts. |
 | **Shortcut → Icons Enabled** | Whether the focused app is read for its shortcuts at all. Off: nothing generic is drawn, since the Escape icon only accompanies shortcut icons. |
 | **Shortcut → Icon Auto Fetch** | Whether the icon set may be downloaded. Off: icons already downloaded keep working; new ones are skipped. |
 | **Shortcut → Enable Accessibility** | Linux only. Whether PolyKybdHost may turn on the desktop's accessibility switch so Qt and KDE apps publish their shortcuts. Off: only apps that publish anyway (GTK) are read. |
