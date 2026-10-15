@@ -217,6 +217,46 @@
   background: #000;
 }
 
+/* An embedded YouTube player fills the column at 16:9. YouTube picks the stream
+   quality from the player size, so a full-width player gets HD where a small
+   one gets 360p. YouTube needs at least 200px of height, which 16:9 drops below
+   on a column narrower than 356px; min-height keeps it there and YouTube
+   letterboxes the rest. Before it loads, .pk-embed is a click-to-play link
+   (public/js/youtube-embed.js swaps in the iframe). Used under the landing
+   page's lead image. */
+.sl-markdown-content .pk-embed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  height: auto;
+  min-height: 200px;
+  aspect-ratio: 16 / 9;
+  margin-block: 0 2rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: #000;
+  color: #fff;
+  text-decoration: none;
+}
+.pk-embed__play {
+  width: 4.5rem;
+  height: 3.2rem;
+  border-radius: 0.9rem;
+  background: #c00 no-repeat center / 1.4rem
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 12'%3E%3Cpath d='M0 0l10 6-10 6z' fill='%23fff'/%3E%3C/svg%3E");
+}
+.pk-embed:hover .pk-embed__play,
+.pk-embed:focus-visible .pk-embed__play {
+  background-color: #f00;
+}
+.pk-embed__note {
+  font-size: var(--sl-text-sm);
+  opacity: 0.8;
+}
+
 /* Full-screen lightbox, created on click by public/js/photo-zoom.js. */
 .photo-zoom-lightbox {
   position: fixed;

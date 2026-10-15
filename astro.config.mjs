@@ -80,6 +80,13 @@ export default defineConfig({
           tag: 'script',
           attrs: { src: '/js/photo-zoom.js', defer: true },
         },
+        // Click-to-play YouTube embeds that autoplay only after analytics
+        // consent. Not build-gated: in a dev run it reads the same stored
+        // choice, and with no consent.js loaded it simply stays click-to-play.
+        {
+          tag: 'script',
+          attrs: { src: '/js/youtube-embed.js', defer: true },
+        },
         // Google Analytics, consent-gated and build-only — see the tag list at
         // the top of this file. Spread so a dev run injects nothing at all.
         ...(isProductionBuild ? googleAnalyticsTags : []),
