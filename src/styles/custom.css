@@ -222,8 +222,8 @@
    one gets 360p. YouTube needs at least 200px of height, which 16:9 drops below
    on a column narrower than 356px; min-height keeps it there and YouTube
    letterboxes the rest. Before it loads, .pk-embed is a click-to-play link
-   (public/js/youtube-embed.js swaps in the iframe). Used under the landing
-   page's lead image. */
+   (public/js/youtube-embed.js swaps in the iframe). Used beside the landing
+   page's lead image (.pk-showcase-row). */
 .sl-markdown-content .pk-embed {
   display: flex;
   flex-direction: column;
@@ -255,6 +255,40 @@
 .pk-embed__note {
   font-size: var(--sl-text-sm);
   opacity: 0.8;
+}
+
+/* Landing page: the lead photo and the video, both 16:9. The splash column
+   stops at 864px, which would leave each at 426px side by side (360p from
+   YouTube). So the row breaks out of the column up to 100rem (1280px; the root
+   font size is 80%), centred by negative margins, and never narrower than the
+   column. Starlight centres the column only from a 72rem (1152px; media
+   queries use the browser's 16px rem) viewport, so the breakout waits for that.
+   At 78rem (~1000px) of row width the two sit side by side, each about 600px
+   wide at a 1280px viewport. A narrower row stacks them. The container query
+   sits on the outer div because a container cannot query itself. */
+.sl-markdown-content .pk-showcase-row {
+  container-type: inline-size;
+  margin-block: 0 2rem;
+}
+@media (min-width: 72rem) {
+  .sl-markdown-content .pk-showcase-row {
+    --pk-row: max(100%, min(100vw - 4rem, 100rem));
+    width: var(--pk-row);
+    margin-inline: calc((100% - var(--pk-row)) / 2);
+  }
+}
+.sl-markdown-content .pk-showcase-row__grid {
+  display: grid;
+  gap: 1rem;
+}
+.sl-markdown-content .pk-showcase-row__grid > .pk-embed,
+.sl-markdown-content .pk-showcase-row__grid > img.landing-showcase {
+  margin: 0;
+}
+@container (min-width: 78rem) {
+  .sl-markdown-content .pk-showcase-row__grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 /* Full-screen lightbox, created on click by public/js/photo-zoom.js. */
