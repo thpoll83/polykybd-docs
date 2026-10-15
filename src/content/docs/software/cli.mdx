@@ -19,20 +19,20 @@ import { Aside } from '@astrojs/starlight/components';
 | `status` | Show connection state and current keyboard status |
 | `lang list` / `lang set <code>` | List available languages, or switch the active language |
 | `brightness <value>` | Set display brightness |
-| `brightness --auto` | Hand brightness back to [automatic](/using/brightness/). A manual level otherwise sticks. With adaptive daylight off, it restores the keyboard's stored level. |
+| `brightness --auto` | Return brightness to [automatic](/using/brightness/) control. Otherwise a manual level stays set. With adaptive daylight off, it restores the keyboard's stored level. |
 | `idle <…>` | Configure or trigger idle behaviour |
 | `idle-style [pulse\|jitter\|eden\|iddqd]` | Get or set the [idle anti-burn-in style](/using/idle/) |
-| `idle-timeout [15sec\|30sec\|45sec\|1min\|2min\|5min]` | Get or set [how long before the keycaps start fading](/using/idle/#how-long-before-it-idles) — the delay before the style above engages, not the display-off deadline |
+| `idle-timeout [15sec\|30sec\|45sec\|1min\|2min\|5min]` | Get or set [how long before the keycaps start fading](/using/idle/#how-long-before-it-idles) — the delay before the style above starts, not the display-off deadline |
 | `glyph-script [standard\|tengwar\|…]` | Get or set the [glyph-script](/using/glyph-scripts/) legend override |
 | `glyph-size [small\|medium\|large]` | Get or set the [legend size](/using/legend-size/) — how large a key's main legend is drawn |
 | `fontpack status\|sync\|flash <id>\|wipe [id]` | Inspect and manage the [font-pack](/firmware/font-packs/) bundles |
 | `overlay send <file…>\|enable\|disable\|reset` | Send overlay image files to the keyboard, switch overlays on or off, or clear the ones it holds |
 | `keymap layer-count\|layer-names\|default-layer\|buffer` / `keymap set <layer> <row> <col> <keycode>` | Read the dynamic keymap, or write one key without touching the rest (the keycode is decimal or `0x` hex) |
 | `macro list\|get <id>\|set <id> …\|clear <id>` | Read and write the keyboard's [macros](/using/macros/) — `set` takes `--text` (plain characters) or `--script` (chords and pauses in [VIA's syntax](/using/macros/#writing-it-as-text)), plus `--label`, `--style` (`index`/`icon`/`text`/`icononly`) and `--icon`; `list` also reports how much of the shared store is in use |
-| `crash show [--slave] [--json]` / `crash clear` | Read (or forget) the keyboard's last [firmware crash record](/software/reporting-problems/#when-the-keyboard-firmware-crashes) — what it was doing when it faulted or hung, and where; `--slave` asks for the link-side half's record |
+| `crash show [--slave] [--json]` / `crash clear` | Read (or delete) the keyboard's last [firmware crash record](/software/reporting-problems/#when-the-keyboard-firmware-crashes) — what it was doing when it faulted or hung, and where; `--slave` asks for the link-side half's record |
 | `reboot` | Restart both keyboard halves. Nothing is saved. Needs firmware protocol 22 (firmware 1.7.0) or later |
-| `bootloop [--rounds N]` / `bootloop --cancel` | Reboot the keyboard up to N times (default 50, at most 9999) and stop at the first boot that left a [crash record](/software/reporting-problems/#catching-a-crash-that-only-happens-now-and-then) or did not come back within a minute. Needs firmware protocol 22 |
-| `handedness left\|right` | Tell the keyboard which half is which, when a half has come up on the wrong side. Name the side of the half the **USB cable is plugged into**; the other half becomes the opposite. Both halves save their [handedness stamp](/reference/glossary/) and restart onto it (about 10 s, no replug). Check the result on the keyboard: the command only confirms that the request was sent. Needs host 1.3.0 or later |
+| `bootloop [--rounds N]` / `bootloop --cancel` | Reboot the keyboard up to N times (default 50, at most 9999) and stop at the first boot that left a [crash record](/software/reporting-problems/#catching-a-crash-that-happens-only-occasionally) or did not finish starting within a minute. Needs firmware protocol 22 |
+| `handedness left\|right` | Tell the keyboard which half is which, when a half has started as the wrong side. Name the side of the half the **USB cable is plugged into**; the other half becomes the opposite. Both halves save their [handedness stamp](/reference/glossary/) and restart with the new setting (about 10 s, no replug). Check the result on the keyboard: the command only confirms that the request was sent. Needs host 1.3.0 or later |
 | `commands <file>` | Run device commands from a file, one command per line |
 | `newer-policy ignore\|safe` | Choose what the host does with a keyboard whose firmware is newer than the host knows. `ignore` connects fully; `safe` allows only firmware update and debugging |
 | `replay-anim` | Replay the one-time [startup animation](/using/idle/) on the keycaps |
@@ -81,4 +81,4 @@ polyctl watch
 polyctl logs bundle --since 2h
 ```
 
-Because `polyctl` speaks the same control protocol the tray GUI uses, you can mix the two freely — drive a headless daemon from scripts and attach the GUI later with `python -m polyhost --connect` when you want a window.
+Because `polyctl` uses the same control protocol the tray GUI uses, you can mix the two freely — drive a headless daemon from scripts and attach the GUI later with `python -m polyhost --connect` when you want a window.

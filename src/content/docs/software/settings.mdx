@@ -15,13 +15,13 @@ polyctl settings set ui_theme dark
 ```
 
 The tables list the settings a user may want to change. The rest are developer and
-transport tuning knobs; see [the end of this page](#not-listed-here).
+transport tuning settings; see [the end of this page](#not-listed-here).
 
 ## Appearance and language
 
 | Dialog | Key | Default | What it changes |
 | --- | --- | --- | --- |
-| **Ui → Theme** | `ui_theme` | `auto` | The tray menu and dialogs: *Automatic* follows the desktop's light or dark setting, *Light* and *Dark* pin one. A desktop that does not report its setting gets the dark theme. |
+| **Ui → Theme** | `ui_theme` | `auto` | The tray menu and dialogs: *Automatic* follows the desktop's light or dark setting, *Light* and *Dark* always use that theme. A desktop that does not report its setting gets the dark theme. |
 | **Ui → Language** | `ui_language` | `auto` | The language of the menus and dialogs. Applies when the tray app restarts. See [Interface language](/software/usage/#interface-language). |
 
 ## Brightness
@@ -35,7 +35,7 @@ transport tuning knobs; see [the end of this page](#not-listed-here).
 | **Irradiance → Min** / **Max** | `irradiance_min` / `irradiance_max` | `1.8` / `5.2` | The sunlight values that map to the dimmest and the brightest level. Lower *Max* to reach full brightness on a cloudy day. |
 | **Irradiance → Prescaler** | `irradiance_prescaler` | `0.75` | Multiplies the sunlight value before *Min* and *Max* apply. |
 
-A change to any of these is applied straight away, without waiting for the next ten-minute
+A change to any of these is applied immediately, without waiting for the next ten-minute
 refresh.
 
 ## Overlays and shortcut icons

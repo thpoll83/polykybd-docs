@@ -33,13 +33,13 @@ Your selection persists across reboots. Because the language list is shared by b
 variants, [split72 and split42](/firmware/variants/) support the same set of languages.
 
 <Aside type="note">
-Want to restyle the legends themselves — Tengwar, runes, Braille — without changing what the keys
-type? That's a separate, cosmetic feature: [Glyph Scripts](/using/glyph-scripts/).
+To change the style of the legends (Tengwar, runes, Braille) without changing what the keys
+type, use a separate, cosmetic feature: [Glyph Scripts](/using/glyph-scripts/).
 </Aside>
 
 ## What a keycap shows
 
-A single keycap carries up to three things at once, in fixed places:
+A single keycap shows up to three things at once, in fixed places:
 
 ![A German layout's 7 key: the digit 7 large on the left, a slash in the upper right, and a curly brace in the lower right](../../../assets/using/legend-anatomy.png)
 
@@ -48,11 +48,11 @@ A single keycap carries up to three things at once, in fixed places:
 - The **Shift preview**, small in the upper right — what you get holding Shift.
 - The **AltGr hint**, small in the lower right — what you get holding AltGr.
 
-The two small ones are previews, so you can find a symbol without hunting for it. They appear
+The two small ones are previews, so you can find a symbol without searching for it. They appear
 only when the key actually has something to show: on most layouts a plain letter has no Shift
-preview, because its capital is no surprise.
+preview, because its capital form is obvious.
 
-<Aside type="tip" title="Crowded scripts get a smaller AltGr hint">
+<Aside type="tip" title="Wide scripts get a smaller AltGr hint">
 On layouts with wide letters, such as Arabic and several Indic scripts, the AltGr hint is drawn
 at half size (firmware **0.17.3** and later):
 
@@ -61,7 +61,7 @@ at half size (firmware **0.17.3** and later):
 
 ## The Intl layer: accented letters on demand
 
-Switching your whole layout is the right move when you *write* in another language. When you only
+Switching your whole layout is the right choice when you *write* in another language. When you only
 need the occasional accented letter — a name, a loanword, a single `ñ` in an English sentence —
 there is the **Intl layer**. Hold the **Intl** key [ İñțł ] and the letters that have accented
 forms show one:
@@ -73,7 +73,7 @@ forms show one:
 | `e` | `é` |
 
 Press the letter and PolyKybd types that character — no dead keys, no compose sequence, no layout
-switch. **Every letter of the alphabet** carries variations — 549 in all, covering every accented
+switch. **Every letter of the alphabet** has variations — 549 in all, covering every accented
 form Unicode has a single character for. `o` has the most at 36, then `a` and `u` at 30 and `e`
 at 25; even `q` and `x` have a couple.
 
@@ -90,48 +90,48 @@ picker on the number row.
 1. Hold **Intl**.
 2. Press the letter you want to change, so the keyboard knows which one you mean.
 3. Tap **Ctrl** [ Á»Æ ]. The Ctrl keycap turns **inverted** — dark legend on a lit key — to show
-   the picker is armed, and the number row fills with that letter's variations.
-4. If the letter has more than a row's worth, step through them with the **page arrows** at either
+   the picker is active, and the number row fills with that letter's variations.
+4. If the letter has more variations than fit in one row, step through them with the **page arrows** at either
    end of the picker row.
 5. Press the key under the accent you want.
 
-That becomes the letter's variation from then on, and it survives a reboot. The picker closes as
+That becomes the letter's variation from then on, and it is kept after a reboot. The picker closes as
 soon as you pick, and reopens on the first page.
 
 ![Holding Intl and tapping Ctrl turns the number row into a picker of the current letter's accented variations; picking one changes that letter's keycap](/img/intl-picker.gif)
 
 ### Giving one letter several keys
 
-The picker chooses another *form* of the letter a key already hosts, so it can only ever give you
-one accent per key. French wants `è` `é` and `ê` at the same time — three forms of one letter, and
+The picker chooses another *form* of the letter a key already has, so it can only ever give you
+one accent per key. French needs `è` `é` and `ê` at the same time — three forms of one letter, and
 only one `e` key to put them on.
 
-So a key can be **reassigned to host a different letter**:
+So a key can be **reassigned to a different letter**:
 
 1. Hold **Intl**.
-2. Tap the **remap** key [ à»ñ ], next to the picker's Ctrl. It **inverts**, and the board blanks
-   down to just the keys you are allowed to choose from.
+2. Tap the **remap** key [ à»ñ ], next to the picker's Ctrl. It **inverts**, and every key goes blank
+   except the keys you can choose from.
 3. Press the key you want to change. It inverts too.
-4. Press the letter it should host.
+4. Press the letter it should type.
 
-That key now carries the chosen letter's variations, and its own picker works exactly as before —
+That key now has the chosen letter's variations, and its own picker works exactly as before —
 so you can give each of them a different accent. `q` and `j` are good candidates: they have one and
-two variations of their own, which makes them close to dead keys on this layer otherwise.
+two variations of their own, so they are almost unused on this layer otherwise.
 
 ![Remapping q, j and semicolon to host e, then picking a different accent on each, leaving é è ê ë on four keys at once](/img/intl-remap.gif)
 
-**Punctuation keys can host a letter too** — `` ` `` `'` `,` `.` `/` `;` `[` `]` `=` on split72, and
+**Punctuation keys can take a letter too** — `` ` `` `'` `,` `.` `/` `;` `[` `]` `=` on split72, and
 `;` `,` `.` `/` on split42. Which ones you get is decided by the layout: a key that isn't on the
-Intl layer simply never offers itself. An unmapped punctuation key keeps typing its own symbol, so
+Intl layer is never available. An unmapped punctuation key keeps typing its own symbol, so
 nothing changes until you deliberately remap it.
 
 <Aside type="note">
-The remap **latches** — tap it, don't hold it. Releasing **Intl** leaves the mode at any point, so
-that is always the way out. Tapping the remap key again backs out too.
+The remap key **stays on** after you release it. Tap it, do not hold it. Releasing **Intl** leaves the mode at any point, so
+that always exits the mode. Tapping the remap key again also exits.
 </Aside>
 
 <Aside type="tip">
-Two ways back. Re-assigning a key to **its own letter** clears just that key (for a punctuation key,
+There are two ways to undo this. Re-assigning a key to **its own letter** clears just that key (for a punctuation key,
 press the highlighted key a second time). **Shift + remap** clears every assignment at once — worth
 knowing, because once the board is remapped the Intl legends no longer match the letters printed on
 your keycaps.
@@ -139,8 +139,8 @@ your keycaps.
 
 ### When a letter needs more than one row
 
-The picker row holds 12 variations at a time on split72 and 10 on split42, so the richest letters
-span several pages. The two **page arrows** sit at the **outer ends** of the row — back on the far
+The picker row holds 12 variations at a time on split72 and 10 on split42, so the letters with the most variations
+span several pages. The two **page arrows** are at the **outer ends** of the row — back on the far
 left of the left half, forward on the far right of the right half. They **wrap** in both
 directions.
 
@@ -153,15 +153,15 @@ Every other letter fits on a single row, and there the arrows stay **blank** —
 you are already looking at all of them.
 
 <Aside type="note">
-What gets stored is the accent itself, not where it sat on the row. Your choices therefore follow
-you from a split72 to a split42 unchanged — though with 12 variations per page against 10, the same
-accent may well turn up on a different page and a different key there.
+What gets stored is the accent itself, not its position on the row. Your choices therefore stay the same
+when you move from a split72 to a split42 — though with 12 variations per page against 10, the same
+accent may appear on a different page and a different key there.
 </Aside>
 
 <Aside type="tip">
-The picker **latches**, so you don't have to hold Ctrl down. Tap it to arm, tap it again to close
-it without changing anything — leaving the Intl layer closes it too. While it's armed you can press
-a different letter to switch which one you're setting, and add or release Shift to flip between the
+The picker **stays on** after you release Ctrl, so you do not have to hold it down. Tap it to activate, tap it again to close
+it without changing anything — leaving the Intl layer closes it too. While it is active you can press
+a different letter to switch which one you're setting, and add or release Shift to switch between the
 capital and lower-case rows; the number row re-renders each time.
 </Aside>
 
@@ -170,13 +170,13 @@ digits won't type numbers.
 
 ### Romanian and the comma-below letters
 
-Romanian's `ș` and `ț` use a **comma** below the letter, not a cedilla — `ș` is a genuinely
+Romanian's `ș` and `ț` use a **comma** below the letter, not a cedilla — `ș` is a
 different character from `ş`, and using the wrong one is a spelling error in Romanian. Both cases of
 both letters are available as variations of `s` and `t`.
 
 ### What the full set adds
 
-The picker now carries every accented letter that Unicode encodes as a **single character**. These
+The picker now contains every accented letter that Unicode encodes as a **single character**. These
 are the writing systems that gained the most from that — the middle column is what was missing
 before, not the whole of what each one uses:
 
@@ -191,7 +191,7 @@ before, not the whole of what each one uses:
 
 <Aside type="caution">
 A letter is only available here if Unicode gives it its own character. Guaraní's `g̃` is the one
-that catches people out: it has no character of its own — it is a `g` followed by a combining tilde
+that most often causes confusion: it has no character of its own — it is a `g` followed by a combining tilde
 — so the picker cannot produce it, and Guaraní still needs a compose key or a layout switch for
 that one letter.
 </Aside>
@@ -210,7 +210,7 @@ The Intl key is on the [split72](/firmware/variants/) keymap only. On split42 yo
 ## Japanese: ja-JP and ja-US
 
 <Aside type="caution" title="Needs firmware 1.8.9 or later">
-ja-US, the romaji legends on ja-JP and ja-JP's Caps Lock key came in 1.8.9. Up to 1.8.8, ja-JP
+ja-US, the romaji legends on ja-JP and ja-JP's Caps Lock key were added in 1.8.9. Up to 1.8.8, ja-JP
 keycaps show the kana only, and there is no ja-US.
 </Aside>
 
@@ -239,7 +239,7 @@ On Windows the setting is under **Settings → Time & language → Language & re
 Language options → Hardware keyboard layout**, and a change needs a restart. A Japanese edition of
 Windows starts on 106/109; Japanese added to an English Windows stays on 101. macOS asks for the
 keyboard type the first time it sees a keyboard it cannot identify. The keyboard cannot read any of
-these settings, so the choice is yours.
+these settings, so you must select the layout yourself.
 
 In the language layer the two sit side by side under Asia, both with Japan's flag.
 
@@ -254,7 +254,7 @@ sends what the ja-US rows list.
 Korean and Japanese are typed through an input method (IME), and the IME has its own on/off
 mode. On the split72 keymap, the key that is Non-US Backslash on other layouts switches that mode
 for you. On the US-style English layouts, where Non-US Backslash only repeats the Backslash key,
-it becomes a second Alt key on the right-hand side. The keyboard picks the stroke from the active
+it becomes a second Alt key on the right-hand side. The keyboard chooses what to send from the active
 language and the OS:
 
 | Language | Windows | Linux, Android | macOS |
@@ -271,7 +271,7 @@ IME keys: Caps Lock is 英数 and the `` ` `` key is 半角/全角. macOS treats
 even on a JIS keyboard type, so there ja-JP keeps the 英数/かな key. On ja-US, Windows uses Microsoft
 IME's Caps Lock shortcuts, which need no IME setting and work on the 101-key layout.
 
-The keycap carries the label a Korean or Japanese keyboard prints on the key: **한/영** on
+The keycap shows the label a Korean or Japanese keyboard prints on the key: **한/영** on
 Korean, and **英数** over **かな** on Japanese, which changes to **カナ** while you hold Shift.
 Where the key is Caps Lock it shows the Caps Lock legend. On the US-style English layouts it shows
 the Alt legend, or ⌥ on macOS. On Windows that Right Alt is also the compose key of
@@ -280,14 +280,14 @@ Option is the macOS key that types characters (⌥E for an accent, ⌥2 for ™)
 into the firmware, so they show even without a font pack. On every other language the key shows
 that layout's Non-US Backslash legend.
 
-On ja-US, and on ja-JP under macOS, the keyboard cannot see the IME's mode. If you change the
+On ja-US, and on ja-JP under macOS, the keyboard cannot detect the IME's mode. If you change the
 mode another way (the mouse, Alt+` or a Caps Lock shortcut), the next press can select the mode
 you are already in. Press once more and
-the key is back in step.
+the key matches the IME mode again.
 
 <Aside type="note" title="A keyboard with a saved keymap keeps the old key">
-The base layouts live in the keyboard's memory once you have saved a keymap, and the saved copy
-wins over new firmware. To get the IME key there, set its position in the
+The base layouts are stored in the keyboard's memory once you have saved a keymap, and the saved copy
+takes priority over new firmware. To get the IME key there, set its position in the
 [keymap editor](/using/keymap-editor/), or write keycode `0x7FA8` with
 `polyctl keymap set <layer> <row> <col> 0x7FA8`.
 </Aside>
@@ -296,7 +296,7 @@ wins over new firmware. To get the IME key there, set its position in the
 
 PolyKybd also has a dedicated **emoji layer** that turns the keycaps into a visual emoji picker —
 each key previews an emoji, grouped into categories along the top row, so you choose one by sight
-instead of memorising a codepoint. Your most-recently-used emoji are kept close at hand.
+instead of memorising a codepoint. Your most recently used emoji are easy to reach.
 
 ![The emoji layer: every keycap OLED previews a different emoji, with category tabs along the top row](/img/emoji-layer.gif)
 

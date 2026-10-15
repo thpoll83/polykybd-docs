@@ -24,7 +24,7 @@ When focus changes on a remote machine, it sends the window title and app info t
 
 ## Before you start
 
-Two things are easy to miss, and each one on its own makes the whole setup look silently broken.
+Two things are easy to miss, and each one on its own makes the setup fail with no visible error.
 
 **The network transport is off by default.** PolyKybdHost does not listen for window reports until you turn the listener on — step 1 below. Without it the forwarder just logs a connection error every few seconds.
 
@@ -49,7 +49,7 @@ Add an entry the same way for whichever client you use. While that window has fo
 polyctl settings set window_report_network_enabled true
 ```
 
-Then **restart PolyKybdHost** — the setting is read once at startup, so it does not take effect until the daemon comes back up.
+Then **restart PolyKybdHost** — the setting is read once at startup, so it does not take effect until the daemon restarts.
 
 Allow inbound TCP on **port 50163** in the keyboard machine's firewall.
 
@@ -67,7 +67,7 @@ Window-report network listener on 0.0.0.0:50163 (auth-gated, 'window.report' onl
 
 The connection is authenticated with a shared key, so the remote machine needs a copy of the keyboard machine's key file. It is created the first time the listener starts, so do this **after** step 1.
 
-The file is called **`polykybd-winreport.authkey`** and lives in PolyKybdHost's config folder — reachable from the tray menu under **Help & About → Open config folder**, or directly:
+The file is called **`polykybd-winreport.authkey`** and is in PolyKybdHost's config folder — reachable from the tray menu under **Help & About → Open config folder**, or directly:
 
 | Platform | Location |
 |---|---|
@@ -75,10 +75,10 @@ The file is called **`polykybd-winreport.authkey`** and lives in PolyKybdHost's 
 | macOS | `~/Library/Application Support/PolyHost/polykybd-winreport.authkey` |
 | Linux | `~/.config/PolyHost/polykybd-winreport.authkey` |
 
-Copy it to each remote machine. It can live anywhere there — you pass its path on the command line in the next step.
+Copy it to each remote machine. You can store it in any folder there — you pass its path on the command line in the next step.
 
 <Aside type="note">
-  This key is deliberately separate from PolyKybdHost's local control key. It only ever unlocks window reports: the listener that accepts it cannot reach brightness, language, keymaps, firmware flashing or the bootloader. Sharing it with your other machines does not hand them control of the keyboard.
+  This key is deliberately separate from PolyKybdHost's local control key. It only allows window reports: the listener that accepts it cannot reach brightness, language, keymaps, firmware flashing or the bootloader. Sharing it with your other machines does not give them control of the keyboard.
 </Aside>
 
 ### 3. Run the forwarder (remote machine)
@@ -102,7 +102,7 @@ If you moved the listener to another port, add `--report-port <n>` to match.
 ## The forwarder's tray menu
 
 The forwarder puts its own icon in the remote machine's tray. Its menu follows the same
-shape as [the keyboard machine's](/software/usage/#system-tray-menu), minus everything
+shape as [the keyboard machine's](/software/usage/#system-tray-menu), without the entries
 that needs a keyboard attached:
 
 ![The PolyKybdHost forwarder tray menu: a status line reading "Forwarding to 192.168.1.100", then Pause, Check for host update, Settings, Help & About and Quit](../../../assets/using/tray-menu-forwarder.png)
@@ -111,13 +111,13 @@ that needs a keyboard attached:
 |---|---|
 | *Status line* | Where this machine is forwarding to, and whether the reports are arriving. Clicking it is a shortcut for **Pause**. |
 | **Pause** | Stop sending this machine's active window. Reads **Resume** while paused. |
-| **Check for host update…** | Update PolyKybdHost on this machine. There is no firmware or font entry — those belong to the machine holding the keyboard. |
-| **Settings** | The handful of settings that mean something here: the light/dark theme, the [interface language](/software/usage/#interface-language) and the [browser-URL](/using/website-detection/) options. Each machine follows its own system language, so the forwarder can run in a different language from the keyboard machine. |
+| **Check for host update…** | Update PolyKybdHost on this machine. There is no firmware or font entry — those are only on the machine the keyboard is connected to. |
+| **Settings** | The few settings that apply here: the light/dark theme, the [interface language](/software/usage/#interface-language) and the [browser-URL](/using/website-detection/) options. Each machine follows its own system language, so the forwarder can run in a different language from the keyboard machine. |
 | **Help & About** | About, the log viewer, **Open config folder**, **Report a Problem…** and **Collect logs…** — the same set, for *this* machine's logs. |
 | **Quit** | Stop forwarding and close. |
 
 <Aside type="tip">
-  **The icon tells the two apps apart.** Both marks are a grid of keycaps whose unlit
+  **The icon shows which app is which.** Both marks are a grid of keycaps whose unlit
   keys spell a letter: **P** on the machine with the keyboard, **F** on a forwarder. If
   you forward to your own desktop you will see both in the same tray, so it is worth
   knowing which is which. The forwarder's mark also goes **grey when its reports are not
@@ -126,10 +126,10 @@ that needs a keyboard attached:
 
 ### Pausing
 
-**Pause** stops this machine's window titles leaving it — useful when you are doing
+**Pause** stops this machine from sending its window titles — useful when you are doing
 something on the remote machine that you would rather the other computer knew nothing
 about. Nothing is sent while it is paused, and the status line says so. Resuming sends
-the current window straight away, so the keycaps catch up without waiting for you to
+the current window immediately, so the keycaps update without waiting for you to
 switch application.
 
 <Aside type="note">
@@ -140,11 +140,11 @@ switch application.
 
 ## Checking that it works
 
-The forwarder's status line answers this before you open anything: it reads
-**Forwarding to &lt;address&gt;** when reports are landing and **Cannot reach
+The forwarder's status line shows this without opening anything: it reads
+**Forwarding to &lt;address&gt;** when reports are arriving and **Cannot reach
 &lt;address&gt;** when they are not, and the tray mark greys out to match.
 
-For the detail, focus a window on the remote machine and watch the two logs.
+For more detail, focus a window on the remote machine and watch the two logs.
 
 The forwarder reports which window it saw:
 
@@ -158,7 +158,7 @@ The keyboard machine's log — the **Daemon Log** tab in the log viewer — show
 Remote App Changed: "winword", Title: "Document1 - Word"  Handle: 12345678
 ```
 
-If the forwarder logs windows but the keyboard machine never mentions them, the reports are not arriving — see below.
+If the forwarder logs windows but the keyboard machine never logs them, the reports are not arriving — see below.
 
 ## Website-aware overlays for a forwarded browser
 
@@ -169,8 +169,8 @@ focused tab's URL along with the window. Your `urls-contains` entries then apply
 forwarded browsers just as they do locally, including an in-app navigation that never
 changes the window title.
 
-This rides the authenticated path only: it needs the `--report-rpc` setup above, and the
-legacy relay in the next section does not carry the URL.
+This works only over the authenticated connection: it needs the `--report-rpc` setup above, and the
+legacy relay in the next section does not send the URL.
 
 ## If it does not work
 
@@ -184,11 +184,11 @@ legacy relay in the next section does not carry the URL.
 | Forwarder: `Connection timed out` on port 50162 | The forwarder is still using the legacy relay | Add `--report-rpc` (and the key file), or see the legacy section below |
 | Keyboard machine: `Remote overlay entries are configured but the legacy plaintext window relay (TCP 50162) is disabled` | Same as above, seen from the other side | As above |
 | Both logs look fine, keycaps do not change | The keyboard machine's focused window is not a `remote` mapping entry | Focus your remote-desktop client, and check it has a `remote: true` entry (see [Before you start](#before-you-start)) |
-| A forwarded browser matches its title but never a `urls-contains` entry | The URL is not reaching the keyboard machine | Check the extension is installed on the **remote** machine and its Options page reports *Connected*, and that the forwarder runs with `--report-rpc` (the legacy relay never carries the URL) |
+| A forwarded browser matches its title but never a `urls-contains` entry | The URL is not reaching the keyboard machine | Check the extension is installed on the **remote** machine and its Options page reports *Connected*, and that the forwarder runs with `--report-rpc` (the legacy relay never sends the URL) |
 
-Collecting the evidence is one click on each side: the forwarder's **Help & About**
+Collecting the logs takes one click on each side: the forwarder's **Help & About**
 submenu has the same **Report a Problem…** and **Collect logs…** entries as the keyboard
-machine's, and a forwarder report says so on its first line. Because the two halves run on different
+machine's, and a forwarder report says so on its first line. Because the two programs run on different
 computers, a bundle from one never contains the other's log — collect from **both**.
 See [Reporting a Problem](/software/reporting-problems/).
 
@@ -196,7 +196,7 @@ See [Reporting a Problem](/software/reporting-problems/).
 
 Older versions relayed window reports over a plaintext TCP socket on **port 50162** with no authentication, accepting connections from anywhere on the network. That relay is **disabled by default** since PolyKybdHost 0.10.5 and has been replaced by the authenticated path above.
 
-If you have an existing setup built on it and want it back for now, enable it on the keyboard machine and restart:
+If you have an existing setup built on it and want to keep using it for now, enable it on the keyboard machine and restart:
 
 ```bash
 polyctl settings set dev_legacy_plaintext_relay true
@@ -205,6 +205,6 @@ polyctl settings set dev_legacy_plaintext_relay true
 The forwarder then needs no extra flags — plain `--host <IP>` uses it. In the settings dialog the option only appears when [developer mode](/software/usage/#developer-mode) is on.
 
 <Aside type="caution">
-  Anything that can reach port 50162 on the keyboard machine can inject window reports, and there is no way to restrict who. Prefer the authenticated setup above; use this only on a network you trust, and as a stepping stone rather than a destination.
+  Anything that can reach port 50162 on the keyboard machine can inject window reports, and there is no way to restrict who. Prefer the authenticated setup above; use this only on a network you trust, and only as a temporary step before you move to the authenticated setup.
 </Aside>
 

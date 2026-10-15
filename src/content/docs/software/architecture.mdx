@@ -13,10 +13,10 @@ PolyKybdHost is built around a **daemon + client** split. Understanding it helps
 - **The core (daemon).** A Qt-free *operational core* owns the HID device, the reconnect logic, the active-window tracking, overlay/icon/keymap sends, adaptive brightness, and the recently-used overlay cache. It runs as a background process that keeps the keyboard connection alive on its own.
 - **The GUI (client).** The system-tray application — menus, dialogs, the layout editor, the log viewer — attaches to the core as a **client** over a local control socket. It renders state the core publishes and forwards user actions back to it. It holds no device state of its own.
 
-A plain `python -m polyhost` launch starts the GUI and, if no daemon is running, spawns one (detached) and connects to it. If the daemon can't come up, it falls back to running the core in-process.
+A plain `python -m polyhost` launch starts the GUI and, if no daemon is running, spawns one (detached) and connects to it. If the daemon cannot start, it falls back to running the core in-process.
 
 <Aside type="tip">
-Because the daemon outlives any single GUI session, you can **quit the tray app and reopen it later** without dropping the device connection or losing reconnect state. Quitting a client closes only its own sockets — the daemon keeps running.
+Because the daemon keeps running after the GUI closes, you can **quit the tray app and reopen it later** without losing the device connection or losing reconnect state. Quitting a client closes only its own sockets — the daemon keeps running.
 </Aside>
 
 ## Why it exists
@@ -33,7 +33,7 @@ The GUI and `polyctl` reach the daemon over a local control socket:
 
 - A Unix domain socket on Linux/macOS, or a named pipe on Windows.
 - Authenticated with a key file stored with `0600` permissions in the platform's user config directory.
-- It doubles as the **single-instance lock** — only one core can own it at a time.
+- It also acts as the **single-instance lock** — only one core can own it at a time.
 
 The wire protocol is plain JSON-RPC framed over that socket; the CLI uses the exact same transport the GUI does.
 
@@ -53,8 +53,8 @@ The wire protocol is plain JSON-RPC framed over that socket; the CLI uses the ex
 In headless mode the core auto-applies its own reconnect snapshots and is driven entirely through [`polyctl`](/software/cli/). The GUI can attach to a headless daemon at any time with `--connect`.
 
 <AiSkill name="fix-debugpy-wmi">
-Debugging PolyKybdHost on **Windows with Python 3.13**? The
-**`fix-debugpy-wmi`** skill patches the known `platform._wmi_query` crash that kills the first
+If you debug PolyKybdHost on **Windows with Python 3.13**, the
+**`fix-debugpy-wmi`** skill patches the known `platform._wmi_query` crash that stops the first
 `debugpy` launch, so stepping through the host works on the first try.
 </AiSkill>
 

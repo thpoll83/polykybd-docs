@@ -34,10 +34,10 @@ idle/suspend, split synchronisation — lives in `poly_keymap.c` and is compiled
 
 ## The hardware it targets
 
-PolyKybd is **custom hardware**, not a stock board:
+PolyKybd is **custom hardware**, not a standard board:
 
 - **MCU**: Raspberry Pi **RP2040** — dual-core ARM Cortex-M0+, running at **200 MHz** since firmware v0.11.0 (the operating point Raspberry Pi certified for the chip; earlier firmware ran at 125 MHz). QMK runs on core 0; core 1 decompresses overlay images and runs DOOM while you play it. See [The Second Core](/beyond-qmk/core1/) and [200 MHz System Clock](/beyond-qmk/system-clock/).
-- **Flash**: **8 MB external QSPI flash** (not the stock 2 MB), partitioned into:
+- **Flash**: **8 MB external QSPI flash** (not the standard 2 MB), partitioned into:
   - **0–2 MB** — the running firmware
   - **2–4 MB** — firmware-update staging
   - **4–6 MB** — the [font pack](/firmware/font-packs/) (independently-versioned glyph bundles)

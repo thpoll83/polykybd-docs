@@ -6,7 +6,7 @@ description: A map of the firmware features PolyKybd adds on top of stock QMK â€
 PolyKybd's firmware is a QMK fork. Layers, tap-hold, combos, unicode input and the rest
 of the [QMK feature set](https://docs.qmk.fm/) work as documented upstream. This section
 covers what the fork adds that stock QMK does not have. Most of it exists because the
-keyboard has 72 displays and 8 MB of flash to look after, and some of it is useful to any
+keyboard has 72 displays and 8 MB of flash to manage, and some of it is useful to any
 RP2040 keyboard.
 
 ## Pages in this section
@@ -52,5 +52,5 @@ RP2040 keyboard.
   side. PolyKybd writes handedness to a dedicated 4 KB sector that only changes when the
   side changes.
 - **Board state the host can see within a second.** The firmware keeps a counter that
-  goes up whenever a setting changes on the keyboard itself. It rides in the identity
+  goes up whenever a setting changes on the keyboard itself. It is sent in the identity
   reply the host already polls every second, so the host notices with no extra traffic.

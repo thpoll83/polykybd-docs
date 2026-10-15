@@ -28,26 +28,26 @@ beside it tells you how long the layer stays:
 | Mark | The layer is | Example |
 |---|---|---|
 | *(none)* | active **only while you hold the key** | `Fn`, and the momentary `Nm` and `Util` |
-| bolt | **one-shot** — it applies to the next key you press, then drops | `Util` on the default keymap |
+| bolt | **one-shot** — it applies to the next key you press, then turns off | `Util` on the default keymap |
 | `!` | a **switch** — it stays on until you switch back | `Base`, and the `Nm` / `Util` keys bound to switch |
 
 <Aside type="note">
-Both marks are built into the firmware rather than supplied by a font pack, so they draw on
+Both marks are built into the firmware rather than supplied by a font pack, so they are drawn on
 a keyboard that has never been connected to the host app.
 </Aside>
 
 ## The utility and settings layers
 
-Two layers hold the keyboard's own controls, and which one a thing lives on follows a single
-rule: **how often you reach for it.**
+Two layers hold the keyboard's own controls, and one rule decides which layer a control is on:
+**how often you use it.**
 
-**Utility** is what you touch while working — media and volume, the display brightness presets,
+**Utility** holds what you use while working — media and volume, the display brightness presets,
 [legend size](/using/legend-size/), mute, scroll lock. Nothing here changes how the keyboard is
 set up; it all changes what it is doing right now.
 
-**Settings** is set-once or destructive — pinning the [OS](#the-operating-system), picking a base
-layout, [RGB](/using/rgb-lighting/), and the keys that reboot the board. Its everyday half is
-visible as soon as you open the layer: the OS pins and the five layout picks.
+**Settings** is set-once or destructive — setting the [OS](#the-operating-system) by hand, picking a base
+layout, [RGB](/using/rgb-lighting/), and the keys that reboot the board. The part you use most is
+visible as soon as you open the layer: the OS keys and the five layout keys.
 
 ### The operating system
 
@@ -61,20 +61,20 @@ key** (Win, Cmd or Super):
 - The same OS picks the [shortcut hints](/using/shortcut-hints/) and what the
   [IME key](/using/languages/#the-ime-key-korean-japanese-and-us-english) sends.
 
-PolyKybdHost reports the OS on its own. On the split72 you can pin one instead: the settings
+PolyKybdHost reports the OS automatically. On the split72 you can set one by hand instead: the settings
 layer's second row has **Auto**, **Windows**, **macOS**, **Linux** and **Android**, and the
-active key shows a lit switch. A pinned OS stays until you press **Auto**, whatever the host
+active key shows a lit switch. An OS set by hand stays until you press **Auto**, whatever the host
 reports.
 
 ### More…
 
-The rest of the settings layer is **blank and inert until you tap `More…`** — the
-[idle style](/using/idle/) and [how long before it engages](/using/idle/#how-long-before-it-idles),
+The rest of the settings layer is **blank and does nothing until you tap `More…`** — the
+[idle style](/using/idle/) and [how long before it starts](/using/idle/#how-long-before-it-idles),
 the [glyph script](/using/glyph-scripts/), the modifier and command legend modes, debug logging,
 whether the [key that wakes the board also types](/using/idle/#the-idle-sequence),
 the Eden replay (the intro, then the [tutorial](/using/first-run/)), [demo mode and the key demo](/using/demo-mode/), and Restart and Boot. Tap it once and those keys
 appear: on split72 as one row, on split42 each at its own place in the layer. Leave the layer
-and they hide themselves again.
+and they are hidden again.
 
 This keeps `Restart` and `Boot` from being pressed by accident.
 
@@ -82,8 +82,8 @@ This keeps `Restart` and `Boot` from being pressed by accident.
 
 <SupportedSince firmware="0.17.0" note="status-display board info" />
 
-While `More…` is showing, the **status display swaps from the usual layout/brightness panel to
-what the board *is*** — the numbers you would otherwise have to ask the host for, or find in a
+While `More…` is showing, the **status display changes from the usual layout/brightness panel to
+board information**: the numbers you would otherwise have to ask the host for, or find in a
 log.
 
 ![The status displays of both halves showing the board-info screen: firmware version, protocol and hardware version, USB or link role with uptime, and split-link health](../../../assets/using/status-oled-telemetry.png)
@@ -91,27 +91,27 @@ log.
 | Line | Means |
 |---|---|
 | `FW 0.16.18` | The firmware version running on **this half**. |
-| `P15  HW 0x0320` | The [HID protocol version](/reference/hid-protocol/) the firmware speaks, and the hardware revision. |
-| `USB  up 1:23:45` | Whether this half is the one plugged into the computer (`USB`) or the one on the other end of the cable (`LNK`), and how long it has been powered. Past four days it switches to `3d 7h`. |
+| `P15  HW 0x0320` | The [HID protocol version](/reference/hid-protocol/) the firmware uses, and the hardware revision. |
+| `USB  up 1:23:45` | Whether this half is the one plugged into the computer (`USB`) or the one on the other end of the cable (`LNK`), and how long it has been powered. After four days it switches to `3d 7h`. |
 | `Lnk 0.4% 182k` | Split-link health — see below. |
 
 Leave the settings layer and the display goes back to normal.
 
 <Aside type="note">
 On the **split42** the status display is smaller, so it shows the first two lines only. Uptime
-and link health are split72.
+and link health are shown on the split72 only.
 </Aside>
 
 #### Reading the link line
 
-The two halves talk to each other over the cable, and the `Lnk` line is the only place that
-conversation is visible: the percentage is the share of messages that had to be retried or went
+The two halves communicate over the cable, and the `Lnk` line is the only place that
+communication is visible: the percentage is the share of messages that had to be retried or went
 unanswered, and the number beside it is how many have been sent.
 
-It counts from power-on, and a handful of errors while the two halves find each other at boot is
+It counts from power-on, and a handful of errors while the two halves connect at startup is
 normal — so on a healthy board the percentage **falls** the longer you leave it running, as those
-first few are diluted by everything since. What matters is the direction: a number that climbs, or
-sits high on a board that has been up for hours, points at the cable or its connectors.
+first few become a smaller share of all messages. What matters is the trend: a percentage that rises, or
+stays high on a board that has run for hours, indicates a problem with the cable or its connectors.
 
 Two readings are not percentages at all:
 
@@ -121,20 +121,20 @@ Two readings are not percentages at all:
 - **`Lnk idle`** before anything has been sent yet.
 
 <Aside type="tip">
-This is the quickest way to answer *"which firmware am I on?"* with no computer attached — and
+This is the fastest way to check the firmware version with no computer attached — and
 the numbers to quote when [reporting a problem](/software/reporting-problems/) if the host cannot
-see the keyboard at all.
+detect the keyboard at all.
 </Aside>
 
-### Keys that name their own state
+### Keys that show their current setting
 
 Several of these keycaps show **what they are set to** rather than what they do, so the layer can
-be read at a glance instead of pressed to find out: the idle-style and glyph-script keys carry a
+be read at a glance instead of pressed to find out: the idle-style and glyph-script keys show a
 label over the current value (`IDLE:` / `Eden`), the layout picks show their name over a lit or
 unlit switch, and the modifier/command legend keys read `Mods` / `Icon` or `Cmds` / `Text`
 depending on which rendering is active.
 
-The idle **timeout** key sits next to the idle-style one. It shows a small clock face over the
+The idle **timeout** key is next to the idle-style one. It shows a small clock face over the
 current value, such as `2min`, and each tap steps to the next preset.
 
 ## The function layer
@@ -142,11 +142,11 @@ current value, such as `2min`, and each tap steps to the next preset.
 <SupportedSince firmware="0.15.14" note="one function layer, aligned F-row" />
 
 Hold **Fn** and the number row becomes **F1–F12**. There is one function layer shared by
-every base layout, and the F-keys line themselves up with **whichever layout you are
-using**: F5 sits on the key that types `5`, wherever that key is.
+every base layout, and the F-keys are aligned with **whichever layout you are
+using**: F5 is on the key that types `5`, wherever that key is.
 
-That matters because the layouts don't agree on where the number row splits between the
-halves. Most carry `1`–`5` on the left and `6`–`0` on the right; one carries `1`–`6` on the
+That matters because the layouts differ in where the number row splits between the
+halves. Most have `1`–`5` on the left and `6`–`0` on the right; one has `1`–`6` on the
 left. The keyboard reads the active layout's own number row and places the F-keys to match,
 rather than guessing.
 
@@ -160,19 +160,19 @@ That is fixed. Qwerty, Neo and the `1`–`6` layout are unchanged.
 
 The function layer is remappable like any other, so you can change it in the
 [keymap editor](/using/keymap-editor/). But the editor shows what is *stored*, and the
-alignment happens on the keyboard as it draws — so the two would disagree if both were
+alignment happens on the keyboard as it draws — so the two would differ if both were
 active at once.
 
 They can't be. **The moment you change any key on the Fn number row, the alignment stops
 for that whole row** and the keyboard uses exactly what you stored. Editor and keyboard
-agree again, which is what you want while you are editing. Reset the keymap and the
-alignment comes back.
+show the same keys again, which is what you want while you are editing. Reset the keymap and the
+alignment is active again.
 
 ## Home row mods on Workman
 
 <SupportedSince firmware="0.24.0" note="Workman base layout only" />
 
-Pick the **Workman** base layout and its home row doubles as your modifiers: tap a key for
+Pick the **Workman** base layout and its home row keys also act as modifiers: tap a key for
 the letter, hold it for the modifier.
 
 | | Left hand | Right hand |
@@ -183,28 +183,28 @@ the letter, hold it for the modifier.
 | **Shift** | `t` | `n` |
 
 The order is the Miryoku GACS arrangement — outside in, mirrored across the two halves —
-so the two strongest fingers carry Ctrl and Shift.
+so the two strongest fingers press Ctrl and Shift.
 
-**The keycaps tell you.** A key that carries a held modifier draws a small badge in its
+**The keycaps show this.** A key that has a held modifier draws a small badge in its
 corner, so you can see which finger holds what instead of memorising the table above.
 
 <Aside type="note" title="Only Workman — the base layout is the on/off switch">
-  These exist **only** on the Workman layer. Qwerty, Colemak, Neo and Stag are untouched,
-  and so is their typing feel: there is no setting to find and nothing to turn off, you
+  These exist **only** on the Workman layer. Qwerty, Colemak, Neo and Stag are unchanged,
+  and they type exactly as before: there is no setting to find and nothing to turn off, you
   just pick a different base layout on the [settings layer](#the-utility-and-settings-layers).
 </Aside>
 
 <Aside type="caution" title="Right ring is Alt, not AltGr">
   The literal Miryoku arrangement puts **AltGr** on the right ring finger. PolyKybd uses
   plain Alt there instead, because AltGr on this keyboard is a deliberate separate
-  function with its own keycap legends — a home row mod that quietly started producing
-  accented characters would be a nasty surprise.
+  function with its own keycap legends — a home row modifier that
+  produced accented characters without warning would confuse the user.
 </Aside>
 
 The keyboard uses a 200 ms tapping term with QMK's **chordal hold** and **Flow Tap**, so
-fast rolls do not trigger a modifier.
+fast overlapping key presses do not trigger a modifier.
 
-## Where the keymap lives
+## Where the keymap code is
 
 The shared keymap *logic* (rendering, HID handling, language selection, and the QMK callbacks) is in:
 
@@ -220,7 +220,7 @@ keyboards/polykybd/split72/keymaps/default/keymap.c
 keyboards/polykybd/split42/keymaps/default/keymap.c
 ```
 
-Both live in the [PolyKybd firmware repo](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd).
+Both are in the [PolyKybd firmware repo](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd).
 See [Keyboard Variants](/firmware/variants/) for why the logic is shared.
 
 ## Customizing with PolyKybdHost

@@ -5,12 +5,12 @@ description: Two optional printed parts for the PolyKybd Split72 — tenting leg
 
 import { Aside } from '@astrojs/starlight/components';
 
-Two parts that are not needed for a working keyboard, but that most builds end up wanting. Both
+Two parts that are not needed for a working keyboard, but that most builders choose to add. Both
 are in the [PolyKybd hardware repo](https://github.com/thpoll83/PolyKybd) under `parts/`.
 
 ## Tenting legs
 
-The legs stick under each half and incline it towards you. Worth printing if you chose the
+The legs attach under each half and tilt it towards you. Worth printing if you chose the
 **stepped** [keycap stem profile](/assembly/keycap-stems/), which is designed around the keyboard
 sitting at 5 degrees or more.
 
@@ -26,7 +26,7 @@ The source is `parts/legs/legs.scad`; re-export it with `parts/build_parts.sh le
 ## LED diffuser frame
 
 Each key has an LED behind it, shining through a half-round hole in the plate. Left bare, the
-light reads as a bright point rather than an even glow. The **diffuser** is a small light pipe
+light looks like a bright point rather than an even glow. The **diffuser** is a small light pipe
 that clips into that hole and spreads it.
 
 The current generation is a **one-piece frame**: all 36 diffusers per half, held at their exact
@@ -46,7 +46,7 @@ It is notched on **both** faces, so the one part serves either half — see
 [Case & Spacer](/assembly/case/).
 </Aside>
 
-Print it in resin (SLA). It is a fine, spidery part, and the web is deliberately close to the
+Print it in resin (SLA). It is a thin, delicate part, and the web is deliberately close to the
 minimum wall a print service will accept.
 
 ### Changing the plate
@@ -54,7 +54,7 @@ minimum wall a print service will accept.
 The frame is generated from the plate PCB
 (`poly_kybd/poly_kybd_split72_plate_<side>.kicad_pcb`) by `parts/diffuser/gen_diffuser_frame.py`.
 
-So if you change the plate, regenerate rather than nudge the model:
+So if you change the plate, regenerate it rather than edit the model by hand:
 
 ```bash
 parts/diffuser/build_frame.sh          # regenerate from the PCB, export, verify

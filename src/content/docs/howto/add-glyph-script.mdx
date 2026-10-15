@@ -10,17 +10,17 @@ import SupportedSince from '../../../components/SupportedSince.astro';
 <SupportedSince protocol={10} note="open-ended glyph-script index" />
 
 A **glyph script** restyles the keycap letter and digit legends in an alternative script —
-Tengwar, runes, Braille and friends (see [Glyph Scripts](/using/glyph-scripts/) for the
+Tengwar, runes, Braille and others (see [Glyph Scripts](/using/glyph-scripts/) for the
 user-facing side). This HowTo adds a new one.
 
 Since firmware **protocol v10** the glyph-script index is **open-ended**. The firmware accepts any
 script byte and draws the normal legend for one it does not know. So **adding a script does not
-bump the protocol**: you add an enum value, a codepoint block, a font and a host label. A keyboard
+change the protocol version**: you add an enum value, a codepoint block, a font and a host label. A keyboard
 without the new font shows Latin.
 
 <Aside type="note">
 This is a **cosmetic legend override** only. Overlays, the language layer and OS hints are drawn
-on separate paths and are untouched — a glyph script never changes what a key types.
+by separate code and are not changed — a glyph script never changes what a key types.
 </Aside>
 
 All firmware paths are relative to `keyboards/polykybd/` in the
@@ -31,7 +31,7 @@ the **`fantasy`** font-pack bundle (see [Font Packs & Resources](/firmware/font-
 
 Each script's letters and digits are rendered into a **dense private codepoint block** (0x40
 apart: Tengwar `0xE800`, Runes `0xE840`, …). A table in `poly_keymap.c` (`glyph_script_blocks[]`,
-indexed by the `poly_glyph_script` enum) maps a script to its block base; letters `a..z` land at
+indexed by the `poly_glyph_script` enum) maps a script to its block base; letters `a..z` are placed at
 `base+0..25`, and scripts with their own numerals put digits at `base+26..35`. The render hook in
 `render_key()` swaps the legend for the block glyph when a script is active.
 
@@ -39,7 +39,7 @@ indexed by the `poly_glyph_script` enum) maps a script to its block base; letter
 
 <Steps>
 
-1. **Pick a license-clean font.** The glyph *shapes* must be embeddable and redistributable
+1. **Pick a font with a suitable license.** The glyph *shapes* must be embeddable and redistributable
    (OFL, Apache, CC0, permissive). Keep user-facing script names generic where a script is a
    trademark, even though the fonts themselves are fine to embed. Check the font file as well
    as the repository. With no license, the font is all rights reserved. The project also asks
@@ -56,24 +56,24 @@ indexed by the `poly_glyph_script` enum) maps a script to its block base; letter
 
 3. **Generate the font into its block.** Add a `fonts.yaml` entry that emits the font at the new
    PUA block using fontconvert's sequence remap, so `a..z` (and digits, if the script has them)
-   land at `base+0..`. Put the entry at the **end** of the `fonts:` list, not next to the other
+   are placed at `base+0..`. Put the entry at the **end** of the `fonts:` list, not next to the other
    glyph scripts: a font's position in that list is its index in the font table, so an entry in
-   the middle shifts every later font and forces other bundles to be reshipped too. Regenerate the
-   headers, then rebuild the `fantasy` bundle and bump its `content_version` so the host
+   the middle shifts every later font and means other bundles must also be rebuilt and shipped again. Regenerate the
+   headers, then rebuild the `fantasy` bundle and increase its `content_version` so the host
    re-flashes it on connect.
 
-4. **Wire the host.** In [PolyKybdHost](https://github.com/thpoll83/PolyKybdHost): add the same
+4. **Update the host.** In [PolyKybdHost](https://github.com/thpoll83/PolyKybdHost): add the same
    value to the `GlyphScript` enum (`command_ids.py`) and a label to `GLYPH_SCRIPT_LABELS`
    (`host.py`). The tray's **Keycap Script** submenu lists scripts in the order of that label
-   list, so add the label where it belongs: the C64 keycap script sits right after the C64 screen
+   list, so add the label where it belongs: the C64 keycap script comes directly after the C64 screen
    font. A test fails if a script has no label. The `polyctl glyph-script <name>` choices come
    from the enum — see the [Command Line](/software/cli/) page.
 
-5. **Reship the bundle.** Copy the regenerated `fantasy.plyf` into
+5. **Ship the rebuilt bundle.** Copy the regenerated `fantasy.plyf` into
    `polyhost/res/fontpack/` and update `bundles.json` with the new size, hash and version so the
    host ships the new glyphs and re-flashes them on the next connect. If the category headers are
-   already committed you don't even need `fontconvert` — the bundle derives from them
-   deterministically.
+   already committed you do not need `fontconvert`, because the bundle is built from them
+   and the result is always the same.
 
 6. **Build and test.** Compile the firmware and select the new script from the tray menu or
    `polyctl`. With the `fantasy` bundle flashed the legends switch; without it, they stay Latin.
@@ -82,7 +82,7 @@ indexed by the `poly_glyph_script` enum) maps a script to its block base; letter
 </Steps>
 
 <Aside type="tip">
-Do **not** bump `PROTOCOL_VERSION` or the host `__protocol__` for a new script.
+Do **not** increase `PROTOCOL_VERSION` or the host `__protocol__` for a new script.
 </Aside>
 
 See [Contributing](/development/contributing/) for how to open the pull requests, and the
@@ -91,6 +91,6 @@ See [Contributing](/development/contributing/) for how to open the pull requests
 <AiSkill name="reship-fontpack-bundle">
 The **`reship-fontpack-bundle`** skill handles step 5 — it regenerates
 the changed `fantasy` bundle straight from the committed headers (no `fontconvert` build needed),
-does the finicky `bundles.json` rebuild (size, sha256, minimal version bump) and updates the
-firmware manifest, so the host and firmware bytes can't drift apart.
+rebuilds `bundles.json` (size, sha256, smallest needed version increase) and updates the
+firmware manifest, so the host and firmware bytes always stay identical.
 </AiSkill>

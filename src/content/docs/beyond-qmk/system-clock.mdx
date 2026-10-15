@@ -17,7 +17,7 @@ If a board ever misbehaves at the higher clock, one flag builds the old one:
 qmk compile -kb polykybd/split72 -km default -e POLYKYBD_SYS_CLK=125
 ```
 
-That escape hatch is verified **byte-for-byte identical** to the pre-v0.11.0 firmware, so it is a genuine return to what shipped before rather than a similar-looking rebuild.
+This build is verified **byte-for-byte identical** to the pre-v0.11.0 firmware, so it is the same image that shipped before, not only a similar rebuild.
 
 Measured on the [test rig](/development/test-rig/), against a 125 MHz build on the same hardware:
 
@@ -30,7 +30,7 @@ Measured on the [test rig](/development/test-rig/), against a 125 MHz build on t
 | Split-link timing | unchanged |
 
 <Aside type="note">
-The gains land on **compute** — drawing keycaps, decompressing overlays. Anything bound by a bus or a wire rather than by the processor is unaffected: HID latency is set by the USB frame rate, and traffic to the other half by the fixed UART speed. That is also why the idle loop gains less than the 1.6× clock increase might suggest — roughly half of each idle pass is time on the wire to the other half, which no amount of MHz will shorten.
+The gains apply to **computation** — drawing keycaps, decompressing overlays. Anything bound by a bus or a wire rather than by the processor is unaffected: HID latency is set by the USB frame rate, and traffic to the other half by the fixed UART speed. That is also why the idle loop gains less than the 1.6× clock increase might suggest — roughly half of each idle pass is time on the wire to the other half, which a faster clock does not shorten.
 </Aside>
 
 To confirm what a keyboard is actually running — and that the regulator was raised to match — watch the boot banner on the [firmware console](/development/test-rig/). Both values are read back from the hardware rather than assumed from the build flags:
