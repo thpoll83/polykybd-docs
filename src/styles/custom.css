@@ -101,6 +101,14 @@
     height: auto;
   }
 }
+/* Beside the title on wide screens Starlight sizes it to about 305px; two
+   thirds of that. */
+@media (min-width: 50rem) {
+  .hero > img {
+    width: 203px;
+    height: auto;
+  }
+}
 
 /* Landing hero: the four entry-point buttons as a 2×2 block.
    Starlight lays the actions out as a wrapping flex row, and the splash hero's
