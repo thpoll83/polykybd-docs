@@ -92,7 +92,7 @@ Three more traps from measuring image rendering, where Playwright
   (or the `http.server` line above).
 - **Measure rendered images in the browser rather than reading the CSS.** Walk
   `.sl-markdown-content img` and compare each `getBoundingClientRect().width` against
-  the container's: expect 55% everywhere and 100% only for `landing-showcase`.
+  the container's: expect 55% everywhere except the landing page's `.pk-strip` tiles.
 - ⚠️ `naturalWidth === 0` in such a measurement means the image is **lazy-loaded below
   the fold**, not broken — confirm by checking `dist/_astro/` for the emitted asset
   before reporting a problem.

@@ -77,8 +77,8 @@ page.
 
 - **Write plain markdown `![alt](../../../assets/<section>/<file>)`.** Every non-SVG body
   image renders at 55% of the column (82% under 50rem), centred, click-to-enlarge
-  (`custom.css`, `public/js/photo-zoom.js`). `img.landing-showcase` is the one full-width
-  opt-out, at most one per page.
+  (`custom.css`, `public/js/photo-zoom.js`). The one opt-out is the landing page's
+  `.pk-strip` (photos, video and renders in one row, `public/js/showcase-strip.js`).
 - **Assets live in `src/assets/<section>/`** (`assembly`, `firmware`, `hardware`,
   `howto`, `landing`, `overlays`, `reference`, `schematics`, `software`, `using`).
   Astro re-encodes them to WebP.

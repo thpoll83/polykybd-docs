@@ -28,13 +28,16 @@ hero:
 import { CardGrid, LinkCard } from '@astrojs/starlight/components';
 import { Image } from 'astro:assets';
 import rgbBothHalves from '../../assets/landing/rgb-both-halves.jpg';
+import rgbKeycapsCloseup from '../../assets/landing/rgb-keycaps-closeup.jpg';
+import split72Render from '../../assets/assembly/split72-assembled-render.jpg';
+import pcbRender from '../../assets/assembly/pcb-render-rev3.3.jpg';
 
-<div class="pk-showcase-row">
-<div class="pk-showcase-row__grid">
+<div class="pk-strip" data-pk-strip>
+<div class="pk-strip__panel">
+<div class="pk-strip__track">
 
 <Image
   src={rgbBothHalves}
-  class="landing-showcase"
   alt="Both PolyKybd halves in the dark, each key lit by its own RGB LED in a rainbow gradient running from blue through purple to magenta, with the OLED legends readable through the transparent keycaps."
 />
 
@@ -48,6 +51,22 @@ import rgbBothHalves from '../../assets/landing/rgb-both-halves.jpg';
   <span class="pk-embed__note">Play video · loads YouTube</span>
 </a>
 
+<Image
+  src={split72Render}
+  alt="Render of the assembled Split72: both halves joined by a braided cable, every keycap display showing its legend and the status screens on the inner edges."
+/>
+
+<Image
+  src={pcbRender}
+  alt="Render of the purple rev3.3 right-half PCB, socket side up: rows of FPC and hot-swap sockets, the RP2040 and both USB-C connectors."
+/>
+
+<Image
+  src={rgbKeycapsCloseup}
+  alt="Rendered close-up of clear keycaps lit in a teal-to-purple gradient, each one showing its own OLED legend: letters, an emoji face, a Windows logo and an Intl key."
+/>
+
+</div>
 </div>
 </div>
 
@@ -105,8 +124,6 @@ import rgbBothHalves from '../../assets/landing/rgb-both-halves.jpg';
     description="HID protocol, browser-extension privacy and the glossary."
   />
 </CardGrid>
-
-![Rendered close-up of clear keycaps lit in a teal-to-purple gradient, each one showing its own OLED legend — letters, an emoji face, a Windows logo and an "Intl" key](../../assets/landing/rgb-keycaps-closeup.jpg)
 
 ## The ecosystem
 
