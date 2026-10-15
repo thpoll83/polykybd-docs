@@ -217,6 +217,20 @@
   background: #000;
 }
 
+/* An embedded YouTube player fills the column at 16:9. YouTube picks the stream
+   quality from the player size, so a full-width player gets HD where a small
+   one gets 360p. Used for the video under the landing page's lead image. */
+.sl-markdown-content iframe.pk-embed {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  margin-block: 0 2rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: #000;
+}
+
 /* Full-screen lightbox, created on click by public/js/photo-zoom.js. */
 .photo-zoom-lightbox {
   position: fixed;
