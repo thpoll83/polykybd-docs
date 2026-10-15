@@ -43,6 +43,29 @@ that existed only in `main` (docs#52). **A page describing new behaviour waits f
 release that carries it.** Say so in the PR body, or name the required version on the
 page.
 
+## Writing style
+
+Plain, technical English that a non-native reader can follow. #131 and #133 removed the
+habits below from all 65 pages, so don't bring them back.
+
+- **No idioms or metaphors.** Write the plain verb: load-bearing → required; escape hatch →
+  build option; lands → is written to / appears; wins, outranks → takes priority; lives in →
+  is in / is stored in; carries → has / shows; latches, armed → stays on, active; in lockstep →
+  together; command surface → command set; fab → manufacturer; bump → increase; stock →
+  standard / default; chord → key combination / shortcut (not "chordal hold", a QMK name);
+  behind More… → under More…; pin an OS → set an OS by hand; out of the box → without setup.
+  Also no "gotcha", "knobs", "moving parts", "wrinkle", "rule of thumb", "ground truth",
+  "source of truth", "hard-won", "quietly", "genuinely", "for free" or personified code.
+- **No rhetorical questions** ("New here?", "Where do the 26 bytes go?"). State the point.
+- **Cut what the reader does not act on**: design rationale, what older versions did,
+  how a render or screenshot was made, frame-by-frame narration of an animation, and
+  paragraphs that repeat another on the same page. Keep steps, limits, versions and
+  warnings.
+- Real technical terms stay (magic number, CRC, starve, backpressure, surface finish), and
+  so do product names (Eden, Flow Tap, IDDQD).
+- ⚠️ **Renaming a heading changes its anchor.** Grep `src/` for `#<old-anchor>` and fix
+  every link in the same change.
+
 ## Architecture
 
 - **Pages** are `src/content/docs/<section>/<page>.{md,mdx}`; the path is the URL.
