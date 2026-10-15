@@ -15,8 +15,8 @@ and match an overlay to the *website*, so switching from Jira to Outlook in the 
 re-labels your keycaps just like switching between two native apps.
 
 <Aside type="note">
-This is entirely optional and off nothing else — with it disabled (or no URL available),
-browser overlays simply fall back to matching on the window title, exactly as before.
+This is optional. With it off, or with no URL available, browser overlays match on the window
+title.
 </Aside>
 
 ## How the URL reaches the host
@@ -107,8 +107,7 @@ new tab, reload, find, zoom, switching tabs. Since **host 1.16.0** a website's o
 - Every other key keeps the **browser's** shortcut.
 
 So with GitHub open, `Ctrl` still shows new tab on `T` and the address bar on `L`, next to
-GitHub's own keys. Before 1.16.0 a website match replaced the browser's overlay, and those keys
-went blank. Nothing changes in your mapping file: the browser entry's `overlay` is the bottom
+GitHub's own keys. Nothing changes in your mapping file: the browser entry's `overlay` is the bottom
 layer, and the matched `urls-contains` or `titles-contains` entry goes on top.
 
 ### Browser keys are drawn dimmed
@@ -137,9 +136,7 @@ as local ones.
 <Aside type="caution">
 The URL only travels over the **authenticated** window-report path (`--report-rpc`). The
 legacy plaintext relay on port 50162 does not carry it — a forwarded browser falls back to
-title matching there. This is deliberate: that relay's message format puts the window title
-in the middle of a `;`-separated line, so adding another field would make a title containing
-a semicolon even more fragile than it already is.
+title matching there.
 </Aside>
 
 ## See also

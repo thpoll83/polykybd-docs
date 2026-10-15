@@ -5,10 +5,8 @@ description: What PolyKybd draws for an app nobody has made artwork for — its 
 
 import { Aside } from '@astrojs/starlight/components';
 
-[Context-Aware Overlays](/using/overlays/) cover a long list of apps, and every one of them
-was drawn by hand. For everything else — an in-house tool, a niche editor, the app you
-happen to use most — PolyKybd now works out what it can on its own, with nothing to
-install and nothing to configure.
+[Context-Aware Overlays](/using/overlays/) cover a long list of apps. For any other app,
+PolyKybd works out what it can on its own. There is nothing to install or configure.
 
 Two things happen together:
 
@@ -18,9 +16,8 @@ Two things happen together:
   those icons belong to.
 
 <Aside type="note">
-**The Escape icon only appears when shortcut icons do.** On its own it would say the app
-was recognised, which reads as "this app has icons" — a promise the rest of the keyboard
-would not keep. So if nothing could be read from the app, the keyboard stays as it was.
+**The Escape icon only appears when shortcut icons do.** If nothing could be read from the
+app, the keyboard stays as it was.
 </Aside>
 
 <Aside type="note">
@@ -39,9 +36,6 @@ a 1-bit 72×40 keycap:
 2. **[Simple Icons](https://simpleicons.org/)** (CC0), the real brand mark where one exists.
 3. **[Material Design Icons](https://pictogrammers.com/library/mdi/)** (Apache-2.0), which
    covers the Microsoft family that Simple Icons does not carry at all.
-
-Detailed logos rarely survive the reduction, so the host measures each candidate and keeps
-the one that still reads at keycap size rather than the first that loads.
 
 ## Icons for the app's shortcuts
 
@@ -82,10 +76,8 @@ app once.
 <Aside type="tip">
 **Shortcuts that appear later are picked up too** (host 1.16.8+). Some apps only add items
 like Save, Undo and Copy once a document is open — Kate's welcome page has none of them.
-PolyKybdHost reads the app again whenever its window title changes, which is exactly when a
-document opens, and keeps the old icons on screen until the new ones are ready. An app that
-changes its title constantly, like a terminal or a browser, is re-read at most every two
-minutes once nothing new turns up.
+PolyKybdHost reads the app again when its window title changes, for example when a document
+opens.
 </Aside>
 
 ### macOS: one permission first
@@ -99,9 +91,8 @@ restart PolyKybdHost.
 
 ⚠️ **The grant is per binary.** A terminal you launched the app from and a packaged
 PolyKybd app are separate entries, so *"I already allowed it"* and *"this copy is
-allowed"* are different statements. PolyKybd never raises the permission dialog by
-itself — a keycap decoration should not interrupt you — so the trip to System Settings
-is yours to make.
+allowed"* are different statements. PolyKybd never opens the permission dialog
+itself, so you have to go to System Settings.
 </Aside>
 
 ### What gets an icon and what doesn't
@@ -118,8 +109,7 @@ Every key the artwork draws keeps exactly what its author intended, and the gene
 fill only the keys it leaves blank.
 
 Turn that off (see below) and an app with artwork shows exactly what was drawn for it and
-nothing else. Both are reasonable: a blank key on a carefully made overlay may be a
-deliberate choice rather than a gap, which is why it is a switch rather than a rule.
+nothing else.
 
 ## Working on another computer
 

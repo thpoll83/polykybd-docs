@@ -19,12 +19,9 @@ PolyKybd is a **heavily customised QMK fork** maintained on the `PolyKybd` branc
 
 [github.com/thpoll83/qmk_firmware — branch: PolyKybd](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd)
 
-**Upstream base: QMK 0.33.13** (as of PolyKybd firmware v0.11.6). The fork tracks
-upstream QMK's *stable release tags* rather than its moving `master`, and is
-re-based onto a newer tag periodically — so everything in the QMK documentation
-for 0.33.x applies to your keyboard, alongside the PolyKybd additions described
-here. The fork's own `master` branch is kept as an untouched mirror of upstream,
-which is what makes the difference between "stock QMK" and "PolyKybd" easy to see.
+**Upstream base: QMK 0.33.13** (as of PolyKybd firmware v0.11.6). The fork follows
+QMK's stable release tags, so the QMK documentation for 0.33.x applies to your
+keyboard, alongside the PolyKybd additions described here.
 
 The keyboard-specific files live at:
 
@@ -52,12 +49,10 @@ There are two hardware variants, **split72** and **split42**, sharing one firmwa
 
 ## Host communication
 
-The firmware talks to the host application ([PolyKybdHost](/software/overview/)) over a
-custom **64-byte raw HID report protocol**. Each report is `[report id, command id, payload…]`, and
-responses are prefixed `P\xNN.` (ACK) or `P\xNN!` (NACK). A `PROTOCOL_VERSION` reported in the
-device's identity string gates host features: the host connects to any firmware from protocol 2
-on and enables each feature only when the firmware's protocol supports it. See the [HID Protocol Reference](/reference/hid-protocol/) for the command surface and the
-per-version feature history.
+The firmware talks to [PolyKybdHost](/software/overview/) over a custom **64-byte raw HID
+protocol**. The host connects to any firmware from protocol 2 on and turns on each feature
+only when the firmware supports it. See the [HID Protocol Reference](/reference/hid-protocol/)
+for the commands and the per-version feature history.
 
 ## Further reading
 

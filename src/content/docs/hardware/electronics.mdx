@@ -5,10 +5,8 @@ description: A tour of the PolyKybd Split72 electronics — the RP2040 core, the
 
 import { Aside } from '@astrojs/starlight/components';
 
-This page is a guided tour of the PolyKybd Split72 electronics, sheet by sheet. The schematics
-below are the individual sheets of the KiCad project (Rev 3.2) — the same set bundled in the PDF
-documentation. Repeated per-key and buffer sheets are shown once, because every instance is
-identical.
+This page walks through the PolyKybd Split72 schematics (KiCad project, Rev 3.2) sheet by sheet.
+Repeated per-key and buffer sheets are shown once.
 
 <Aside type="tip">
 These images are for **reading and understanding** the board. The editable KiCad sources, gerbers
@@ -37,9 +35,7 @@ and the optional peripherals — the Pimoroni trackball / Cirque trackpad connec
 
 ![Left half schematic — root sheet tying together the 36 key units, RP2040, shift registers, power and peripherals](../../../assets/schematics/schematic_left.png)
 
-**Right half** ("PolyKybd Split72 R") — structurally the same as the left, wiring up its own 36 key
-units, the shared control and power nets, and the non-inverting buffer blocks along the signal
-chain:
+**Right half** ("PolyKybd Split72 R"), structurally the same as the left:
 
 ![Right half schematic — structurally identical to the left half](../../../assets/schematics/schematic_right.png)
 
@@ -73,9 +69,6 @@ hot-swap switch** with its **1N4148 matrix diode**, and the local decoupling cap
 display, LED and switch of one key, all on one small repeated block.
 
 ![Key unit schematic — FPC display socket, WS2812B RGB LED, hot-swap MX switch and matrix diode](../../../assets/schematics/schematic_key_block.png)
-
-This is what makes every key independent: each has its own OLED to draw a legend on and its own RGB
-LED, addressed through the shift-register block below.
 
 ## Shift registers — pin expansion
 

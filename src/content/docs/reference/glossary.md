@@ -30,7 +30,7 @@ A quick reference for terms used across the PolyKybd documentation, firmware, an
 : The per-keycap image data shown on a key's OLED — 360 bytes per keycap, pushed from the host over HID (RLE- or PRC-compressed).
 
 **PRC**
-: Predictive Range Coding, the keycap-image encoding added in protocol v19. A context-model binary arithmetic coder: 10 already-decoded pixels form a context, a fixed 1 KB table maps it to a probability, and a range coder codes each pixel of the ROI against it, so a typical icon's coded payload is about 28 bytes, plus a 6-byte record header. See [PRC in the HID protocol reference](/reference/hid-protocol/#prc-predictive-range-coding).
+: Predictive Range Coding, the compressed keycap-image encoding added in protocol v19. A typical icon codes to about 28 bytes plus a 6-byte header. See [PRC in the HID protocol reference](/reference/hid-protocol/#prc-predictive-range-coding).
 
 **MRU**
 : Most-Recently-Used overlay cache. A fast path that re-applies previously sent overlay sets when switching back to a recently used application.
@@ -57,7 +57,7 @@ A quick reference for terms used across the PolyKybd documentation, firmware, an
 : The standalone tool (in the Adafruit-GFX repo) that converts TTF/OTF fonts into Adafruit GFX `.h` bitmap headers for the firmware.
 
 **Handedness stamp**
-: How each half knows which side it is — a record in a flash sector of its own, so it survives an EEPROM loss. It sets the side only, not which half talks to the computer. PolyKybd deliberately does *not* use QMK's `EE_HANDS`, which keeps the same marker in the emulated EEPROM: a torn write there clears the whole store, and a cleared byte reads as a confident `right`, so a half comes up on the wrong side with nothing reporting anything wrong.
+: How each half knows which side it is — a record in a flash sector of its own, so it survives an EEPROM loss. It sets the side only, not which half talks to the computer. PolyKybd does not use QMK's `EE_HANDS`, because a cleared EEPROM byte reads as `right` and a half can come up on the wrong side without warning.
 
 **Split sync**
 : The CRC32-validated UART transactions that synchronise state and overlay data between the two keyboard halves.

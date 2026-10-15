@@ -6,12 +6,8 @@ description: Collect PolyKybdHost's logs into a single file and file a bug repor
 import { Aside } from '@astrojs/starlight/components';
 import SupportedSince from '../../../components/SupportedSince.astro';
 
-When something goes wrong, the useful answer is almost always in the logs — but
-PolyKybdHost writes **six** of them, most with their own rotated backups, and under the
-default daemon setup the interesting half belongs to the background daemon rather than
-the tray app you were looking at.
-
-So you never have to go hunting: two entries under **Help & About** do it for you.
+PolyKybdHost writes several logs, split between the tray app and the background daemon.
+Two entries under **Help & About** collect them for you.
 
 | Entry | Use it when |
 |---|---|
@@ -63,10 +59,8 @@ That crash-log line is a count, not a diagnosis:
 Crash log        : 1 session(s), 0 clean exit(s), 1 native fault dump(s), newest marker 2026-08-15 09:00:00
 ```
 
-It never claims the app crashed, and a session with no matching clean exit is not by
-itself bad news — the app writing the report is one such session, and so is a running
-daemon. It is there so whoever reads the issue can tell at a glance whether the attached
-file has a crash in it.
+A session without a clean exit is not a crash by itself. The app writing the report is
+one such session, and so is a running daemon.
 
 Paths are stripped of your account name, and on a forwarder machine the address of the
 computer it forwards to is masked — an issue tracker is public.
@@ -123,8 +117,7 @@ meanwhile; the alert is information, not an error you have to act on.
 
 <Aside type="note">
 The firmware records crashes from protocol 16 on. Reading the record on every keyboard
-boot needs PolyKybdHost 1.14.0 or later. Older versions only noticed a crash from the
-keyboard's console, so one the keyboard recovered from on its own could go unreported.
+boot needs PolyKybdHost 1.14.0 or later.
 </Aside>
 
 ## Catching a crash that only happens now and then
@@ -164,10 +157,7 @@ describing your setup, your settings with any secrets removed, and a `README.txt
 stating the timeframe and whether titles were masked.
 
 The timeframe applies to the rotating logs. **Crash markers and native fault dumps are
-always included in full**, whichever window you pick — a fault dump is written at the
-instant of the crash and carries no timestamp of its own, so filtering it by time would
-be as likely to throw away the crash you are reporting as to keep it. That file is small
-and never rotated, so it always travels whole.
+always included in full**, whatever timeframe you pick.
 
 <Aside type="caution">
 Masking is **off** by default here, because a bundle you inspect yourself is a
@@ -178,9 +168,8 @@ rather not include them.
 
 ## From the command line
 
-`polyctl logs` does the same things without the GUI — and, unlike every other
-`polyctl` command, it **works with the host stopped**. That is deliberate: the moment
-you most need the logs is the one where the app failed to start or the daemon died.
+`polyctl logs` does the same things without the GUI. Unlike every other `polyctl`
+command, it **works with the host stopped**, so you can use it when the app will not start.
 
 ```sh
 # Write a support .zip of the last 24 hours
@@ -202,12 +191,10 @@ daemon started from a different working directory — point at them with `--log-
 
 ## On the forwarder
 
-Both entries are under **Help & About** in the [forwarder](/using/multi-machine/)'s tray
-menu too, in the same place as here, and this matters more than it looks: the forwarder
-runs on a **different machine** from the keyboard, so its logs can never appear in a
-bundle collected on the keyboard side. Its reports say **FORWARDER mode** on the first
-line and describe which report transport it uses, so the two machines' reports can't be
-mistaken for each other.
+Both entries are also under **Help & About** in the [forwarder](/using/multi-machine/)'s
+tray menu. The forwarder runs on a **different machine** from the keyboard, so its logs
+never appear in a bundle collected on the keyboard side. Its reports say
+**FORWARDER mode** on the first line.
 
 If overlays are not following a forwarded window, collect from **both** machines —
 [If it does not work](/using/multi-machine/#if-it-does-not-work) lists which log carries

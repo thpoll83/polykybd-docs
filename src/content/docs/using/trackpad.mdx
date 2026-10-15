@@ -8,9 +8,7 @@ import SupportedSince from '../../../components/SupportedSince.astro';
 
 <SupportedSince firmware="0.25.0" note="PolyKybd gesture layer" />
 
-The **split72** right half carries a circular **Cirque** trackpad under the thumb. Since firmware
-0.25.0 the gestures are decided by PolyKybd's own firmware rather than by the sensor chip, which
-is what makes the zones land where your thumb actually reaches.
+The **split72** right half carries a circular **Cirque** trackpad under the thumb.
 
 <Aside type="note">
 split42 has no trackpad. On split72 the pad goes on the **right** half; the firmware does not
@@ -34,12 +32,6 @@ scrolls up, for as many turns as you like. You can also start a dial anywhere on
 ring** near the pad's edge — the top-left wedge exists because the ring is narrow on the axes and
 a wedge stays a generous target.
 
-<Aside type="tip">
-Both special zones sit at the **far** edge of the pad. The near edge is hard against the key
-wells, so reaching it means curling your thumb back into the keys — the zones are placed where
-the thumb already travels, not where the geometry is tidiest.
-</Aside>
-
 ## The pad on the status OLED
 
 While your thumb is on the pad, the right half's **128×64 status OLED** switches to a pad view: a
@@ -61,19 +53,16 @@ and the right-click corner and dial ring stop being something you have to rememb
 
 ## Tracking feel
 
-Cursor motion is filtered in firmware: a median of the last three samples removes single-sample
-spikes, a one-pole low pass smooths the rest, and a glitch cap discards jumps no finger could
-make. Acceleration carries its remainder between reports, so slow tracking stays steady and a
-fast flick still crosses the screen.
+The firmware filters out jitter and stray jumps. Slow tracking stays steady, and a fast flick
+still crosses the screen.
 
 A tap has to be a real press. Resting contact and hover are ignored, so the pad will not click
 because your thumb happens to be lying on it.
 
 ## Going back to the stock behaviour
 
-The stock Cirque gestures are still in the tree as an A/B escape hatch. They are **not**
-recommended — the sensor picks its corner before the firmware rotates the coordinates, so the
-stock right-click corner lands at 11 o'clock and neither of its scroll gestures fires at all.
+The stock Cirque gestures are still available as a build option. They are **not**
+recommended: the right-click corner lands at 11 o'clock and scrolling does not work.
 
 If you want to build them anyway:
 

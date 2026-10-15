@@ -31,11 +31,6 @@ beside it tells you how long the layer stays:
 | bolt | **one-shot** — it applies to the next key you press, then drops | `Util` on the default keymap |
 | `!` | a **switch** — it stays on until you switch back | `Base`, and the `Nm` / `Util` keys bound to switch |
 
-Before this, `Fn`, `Nm` and `Util` looked alike whichever they were, so the only way to
-find out was to press one and watch. The same three keycaps can carry any of the three
-behaviours depending on how they are bound, which is exactly why the mark is on the key
-rather than in a table you have to remember.
-
 <Aside type="note">
 Both marks are built into the firmware rather than supplied by a font pack, so they draw on
 a keyboard that has never been connected to the host app.
@@ -81,14 +76,7 @@ the Eden replay (the intro, then the [tutorial](/using/first-run/)), [demo mode 
 appear: on split72 as one row, on split42 each at its own place in the layer. Leave the layer
 and they hide themselves again.
 
-That is not decoration. `Restart` and `Boot` are one tap from a layer you open to change the OS
-pin, and neither is undoable from the keyboard — so they, and everything else on that row, take
-a deliberate second press to reach.
-
-<Aside type="note">
-Keys behind `More…` are **inert as well as blank** while hidden — a key that renders nothing but
-still reboots the board would be worse than a visible one.
-</Aside>
+This keeps `Restart` and `Boot` from being pressed by accident.
 
 ### Board info on the status display
 
@@ -99,9 +87,6 @@ what the board *is*** — the numbers you would otherwise have to ask the host f
 log.
 
 ![The status displays of both halves showing the board-info screen: firmware version, protocol and hardware version, USB or link role with uptime, and split-link health](../../../assets/using/status-oled-telemetry.png)
-
-The numbers above are from a development board — yours will differ, and the firmware version
-shown is whatever that board happened to be running, not the one this screen needs.
 
 | Line | Means |
 |---|---|
@@ -149,10 +134,8 @@ label over the current value (`IDLE:` / `Eden`), the layout picks show their nam
 unlit switch, and the modifier/command legend keys read `Mods` / `Icon` or `Cmds` / `Text`
 depending on which rendering is active.
 
-The idle **timeout** key sits next to the idle-style one and follows the same rule, except that
-its top line is a small clock face rather than a word — two neighbours both reading `IDLE:` would
-be the one place this convention stopped helping. So it shows the clock over `2min`, and each tap
-steps to the next preset.
+The idle **timeout** key sits next to the idle-style one. It shows a small clock face over the
+current value, such as `2min`, and each tap steps to the next preset.
 
 ## The function layer
 
@@ -218,13 +201,8 @@ corner, so you can see which finger holds what instead of memorising the table a
   accented characters would be a nasty surprise.
 </Aside>
 
-If a hold ever fires when you meant to type, that is what the tap-hold tuning is for:
-the keyboard uses a 200 ms tapping term together with QMK's **chordal hold** and **Flow
-Tap**, which between them suppress a modifier on ordinary fast rolls. Settling as *held*
-on any other keypress is deliberately switched off.
-
-Workman's bottom row also gained its missing `<` / `\` key, which had been a second `B`
-by mistake.
+The keyboard uses a 200 ms tapping term with QMK's **chordal hold** and **Flow Tap**, so
+fast rolls do not trigger a modifier.
 
 ## Where the keymap lives
 
@@ -248,12 +226,8 @@ See [Keyboard Variants](/firmware/variants/) for why the logic is shared.
 ## Customizing with PolyKybdHost
 
 <Aside type="caution" title="Updating to v0.15.14 clears a customised keymap, once">
-This version merged two near-identical function layers into one, which shifts the internal
-numbering of every layer above it. The keyboard stores your remaps *by layer number*, so it
-clears them once on the first boot after the update rather than serving them on the wrong
-layers. Any custom layout needs re-applying — after that, updates leave it alone as usual.
-The layout editor also now offers **eight** remappable layers instead of nine, since one of
-the two it merged is gone.
+Updating from an older version clears your remaps once, on the first boot. Apply them again
+after the update. Later updates keep them. The layout editor offers **eight** remappable layers.
 </Aside>
 
 The easiest way to remap keys is through the PolyKybdHost keymap editor, which writes changes

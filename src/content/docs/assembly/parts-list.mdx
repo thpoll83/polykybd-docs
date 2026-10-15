@@ -32,10 +32,6 @@ This page lists every part needed for a complete PolyKybd Split72 build.
 If you use CNC aluminium cases instead of resin-printed ones, add threaded inserts to the screw holes. Resin prints accept M3 screws directly.
 </Aside>
 
-<Aside type="tip">
-If a resin case is slightly warped, use a hair dryer to soften it, then press it flat under a heavy object — it really works.
-</Aside>
-
 ### Switches & keycaps
 
 | Part | Quantity | Notes |
@@ -124,16 +120,15 @@ Either of these fits the PCB footprint:
 | Trackpad (smaller) | Cirque TM023023-2024-002 (23mm) | Same wiring; a smaller target for the same gestures |
 
 <Aside type="caution">
-A trackpad only works on the **right** half — the firmware reads the pad there
-(`POINTING_DEVICE_RIGHT`) and its gesture zones were measured on a right-hand mount. See
+A trackpad only works on the **right** half. The firmware reads the pad there only
+(`POINTING_DEVICE_RIGHT`). See
 [Trackpad](/using/trackpad/).
 </Aside>
 
 <Aside type="tip">
 **Take the 35mm pad.** The firmware is configured for it (`CIRQUE_PINNACLE_DIAMETER_MM 35`),
-and the gesture zones — the right-click corner and the dial ring — were fitted to corners
-measured on a 35mm pad. A 23mm pad still works, but it packs the same zones into a target
-barely a third of the area, and the fit was not measured on one.
+and the gesture zones were fitted on a 35mm pad. A 23mm pad works, but it packs the same zones
+into about a third of the area.
 </Aside>
 
 Either pad needs a 3D-printed holder:

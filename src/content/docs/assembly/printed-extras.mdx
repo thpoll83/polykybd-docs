@@ -19,13 +19,7 @@ sitting at 5 degrees or more.
 | Legs, 8 per plate | `parts/export/legs/legs_r2_8p.stl` |
 
 One plate is the whole set: **eight legs in four mirrored pairs**, 119 × 39 × 3.8 mm, so a single
-print does both halves. `legs_v0_1p.stl` beside it is an older single leg, kept for reference.
-
-<Aside>
-The legs are 3.8 mm thick — exactly the same as the plate-to-PCB spacer, which is why the two are
-easy to confuse if you are looking at bare meshes rather than at
-[`parts/README.md`](https://github.com/thpoll83/PolyKybd/blob/master/parts/README.md).
-</Aside>
+print does both halves.
 
 The source is `parts/legs/legs.scad`; re-export it with `parts/build_parts.sh legs`.
 
@@ -55,13 +49,10 @@ It is notched on **both** faces, so the one part serves either half — see
 Print it in resin (SLA). It is a fine, spidery part, and the web is deliberately close to the
 minimum wall a print service will accept.
 
-### Why it is generated, not modelled
+### Changing the plate
 
-The frame is not drawn by hand — `parts/diffuser/gen_diffuser_frame.py` reads the plate PCB
-(`poly_kybd/poly_kybd_split72_plate_<side>.kicad_pcb`) directly and emits the OpenSCAD from it.
-The board is the authoritative source for where every LED hole is and how it is rotated; the
-Split72's thumb keys sit at up to 20 degrees off axis, and those rotations are lost in the SVG
-exports.
+The frame is generated from the plate PCB
+(`poly_kybd/poly_kybd_split72_plate_<side>.kicad_pcb`) by `parts/diffuser/gen_diffuser_frame.py`.
 
 So if you change the plate, regenerate rather than nudge the model:
 
@@ -70,13 +61,10 @@ parts/diffuser/build_frame.sh          # regenerate from the PCB, export, verify
 parts/diffuser/build_frame.sh --check  # verify the committed meshes only
 ```
 
-The verify step is not decoration — `parts/diffuser/check_frame.py` gates the result on
-watertightness, minimum wall thickness, left/right symmetry, whether the frame is trapped by the
-plate, and clearance against the spacer in both flip orientations.
+The verify step runs `parts/diffuser/check_frame.py`, which checks watertightness, minimum wall
+thickness, left/right symmetry, the fit in the plate and clearance against the spacer.
 
 ### The older diffuser
 
-Before the frame there were **loose caps**: 76 individual light pipes on a torus sprue
-(`parts/export/diffuser/diff_v2.stl`, from `parts/diffuser/led_caps.scad`), clipped in one at a
-time. It still prints, and it is what earlier builds used, but the frame is much less fiddly to
-assemble.
+Earlier builds used 76 loose light pipes (`parts/export/diffuser/diff_v2.stl`), clipped in one at
+a time. They still print, but the frame is much easier to fit.

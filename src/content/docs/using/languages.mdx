@@ -32,12 +32,6 @@ Pick a language and PolyKybd does two things at once:
 Your selection persists across reboots. Because the language list is shared by both hardware
 variants, [split72 and split42](/firmware/variants/) support the same set of languages.
 
-<Aside type="tip">
-The layouts cover everything from US/UK/DE/FR/ES variants to minority and regional locales. Some are
-folds (same physical layout, different OS locale), others are full distinct layouts with their own
-AltGr legends.
-</Aside>
-
 <Aside type="note">
 Want to restyle the legends themselves — Tengwar, runes, Braille — without changing what the keys
 type? That's a separate, cosmetic feature: [Glyph Scripts](/using/glyph-scripts/).
@@ -59,12 +53,10 @@ only when the key actually has something to show: on most layouts a plain letter
 preview, because its capital is no surprise.
 
 <Aside type="tip" title="Crowded scripts get a smaller AltGr hint">
-Since firmware **0.17.3**, on layouts whose letters are wide — Arabic and several Indic scripts —
-the AltGr hint is drawn at half size so it does not crowd the letter or run into the Shift preview:
+On layouts with wide letters, such as Arabic and several Indic scripts, the AltGr hint is drawn
+at half size (firmware **0.17.3** and later):
 
 ![An Arabic layout's key: the Arabic letter large, a bracket in the upper right, and a noticeably smaller Arabic AltGr hint in the lower right](../../../assets/using/legend-altgr-half.png)
-
-A hint that is only a combining mark stays full size — halving one of those would leave a dot.
 </Aside>
 
 ## The Intl layer: accented letters on demand
@@ -149,10 +141,8 @@ your keycaps.
 
 The picker row holds 12 variations at a time on split72 and 10 on split42, so the richest letters
 span several pages. The two **page arrows** sit at the **outer ends** of the row — back on the far
-left of the left half, forward on the far right of the right half — the same places the emoji and
-language layers put theirs, so paging is one gesture everywhere. They **wrap** in both
-directions — past the last page returns to the first, before the first returns to the last — so you
-can never get stranded partway through a letter.
+left of the left half, forward on the far right of the right half. They **wrap** in both
+directions.
 
 | | Letters that page | Most pages |
 |---|---|---|
@@ -213,10 +203,8 @@ usual cause: see [Unicode input](#unicode-input) below.
 </Aside>
 
 <Aside type="note">
-The Intl key is on the [split72](/firmware/variants/) keymap. It is not currently bound on split42,
-whose smaller key count leaves no obvious home for it — you can add it yourself in the
-[keymap editor](/using/keymap-editor/), and the layer behind it is ready: split42 carries the full
-10-slot picker row and its page arrows.
+The Intl key is on the [split72](/firmware/variants/) keymap only. On split42 you can add it in the
+[keymap editor](/using/keymap-editor/), and the layer behind it works there too.
 </Aside>
 
 ## Japanese: ja-JP and ja-US
@@ -292,11 +280,9 @@ Option is the macOS key that types characters (⌥E for an accent, ⌥2 for ™)
 into the firmware, so they show even without a font pack. On every other language the key shows
 that layout's Non-US Backslash legend.
 
-The keyboard cannot see which mode the IME is in. For Korean that is no problem, because 한/영 is
-a toggle on every OS. On ja-US, and on ja-JP under macOS, the keyboard remembers which mode it
-last selected and sends the next one by name, never as a toggle. (ja-JP's Caps Lock on Windows and
-Linux needs no memory: it is the OS's own key.) If you change the mode another way, with the mouse, Alt+` or
-a Caps Lock shortcut, the next press can select the mode you are already in. Press once more and
+On ja-US, and on ja-JP under macOS, the keyboard cannot see the IME's mode. If you change the
+mode another way (the mouse, Alt+` or a Caps Lock shortcut), the next press can select the mode
+you are already in. Press once more and
 the key is back in step.
 
 <Aside type="note" title="A keyboard with a saved keymap keeps the old key">
