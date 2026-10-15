@@ -273,11 +273,10 @@
    16:9 tile fits the viewport width minus 32px and the strip fits under the
    header. A tile is never wider than the viewport minus 32px.
    public/js/showcase-strip.js widens the panel to the full viewport. Where
-   all tiles fit, they sit centred in one row. Where they do not, the panel
-   and the hero above it stick under the header together, and vertical
-   scrolling moves the row from left to right; once the last tile is in view
-   the page scrolls on. Without
-   JavaScript the strip stays in the column and scrolls sideways on its own. */
+   all tiles fit, they sit centred in one row. Where they do not, the whole
+   page column (hero, strip and the content below it) sticks under the
+   header, and vertical scrolling moves the row from left to right; once the
+   last tile is in view the page scrolls on. Without JavaScript the strip stays in the column and scrolls sideways on its own. */
 .pk-strip {
   margin-block: 0 2rem;
 }
@@ -320,17 +319,19 @@
   padding-inline: 16px;
   will-change: transform;
 }
-/* Built by showcase-strip.js when the row needs to scroll: the hero and the
-   strip in one block that sticks under the header (its top is set inline),
-   with a trimmed hero padding so both fit the viewport together. */
-.pk-stage {
+/* Built by showcase-strip.js when the row needs to scroll: .pk-pin wraps the
+   page column (hero, strip and everything below), which sticks under the
+   header (its top is set inline) while a spacer after it supplies the scroll
+   distance. The hero padding and the gap under the strip shrink so the hero,
+   the strip and the heading after it fit the viewport. */
+.pk-pin > .sl-container {
   position: sticky;
 }
-.pk-stage .hero {
+.pk-pin .hero {
   padding-block: 2rem;
 }
-.pk-stage .pk-strip {
-  margin-block: 0 1.5rem;
+.pk-pin .pk-strip {
+  margin-block-end: 1rem;
 }
 
 /* Full-screen lightbox, created on click by public/js/photo-zoom.js. */
