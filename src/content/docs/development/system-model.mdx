@@ -222,7 +222,7 @@ flowchart TD
   T["Window-tracking tick<br/>(every 0.25 s)"] --> E{"Overlays Enabled?"}
   E -- no --> X["No read,<br/>nothing generic"]
   E -- yes --> A{"Artwork covers<br/>this app?"}
-  A -- "yes, Add Shortcut Icons off<br/>(the default)" --> N["No read: artwork, plus the<br/>Escape mark if Add Escape Mark is on"]
+  A -- "yes, Add Shortcut Icons off" --> N["No read: artwork, plus the<br/>Escape mark if Add Escape Mark is on"]
   A -- "no, or Add Shortcut Icons on" --> I{"Shortcut Icons<br/>Enabled?"}
   I -- no --> Y["No read:<br/>no shortcut icons"]
   I -- yes --> F{"Forwarded from<br/>another computer?"}
