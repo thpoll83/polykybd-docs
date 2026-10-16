@@ -86,5 +86,5 @@ pushed commit message, or start the workflow by hand with the `perf` tier.
 The job only reports. It never fails a pull request on a slower number, because
 wall-clock timings on shared hardware vary from run to run, and a check that fails at
 random teaches people to ignore it. The baseline is never updated automatically either,
-so a slow regression cannot creep in one run at a time.
+so a series of small slowdowns cannot become the new baseline without review.
 

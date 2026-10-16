@@ -6,7 +6,7 @@ description: Set keycap brightness by hand, follow the daylight automatically, o
 import { Aside } from '@astrojs/starlight/components';
 
 The per-key OLEDs can be dimmed and brightened three different ways. Whichever you use, a
-**manual** change always wins until you re-enable automatic mode.
+**manual** change always takes priority until you re-enable automatic mode.
 
 ## Manual
 
@@ -15,12 +15,11 @@ The per-key OLEDs can be dimmed and brightened three different ways. Whichever y
   under **Settings → Brightness**.
 - **Command line** — `polyctl brightness <0–100>`.
 
-A manual set switches automatic mode off, so the board holds exactly the level you picked.
+A manual set switches automatic mode off, so the keyboard keeps exactly the level you picked.
 
 ### Going back to automatic
 
-A manual level sticks until something turns automatic mode back on — the keyboard will
-not do it by itself, not even after the sun comes up. To hand control back, choose
+A manual level stays until you turn automatic mode back on. To do that, choose
 **Brightness → Back to automatic** in the tray (or run `polyctl brightness --auto`).
 
 ![The tray Brightness submenu: Off, 1%, 50% and 100% presets, then a separated "Back to automatic" entry](../../../assets/software/tray-brightness-submenu.png)
@@ -31,9 +30,9 @@ the keyboard back on its own stored level.
 
 ## Adaptive (daylight)
 
-PolyKybdHost can follow the sun: with location access enabled it computes the solar
-irradiance for your position and time of day and drifts the brightness up during the day and
-down in the evening. Enable it under **Settings → Brightness**. It refreshes roughly every ten
+PolyKybdHost can adjust to daylight: with location access enabled it computes the solar
+irradiance for your position and time of day and slowly raises the brightness during the day and
+lowers it in the evening. Enable it under **Settings → Brightness**. It refreshes roughly every ten
 minutes.
 
 It uses two online lookups, each with its own switch under **Settings → Brightness**:
@@ -43,7 +42,7 @@ It uses two online lookups, each with its own switch under **Settings → Bright
 - **Allow Online Irradiance Request** asks `open-meteo.com` for this hour's sunlight at that
   location, clouds included. Without it, the host computes the sunlight of a cloudless sky.
 
-If the curve does not suit your room, **Gamma** and the **Irradiance** values reshape it; see
+If the curve does not suit your room, **Gamma** and the **Irradiance** values change it; see
 the [Settings Reference](/software/settings/#brightness).
 
 ## On-board light sensor (optional)
@@ -51,7 +50,7 @@ the [Settings Reference](/software/settings/#brightness).
 ![The Pimoroni LTR-559 light and proximity sensor breakout, roughly a fingertip across](../../../assets/using/ltr559-breakout.jpg)
 
 The **Split72** has an expansion port for an optional ambient-light + proximity sensor
-(Pimoroni LTR-559). If one is fitted, the keyboard drives its **own** brightness from the
+(Pimoroni LTR-559). If one is fitted, the keyboard sets its **own** brightness from the
 measured light level — much faster than the host's daylight estimate (roughly twice a second)
 — and overrides the host's daylight value while automatic mode is on.
 
@@ -59,18 +58,14 @@ The same sensor reads **proximity**: reach toward the keyboard and the displays 
 even press a key.
 
 <Aside type="note">
-The sensor is entirely optional and side-agnostic — it works on whichever half it's soldered
+The sensor is entirely optional. It works on whichever half it is soldered
 to, and a keyboard without one simply uses the manual/daylight paths above. It is a Split72-only
 feature (the Split42 has no expansion port).
 </Aside>
 
 <Aside type="tip">
 Fitting the sensor is the **very first** assembly step — it does not fit through the plate hole,
-so it can't be added later without a near-complete teardown. See the soldering instructions in the
+so it can't be added later without taking the keyboard almost completely apart. See the soldering instructions in the
 [Step-by-Step Build Guide](/assembly/step-by-step/) and the [Parts List](/assembly/parts-list/#ambient-light--proximity-sensor-highly-recommended).
 </Aside>
 
-<Aside type="tip">
-A manual brightness change (preset keys or an explicit set) always takes over from any automatic
-source until you turn automatic mode back on or reboot — so you're never fighting the sensor.
-</Aside>

@@ -5,29 +5,28 @@ description: How to use the PolyKybdHost tray application — the menu, settings
 
 import { Aside } from '@astrojs/starlight/components';
 
-Once PolyKybdHost is running, it lives in your system tray (Windows) or menu bar (macOS). A small PolyKybd icon indicates it is active and connected. The tray app is a client of the background daemon that owns the keyboard — see [Daemon & Client Model](/software/architecture/).
+Once PolyKybdHost is running, it runs in your system tray (Windows) or menu bar (macOS). A small PolyKybd icon indicates it is active and connected. The tray app is a client of the background daemon that owns the keyboard — see [Daemon & Client Model](/software/architecture/).
 
 ## System tray menu
 
-Right-click the tray icon. The menu is deliberately short — everything you need for
-normal use, and nothing else:
+Right-click the tray icon:
 
 ![The PolyKybdHost tray menu: a status line naming the connected Split72 and its firmware, then Pause, Selected Language, Brightness, Idle Display, Keycap Script, Configure Keymap, Updates, Maintenance, Settings, Help & About and Quit](../../../assets/software/tray-menu.png)
 
 | Entry | What it does |
 |---|---|
 | *Status line* | The connected keyboard and its firmware. Clicking it is a shortcut for **Pause** below. |
-| **Pause** | Stop talking to the keyboard — it keeps typing, the overlays just stop updating. Reads **Resume** while paused. |
+| **Pause** | Stop communicating with the keyboard. The keys still type, but the overlays stop updating. Reads **Resume** while paused. |
 | **Language** | Pick the keyboard's layout language, grouped by region. |
 | **Brightness** | Keycap brightness presets, plus **Back to automatic** — see [Display Brightness](/using/brightness/). |
 | **Idle Display** | What the keycaps do while you're away, and — under **Idle After** — how long they wait first. See [Idle & Burn-in Protection](/using/idle/). |
-| **Keycap Script** | Theme the letter legends — see [Glyph Scripts](/using/glyph-scripts/). |
+| **Keycap Script** | Change the style of the letter legends — see [Glyph Scripts](/using/glyph-scripts/). |
 | **Configure Keymap** | Remap keys without reflashing — see [Keymap Editor](/using/keymap-editor/). |
 | **Updates** | Host app, keyboard firmware, keyboard fonts, and [WinCompose](/software/wincompose/) (Windows). |
 | **Maintenance** | Fix left/right sides, reset overlays or the keymap, flash a firmware file, enter the bootloader. See [below](#maintenance). |
 | **Settings** | Interface language, theme, brightness, unicode mode, daemon mode and the rest. The [Settings Reference](/software/settings/) explains each one a user may want to change. |
 | **Help & About** | About, the log viewer, **Open config folder**, and — when something goes wrong — **Report a Problem…** and **Collect logs…** (see [Reporting a Problem](/software/reporting-problems/)). |
-| **Quit** | Close the tray app. The daemon keeps running, so the keyboard stays live. |
+| **Quit** | Close the tray app. The daemon keeps running, so the keyboard stays connected. |
 
 Two entries only appear when they apply: **Install WinCompose…** while
 [WinCompose](/software/wincompose/) is not running, and a **Firmware newer than this
@@ -42,7 +41,7 @@ fully know yet (click it to choose how to handle that).
 </Aside>
 
 <Aside type="tip">
-**Updates → Keyboard fonts** tells you the answer before you click: it reads either
+**Updates → Keyboard fonts** shows the status before you click: it reads either
 *"Keyboard fonts: up to date"* or *"Update keyboard fonts (2)…"* with the outdated
 bundles named in its tooltip. See [Font Packs](/firmware/font-packs/).
 </Aside>
@@ -51,7 +50,7 @@ bundles named in its tooltip. See [Font Packs](/firmware/font-packs/).
 
 | Entry | What it does |
 | --- | --- |
-| **Fix Left/Right Side** | Tells the keyboard which half the USB cable is plugged into, when a half came up on the wrong side. Both halves restart onto it. Same as `polyctl handedness`. |
+| **Fix Left/Right Side** | Tells the keyboard which half the USB cable is plugged into, when a half started as the wrong side. Both halves restart with the new setting. Same as `polyctl handedness`. |
 | **Reset overlays** | Clears the overlay images the keyboard holds. |
 | **Reset keymap to default…** | Puts layers 0 to 7 back to the firmware's default keymap, encoders included, and **deletes every [macro](/using/macros/)**. It asks first. There is no undo. |
 | **Flash firmware file (.bin)…** | Installs a firmware `.bin` over USB. See [Firmware updates](#firmware-updates). |
@@ -59,8 +58,8 @@ bundles named in its tooltip. See [Font Packs](/firmware/font-packs/).
 
 ### Developer mode
 
-Diagnostic and power-user tools — overlay resets, font-pack inspection, staged
-firmware, keymap dumps — live in a separate **Developer** submenu that is hidden by
+Diagnostic and advanced tools (overlay resets, font-pack inspection, staged
+firmware, keymap dumps) are in a separate **Developer** submenu that is hidden by
 default. Turn it on in **Settings → Developer → Mode** (then restart the app), or start
 with `--dev` for one session.
 
@@ -68,7 +67,7 @@ with `--dev` for one session.
 
 Beyond what the screenshot shows:
 
-- **Inspect MRU Cache…** shows the host's overlay cache: which images it believes the keyboard
+- **Inspect MRU Cache…** shows the host's overlay cache: which images it expects the keyboard
   already holds. It is missing when the tray app is a client of the daemon, the default.
 - **Mock Keyboard…** shows the keycaps of the simulated keyboard the host runs with no
   keyboard attached (`dev_mock_enabled`).
@@ -78,14 +77,12 @@ Beyond what the screenshot shows:
   status, sync, re-flash or wipe the bundles, and stage a firmware file without applying it
   (then apply it later).
 
-Switching it on **only adds** the Developer submenu; nothing else in the menu moves,
-so you can leave it on without relearning where things are.
+Switching it on **only adds** the Developer submenu. Nothing else in the menu moves.
 
 <Aside type="note">
-The screenshots on this page are rendered from the app itself, so they show the real
-labels and order. Your desktop draws its own menu style, and a couple of entries are
-conditional — "Quit && stop background daemon" appears when a daemon owns the keyboard
-(the default), and the in-process-only debugging entries are absent in that mode.
+The screenshots are rendered from the app. Your desktop draws its own menu style.
+"Quit && stop background daemon" appears when a daemon owns the keyboard, which is the
+default.
 </Aside>
 
 ## Interface language
@@ -110,13 +107,11 @@ Kong get Traditional Chinese.
 To pick a language yourself, open **Settings → Ui → Language**. Each language is listed
 in its own name, so you can find yours even after picking one you cannot read.
 **Automatic** goes back to following the system and shows which language that resolves
-to. A change asks to restart the tray app. In the default daemon mode the restart keeps
-the keyboard connected, because the background daemon owns it. When the app runs
-without a daemon (`--no-daemon`, or when the daemon could not start), the restart
-reconnects to the keyboard after a few seconds.
+to. A change asks to restart the tray app. The keyboard stays connected, or reconnects
+within a few seconds when the app runs without the daemon.
 
 In Arabic and Persian the whole interface is laid out right to left. The keymap editor's
-drawing of the keyboard stays the right way round, because the hardware does not flip.
+drawing of the keyboard is not mirrored, because the hardware does not change.
 
 Some text stays English on purpose:
 
@@ -132,7 +127,7 @@ Some text stays English on purpose:
   language is one file, `polyhost/res/locale/<code>.po`.
 </Aside>
 
-## What the app drives
+## What the app controls
 
 The tray app is the front-end for the keyboard's live features — each has its own page under
 **Using the Keyboard**:
@@ -140,7 +135,7 @@ The tray app is the front-end for the keyboard's live features — each has its 
 - [Context-Aware Overlays](/using/overlays/) — the keycaps follow your active window automatically.
 - [Display Brightness](/using/brightness/) — presets in the **Brightness** submenu, adaptive daylight (**Settings → Brightness**), or the optional light sensor.
 - [Languages & Unicode Input](/using/languages/) — the OS unicode mode selected on the keyboard is synced here, and settable from the Settings dialog.
-- [Glyph Scripts](/using/glyph-scripts/) — theme the legends from the **Keycap Script** submenu.
+- [Glyph Scripts](/using/glyph-scripts/) — change the style of the legends from the **Keycap Script** submenu.
 
 The app also sends an anonymous once-a-day usage report, which you are told about on first
 run and can switch off under **Settings → Telemetry** — see
@@ -148,12 +143,13 @@ run and can switch off under **Settings → Telemetry** — see
 
 ## Firmware updates
 
-You can flash new firmware directly from the tray: **Updates → Check for keyboard firmware
-update…** fetches the latest release for you, and **Maintenance → Flash firmware file
-(.bin)…** takes a `.bin` you already have. If the keyboard does not report its firmware
-version, the check still offers the newest release and shows the installed version as
-"unknown". Without a connected keyboard, it says so instead of waiting. This needs
-PolyKybdHost 1.17.18 or later. Flashing works over HID and is available even when the keyboard is on a protocol version the rest of PolyKybdHost doesn't fully support, so a mismatched keyboard can always be updated. The same operation is available from the command line with `polyctl fw flash` — see [Command Line](/software/cli/) and [Flashing Firmware](/setup/flashing/).
+You can flash new firmware from the tray. **Updates → Check for keyboard firmware
+update…** fetches the latest release, and **Maintenance → Flash firmware file
+(.bin)…** takes a `.bin` you already have. From PolyKybdHost 1.17.18 the check also
+works when the keyboard does not report its version. Flashing works even when the
+keyboard's protocol does not match this app. From the command line, use
+`polyctl fw flash`. See [Command Line](/software/cli/) and
+[Flashing Firmware](/setup/flashing/).
 
 ## Installing WinCompose (Windows)
 
@@ -163,10 +159,8 @@ running, the tray menu offers **Install WinCompose…**: it downloads PolyKybd's
 from GitHub and starts the installer (Windows asks you to confirm the elevation).
 
 The entry appears only on Windows, and only while WinCompose is not running — it
-disappears by itself once WinCompose is up. At that point the keyboard is switched to
-compose mode straight away; the unicode input mode is otherwise only sent when the
-keyboard connects, so no replug is needed. `polyctl unicode-mode` does the same
-re-detection from the command line.
+disappears by itself once WinCompose is running, and the keyboard switches to compose mode
+immediately, without reconnecting the keyboard. `polyctl unicode-mode` does the same from the command line.
 
 ## Debug logging
 
@@ -185,7 +179,7 @@ instead and start the app normally.
 The Log Viewer (tray menu → **Help & About → Log file…**) shows the same output in a GUI window. When running with the daemon, its activity appears under the **Daemon Log** tab.
 
 To send those logs to someone — or to file a bug with them attached — use **Help & About
-→ Report a Problem…** or **Collect logs…** rather than hunting for the files. Both are
+→ Report a Problem…** or **Collect logs…** instead of searching for the files. Both are
 described in [Reporting a Problem](/software/reporting-problems/), along with the
 `polyctl logs` equivalents that work even when the app will not start.
 

@@ -8,10 +8,10 @@ import { Aside } from '@astrojs/starlight/components';
 _Last updated: 2026-10-15_
 
 This documentation site uses **Google Analytics 4** to count visits, so we can see which
-pages people actually read and which ones nobody can find. It is **off until you say yes** —
-nothing is stored in your browser unless you accept the small 🍪 prompt in the corner.
+pages people actually read and which ones nobody can find. It is **off until you accept** —
+nothing is stored in your browser unless you accept the small cookie prompt in the corner.
 
-This page describes exactly what that collects, and lets you change your mind whenever
+This page describes exactly what that collects, and lets you change your choice whenever
 you like.
 
 ## Your current setting
@@ -39,7 +39,7 @@ Once you accept, Google Analytics records, for each page you open:
 
 - **Nothing you type.** There are no forms on this site, and no keystrokes are recorded.
 - **Nothing from your keyboard or from PolyKybdHost.** This is website traffic only —
-  the host application's own reporting is a separate thing entirely, described in
+  the host application's own reporting is separate, described in
   [Usage Data & Privacy](/software/telemetry/).
 - **No name, email, or account** — the site has no login.
 - **Nothing at all** if you decline, or before you answer.
@@ -62,10 +62,10 @@ both.
 
 Until you accept, the tag runs in Google's **Consent Mode** with storage denied. In that
 state it sets no cookies and sends only anonymous, cookieless signals — no identifier that
-can follow you between visits. Declining keeps it that way permanently.
+can track you between visits. Declining keeps it that way permanently.
 
 <Aside type="note">
-Advertising features are switched off outright: `ad_storage`, `ad_user_data` and
+Advertising features are always switched off: `ad_storage`, `ad_user_data` and
 `ad_personalization` are denied and are never granted, whatever you choose here. Accepting
 enables `analytics_storage` and nothing else.
 </Aside>

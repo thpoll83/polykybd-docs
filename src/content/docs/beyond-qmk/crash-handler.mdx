@@ -5,8 +5,8 @@ description: How the PolyKybd firmware records a HardFault, an unhandled interru
 
 import { Aside } from '@astrojs/starlight/components';
 
-On stock QMK for the RP2040, a HardFault lands in ChibiOS's default handler, which is an
-endless loop. The keyboard goes dead until it is unplugged, and nothing records why. A
+On stock QMK for the RP2040, a HardFault goes to ChibiOS's default handler, which is an
+endless loop. The keyboard stops responding until it is unplugged, and nothing records why. A
 hang in the main loop looks the same.
 
 PolyKybd records all three cases, reboots, and reports the record on the next boot. The
@@ -98,7 +98,7 @@ loop, which boot has not reached yet.
 Three things make a boot stall diagnosable anyway:
 
 - **The status OLED shows the progress.** *Booting…* over a percentage (25, 38, 50, 63,
-  75, 88, 100), one value per boot step. A photo of a stuck board names the step.
+  75, 88, 100), one value per boot step. A photo of a stuck board shows the step.
 - **The breadcrumb covers boot.** Each boot step writes `phase=1:<step>`, and the final
   keycap render writes the key it is drawing. If a later reset produces a record, it
   says how far that boot got.
@@ -115,12 +115,12 @@ Three things make a boot stall diagnosable anyway:
   So look a RAM `pc` up in the linker map (`.build/*.map`) of the same build. If it falls
   inside a function placed in RAM, that is the fault location. If it falls in data, such
   as the overlay pool, the code jumped somewhere it should not have, and the symbol
-  `addr2line` prints for it is not an answer.
+  `addr2line` prints for it is not the fault location.
 - **`psr` bit 24 (`0x01000000`) set** means the fault happened while executing an
   instruction. **Clear** means the CPU faulted trying to enter ARM state, the result of a
   jump to an address with bit 0 clear.
 - **`lr` is only meaningful when the fault is at a call.** The M0+ does not store a call
-  chain, so `lr` may be left over from an earlier call. If `addr2line lr` lands far from
+  chain, so `lr` may be left over from an earlier call. If `addr2line lr` points far from
   `pc`'s function, ignore it.
 - **`reason` keeps a sticky power-on bit**, so a watchdog reboot can read as "power-on,
   watchdog forced" on a board that was never unplugged.
@@ -140,5 +140,5 @@ A build with `-e POLYKYBD_CRASH_TEST=yes` adds deliberate faults. Hold
 | `6` | Unaligned store on `core1` (the record reads `core=1`) |
 | `7` | Fault on the slave half |
 
-A normal build compiles all of this to nothing. Triggers 1 and 2 have been confirmed on
+A normal build compiles none of this code. Triggers 1 and 2 have been confirmed on
 hardware: the record's `pc` pointed at the faulting line.

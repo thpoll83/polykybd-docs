@@ -44,7 +44,7 @@ keyboards/polykybd/
 └── split42/            — variant: keymaps/, header, layout data
 ```
 
-All behaviour lives in the keyboard-level `poly_keymap.c` (compiled for both variants via `rules.mk`). Each variant's `<variant>/keymaps/default/keymap.c` is **data only** — `keymaps[]`, `encoder_map[]`, and (on RGB variants) `g_led_config`. A feature added to `poly_keymap.c` lands on both keyboards at once, so they can't drift apart. The legacy `polykybd.c` / `polykybd.h` still exist, but the bulk of the logic now lives in `poly_keymap.c`.
+All behaviour lives in the keyboard-level `poly_keymap.c` (compiled for both variants via `rules.mk`). Each variant's `<variant>/keymaps/default/keymap.c` is **data only** — `keymaps[]`, `encoder_map[]`, and (on RGB variants) `g_led_config`. A feature added to `poly_keymap.c` applies to both keyboards at once, so they always stay the same. The legacy `polykybd.c` / `polykybd.h` still exist, but the bulk of the logic now lives in `poly_keymap.c`.
 
 ## Setting up the dev environment
 
@@ -83,7 +83,7 @@ qmk compile -kb polykybd/split72 -km default
 make polykybd/split72:default
 ```
 
-The output `.uf2` lands in the repo root and `.build/`. The `.uf2` is used for manual bootloader-drive recovery — see [Flashing the Firmware](/setup/flashing/).
+The build writes the `.uf2` to the repo root and `.build/`. The `.uf2` is used for manual bootloader-drive recovery — see [Flashing the Firmware](/setup/flashing/).
 
 ### Producing a `.bin` for HID flashing
 
@@ -142,10 +142,10 @@ git describe --tags --abbrev=0 "$base"
 ```
 
 <Aside type="caution">
-The `[ -n "$base" ]` guard is load-bearing. On a shallow clone (the default in some
+The `[ -n "$base" ]` guard is required. On a shallow clone (the default in some
 cloud dev containers) `git merge-base` returns an **empty string** instead of
 failing — and an empty argument would leave `git describe` describing `HEAD`, so
-without the guard the command reports a confident, wrong answer. If it trips, run
+without the guard the command reports a wrong tag and no error. If the guard fails, run
 `git rev-parse --is-shallow-repository` and then `git fetch origin --unshallow`.
 </Aside>
 

@@ -6,7 +6,7 @@ description: Step-by-step guide to adding a new xx-YY keyboard-language layout t
 import { Aside, Steps } from '@astrojs/starlight/components';
 import AiSkill from '../../../components/AiSkill.astro';
 
-This HowTo walks through adding a new **keyboard-language layout** — a new `xx-YY` entry
+This HowTo describes how to add a new **keyboard-language layout** — a new `xx-YY` entry
 in the on-screen language picker (see [Languages & Unicode Input](/using/languages/) for
 the user-facing side).
 
@@ -15,15 +15,13 @@ So a layout is really three things — a per-key codepoint map drawn on the OLED
 can render those codepoints, and a host hint that switches the OS input source. The firmware
 never composes characters and needs no input-method engine.
 
-It's a hands-on job: you edit a spreadsheet in a spreadsheet program, run a couple of code
-generators, and check the result in a preview tool. Nothing exotic, but there are several files
-to keep in step. The authoritative deep-dive — with the full decision table and every locale
-already implemented — lives in the firmware repo at
+You edit a spreadsheet, run a few code generators and check the result in a preview tool. The
+full decision table and every implemented locale are in the firmware repo at
 `keyboards/polykybd/lang/FUTURE_LANGUAGES.md`.
 
 All paths below are relative to `keyboards/polykybd/` in the
 [qmk_firmware fork](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd) (branch `PolyKybd`),
-except the host files, which live in
+except the host files, which are in
 [PolyKybdHost](https://github.com/thpoll83/PolyKybdHost).
 
 ## Before you start
@@ -43,19 +41,19 @@ Python environment with `openpyxl cogapp pyyaml fonttools pillow`. You only need
    |---|---|---|
    | **Fold** | The OS layout is plain US-QWERTY (e.g. Indonesian) | No key column — falls back to en-US; just a host fold `xx=us` |
    | **Clone** | A distinct layout identical to one already present | Copy the source column; inherits its AltGr legends |
-   | **Clone + override** | A base layout plus a few extra AltGr letters (Welsh, Irish) | Clone, then override the handful of keys |
-   | **New mapping** | A genuinely different keymap or new script (Sami, Pashto) | Transcribe from xkb; maybe a new font |
+   | **Clone + override** | A base layout plus a few extra AltGr letters (Welsh, Irish) | Clone, then override those few keys |
+   | **New mapping** | A different keymap or new script (Sami, Pashto) | Transcribe from xkb; maybe a new font |
 
-   Rule of thumb: **identical keymap → fold; different keymap → its own column.**
+   General rule: **identical keymap → fold; different keymap → its own column.**
 
-2. **Get the layout data from an authoritative source.** xkb is ground truth
+2. **Get the layout data from an authoritative source.** xkb is the reference
    (`/usr/share/X11/xkb/symbols/<file>`). Its level-3 (AltGr) legends match Linux **and**
-   Windows exactly; macOS Option diverges, and the firmware carries one legend set, so treat
+   Windows exactly; macOS Option differs, and the firmware carries one legend set, so treat
    AltGr as Linux/Windows-canonical. The HID protocol carries a **fixed 2+2-char code**, so an
    ISO-639-2/3 language needs a 2-char **pseudo-code** stored verbatim (Hawaiian `hw`,
    Sorani `ku-IQ`).
 
-3. **Add the per-key column.** The language layouts live in a real spreadsheet,
+3. **Add the per-key column.** The language layouts are stored in a spreadsheet,
    `lang/lang_lut.xlsx` — open it in LibreOffice Calc (or Excel) to see how the existing
    languages are laid out, one colour-coded column group per language, one row per key. You add
    your language as a new column of per-key codepoints, either by hand for a small clone/override
@@ -66,8 +64,8 @@ Python environment with `openpyxl cogapp pyyaml fonttools pillow`. You only need
 
    <Aside type="caution">
    Don't just *Save As* over `lang_lut.xlsx` from openpyxl — it drops the cached formula values
-   the code generator reads and quietly corrupts **every** existing language. Edit it in a
-   spreadsheet program, or patch it surgically with the helper scripts, and always regenerate
+   the code generator reads and corrupts **every** existing language without any warning. Edit it in a
+   spreadsheet program, or make only targeted changes with the helper scripts, and always regenerate
    from a clean committed base.
    </Aside>
 
@@ -78,7 +76,7 @@ Python environment with `openpyxl cogapp pyyaml fonttools pillow`. You only need
    [Font Packs](/firmware/font-packs/) page.
 
 5. **Regenerate the code-generated files.** The spreadsheet feeds several files through `cog`.
-   Run them all (or the language ends up half-wired and "not selectable"):
+   Run them all (or the language is only partly set up and "not selectable"):
 
    ```sh
    cd keyboards/polykybd
@@ -92,7 +90,7 @@ Python environment with `openpyxl cogapp pyyaml fonttools pillow`. You only need
    bash fonts/gen-lang-fonts.sh    # appends the new flag to flag_fonts.h
    ```
 
-7. **Wire the host.** In PolyKybdHost, the country→region map
+7. **Update the host.** In PolyKybdHost, the country→region map
    (`polyhost/services/lang_regions.py`) already covers every standard ISO country, so most
    languages need no edit. Add a fold entry only for a country with no native xkb layout. A new
    **pseudo-code** (non-ISO-639-1 language) must be appended to the frozen index table
@@ -110,12 +108,12 @@ Python environment with `openpyxl cogapp pyyaml fonttools pillow`. You only need
    ```
 
 9. **Build and commit.** Compile both variants (`split72` and `split42` share one keymap, so a
-   language lands on both at once) and commit the firmware, host, and test-rig changes on their
+   language is added to both at once) and commit the firmware, host, and test-rig changes on their
    respective branches. Document the addition in `lang/FUTURE_LANGUAGES.md`.
 
 </Steps>
 
-## Common pitfalls
+## Common problems
 
 - A key with a `NULL` base legend falls back to en-US **entirely** for that key — its Shift/AltGr
   preview is never shown. Any key carrying a preview must also set a base.
@@ -127,8 +125,8 @@ Python environment with `openpyxl cogapp pyyaml fonttools pillow`. You only need
 See [Contributing](/development/contributing/) for how to open the pull requests.
 
 <AiSkill name="add-polykybd-language">
-The **`add-polykybd-language`** skill runs this whole playbook for you
+The **`add-polykybd-language`** skill runs all of these steps for you
 — classify the layout, build the key column from xkb, handle fonts and glyphs, re-cog every
-generated file, wire the host folds and frozen index table, then verify the keycaps with the
+generated file, update the host folds and frozen index table, then verify the keycaps with the
 preview tool.
 </AiSkill>

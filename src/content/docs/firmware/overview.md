@@ -19,12 +19,9 @@ PolyKybd is a **heavily customised QMK fork** maintained on the `PolyKybd` branc
 
 [github.com/thpoll83/qmk_firmware — branch: PolyKybd](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd)
 
-**Upstream base: QMK 0.33.13** (as of PolyKybd firmware v0.11.6). The fork tracks
-upstream QMK's *stable release tags* rather than its moving `master`, and is
-re-based onto a newer tag periodically — so everything in the QMK documentation
-for 0.33.x applies to your keyboard, alongside the PolyKybd additions described
-here. The fork's own `master` branch is kept as an untouched mirror of upstream,
-which is what makes the difference between "stock QMK" and "PolyKybd" easy to see.
+**Upstream base: QMK 0.33.13** (as of PolyKybd firmware v0.11.6). The fork follows
+QMK's stable release tags, so the QMK documentation for 0.33.x applies to your
+keyboard, alongside the PolyKybd additions described here.
 
 The keyboard-specific files live at:
 
@@ -37,10 +34,10 @@ idle/suspend, split synchronisation — lives in `poly_keymap.c` and is compiled
 
 ## The hardware it targets
 
-PolyKybd is **custom hardware**, not a stock board:
+PolyKybd is **custom hardware**, not a standard board:
 
 - **MCU**: Raspberry Pi **RP2040** — dual-core ARM Cortex-M0+, running at **200 MHz** since firmware v0.11.0 (the operating point Raspberry Pi certified for the chip; earlier firmware ran at 125 MHz). QMK runs on core 0; core 1 decompresses overlay images and runs DOOM while you play it. See [The Second Core](/beyond-qmk/core1/) and [200 MHz System Clock](/beyond-qmk/system-clock/).
-- **Flash**: **8 MB external QSPI flash** (not the stock 2 MB), partitioned into:
+- **Flash**: **8 MB external QSPI flash** (not the standard 2 MB), partitioned into:
   - **0–2 MB** — the running firmware
   - **2–4 MB** — firmware-update staging
   - **4–6 MB** — the [font pack](/firmware/font-packs/) (independently-versioned glyph bundles)
@@ -52,12 +49,10 @@ There are two hardware variants, **split72** and **split42**, sharing one firmwa
 
 ## Host communication
 
-The firmware talks to the host application ([PolyKybdHost](/software/overview/)) over a
-custom **64-byte raw HID report protocol**. Each report is `[report id, command id, payload…]`, and
-responses are prefixed `P\xNN.` (ACK) or `P\xNN!` (NACK). A `PROTOCOL_VERSION` reported in the
-device's identity string gates host features: the host connects to any firmware from protocol 2
-on and enables each feature only when the firmware's protocol supports it. See the [HID Protocol Reference](/reference/hid-protocol/) for the command surface and the
-per-version feature history.
+The firmware talks to [PolyKybdHost](/software/overview/) over a custom **64-byte raw HID
+protocol**. The host connects to any firmware from protocol 2 on and turns on each feature
+only when the firmware supports it. See the [HID Protocol Reference](/reference/hid-protocol/)
+for the commands and the per-version feature history.
 
 ## Further reading
 

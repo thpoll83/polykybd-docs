@@ -5,7 +5,7 @@ description: How the PolyKybd firmware uses the RP2040's second core, which stoc
 
 import { Aside, Steps } from '@astrojs/starlight/components';
 
-Stock QMK runs on one core and leaves the RP2040's second core parked in the bootrom.
+Stock QMK runs on one core and leaves the RP2040's second core idle in the bootrom.
 PolyKybd starts it at boot and uses it for work that is pure computation: decompressing
 overlay images, rendering the Eden screensaver, and running DOOM.
 
@@ -73,7 +73,7 @@ handler, behind the same gate.
     `core0`. Later sessions use `core1` again only once it has finished every job it
     was handed, so a stalled `core1` can never fill the FIFO and block `core0`.
 - **DOOM.** `doom_enter()` resets `core1` through the power-state machine and hands it
-  to the engine, with a 4 KB stack carved from the overlay pool. The game renders on
+  to the engine, with a 4 KB stack taken from the overlay pool. The game renders on
   `core1` alone; `core0` blits finished frames and passes keys through a ring buffer.
   Eden never uses `core1` while DOOM runs. On exit, `core1` is reset and the overlay
   service relaunched with a bounded handshake (100 ms, up to three tries). If that
@@ -143,7 +143,7 @@ for this reason.
    compiler or the bus move a result store past the completion store.
 
 4. **Never block `core0` on the result.** `core0` is the core that scans the key matrix,
-   so a long wait there drops keystrokes. Use one of the two existing shapes:
+   so a long wait there drops keystrokes. Use one of the two existing patterns:
    - **Backpressure.** Poll a "busy" predicate and defer new work until `core1` catches
      up. The overlay path does this through `raw_hid_pre_receive_kb()`, which leaves the
      next HID packet in the USB queue for one main-loop pass.
@@ -154,9 +154,9 @@ for this reason.
    If `core0` has to spin at all, wrap the spin in
    `crash_phase_enter(CRASH_PHASE_CORE1_WAIT, …)` / `crash_phase_leave()`. A hang then
    produces a [crash record](/beyond-qmk/crash-handler/) that says "core0 waiting on
-   core1" instead of an anonymous watchdog reset.
+   core1" instead of a watchdog reset with no location.
 
-5. **Check that core1 is yours.** DOOM takes `core1` over completely. Gate your job on a
+5. **Check that core1 is free.** DOOM uses `core1` exclusively. Gate your job on a
    predicate like `core1_eden_available()`, which is true only once `core1` has reached
    `core1_entry()` and DOOM is not running.
 
@@ -169,7 +169,7 @@ for this reason.
    that depth, no longer fits.
 </Steps>
 
-A minimal sketch of the shape (not code from the tree):
+A minimal example of the pattern (not code from the repository):
 
 ```c
 // multicore_exec.c
@@ -204,5 +204,5 @@ bool core1_my_job_done(uint32_t seq) {
 <Aside type="caution">
 Do not unmask interrupts on `core1` to make a job easier to write. Masking them is what
 stopped `core1` from hanging inside the RTOS context switch. The root cause is described
-above, but the fix was found empirically, so treat it as load-bearing.
+above, but the fix was found empirically, so do not remove it.
 </Aside>

@@ -15,10 +15,10 @@ A quick reference for terms used across the PolyKybd documentation, firmware, an
 : The 42-key PolyKybd variant on a CRKBD footprint — no RGB or trackpad, with a 128×32 status OLED. (Renamed from "corne42".)
 
 **PolyKybdHost**
-: The PyQt5 system-tray host application that bridges the keyboard to the host OS — tracking the active window and pushing overlay/keymap/language updates over HID.
+: The PyQt5 system-tray host application that connects the keyboard to the host OS. It tracks the active window and sends overlay, keymap and language updates over HID.
 
 **polyctl**
-: The stdlib-only command-line client for PolyKybdHost. Talks to the host's control socket to query status, set language/brightness, manage overlays, flash firmware, and more.
+: The command-line client for PolyKybdHost, which uses only the Python standard library. It connects to the host's control socket to query status, set language/brightness, manage overlays, flash firmware, and more.
 
 **Daemon mode**
 : PolyKybdHost running its operational core as a separate headless process, with the tray GUI attached as a client. Default startup mode; lets the GUI restart without disrupting the device connection.
@@ -30,10 +30,10 @@ A quick reference for terms used across the PolyKybd documentation, firmware, an
 : The per-keycap image data shown on a key's OLED — 360 bytes per keycap, pushed from the host over HID (RLE- or PRC-compressed).
 
 **PRC**
-: Predictive Range Coding, the keycap-image encoding added in protocol v19. A context-model binary arithmetic coder: 10 already-decoded pixels form a context, a fixed 1 KB table maps it to a probability, and a range coder codes each pixel of the ROI against it, so a typical icon's coded payload is about 28 bytes, plus a 6-byte record header. See [PRC in the HID protocol reference](/reference/hid-protocol/#prc-predictive-range-coding).
+: Predictive Range Coding, the compressed keycap-image encoding added in protocol v19. A typical icon codes to about 28 bytes plus a 6-byte header. See [PRC in the HID protocol reference](/reference/hid-protocol/#prc-predictive-range-coding).
 
 **MRU**
-: Most-Recently-Used overlay cache. A fast path that re-applies previously sent overlay sets when switching back to a recently used application.
+: Most-Recently-Used overlay cache. A faster method that re-applies previously sent overlay sets when switching back to a recently used application.
 
 **QMK**
 : The open-source keyboard firmware framework. PolyKybd firmware is a heavily customised fork of QMK.
@@ -57,7 +57,7 @@ A quick reference for terms used across the PolyKybd documentation, firmware, an
 : The standalone tool (in the Adafruit-GFX repo) that converts TTF/OTF fonts into Adafruit GFX `.h` bitmap headers for the firmware.
 
 **Handedness stamp**
-: How each half knows which side it is — a record in a flash sector of its own, so it survives an EEPROM loss. It sets the side only, not which half talks to the computer. PolyKybd deliberately does *not* use QMK's `EE_HANDS`, which keeps the same marker in the emulated EEPROM: a torn write there clears the whole store, and a cleared byte reads as a confident `right`, so a half comes up on the wrong side with nothing reporting anything wrong.
+: The record that tells each half which side it is — a record in a flash sector of its own, so it is kept when the EEPROM is cleared. It sets the side only, not which half is connected to the computer. PolyKybd does not use QMK's `EE_HANDS`, because a cleared EEPROM byte reads as `right` and a half can start as the wrong side without warning.
 
 **Split sync**
 : The CRC32-validated UART transactions that synchronise state and overlay data between the two keyboard halves.
@@ -69,10 +69,10 @@ A quick reference for terms used across the PolyKybd documentation, firmware, an
 : A cosmetic override that redraws the keycap letter/digit legends in an alternative script (Tengwar, runes, Aurebesh, C64, Braille, …) without changing what the keys type. See [Glyph Scripts](/using/glyph-scripts/).
 
 **Idle style**
-: The anti-burn-in animation the keycaps run while idle — **Eden** (a comet-field screensaver, the split72 default), **pulse** (per-key breathing, the split42 default), **jitter** (legends migrate to fresh spots) or **IDDQD** (an attract-demo screensaver). See [Idle & Burn-in Protection](/using/idle/).
+: The anti-burn-in animation the keycaps run while idle — **Eden** (a comet-field screensaver, the split72 default), **pulse** (per-key breathing, the split42 default), **jitter** (legends move to new positions) or **IDDQD** (a screensaver that plays a demo). See [Idle & Burn-in Protection](/using/idle/).
 
 **Protocol version**
-: The `PROTOCOL_VERSION` the firmware reports in its GET_ID string. The versions need not match — the host connects to any keyboard from v2 on and gates each feature individually, so a mismatch costs you only the newer features. Firmware and host are still released in lockstep. See the [HID Protocol Reference](/reference/hid-protocol/).
+: The `PROTOCOL_VERSION` the firmware reports in its GET_ID string. The versions need not match — the host connects to any keyboard from v2 on and enables each feature separately, so a mismatch disables only the newer features. Firmware and host are still released together. See the [HID Protocol Reference](/reference/hid-protocol/).
 
 **LTR-559**
-: The optional ambient-light + proximity sensor (Pimoroni) on the Split72 expansion port. Drives automatic brightness and wakes the displays on approach. See [Display Brightness](/using/brightness/).
+: The optional ambient-light + proximity sensor (Pimoroni) on the Split72 expansion port. Controls automatic brightness and wakes the displays on approach. See [Display Brightness](/using/brightness/).

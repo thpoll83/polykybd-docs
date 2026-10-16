@@ -1,24 +1,24 @@
 ---
 title: Idle & Burn-in Protection
-description: How PolyKybd keeps its keycap OLEDs from burning in when you step away. The legends fade, an idle style takes over (the Eden screensaver by default on the split72), and the displays switch off.
+description: How PolyKybd keeps its keycap OLEDs from burning in when you are not using it. The legends fade, an idle style starts (the Eden screensaver by default on the split72), and the displays switch off.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 import SupportedSince from '../../../components/SupportedSince.astro';
 
 OLED pixels that show the same legend for hours can burn in. To prevent that, PolyKybd moves
-through a few states while you're away and wakes instantly the moment you come back. On a
+through a few states while you are not typing and wakes immediately when you press a key. On a
 split72 the default is **Eden**, a screensaver that streams comets across all keycaps. The
 split42 pulses its legends instead.
 
-![Close-up of the lit per-key OLED legends — the static images that anti-burn-in protection keeps from burning in](../../../assets/using/oled-keycaps.jpg)
+![Render of the left half from above and slightly in front, in a dark room: the lit per-key OLED legends, the static images that anti-burn-in protection keeps from burning in, with the RGB backlight running from red to blue](../../../assets/using/oled-keycaps-render.jpg)
 
 ## The idle sequence
 
 1. **Awake** — normal, full-brightness legends.
 2. **Fade** — after the idle timeout (**2 minutes** unless you change it) the keycaps dim
    over about 10 seconds.
-3. **Idle** — the [idle style](#idle-styles) takes over. On a split72 that is the Eden
+3. **Idle** — the [idle style](#idle-styles) starts. On a split72 that is the Eden
    screensaver by default, at a low, steady brightness. On a split42 it is Pulse.
 4. **Off** — after **20 minutes** without a key press the keycaps switch off entirely.
 
@@ -26,7 +26,7 @@ Any key press wakes them — and if the optional [light sensor](/using/brightnes
 is fitted, so does reaching toward the board.
 
 The key you press to wake the board also types, as usual. To have it only wake the keycaps once
-they have switched off, turn on the **Wake** key behind [`More…`](/using/keymaps/#more) on the
+they have switched off, turn on the **Wake** key under [`More…`](/using/keymaps/#more) on the
 settings layer. Its switch shows on the keycap, and it is off by default.
 
 ## How long before it idles
@@ -36,24 +36,23 @@ settings layer. Its switch shows on the keycap, and it is off by default.
 How long the keyboard waits before it starts fading is a setting on the board — one of six
 fixed choices: **15 sec · 30 sec · 45 sec · 1 min · 2 min · 5 min**.
 
-**2 minutes is the default**, and it is what every keyboard did before this setting existed —
-so a board you never touch behaves exactly as it always has.
+**2 minutes is the default.**
 
 Set it in any of three places:
 
-- **On the keyboard** — a key on the settings layer, behind **More…** (see
+- **On the keyboard** — a key on the settings layer, under **More…** (see
   [the settings layer](/using/keymaps/#more)), next to the idle-style key. It shows a small
   clock face over the current value, so `2min` on the keycap *is* the setting.
 - **Tray menu** — right-click the PolyKybdHost tray icon → **Idle Display** → **Idle After**.
 - **Command line** — `polyctl idle-timeout 30sec` (or `15sec`, `45sec`, `1min`, `2min`,
   `5min`; with no argument it prints the current one).
 
-Like the style, your choice is saved on the keyboard and survives a reboot and a reconnect.
+Like the style, your choice is saved on the keyboard and is kept after a reboot and a reconnect.
 
 <Aside type="note" title="Switching off is a separate, fixed timer">
-Picking a shorter timeout brings the **fade** and the **idle animation** forward. It does not
+Picking a shorter timeout makes the **fade** and the **idle animation** start earlier. It does not
 move step 4 — the displays still switch off after **20 minutes** without a key press, whichever
-timeout you choose. So `15 s` gets you the animation sooner, not a keyboard that goes dark
+timeout you choose. So `15 s` starts the animation sooner, but does not switch the displays off
 sooner.
 </Aside>
 
@@ -61,27 +60,18 @@ sooner.
 
 | Style | What it does |
 |---|---|
-| **Eden** | A full-screen screensaver: a procedural "comet field" streams across all keycaps, with the key legend drifting over it as a dim overlay. Pretty rather than glanceable — the moving pixels give the strongest burn-in protection. The default on the split72. |
-| **Pulse** | Each key gently "breathes" its brightness out of phase with its neighbours. The lit pixels don't move — simple, and the legend stays glanceable. The default on the split42. |
-| **Jitter** | Keeps the breathing, but each key also relocates its legend to a fresh random spot whenever its own pulse dims it to black. The lit pixels migrate per key, so no pixel stays lit in one place. |
-| **IDDQD** | An attract-demo screensaver that plays across the keycaps at your normal brightness until the displays switch off. A keyboard that cannot play it falls back to Pulse. |
-
-Pulse and jitter keep the dimmed legend readable so you can glance down and resume typing;
-jitter adds stronger burn-in protection by moving the lit pixels. Eden trades that
-glanceability for a full moving picture — it's a screensaver, so the pixels never rest in
-one place. Any key press dismisses it instantly.
+| **Eden** | A full-screen screensaver: a procedural "comet field" streams across all keycaps, with the key legend drifting over it as a dim overlay. Decorative, and the legend is harder to read at a glance, but the moving pixels give the strongest burn-in protection. The default on the split72. |
+| **Pulse** | Each key slowly fades its brightness up and down, out of phase with its neighbours. The lit pixels don't move — simple, and the legend stays easy to read at a glance. The default on the split42. |
+| **Jitter** | Keeps the fading, but each key also moves its legend to a new random position whenever its own pulse dims it to black. The lit pixels move per key, so no pixel stays lit in one place. |
+| **IDDQD** | An arcade-style demo screensaver that plays across the keycaps at your normal brightness until the displays switch off. A keyboard that cannot play it falls back to Pulse. |
 
 Holding **Hyper** for a second during Pulse, Jitter or Eden starts [Mines](/using/mines/), a mine
 sweeper on the keycaps, instead of waking the keyboard.
 
-Eden dims its drifting legend by lighting every other row rather than every row. Since firmware
-**0.17.3** that stripe pattern shifts as the legend moves, so the dimming itself no longer favours
-one set of rows for the life of the board.
-
 <Aside type="caution" title="Eden is split72 only">
-The Eden screensaver is drawn by code that only the **split72** carries. On the split42 you can
-still select it, but nothing draws it — the legends just sit dimmed and motionless until the
-displays switch off, which is the one thing an anti-burn-in setting should never do. **On a
+The Eden screensaver is drawn by code that only the **split72** firmware contains. On the split42 you can
+still select it, but nothing draws it — the legends stay dimmed and do not move until the
+displays switch off, so there is no burn-in protection. **On a
 split42, use Pulse or Jitter.**
 </Aside>
 
@@ -95,10 +85,10 @@ plays the [tutorial](/using/first-run/) after the intro; the host's replay plays
 
 <SupportedSince protocol={4} note="selectable idle style" />
 
-- **On the keyboard** — a key on the settings layer, behind **More…** (see
+- **On the keyboard** — a key on the settings layer, under **More…** (see
   [the settings layer](/using/keymaps/#more)). It names the active style rather than
   its own function — `IDLE:` on the first line, the current style on the second — so the
-  keycap answers *what is this set to* without being pressed. Each tap moves to the next
+  keycap shows the current setting without being pressed. Each tap moves to the next
   style, in the order Pulse, Jitter, Eden. It skips IDDQD.
 - **Tray menu** — right-click the PolyKybdHost tray icon → **Idle Display** →
   *Pulse (legacy)*, *Jitter (move legend)*, *IDDQD (attract demo)* or *Eden*.
@@ -107,14 +97,7 @@ plays the [tutorial](/using/first-run/) after the intro; the host's replay plays
 Your choice is saved on the keyboard and persists across reboots.
 
 <Aside type="note" title="Split72 owners updating from an older firmware">
-Eden became the split72 default in **v0.17.0**. Earlier firmware could not tell *"I picked
-Pulse"* apart from *"I never picked anything"* — both were stored as the same value — so a
-split72 that had never been switched to Jitter or Eden comes up in **Eden** once after the
-update. Set it back from any of the three places above and it stays put from then on.
+Eden became the split72 default in **v0.17.0**. A split72 that was on Pulse before that update
+starts in **Eden** once. Set it back from any of the three places above and it stays set from then on.
 </Aside>
 
-<Aside type="note">
-Each half runs its own idle animation on its own keys — only the *style* (pulse, jitter
-or Eden) crosses the split link. See [Display power states](/development/system-model/#display-power-states)
-for the full state machine.
-</Aside>

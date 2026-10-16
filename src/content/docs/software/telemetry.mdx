@@ -8,7 +8,7 @@ import { Aside } from '@astrojs/starlight/components';
 PolyKybdHost sends a **small anonymous report once a day**. It exists so we can see
 which host and firmware versions people are actually running, and whether updates and
 firmware flashes are working — things that are otherwise invisible to us unless
-someone writes in to say something broke.
+someone contacts us to report a problem.
 
 It is **on by default** and you can turn it off in one click.
 
@@ -18,7 +18,7 @@ PolyKybdHost writes a line into its log on every start saying whether reporting 
 
 ## See exactly what would be sent
 
-You never have to take our word for it. This prints the real report from your own
+You can check this yourself. This command prints the real report from your own
 machine, without sending anything:
 
 ```bash
@@ -50,7 +50,7 @@ PolyKybdHost can see all of the following while it runs. **None of it is collect
   location for sunrise/sunset; that is never included, and neither is anything from
   your device's location services. The only geographic information in the report is
   the **two-letter country code** the server derives from your connection (see
-  above) — the same thing any website you visit can tell.
+  above) — the same information any website you visit can detect.
 - Your user name, computer name, MAC address, or keyboard serial number.
 - File paths, overlay images, or your keymap.
 
@@ -59,24 +59,24 @@ PolyKybdHost can see all of the following while it runs. **None of it is collect
   list of fields, and the test suite fails if that list ever changes by accident.
 </Aside>
 
-<Aside type="note" title="The Linux session and desktop are bucketed before they are sent">
+<Aside type="note" title="The Linux session and desktop are mapped to fixed values before they are sent">
   Those two values come from `XDG_SESSION_TYPE` and `XDG_CURRENT_DESKTOP`, which are
   **free text on your machine** — a custom session can set them to anything, and some
   distributions prefix their own name. PolyKybdHost maps them against a fixed list
   *before* building the report, and anything it does not recognise is sent as `other`,
   so the raw text never leaves your computer. `polyctl telemetry preview` shows you
-  exactly what yours resolves to.
+  exactly which value your system is mapped to.
 </Aside>
 
 ## The random ID
 
 The ID is a random number created on your machine the first time PolyKybdHost runs.
 It is **not** derived from your hardware, network card, or anything else about you —
-its only job is to stop one computer being counted five times in a day.
+it is used only to prevent one computer being counted five times in a day.
 
-You can see it with `polyctl telemetry status`. To become a brand-new install, delete
+You can see it with `polyctl telemetry status`. To appear as a new installation, delete
 the `telemetry_install_id` line from `settings.yaml` — a fresh one is generated on the
-next start. The file lives here:
+next start. The file is here:
 
 | OS | Path |
 |---|---|
@@ -84,10 +84,10 @@ next start. The file lives here:
 | macOS | `~/Library/Application Support/PolyHost/settings.yaml` |
 | Linux | `~/.config/PolyHost/settings.yaml` |
 
-<Aside type="caution" title="A small user base is not a crowd">
+<Aside type="caution" title="A small number of users limits anonymity">
   While only a small number of PolyKybd keyboards exist, "anonymous" means the report
-  carries nothing that identifies you — not that it is lost among thousands of others.
-  We would rather say so than imply otherwise.
+  carries nothing that identifies you — not that it is hidden among thousands of other reports.
+  We state this clearly.
 </Aside>
 
 ## Turning it off
@@ -102,13 +102,13 @@ report is ever queued or stored elsewhere.
 
 ## Other things worth knowing
 
-- **A failed send is simply forgotten.** If you are offline or our server is down,
+- **A failed send is discarded.** If you are offline or our server is down,
   nothing is retried aggressively and nothing is ever shown to you as an error. It
   cannot slow the app down or interfere with your keyboard.
 - **One report per install, not per window.** In the usual
   [daemon setup](/software/architecture/) the background daemon sends the report, so
   restarting the tray app does not produce extra reports.
-- **You can point it elsewhere.** *Settings → Telemetry → Endpoint* (`telemetry_endpoint`)
+- **You can send it to a different server.** *Settings → Telemetry → Endpoint* (`telemetry_endpoint`)
   is the address the report goes to, for running your own collector. An empty address sends
   nothing.
 
@@ -116,7 +116,7 @@ report is ever queued or stored elsewhere.
 
 | Command | What it does |
 |---|---|
-| `polyctl telemetry status` | Show whether it is on, the ID, and when the last report went |
+| `polyctl telemetry status` | Show whether it is on, the ID, and when the last report was sent |
 | `polyctl telemetry preview` | Print the exact report that would be sent |
 | `polyctl telemetry enable` / `disable` | Turn it on or off |
 | `polyctl telemetry send` | Send one now, ignoring the once-a-day limit |

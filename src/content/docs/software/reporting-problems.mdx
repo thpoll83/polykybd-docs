@@ -6,12 +6,8 @@ description: Collect PolyKybdHost's logs into a single file and file a bug repor
 import { Aside } from '@astrojs/starlight/components';
 import SupportedSince from '../../../components/SupportedSince.astro';
 
-When something goes wrong, the useful answer is almost always in the logs — but
-PolyKybdHost writes **six** of them, most with their own rotated backups, and under the
-default daemon setup the interesting half belongs to the background daemon rather than
-the tray app you were looking at.
-
-So you never have to go hunting: two entries under **Help & About** do it for you.
+PolyKybdHost writes several logs, split between the tray app and the background daemon.
+Two entries under **Help & About** collect them for you.
 
 | Entry | Use it when |
 |---|---|
@@ -31,7 +27,7 @@ PolyKybdHost then saves a log file to your Downloads folder, puts the finished r
 on your clipboard, and opens a **pre-filled GitHub issue** in your browser. Nothing is
 sent until you press *Submit* there.
 
-The last step is yours: **drag the saved log file into the comment box** before
+You do the last step yourself: **drag the saved log file into the comment box** before
 submitting. The app deliberately does not upload it for you — an attachment is a file
 you can open and look at first, which pasted log text is not. The dialog's **Show Log
 File** button reveals it in your file manager.
@@ -41,9 +37,9 @@ The report body is on your clipboard either way. If your browser doesn't open, o
 report is too long for GitHub to pre-fill, just open a blank issue and paste.
 </Aside>
 
-<Aside type="note" title="If the host can't see the keyboard at all">
+<Aside type="note" title="If the host cannot detect the keyboard at all">
 The diagnostics block gets the firmware and protocol versions *from the keyboard*, so a report
-filed while nothing is connected won't carry them. Read them off the board instead: open the
+filed while nothing is connected does not include them. Read them on the keyboard instead: open the
 settings layer, tap `More…`, and the status display shows the firmware, protocol and hardware
 versions — on the split72, uptime and split-link health as well — see
 [board info on the status display](/using/keymaps/#board-info-on-the-status-display).
@@ -51,11 +47,11 @@ versions — on the split72, uptime and split-link health as well — see
 
 ### What the report contains
 
-The issue body carries your description plus a short diagnostics block — app and
+The issue body contains your description plus a short diagnostics block — app and
 firmware versions, protocol version, operating system and architecture, run mode, the
 connected keyboard, (on Linux) the desktop session, since that decides how window
 tracking works, and a one-line summary of the crash log. It contains **no log lines**;
-those travel only in the attached file.
+they are only in the attached file.
 
 That crash-log line is a count, not a diagnosis:
 
@@ -63,10 +59,8 @@ That crash-log line is a count, not a diagnosis:
 Crash log        : 1 session(s), 0 clean exit(s), 1 native fault dump(s), newest marker 2026-08-15 09:00:00
 ```
 
-It never claims the app crashed, and a session with no matching clean exit is not by
-itself bad news — the app writing the report is one such session, and so is a running
-daemon. It is there so whoever reads the issue can tell at a glance whether the attached
-file has a crash in it.
+A session without a clean exit is not a crash by itself. The app writing the report is
+one such session, and so is a running daemon.
 
 Paths are stripped of your account name, and on a forwarder machine the address of the
 computer it forwards to is masked — an issue tracker is public.
@@ -84,7 +78,7 @@ window, and look at the file before you attach it.
 ## When the app notices a problem itself
 
 PolyKybdHost watches the keyboard's console for known failure messages and its own log for
-errors. The first time one turns up in a session, it shows a dialog that offers
+errors. The first time one appears in a session, it shows a dialog that offers
 **Report a Problem**. Nothing is sent unless you send it.
 
 Three settings control it, under **Settings → Problem**:
@@ -99,15 +93,15 @@ Three settings control it, under **Settings → Problem**:
 
 <SupportedSince protocol={16} />
 
-A keyboard half that hits a hardware fault or stops responding no longer just sits
-there until you replug it: the firmware records what it was doing, restarts itself,
+A keyboard half that hits a hardware fault or stops responding no longer stays stopped
+until you reconnect it: the firmware records what it was doing, restarts itself,
 and keeps a record of the crash. Each time the keyboard boots, PolyKybdHost reads that
-record from both halves and **pops up an alert** for any crash it has not shown you
+record from both halves and **shows an alert** for any crash it has not shown you
 before, so you find out about a crash without ever opening a log.
 
 The dialog says which half crashed, what kind of crash it was (a fault, an unexpected
 exception, or a watchdog restart after a hang), what the firmware was doing at the time
-and how long it had been running, and offers two ways to pass it on:
+and how long it had been running, and offers two ways to report it:
 
 | Button | What it does |
 |---|---|
@@ -118,28 +112,27 @@ and how long it had been running, and offers two ways to pass it on:
 choose **Help & About → Read keyboard crash record**: it reads both halves, shows what
 they hold, older records included, and copies the text to the clipboard for a bug report.
 From a terminal, `polyctl crash show` does the same while the host daemon is running
-(`--slave` for the link-side half, `crash clear` to forget it). The keyboard keeps working
+(`--slave` for the link-side half, `crash clear` to delete it). The keyboard keeps working
 meanwhile; the alert is information, not an error you have to act on.
 
 <Aside type="note">
 The firmware records crashes from protocol 16 on. Reading the record on every keyboard
-boot needs PolyKybdHost 1.14.0 or later. Older versions only noticed a crash from the
-keyboard's console, so one the keyboard recovered from on its own could go unreported.
+boot needs PolyKybdHost 1.14.0 or later.
 </Aside>
 
-## Catching a crash that only happens now and then
+## Catching a crash that happens only occasionally
 
 <SupportedSince protocol={22} note="host 1.15.0+" />
 
-Some problems show up only at startup, and only once in a while: the keyboard stops on
+Some problems show up only at startup, and only occasionally: the keyboard stops on
 its boot screen and recovers by itself a few seconds later. Waiting for that to happen
 again is slow. The **boot-loop test** makes it happen on purpose.
 
 Turn on [developer mode](/software/usage/#developer-mode) (**Settings → Developer →
 Mode**) and choose **Developer → Firmware → Boot-loop test…**. Pick a
 number of rounds (up to 9999) and start it. The app reboots the keyboard, waits for it to
-come back and reads its crash record, then does it again. It stops at the first boot that
-left a crash record, at a boot that does not come back within a minute, or after the last
+start again and reads its crash record, then does it again. It stops at the first boot that
+left a crash record, at a boot that does not finish within a minute, or after the last
 round. Each round takes a few seconds, and the keyboard does not type while the test runs.
 
 From a terminal, `polyctl bootloop --rounds 200` does the same, and `polyctl bootloop
@@ -147,7 +140,7 @@ From a terminal, `polyctl bootloop --rounds 200` does the same, and `polyctl boo
 so a long run does not wear out the keyboard's settings storage.
 
 When the test stops on a crash, attach its result to your [report](#report-a-problem): it
-names the round and carries the crash record.
+names the round and contains the crash record.
 
 ## Collect logs
 
@@ -164,23 +157,19 @@ describing your setup, your settings with any secrets removed, and a `README.txt
 stating the timeframe and whether titles were masked.
 
 The timeframe applies to the rotating logs. **Crash markers and native fault dumps are
-always included in full**, whichever window you pick — a fault dump is written at the
-instant of the crash and carries no timestamp of its own, so filtering it by time would
-be as likely to throw away the crash you are reporting as to keep it. That file is small
-and never rotated, so it always travels whole.
+always included in full**, whatever timeframe you pick.
 
 <Aside type="caution">
 Masking is **off** by default here, because a bundle you inspect yourself is a
-different decision from one aimed at a public tracker — and a first support round with
+different decision from one meant for a public issue tracker, and a first support request with
 everything masked usually has to be repeated. Tick **Mask window titles** if you would
 rather not include them.
 </Aside>
 
 ## From the command line
 
-`polyctl logs` does the same things without the GUI — and, unlike every other
-`polyctl` command, it **works with the host stopped**. That is deliberate: the moment
-you most need the logs is the one where the app failed to start or the daemon died.
+`polyctl logs` does the same things without the GUI. Unlike every other `polyctl`
+command, it **works with the host stopped**, so you can use it when the app will not start.
 
 ```sh
 # Write a support .zip of the last 24 hours
@@ -198,25 +187,23 @@ polyctl logs paths
 ```
 
 `--since` accepts `30m`, `2h`, `7d` or `all`. If the logs are somewhere unusual — a
-daemon started from a different working directory — point at them with `--log-dir`.
+daemon started from a different working directory — give their folder with `--log-dir`.
 
 ## On the forwarder
 
-Both entries are under **Help & About** in the [forwarder](/using/multi-machine/)'s tray
-menu too, in the same place as here, and this matters more than it looks: the forwarder
-runs on a **different machine** from the keyboard, so its logs can never appear in a
-bundle collected on the keyboard side. Its reports say **FORWARDER mode** on the first
-line and describe which report transport it uses, so the two machines' reports can't be
-mistaken for each other.
+Both entries are also under **Help & About** in the [forwarder](/using/multi-machine/)'s
+tray menu. The forwarder runs on a **different machine** from the keyboard, so its logs
+never appear in a bundle collected on the keyboard side. Its reports say
+**FORWARDER mode** on the first line.
 
 If overlays are not following a forwarded window, collect from **both** machines —
-[If it does not work](/using/multi-machine/#if-it-does-not-work) lists which log carries
+[If it does not work](/using/multi-machine/#if-it-does-not-work) lists which log shows
 which symptom.
 
-## Where the logs live
+## Where the logs are stored
 
 The log viewer (**Help & About → Log file…**) shows the same files in a window, with the
 daemon's own activity under the **Daemon Log** tab and anything the app recorded about a
 crash under **Crash Log**. A tab appears once its file exists, so the set you see is
-whatever this machine has actually written. For more detail in the first place,
+whatever this machine has actually written. To record more detail,
 start the app with `--dev` or `--dev 2` — see [Using the Tray App](/software/usage/#debug-logging).

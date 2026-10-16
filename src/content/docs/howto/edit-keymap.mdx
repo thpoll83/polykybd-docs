@@ -6,7 +6,7 @@ description: The two routes to changing what the PolyKybd keys do — the host l
 import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
 This HowTo changes **what the keys do**. There are two routes — pick by how permanent the change is
-and how deep it goes:
+and how much it changes:
 
 | Route | Best for | Recompile? | Survives a reflash? |
 |---|---|---|---|
@@ -16,12 +16,9 @@ and how deep it goes:
 Background on layers and the dynamic keymap is on [Keymaps & Layers](/using/keymaps/).
 
 <Aside type="caution">
-There is **no QMK Configurator or `keymap.json` route for PolyKybd.** The online
-[Configurator](https://config.qmk.fm) only lists keyboards in mainline QMK, and PolyKybd is a fork,
-so it isn't there. The `keymap.json` workflow doesn't work either: `qmk c2json` can't parse the
-firmware's custom keycodes and layer names, and a JSON-built image would drop the per-variant
-`g_led_config` (RGB matrix) and `encoder_map` that live in the keymap. Use one of the two routes
-below.
+There is **no QMK Configurator or `keymap.json` route for PolyKybd.** The
+[Configurator](https://config.qmk.fm) lists only mainline QMK keyboards, and `qmk c2json` cannot
+parse the firmware's custom keycodes. Use one of the two routes below.
 </Aside>
 
 ## Route 1 — PolyKybdHost Layout Editor (runtime)
@@ -33,22 +30,18 @@ key at a time (`ID_DYNAMIC_KEYMAP_SET_KEYCODE`) and the change persists across p
 Full walkthrough and limitations: [Keymap Editor](/using/keymap-editor/).
 
 <Aside type="note">
-\* The Layout Editor writes to the keyboard's **EEPROM**, which lives in a separate flash region
-from the firmware image — so your remaps persist across power cycles **and** survive a normal
-firmware reflash. The only time they revert to the compiled defaults is when a firmware update
-changes the on-keyboard EEPROM layout, or you explicitly clear the EEPROM. Reach for route 2 when
-you want the change to *be* the firmware default, or when you need behaviour beyond remapping single
-keys (new layers, macros, encoder logic).
+\* The Layout Editor writes to the keyboard's **EEPROM**, which is separate from the firmware
+image, so remaps survive a normal reflash. They revert to the compiled defaults only when a
+firmware update changes the EEPROM layout or you clear the EEPROM.
 </Aside>
 
 ## Route 2 — QMK firmware source
 
-Editing the firmware directly is the most powerful route: it does **much more than remap keys** —
-new layers, macros, tap-dance, encoder behaviour, and any custom QMK logic. It's also the way to
-make your change the compiled default that *ships* with the firmware (rather than living only in the
-keyboard's EEPROM), so it's there on a fresh board and is what you share or upstream.
+Editing the firmware does **much more than remap keys**: new layers, macros, tap-dance, encoder
+behaviour and any custom QMK logic. It also makes your change the compiled default, so it is on a
+fresh board and is what you share or submit to the main project.
 
-The keymap *data* — the `keymaps[]` array, `g_led_config`, and `encoder_map[]` — lives per-variant:
+The keymap *data* — the `keymaps[]` array, `g_led_config`, and `encoder_map[]` — is stored per variant:
 
 ```
 keyboards/polykybd/split72/keymaps/default/keymap.c
@@ -79,7 +72,7 @@ The shared keymap *logic* (rendering, HID handling, the QMK callbacks) is in
      </TabItem>
      <TabItem label="Macro / tap-dance / custom">
        These need firmware logic, not just data — implement them via the QMK callbacks and reference
-       them from `keymaps[]`. This is exactly what makes route 2 worth it. See
+       them from `keymaps[]`. This is the main reason to use route 2. See
        [Firmware Development](/development/firmware/).
      </TabItem>
    </Tabs>
@@ -92,7 +85,7 @@ The shared keymap *logic* (rendering, HID handling, the QMK callbacks) is in
 
 </Steps>
 
-A keymap change lands on the per-key displays automatically — the firmware re-derives every legend
+A keymap change appears on the per-key displays automatically — the firmware re-derives every legend
 from the active layer.
 
-See [Contributing](/development/contributing/) if you want to upstream a keymap change.
+See [Contributing](/development/contributing/) if you want to submit a keymap change to the main project.

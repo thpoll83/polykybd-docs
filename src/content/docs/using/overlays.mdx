@@ -1,46 +1,31 @@
 ---
 title: Context-Aware Overlays
-description: How PolyKybd re-labels every key for the app you're using — the keyboard's headline feature.
+description: How PolyKybd re-labels every key for the app you're using — the keyboard's main feature.
 ---
 
 import { Aside, Steps } from '@astrojs/starlight/components';
 
-The signature PolyKybd feature: every key's OLED shows an image ("overlay") that matches
-**whatever app you're currently in**. Switch from your browser to your editor and all 72
+The main PolyKybd feature: every key's OLED shows an image ("overlay") that matches
+**the app you are currently using**. Switch from your browser to your editor and all 72
 keycaps re-label themselves to that app's shortcuts, with no action from you.
 
 Overlays are driven by [PolyKybdHost](/software/overview/) — the keyboard on its own shows the
-static legends baked into the firmware; the host is what makes them dynamic.
+static legends built into the firmware; the host is what makes them dynamic.
 
 ![Close-up of the left half's keycaps with GIMP's overlay active: each key shows its letter in the top-left and that key's GIMP tool in the bottom-right, rendered from the KiCad models](../../../assets/using/overlay-icons-on-keys.jpg)
 
 ## How it works
 
 1. PolyKybdHost watches which window is focused on your computer.
-2. When the active app changes, it looks up the overlay set for that app and pushes the
-   keycap images to the keyboard over USB HID (compressed, so a full re-label is quick).
-3. The **master** half decompresses the images into its display memory and relays them to
-   the **slave** half over the split link, so both hands show the same thing.
-
-<Aside type="tip">
-Frequently-used apps are cached (the **MRU** — most-recently-used — cache), so returning to a
-recent app replays from cache instead of re-sending every image. The cache lives in
-PolyKybdHost and is rebuilt when the keyboard reconnects.
-</Aside>
+2. When the active app changes, it sends that app's keycap images to the keyboard over USB,
+   and both halves update.
 
 ## Modifier variants
 
 An overlay isn't a single image per key — each key stores **16 variants**, one for every
 combination of Ctrl, Shift, Alt and GUI (Command on macOS, Win elsewhere). Hold a modifier and
 the keycaps update to show what each key does *with that modifier down*, so a shortcut layer is
-visible before you commit to it.
-
-<Aside type="tip">
-**GUI combinations work now.** Older releases showed the GUI key on its own, but folded every
-`GUI+…` chord onto it — so holding `Cmd+Shift` drew the plain `Cmd` icons rather than the right
-ones. That mattered most on macOS, where `Cmd+Shift` chords are everywhere. All sixteen
-combinations are addressable now, so an overlay can cover them.
-</Aside>
+visible before you press a key.
 
 ## What you need
 
@@ -48,7 +33,7 @@ combinations are addressable now, so an overlay can cover them.
   see [Multi-Machine Setup](/using/multi-machine/)).
 - An overlay set for the app. PolyKybdHost ships overlays for the apps listed
   [below](#which-apps-are-covered), and adding one is a plain image plus a one-line mapping
-  entry — [Create App Overlays](/howto/app-overlays/) walks through it.
+  entry — [Create App Overlays](/howto/app-overlays/) explains the steps.
 
 ## Which apps are covered
 
@@ -77,7 +62,7 @@ platform gets the default set, if the app runs there at all.
 | | Claude Code on the web | ✓ | | |
 | | ChatGPT | ✓ | | Codex in a tab gets the browser's set |
 | **Office & documents** | Word, Excel, PowerPoint, Outlook | ✓ | | |
-| | LibreOffice Writer, Calc, Impress | ✓ | | Told apart by window title; Draw, Base and Math get a shared LibreOffice set |
+| | LibreOffice Writer, Calc, Impress | ✓ | | Identified by window title; Draw, Base and Math get a shared LibreOffice set |
 | **Creative** | Photoshop, Illustrator, After Effects, Premiere Pro | ✓ | | |
 | | DaVinci Resolve | ✓ | | |
 | | GIMP, Krita | ✓ | | |
@@ -116,13 +101,13 @@ PolyKybdHost. Adding an app yourself is a template image plus one mapping entry.
 </Aside>
 
 <Aside type="tip">
-**An app that isn't listed is no longer a blank.** PolyKybd works out what it can on its
-own: the app's own icon on Escape, and an icon on each shortcut the app advertises. See
+**An app that is not listed no longer shows blank keys.** PolyKybd collects what it can by
+itself: the app's own icon on Escape, and an icon on each shortcut the app publishes. See
 [Apps With No Overlay](/using/generic-overlays/).
 </Aside>
 
 <Aside type="note">
-The icons for the operating system's own chords, such as Win+L or Cmd+Tab, are not part of an
+The icons for the operating system's own shortcuts, such as Win+L or Cmd+Tab, are not part of an
 app overlay. The firmware draws them for every app. See [Shortcut Hints](/using/shortcut-hints/).
 </Aside>
 
@@ -130,7 +115,7 @@ app overlay. The firmware draws them for every app. See [Shortcut Hints](/using/
 
 Blender's shortcuts depend on the mode you are in and on the editor under the mouse. `Ctrl+R`
 is Loop Cut in Edit Mode, Sculpt Mode has its own brush keys, and the Node Editor binds a
-different set again. With the **PolyKybd Context Reporter** add-on, the keycaps follow along:
+different set again. With the **PolyKybd Context Reporter** add-on, the keycaps change with the mode:
 there are 14 shortcut sets, from Object and Edit Mesh to Sculpt, Pose, the paint modes, Node,
 UV, Dope Sheet and Graph Editor.
 
@@ -172,7 +157,7 @@ everywhere, so where an app has per-OS overlays the host picks the one matching 
 
 <Aside type="tip">
 This follows the machine the **app** runs on, not the one your keyboard is plugged into. If you
-drive the keyboard from a Mac over a [multi-machine setup](/using/multi-machine/), you still get
+use the keyboard with a Mac over a [multi-machine setup](/using/multi-machine/), you still get
 the Mac artwork.
 </Aside>
 
@@ -185,7 +170,7 @@ so the browser's own shortcuts stay on the keys the website doesn't use.
 </Aside>
 
 <Aside type="note">
-Want the technical version — the exact HID commands, the compression path, and how both
-halves stay in sync? See [System Model & Data Flow](/development/system-model/#overlay-data-path--an-app-switch)
+For the technical details (the exact HID commands, the compression path, and how both
+halves stay in sync), see [System Model & Data Flow](/development/system-model/#overlay-data-path--an-app-switch)
 and the [HID Protocol Reference](/reference/hid-protocol/#overlay-addressing).
 </Aside>

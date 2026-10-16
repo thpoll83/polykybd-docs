@@ -65,7 +65,7 @@ curve the way a sculpted keycap set does:
 
 ## Which files to print
 
-The plates live in
+The plates are in
 [`parts/export/keycap_stem/`](https://github.com/thpoll83/PolyKybd/tree/master/parts/export/keycap_stem)
 in the hardware repo, named:
 
@@ -85,7 +85,7 @@ is engraved into every piece, so you can tell printed stems apart later.
 
 ## Making your own profile
 
-The stems are generated from OpenSCAD, not hand-modelled. The shape lives in one shared library,
+The stems are generated from OpenSCAD, not hand-modelled. The shape is defined in one shared library,
 [`parts/keycap_stem/keycap_stem.scad`](https://github.com/thpoll83/PolyKybd/blob/master/parts/keycap_stem/keycap_stem.scad),
 and each plate is a small file in `parts/keycap_stem/variants/` that sets the two parameters that
 define a profile — the tilt `angle` and the `extra_len` that lifts the row:
@@ -102,6 +102,6 @@ parts/keycap_stem/build_stems.sh          # export every variant
 parts/keycap_stem/build_stems.sh 1U_R2    # or just the ones matching
 ```
 
-The script walks the variants directory and needs no editing.
+The script processes every file in the variants directory and needs no editing.
 [`parts/README.md`](https://github.com/thpoll83/PolyKybd/blob/master/parts/README.md) covers the
 rest, including the Noto font the engraved revision needs.

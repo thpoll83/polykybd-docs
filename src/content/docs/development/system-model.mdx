@@ -5,10 +5,10 @@ description: A visual mental model of PolyKybd — how the host and the two halv
 
 import { Aside } from '@astrojs/starlight/components';
 
-PolyKybd has a lot of moving parts: a host application (**PolyKybdHost**), two keyboard halves that
+PolyKybd has many components: a host application (**PolyKybdHost**), two keyboard halves that
 run the **same** firmware image in different roles, a custom HID protocol, and 8 MB
-of external flash carved into regions. This page is a single mental model of how it
-all fits together — the topology, the command surface, where resources live, and the
+of external flash divided into regions. This page shows how it
+all fits together — the topology, the command set, where resources live, and the
 handful of runtime processes worth understanding before you change any of them.
 
 ## Topology — who talks to whom
@@ -43,12 +43,12 @@ flowchart LR
 ```
 
 <Aside type="note">
-The slave has **no idea PolyKybdHost exists**. Everything it displays was relayed by the
+The slave **never communicates with PolyKybdHost**. Everything it displays was relayed by the
 master over the split link. Each half keeps its **own** copy of the overlay images in
 RAM, which is why an image change has to be sent to both halves.
 </Aside>
 
-## The HID command surface
+## The HID command set
 
 Every report is `[report-id][command][payload…]`, 64 bytes. Replies are prefixed
 `P\xNN.` (ACK) or `P\xNN!` (NACK). Commands live on the keyboard-specific
@@ -117,7 +117,7 @@ The same three-command flow, with a different target, drives **firmware update**
 
 ## Where resources live — the 8 MB flash
 
-Custom hardware: 8 MB external QSPI, hard-partitioned. The authoritative map is
+Custom hardware: 8 MB external QSPI, divided into fixed partitions. The authoritative map is
 `base/fw_staging.h`.
 
 | Range | Size | Contents |
@@ -129,7 +129,7 @@ Custom hardware: 8 MB external QSPI, hard-partitioned. The authoritative map is
 | `0x7C0000–0x7FE000` | 248 KB | DOOM engine pack |
 | `0x7FE000–0x800000` | 8 KB | Emulated EEPROM (wear-levelling backing store) |
 
-The last 8 KB is not the keyboard's to spend: QMK's RP2040 wear-levelling driver
+The firmware cannot use the last 8 KB: QMK's RP2040 wear-levelling driver
 places the emulated EEPROM at the very top of flash, so everything you configure —
 keymap, brightness, language, idle style, glyph script — lives there, and the DOOM
 engine-pack slot deliberately stops short of it.
@@ -137,7 +137,7 @@ engine-pack slot deliberately stops short of it.
 The **firmware partition** is the budget that matters for adding languages and fonts:
 `split72:default` uses roughly a third of its 2 MB. `FW_STAGING_OFFSET` is kept equal
 to the linker's `flash1` length, so a build that exceeds 2 MB fails to **link** rather
-than silently growing into the staging area.
+than overwriting the staging area without an error.
 
 Font-pack bundles are **`.plyf`** files carrying **ABI version 2** — column-native
 (OLED page) glyph bitmaps (see [Column-native glyph bitmap format](/development/display-graphics/#column-native-glyph-bitmap-format)). A keyboard rejects a bundle whose ABI does not match its firmware and falls back to its resident fonts, so the host, firmware, and shipped bundles are versioned together.
@@ -157,7 +157,7 @@ Font-pack bundles are **`.plyf`** files carrying **ABI version 2** — column-na
 
 Each half boots independently and loads its own state from EEPROM. The USB half
 becomes the master; it renders all keycaps and brings up the split link to the slave.
-Until the link establishes, the master retries; if it never comes up it runs solo.
+Until the link establishes, the master retries; if it never comes up, the master runs alone.
 
 ```mermaid
 sequenceDiagram
@@ -177,7 +177,7 @@ sequenceDiagram
 <Aside type="note">
 There is a brief **boot-time busy window** on the master (the initial 72-keycap
 render plus the first sync to a slave that may still be coming up). It clears within a
-couple of seconds; a person never notices it, but automated tooling that pokes the
+couple of seconds; a person never notices it, but automated tooling that sends commands to the
 keyboard immediately after power-on can.
 </Aside>
 
@@ -266,17 +266,16 @@ sequenceDiagram
 
 Three things follow from this layout:
 
-- A slow read costs the helper process, not PolyKybdHost. The tracking loop, the tray
-  menu and the brightness requests keep their normal speed.
+- A slow read runs in the helper process, not in PolyKybdHost. The tracking loop, the
+  tray menu and the brightness requests keep their normal speed.
 - A read always reports on the window the loop matched. The helper starts from that
-  window's handle and refuses one owned by another process, so a slow read can no
-  longer file one app's shortcuts under another.
+  window's handle and refuses one owned by another process, so a slow read cannot
+  store one app's shortcuts under another app.
 - Killing the helper is the only way to stop a read midway. It is restarted on the next
   read. Linux (AT-SPI) and macOS (the menu bar) read inside PolyKybdHost; their reads
   are capped at 4000 and 3000 elements.
 
-This applies from the host release that carries it. Earlier hosts ran the read on a
-thread inside PolyKybdHost and read whatever had focus when the read started.
+This describes the PolyKybdHost release that includes the helper process.
 
 ### Display power states
 
@@ -312,10 +311,10 @@ see [Idle & Burn-in Protection](/using/idle/).
 
 ### Resource flashing (firmware & font packs)
 
-Firmware images, font-pack bundles, and the engine packs all ride the same BEGIN / CHUNK
+Firmware images, font-pack bundles, and the engine packs all use the same BEGIN / CHUNK
 / COMMIT transport. The master streams chunks to its own staging flash **and** bridges
 them to the slave, so both halves end up with byte-identical data. A firmware apply
-reboots both halves in lockstep.
+reboots both halves at the same time.
 
 ```mermaid
 sequenceDiagram
@@ -337,7 +336,7 @@ sequenceDiagram
 ```
 
 <Aside type="caution">
-Heavy work never runs inside a split-transaction handler. A font-pack COMMIT verifies
+Slow work never runs inside a split-transaction handler. A font-pack COMMIT verifies
 the whole pack, which is too slow for the transaction window, so the slave ACKs on the
 fast transport CRC and defers the full reload to its main loop.
 </Aside>

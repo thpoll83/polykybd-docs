@@ -9,19 +9,19 @@ import AiSkill from '../../../components/AiSkill.astro';
 
 <SupportedSince protocol={6} note="per-bundle versioning & auto-flash" />
 
-PolyKybd can draw an enormous range of glyphs on its keycaps — Latin of course, but also
+PolyKybd can draw an enormous range of glyphs on its keycaps — Latin, and also
 symbols, CJK, emoji, country flags and the [glyph scripts](/using/glyph-scripts/). That
 glyph set is far too big to compile into the firmware image, so it's split in two.
 
 ## Resident fonts vs the font pack
 
 - **Resident fonts** are compiled into the firmware. They cover ASCII text and the essential
-  UI chrome, so the keyboard always renders basic legends **even with no font pack flashed**.
+  interface symbols, so the keyboard always renders basic legends **even with no font pack flashed**.
 - **The font pack** lives in the keyboard's **external QSPI flash** (the 4–6 MB resource
   region) and holds everything else. It's flashed separately from the firmware and survives a
   firmware update.
 
-The pack isn't one big blob — it's a set of independently-versioned **bundles**
+The pack is not one single file. It is a set of independently-versioned **bundles**
 (symbols, Middle-Eastern, syllabic, Asian, flags, emoji, the `fantasy` script bundle, and
 `latinbig`, which carries the bigger faces for the [legend size](/using/legend-size/)).
 
@@ -32,30 +32,25 @@ The pack isn't one big blob — it's a set of independently-versioned **bundles*
 You normally never manage the pack by hand. When PolyKybdHost connects, the keyboard reports
 the version of each bundle it holds, and the host **flashes only the bundles that are missing or
 out of date**. That's what the *"Updating fonts — do not unplug"* screen is: a font-pack bundle
-being written. It's quick, and it only happens when something is actually stale.
+being written.
 
 To manage the pack yourself instead, turn off **Settings → Fontpack → Auto Flash**
 (`fontpack_auto_flash`). The host then flashes bundles only when you ask.
 
-While a bundle is being written, the keycap legends stay frozen. Shift, Caps Lock and layer
-keys still type correctly but do not repaint the keycaps. The legends catch up as soon as the
+While a bundle is being written, the keycap legends do not change. Shift, Caps Lock and layer
+keys still type correctly but do not repaint the keycaps. The legends update as soon as the
 bundle is written.
-
-<Aside type="tip">
-Because bundles are versioned, adding a new language flag or a new glyph script only reships the
-one bundle that changed — the rest are left untouched.
-</Aside>
 
 ## Checking and updating it yourself
 
-The tray's **Updates** menu carries a **Keyboard fonts** row that already knows the
-answer: it reads *"Keyboard fonts: up to date"* when nothing is stale, or
+The tray's **Updates** menu has a **Keyboard fonts** row that shows the
+status: it reads *"Keyboard fonts: up to date"* when nothing is stale, or
 *"Update keyboard fonts (2)…"* when something is — with the outdated bundles named in
 its tooltip. Clicking it flashes exactly those.
 
 ![The tray Updates submenu: check for host update, check for keyboard firmware update, and "Update keyboard fonts (1)…"](../../../assets/software/tray-updates-submenu.png)
 
-For troubleshooting you can also drive the pack from the CLI:
+For troubleshooting you can also manage the pack from the CLI:
 
 ```sh
 polyctl fontpack status        # show device-vs-shipped versions per bundle
@@ -77,7 +72,7 @@ Generating the fonts themselves is a development task — see
 
 <AiSkill name="reship-fontpack-bundle">
 The **`reship-fontpack-bundle`** skill refreshes a bundle's shipped
-`.plyf` from the committed firmware headers when the host and firmware bytes have drifted — no
+`.plyf` from the committed firmware headers when the host and firmware bytes differ — no
 `fontconvert` build needed. To make a single glyph render with **no** pack flashed, the
 companion **`make-font-resident`** skill moves it into the compiled-in resident set.
 </AiSkill>

@@ -5,9 +5,9 @@ description: How the PolyKybd hardware, firmware, host software and tooling fit 
 
 import { Aside, Card, CardGrid } from '@astrojs/starlight/components';
 
-PolyKybd is not a single program — it is a small stack of open-source projects that each own one layer of the system. Understanding how they connect makes the rest of these docs easier to navigate.
+PolyKybd is a small stack of open-source projects, each responsible for one layer of the system.
 
-## The big picture
+## Overview
 
 ```mermaid
 flowchart TB
@@ -22,10 +22,8 @@ flowchart TB
 The two keyboard halves run the **same firmware image**; which half is master is decided at runtime (the half with USB power). They stay in sync over a CRC32-validated full-duplex serial link.
 
 <Aside type="tip">
-Want the deeper version? [System Model & Data Flow](/development/system-model/) expands this
-picture with the full HID command surface, the 8 MB flash map, and diagrams of the key
-runtime processes — boot & split-link establishment, the overlay data path on an app switch,
-display power states, resource flashing, and the core0/core1 offload.
+For more depth, [System Model & Data Flow](/development/system-model/) covers the HID commands,
+the flash map and the main runtime processes.
 </Aside>
 
 ## The repositories
@@ -48,7 +46,7 @@ display power states, resource flashing, and the core0/core1 offload.
 Those four are the stack itself. Four more repositories support it without being a layer of it:
 
 - [thpoll83/polykybd-ctnd](https://github.com/thpoll83/polykybd-ctnd) — a Raspberry Pi **hardware-in-the-loop** rig that flashes and tests firmware on real hardware as part of CI. Development infrastructure rather than something you need to use the keyboard; see [Test Rig & CI](/development/test-rig/).
-- [thpoll83/wincompose](https://github.com/thpoll83/wincompose) — a maintained fork of Sam Hocevar's **WinCompose**, kept alive because compose-key [unicode input on Windows](/software/wincompose/) is a hard dependency for PolyKybd.
+- [thpoll83/wincompose](https://github.com/thpoll83/wincompose) — a maintained fork of Sam Hocevar's **WinCompose**, maintained because compose-key [unicode input on Windows](/software/wincompose/) is a hard dependency for PolyKybd.
 - [thpoll83/gnome-wayland-winreader](https://github.com/thpoll83/gnome-wayland-winreader) — a **read-only** GNOME Shell extension that reports the focused window over D-Bus. On GNOME/Wayland, Mutter does not expose the active window over X11/EWMH, so the usual window-tracking libraries cannot see native Wayland windows.
 - [thpoll83/polykybd-docs](https://github.com/thpoll83/polykybd-docs) — this documentation site.
 
@@ -63,8 +61,8 @@ Those four are the stack itself. Four more repositories support it without being
 
 ## What works without the host
 
-The keyboard is a complete QMK keyboard on its own: every key types, layers work, and the displays show the static labels baked into the firmware. **PolyKybdHost is what makes the displays dynamic** — context overlays, live language switching, adaptive brightness and the keymap editor. You can also flash firmware straight from the host over HID, with no bootloader button.
+The keyboard is a complete QMK keyboard on its own: every key types, layers work, and the displays show the static labels built into the firmware. **PolyKybdHost is what makes the displays dynamic** — context overlays, live language switching, adaptive brightness and the keymap editor. You can also flash firmware straight from the host over HID, with no bootloader button.
 
 <Aside type="tip">
-New here? Read [Firmware Overview](/firmware/overview/) for the keyboard side and [What is PolyKybdHost?](/software/overview/) for the computer side. The [Glossary](/reference/glossary/) defines the project-specific terms used throughout.
+If you are new to PolyKybd, read [Firmware Overview](/firmware/overview/) for the keyboard side and [What is PolyKybdHost?](/software/overview/) for the computer side. The [Glossary](/reference/glossary/) defines the project-specific terms used throughout.
 </Aside>
