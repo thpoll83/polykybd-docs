@@ -219,8 +219,10 @@ The first question, asked every 0.25 s, is whether a read should start at all:
 
 ```mermaid
 flowchart TD
-  T["Window-tracking tick<br/>(every 0.25 s)"] --> A{"Artwork covers<br/>this app?"}
-  A -- "yes, Fill Shortcuts off<br/>(the default)" --> N["No read:<br/>artwork + Escape mark"]
+  T["Window-tracking tick<br/>(every 0.25 s)"] --> E{"Overlays Enabled and<br/>Shortcut Icons Enabled?"}
+  E -- no --> X["No read,<br/>nothing generic"]
+  E -- yes --> A{"Artwork covers<br/>this app?"}
+  A -- "yes, Fill Shortcuts off<br/>(the default)" --> N["No read: artwork, plus the<br/>Escape mark if Fill Gaps is on"]
   A -- "no, or Fill Shortcuts on" --> F{"Forwarded from<br/>another computer?"}
   F -- yes --> R["Use the shortcuts the<br/>forwarder sent: no read here"]
   F -- no --> C{"Answer cached for this<br/>window title, under 30 min old?"}
@@ -268,9 +270,11 @@ Three things follow from this layout:
 
 - A slow read runs in the helper process, not in PolyKybdHost. The tracking loop, the
   tray menu and the brightness requests keep their normal speed.
-- A read always reports on the window the loop matched. The helper starts from that
-  window's handle and refuses one owned by another process, so a slow read cannot
-  store one app's shortcuts under another app.
+- A read reports on the window the loop matched. The helper starts from that window's
+  handle and refuses a window owned by another process, so a slow read cannot store one
+  app's shortcuts under another app. If the handle cannot be read, the helper starts from
+  the focused element and still checks the process. If the process id cannot be read,
+  there is nothing to check against.
 - Killing the helper is the only way to stop a read midway. It is restarted on the next
   read. Linux (AT-SPI) and macOS (the menu bar) read inside PolyKybdHost; their reads
   are capped at 4000 and 3000 elements.
