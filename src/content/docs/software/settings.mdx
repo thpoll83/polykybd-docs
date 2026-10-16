@@ -6,7 +6,8 @@ description: The PolyKybdHost settings a user may want to change, where each sit
 import { Aside } from '@astrojs/starlight/components';
 
 Open **Settings…** in the tray menu. The dialog groups each setting under the first word of
-its key, so `brightness_gamma` appears as **Brightness → Gamma**. From the command line, read
+its key, so `brightness_gamma` appears as **Brightness → Gamma**. Hold the pointer over a
+setting to see a short description of it. From the command line, read
 or change a setting by its key:
 
 ```sh
@@ -43,7 +44,8 @@ refresh.
 | Dialog | Key | Default | What it changes |
 | --- | --- | --- | --- |
 | **Generic → Overlays Enabled** | `generic_overlays_enabled` | on | [Icons for apps with no overlay](/using/generic-overlays/): the app's mark on Escape and an icon per shortcut. |
-| **Generic → Overlays Fill Gaps** | `generic_overlays_fill_gaps` | on | Generic icons also fill the keys an app's own overlay leaves blank. |
+| **Generic → Overlays Add Escape Mark** | `generic_overlays_fill_gaps` | on | An app with its own overlay also gets its mark on Escape, when the overlay leaves Escape blank. |
+| **Generic → Overlays Add Shortcut Icons** | `generic_overlays_fill_shortcuts` | on | Such an app is also read for its shortcuts, with icons on the keys its overlay leaves blank. |
 | **Shortcut → Icons Enabled** | `shortcut_icons_enabled` | on | Whether the focused app is read for its shortcuts at all. |
 | **Shortcut → Icon Auto Fetch** | `shortcut_icon_auto_fetch` | on | Whether missing icons may be downloaded. |
 | **Shortcut → Enable Accessibility** | `shortcut_enable_accessibility` | on | Linux only: whether the host may turn on the desktop's accessibility switch so Qt and KDE apps publish their shortcuts. |
@@ -88,4 +90,7 @@ send it.
 <Aside type="note">
 A change made in the dialog and one made with `polyctl settings set` do not overwrite each
 other.
+
+The file keeps only the settings you changed. Every other setting follows the default of
+the PolyKybdHost version you run, so an update that improves a default reaches you too.
 </Aside>
