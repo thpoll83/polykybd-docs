@@ -206,6 +206,78 @@ sequenceDiagram
 Frequently-used apps are also cached (the MRU path), so a return to a recent app
 replays from cache rather than re-sending every image.
 
+### Shortcut icons on Windows — the UI Automation read
+
+For an app without hand-made artwork, PolyKybdHost reads the app's own shortcuts and
+draws an icon for each one it recognises (see [Generic Overlays](/using/generic-overlays/)).
+On Windows the read goes through UI Automation, which walks every element of the
+window. On a long browser page that is tens of thousands of elements and can take
+minutes. So the read never runs in the window-tracking loop. The loop only asks for
+an answer, and a separate helper process does the walk.
+
+The first question, asked every 0.25 s, is whether a read should start at all:
+
+```mermaid
+flowchart TD
+  T["Window-tracking tick<br/>(every 0.25 s)"] --> A{"Artwork covers<br/>this app?"}
+  A -- "yes, Fill Shortcuts off<br/>(the default)" --> N["No read:<br/>artwork + Escape mark"]
+  A -- "no, or Fill Shortcuts on" --> F{"Forwarded from<br/>another computer?"}
+  F -- yes --> R["Use the shortcuts the<br/>forwarder sent: no read here"]
+  F -- no --> C{"Answer cached for this<br/>window title, under 30 min old?"}
+  C -- yes --> S["Serve the cached icons:<br/>no read"]
+  C -- no --> B{"Last read failed and<br/>its backoff still runs?"}
+  B -- yes --> W["Keep the old icons,<br/>ask again later"]
+  B -- no --> Q["Queue a read<br/>(the tick returns at once)"]
+```
+
+The read itself runs on a worker thread in PolyKybdHost, which hands it to the helper
+process over its standard input and output:
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant L as Tracking loop
+  participant F as Fetcher thread
+  participant H as Helper process
+  participant A as Focused app (UIA)
+  L->>F: queue a read (app, pid, title, window handle)
+  Note over F: dropped here if focus already moved on
+  F->>H: JSON request (app, pid, window handle)
+  Note over H: started on first use, kept for later reads
+  par the helper reads
+    H->>A: ElementFromHandle(window handle)
+    A-->>H: window element + its process id
+    alt process id is not the app's
+      H-->>F: "did not look" (retry later)
+    else same app
+      H->>A: FindAllBuildCache(whole subtree)
+      A-->>H: every element, with its accelerator key
+      H-->>F: JSON answer (shortcuts, element count, seconds)
+    end
+  and the fetcher waits, checking every 0.25 s
+    F->>F: focus left the app? kill the helper
+    F->>F: no answer after 3 min? kill the helper
+  end
+  F->>F: store the answer, and cache it per title for 30 min<br/>(only if title and pid did not change)
+  L->>F: next tick asks again
+  F-->>L: the stored answer
+  L->>L: send the new icons to the keyboard
+```
+
+Three things follow from this layout:
+
+- A slow read costs the helper process, not PolyKybdHost. The tracking loop, the tray
+  menu and the brightness requests keep their normal speed.
+- A read always reports on the window the loop matched. The helper starts from that
+  window's handle and refuses one owned by another process, so a slow read can no
+  longer file one app's shortcuts under another.
+- Killing the helper is the only way to stop a read midway. It is restarted on the next
+  read. Linux (AT-SPI) and macOS (the menu bar) read inside PolyKybdHost; their reads
+  are capped at 4000 and 3000 elements.
+
+This applies from the host release that carries it. Earlier hosts ran the read on a
+thread inside PolyKybdHost and read whatever had focus when the read started.
+
 ### Display power states
 
 To avoid burning the OLED legends in, the keycaps fade and then run the configured
