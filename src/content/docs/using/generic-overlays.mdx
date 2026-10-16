@@ -133,12 +133,12 @@ All six are in **Settings…** in the tray menu. All are **on** by default excep
 | **Generic → Overlays Enabled** | The whole feature. Off: no Escape mark and no shortcut icons for any app. |
 | **Generic → Overlays Add Escape Mark** | Whether an app that already has artwork also gets its mark on Escape, when the artwork leaves Escape blank. |
 | **Generic → Overlays Add Shortcut Icons** | Off by default. Whether such an app is also read for its shortcuts, with icons on the keys its artwork leaves blank. Reading a large app (a browser with a long page open) can take minutes, and its artwork already shows its main shortcuts. |
-| **Shortcut → Icons Enabled** | Whether the focused app is read for its shortcuts at all. Off: nothing generic is drawn, since the Escape icon only accompanies shortcut icons. |
+| **Shortcut → Icons Enabled** | Whether the focused app is read for its shortcuts at all. Off: no shortcut icons, and an app without artwork gets no Escape mark either, since that mark only accompanies shortcut icons. An app with artwork still gets its mark when **Overlays Add Escape Mark** is on. |
 | **Shortcut → Icon Auto Fetch** | Whether the icon set may be downloaded. Off: icons already downloaded keep working; new ones are skipped. |
 | **Shortcut → Enable Accessibility** | Linux only. Whether PolyKybdHost may turn on the desktop's accessibility switch so Qt and KDE apps publish their shortcuts. Off: only apps that publish anyway (GTK) are read. |
 
-Two of them switch everything off: with **Generic → Overlays Enabled** or **Shortcut → Icons
-Enabled** off, nothing generic is drawn and the other settings have no effect.
+**Generic → Overlays Enabled** switches everything off: nothing generic is drawn and the
+other settings have no effect.
 
 <Aside type="tip">
 On a managed or offline machine the two you probably want are **Shortcut → Icons Enabled**
