@@ -56,9 +56,12 @@ shows the result in the tray tooltip, for example "0.6 MB/s link"; a keyboard wi
 shows "HID link, up to 64 KB/s".
 
 The serial port carries framed commands with their own protocol version, separate from
-`PROTOCOL_VERSION`. Only the CHUNK step of the update uses it: one frame carries up to
+`PROTOCOL_VERSION`. The CHUNK step of the update uses it: one frame carries up to
 236 bytes, which the master relays to the slave in one split transaction and then writes
-itself. BEGIN, SIGNATURE, COMMIT and APPLY stay on HID. The host sends four frames ahead
+itself. BEGIN, SIGNATURE, COMMIT and APPLY stay on HID. From host 1.17.29 the chunks of a
+font-pack bundle, the icon library, the game data and the engine pack take the same
+frames: the keyboard writes a frame into whatever target the preceding BEGIN selected,
+so those transfers need no command of their own. The host sends four frames ahead
 of their replies, and every reply names the keyboard's write position, so the host
 continues from there after a lost frame. When the port is busy, missing, or the firmware
 predates it, the host sends the chunks over HID, and a transfer that started on the serial

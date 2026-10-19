@@ -132,7 +132,7 @@ firmware:
 | **FW_UP_APPLY** | `0x44` | Install the staged image on both halves and reboot. |
 | **FW_UP_SIGNATURE** | `0x45` | Ed25519 signature, two 32-byte parts, before COMMIT. |
 | **FONTPACK_BEGIN** | `0x50` | Font-pack bundle, DOOM WAD or DOOM engine pack: size, CRC and target slot. |
-| **FONTPACK_CHUNK** | `0x51` | 56 bytes at an offset; relayed to the slave. |
+| **FONTPACK_CHUNK** | `0x51` | 56 bytes at an offset; relayed to the slave. The same data goes as 236-byte frames on the fast link when the host has it. |
 | **FONTPACK_COMMIT** | `0x52` | Check CRC on both halves and reload the fonts. No reboot. |
 | **FONTPACK_STATUS** | `0x53` | Whether a pack is present, its ABI, content version and font count. |
 

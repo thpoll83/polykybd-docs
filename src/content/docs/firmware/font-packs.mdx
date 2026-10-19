@@ -32,7 +32,11 @@ The pack is not one single file. It is a set of independently-versioned **bundle
 You normally never manage the pack by hand. When PolyKybdHost connects, the keyboard reports
 the version of each bundle it holds, and the host **flashes only the bundles that are missing or
 out of date**. That's what the *"Updating fonts — do not unplug"* screen is: a font-pack bundle
-being written.
+being written. The nine shipped bundles are about 743 KB together. With firmware 1.9.4 and
+host 1.17.29 or newer the bundle data goes over the keyboard's
+[fast link](/beyond-qmk/firmware-update/#the-fast-link), which moves it in about a
+quarter of the time HID needs (about 11 KB/s over HID, so about a minute for all nine);
+each bundle's slot erase adds time on both paths.
 
 To manage the pack yourself instead, turn off **Settings → Fontpack → Auto Flash**
 (`fontpack_auto_flash`). The host then flashes bundles only when you ask.
