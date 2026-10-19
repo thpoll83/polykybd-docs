@@ -338,7 +338,7 @@ sequenceDiagram
   M->>S: bridge BEGIN
   Note over M,S: both erase the target slot (deferred, 64 KB blocks and 4 KB sectors)
   loop chunks
-    H->>M: CHUNK (56 B over HID; firmware only: 236 B over the fast link)
+    H->>M: CHUNK (56 B over HID, or 236 B over the fast link)
     M->>S: bridge CHUNK
   end
   H->>M: COMMIT
