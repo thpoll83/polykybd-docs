@@ -6,7 +6,8 @@ description: Set keycap brightness by hand, follow the daylight automatically, o
 import { Aside } from '@astrojs/starlight/components';
 
 The per-key OLEDs can be dimmed and brightened three different ways. Whichever you use, a
-**manual** change always takes priority until you re-enable automatic mode.
+**manual** change takes priority until automatic mode is back on: you turn it on again, or
+the keyboard reconnects to PolyKybdHost.
 
 ## Manual
 
@@ -19,7 +20,9 @@ A manual set switches automatic mode off, so the keyboard keeps exactly the leve
 
 ### Going back to automatic
 
-A manual level stays until you turn automatic mode back on. To do that, choose
+A manual level stays until you turn automatic mode back on, or until the keyboard
+reconnects to PolyKybdHost (after a reboot, a replug or a host restart): on every connect
+the host sets its brightness mode again. To turn automatic mode back on yourself, choose
 **Brightness → Back to automatic** in the tray (or run `polyctl brightness --auto`).
 
 ![The tray Brightness submenu: Off, 1%, 50% and 100% presets, then a separated "Back to automatic" entry](../../../assets/software/tray-brightness-submenu.png)
