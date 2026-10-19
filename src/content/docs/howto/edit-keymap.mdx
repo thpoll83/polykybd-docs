@@ -66,9 +66,11 @@ The shared keymap *logic* (rendering, HID handling, the QMK callbacks) is in
 
    <Tabs>
      <TabItem label="Remap / add a layer">
-       Replace a keycode, or add another `[n] = LAYOUT_left_right_stacked(...)` entry (up to 9
-       layers) plus a key that reaches it — `MO(n)` (momentary) or `TG(n)` (toggle). QMK's keycode
-       reference is at [docs.qmk.fm/keycodes](https://docs.qmk.fm/keycodes).
+       Replace a keycode, or add another `[n] = LAYOUT_left_right_stacked(...)` entry plus a key
+       that reaches it: `MO(n)` (momentary) or `TG(n)` (toggle). The keymap already uses all 12
+       layers that `DYNAMIC_KEYMAP_LAYER_COUNT` allows (in the variant's `config.h`), so a new
+       layer also needs that count raised. Only layers 0–7 can be changed later in the Keymap
+       Editor. QMK's keycode reference is at [docs.qmk.fm/keycodes](https://docs.qmk.fm/keycodes).
      </TabItem>
      <TabItem label="Macro / tap-dance / custom">
        These need firmware logic, not just data — implement them via the QMK callbacks and reference

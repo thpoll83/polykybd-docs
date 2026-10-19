@@ -31,16 +31,16 @@ pushing and grep `dist/` for what you changed.** A green PR can have had zero ch
 compile the site (#48).
 
 - ⚠️ **An on-demand Claude reviewer was tried and removed (2026-08-20). Don't rebuild
-  it.** Three summonses, every run green, zero reviews posted (`permission_denials_count`
+  it.** Three requests, every run green, zero reviews posted (`permission_denials_count`
   1–2, output hidden), ~$1.30 spent.
 
 ## Merging a page ships it
 
 A merged docs PR is live within minutes; host and firmware features reach users only on
-a release. Both directions have bitten: the Multi-Machine page kept recommending a path
+a release. Both directions have caused errors: the Multi-Machine page kept recommending a path
 the host had gated off for six weeks (docs#51), and its follow-up described a feature
 that existed only in `main` (docs#52). **A page describing new behaviour waits for the
-release that carries it.** Say so in the PR body, or name the required version on the
+release that contains it.** Say so in the PR body, or name the required version on the
 page.
 
 ## Writing style
@@ -78,9 +78,9 @@ habits below from all 65 pages, so don't bring them back.
   "every page" (65 content pages today) are different counts.
 - **`routeMiddleware: './src/starlightRouteData.ts'`** clears `toc`, so there is no
   right-hand table of contents and the right side of the viewport is free.
-- ⚠️ **Starlight's CSS is in `@layer starlight.*`, and an unlayered rule beats every
-  layered one.** A `:root` token override in `src/styles/custom.css` also wins in the
-  light theme. Give every token override a `:root[data-theme='light']` value too, and
+- ⚠️ **Starlight's CSS is in `@layer starlight.*`, and an unlayered rule takes priority
+  over every layered one.** A `:root` token override in `src/styles/custom.css` also takes priority in
+  the light theme. Give every token override a `:root[data-theme='light']` value too, and
   check the light theme (Playwright `colorScheme: 'light'`). The failure is silent.
 
 ## Site-wide `<head>` scripts and analytics
@@ -102,7 +102,7 @@ habits below from all 65 pages, so don't bring them back.
   image renders at 55% of the column (82% under 50rem), centred, click-to-enlarge
   (`custom.css`, `public/js/photo-zoom.js`). The one opt-out is the landing page's
   `.pk-strip` (photos, video and renders in one row, `public/js/showcase-strip.js`).
-- **Assets live in `src/assets/<section>/`** (`assembly`, `firmware`, `hardware`,
+- **Assets are in `src/assets/<section>/`** (`assembly`, `firmware`, `hardware`,
   `howto`, `landing`, `overlays`, `reference`, `schematics`, `software`, `using`).
   Astro re-encodes them to WebP.
 - **Size photos ~1400 px on the long edge, quality ~82.** 2000 px was tried and reverted.

@@ -21,6 +21,8 @@ A manual set switches automatic mode off, so the keyboard keeps exactly the leve
 
 A manual level stays until you turn automatic mode back on. To do that, choose
 **Brightness → Back to automatic** in the tray (or run `polyctl brightness --auto`).
+Each time the keyboard connects to PolyKybdHost (after a reboot, a replug or a host
+restart), the host sets its brightness mode again, and this also ends a manual level.
 
 ![The tray Brightness submenu: Off, 1%, 50% and 100% presets, then a separated "Back to automatic" entry](../../../assets/software/tray-brightness-submenu.png)
 
