@@ -67,7 +67,7 @@ import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
        ```
     2. **Install the udev rule** for HID access (required for non-root access). The same
        file grants access to the keyboard's serial port, which the host uses as the fast
-       link for firmware updates, and tells ModemManager to leave that port alone:
+       link for firmware updates, and prevents ModemManager from probing that port:
        ```sh
        sudo cp polyhost/device/99-hid.rules /etc/udev/rules.d/
        sudo udevadm control --reload-rules

@@ -65,8 +65,9 @@ predates it, the host sends the chunks over HID, and a transfer that started on 
 port finishes over HID if the port stops.
 
 On Linux the udev rule shipped with the host (`polyhost/device/99-hid.rules`) also grants
-access to the serial port and tells ModemManager to leave it alone. Without it the host
-reports the HID link and the update still works, over HID.
+access to the serial port (its `tty` lines) and prevents ModemManager from probing it.
+Without the `tty` lines the host reports the HID link and the update still works over HID,
+as long as the `hidraw` lines of the same file are installed.
 
 ## Staging: both halves at once
 
@@ -78,7 +79,7 @@ sequenceDiagram
   participant S as Slave
   H->>M: FW_UP_BEGIN (size, CRC)
   M->>S: FLASH_STAGE BEGIN
-  Note over M,S: deferred erase, one sector per pass
+  Note over M,S: deferred erase, one 64 KB block or 4 KB sector per pass, blank units skipped
   M-->>H: ready once the slave has erased
   loop one chunk per 236 bytes (fast link) or 56 bytes (HID)
     H->>M: chunk (offset, data)
