@@ -11,8 +11,8 @@ is two halves, two cables and two drag-and-drops.
 
 PolyKybd updates itself from the running firmware instead. The host streams the new image
 over USB: over the keyboard's fast link (a serial port next to the HID interface, see
-[The fast link](#the-fast-link)) when the firmware and the host both have it, else over the
-raw HID channel it uses for overlays. Both halves store the image in a spare flash area,
+[The fast link](#the-fast-link)) when the firmware and the host both have it (firmware
+1.9.4 and host 1.17.28 or newer), else over the raw HID channel it uses for overlays. Both halves store the image in a spare flash area,
 check it, and then copy it over their own firmware and reboot together. The user sees the
 [tray app](/setup/flashing/) or `polyctl fw flash --apply` and nothing else.
 
