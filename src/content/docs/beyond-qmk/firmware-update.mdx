@@ -1,6 +1,6 @@
 ---
-title: Firmware Update over HID
-description: How PolyKybd installs new firmware on both halves from the host over raw HID, without the RP2040 bootloader — staging, the split bridge, the self-apply, what the board shows, and how to recover.
+title: Firmware Update over USB
+description: How PolyKybd installs new firmware on both halves from the host over USB, without the RP2040 bootloader — staging over the fast link or raw HID, the split bridge, the self-apply, what the board shows, and how to recover.
 ---
 
 import { Aside, Steps } from '@astrojs/starlight/components';
@@ -10,9 +10,15 @@ double-tap reset), wait for the `RPI-RP2` drive, copy a `.uf2`. On a split keybo
 is two halves, two cables and two drag-and-drops.
 
 PolyKybd updates itself from the running firmware instead. The host streams the new image
-over the same raw HID channel it uses for overlays. Both halves store it in a spare flash
-area, check it, and then copy it over their own firmware and reboot together. The user
-sees the [tray app](/setup/flashing/) or `polyctl fw flash --apply` and nothing else.
+over USB: over the keyboard's fast link (a serial port next to the HID interface, see
+[The fast link](#the-fast-link)) when the firmware and the host both have it (firmware
+1.9.4 and host 1.17.28 or newer), else over the raw HID channel it uses for overlays. Both halves store the image in a spare flash area,
+check it, and then copy it over their own firmware and reboot together. The user sees the
+[tray app](/setup/flashing/) or `polyctl fw flash --apply` and nothing else.
+
+A 545 KB image takes about 23 s end to end over the fast link: 3 s to erase the staging
+area on both halves, 11 s to transfer, 2 s for the signature prompt, and 7 s to copy and
+reboot. Over HID alone the transfer takes about 50 s.
 
 ## The flash layout that makes it possible
 
@@ -31,7 +37,7 @@ the running firmware:
 |---|---|---|
 | `0x43` | `FW_UP_GET_VERSION` | Returns the running version string, image size and CRC. `polyctl fw version` asks this live, every time. |
 | `0x40` | `FW_UP_BEGIN` | Announces the size and CRC32, and starts erasing the staging area on both halves. |
-| `0x41` | `FW_UP_CHUNK` | One 56-byte piece of the image at a given offset. |
+| `0x41` | `FW_UP_CHUNK` | One 56-byte piece of the image at a given offset, over HID. Over the fast link the pieces are 236 bytes (see below). |
 | `0x45` | `FW_UP_SIGNATURE` | The 64-byte Ed25519 signature, in two parts, before COMMIT. See [Firmware Signing](/beyond-qmk/signing/). |
 | `0x42` | `FW_UP_COMMIT` | Checks the CRC and the signature and stamps the staging header. Answers `.`, `?`, `S` or `!`. |
 | `0x44` | `FW_UP_APPLY` | Installs the staged image on both halves and reboots them. |
@@ -39,6 +45,29 @@ the running firmware:
 The firmware-update commands are not gated on `PROTOCOL_VERSION`. A host can always update
 a keyboard, even one whose protocol it does not otherwise support. This is how a user fixes
 a mismatch, so the host gates these actions only on "a device is present".
+
+## The fast link
+
+Raw HID moves one 64-byte report per USB frame, with a round trip for each, which caps a
+transfer at about 10 KB/s. The firmware also exposes a USB serial port (CDC-ACM, a COM
+port on Windows, `/dev/ttyACM*` on Linux, `/dev/cu.usbmodem*` on macOS) whose bulk
+endpoints take packets back to back. The host measures that link at every connect and
+shows the result in the tray tooltip, for example "0.6 MB/s link"; a keyboard without it
+shows "HID link, up to 64 KB/s".
+
+The serial port carries framed commands with their own protocol version, separate from
+`PROTOCOL_VERSION`. Only the CHUNK step of the update uses it: one frame carries up to
+236 bytes, which the master relays to the slave in one split transaction and then writes
+itself. BEGIN, SIGNATURE, COMMIT and APPLY stay on HID. The host sends four frames ahead
+of their replies, and every reply names the keyboard's write position, so the host
+continues from there after a lost frame. When the port is busy, missing, or the firmware
+predates it, the host sends the chunks over HID, and a transfer that started on the serial
+port finishes over HID if the port stops.
+
+On Linux the udev rule shipped with the host (`polyhost/device/99-hid.rules`) also grants
+access to the serial port (its `tty` lines) and prevents ModemManager from probing it.
+Without the `tty` lines the host reports the HID link and the update still works over HID,
+as long as the `hidraw` lines of the same file are installed.
 
 ## Staging: both halves at once
 
@@ -50,10 +79,10 @@ sequenceDiagram
   participant S as Slave
   H->>M: FW_UP_BEGIN (size, CRC)
   M->>S: FLASH_STAGE BEGIN
-  Note over M,S: deferred erase, one sector per pass
+  Note over M,S: deferred erase, one 64 KB block or 4 KB sector per pass, blank units skipped
   M-->>H: ready once the slave has erased
-  loop one chunk per 56 bytes of image
-    H->>M: FW_UP_CHUNK (offset, 56 B)
+  loop one chunk per 236 bytes (fast link) or 56 bytes (HID)
+    H->>M: chunk (offset, data)
     M->>S: FLASH_STAGE CHUNK
   end
   H->>M: FW_UP_SIGNATURE (2 parts)
@@ -66,11 +95,13 @@ sequenceDiagram
 The master writes each chunk into its own staging area and relays it to the slave in one
 split transaction (`USER_SYNC_FLASH_STAGE`). The slave never talks to the host.
 
-**The erase is deferred.** Erasing a 4 KB sector blocks the flash for tens of
-milliseconds, and erasing all of staging at once would starve the split link. So each
-half erases one sector per main-loop pass, at a limited rate, and the master polls the
-slave until it reports ready. QMK's `SPLIT_MAX_CONNECTION_ERRORS` is raised to 200 so the
-erase does not make QMK declare the link lost.
+**The erase is deferred.** An erase blocks the flash for tens of milliseconds (about
+60 ms for a 4 KB sector, 150 ms for a 64 KB block), and erasing all of staging at once
+would starve the split link. So each half erases one unit per main-loop pass, 20 ms
+apart, and the master polls the slave until it reports ready. A unit is a 64 KB block
+where the range allows it and a 4 KB sector at the end; a unit that already reads blank
+is skipped. QMK's `SPLIT_MAX_CONNECTION_ERRORS` is raised to 200 so the erase does not
+make QMK declare the link lost.
 
 **The keyboard stays usable during the transfer.** Housekeeping that would compete for
 the split link (EEPROM saves, state pushes, slave display refreshes) pauses, and the RGB
@@ -105,10 +136,11 @@ next one, so its console line goes out and a log shows which stage stopped.
    the keycaps their legends back.
 
 4. **Copy and reset.** A routine that runs from RAM halts `core1`, disarms the
-   [watchdog](/beyond-qmk/crash-handler/), turns interrupts off and copies the image
-   sector by sector. It writes sector 0, which holds the vector table, last. It then
-   compares what it wrote against the source, records the result in flash, and resets
-   the chip.
+   [watchdog](/beyond-qmk/crash-handler/), turns interrupts off, erases the running
+   partition in 64 KB blocks and copies the image sector by sector. It erases and writes
+   the first 64 KB last, with sector 0, which holds the vector table, as the final
+   sector. It then compares what it wrote against the source, records the result in
+   flash, and resets the chip.
 </Steps>
 
 Two halves that run new firmware boot together, as after a replug. A master that reboots
