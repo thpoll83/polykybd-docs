@@ -15,9 +15,10 @@ top.
 ## The wire
 
 The halves are joined by a **full-duplex two-wire UART** (TX on `GP5`, RX on `GP4`) at
-460800 baud, driven by the RP2040's PIO. `SERIAL_USART_PIN_SWAP` crosses TX and RX on the
+1843200 baud, driven by the RP2040's PIO. `SERIAL_USART_PIN_SWAP` crosses TX and RX on the
 master at runtime, so one firmware image works on either half. The steady-state error rate
-measured after the move to full duplex is zero.
+measured on the test rig at this speed is zero; `-e POLYKYBD_SPLIT_BAUD=460800` rebuilds
+the earlier speed.
 
 ## The transactions
 

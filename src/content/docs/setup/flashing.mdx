@@ -15,6 +15,11 @@ PolyKybdHost sends the firmware image to the keyboard over its normal USB connec
 button is needed, and it works **even when the keyboard's protocol version does not match the
 host**, so a keyboard on incompatible firmware can still be updated.
 
+The image goes over the keyboard's fast link (a USB serial port next to the HID interface)
+when the firmware and the host both have it, which takes about 11 s for a full image, and
+over HID otherwise, about 50 s. The tray tooltip names the link in use. Details:
+[Firmware Update over USB](/beyond-qmk/firmware-update/#the-fast-link).
+
 HID flashing uses a raw **`.bin`** image (not the `.uf2`).
 
 <Tabs>
