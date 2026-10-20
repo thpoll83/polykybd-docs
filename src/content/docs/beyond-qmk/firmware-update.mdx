@@ -70,7 +70,9 @@ port finishes over HID if the port stops.
 On Linux the udev rule shipped with the host (`polyhost/device/99-hid.rules`) also grants
 access to the serial port (its `tty` lines) and prevents ModemManager from probing it.
 Without the `tty` lines the host reports the HID link and the update still works over HID,
-as long as the `hidraw` lines of the same file are installed.
+as long as the `hidraw` lines of the same file are installed. From host 1.17.30 the tray
+shows **Updates → Allow access to the keyboard (udev rule)…** while the installed rule
+lacks a line of the shipped file, and installs it through a PolicyKit password prompt.
 
 ## Staging: both halves at once
 
