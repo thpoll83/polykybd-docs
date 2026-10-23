@@ -196,7 +196,7 @@ little-endian. "—" means no payload.
 | `0x14` SET_UNICODE_MODE | `[2]` `0` Linux, `1` macOS, `2` Windows, `3` WinCompose, `4` BSD; `[3]` non-zero = this session only (v17) | — |
 | `0x17` BOOTLOADER | — | — then the keyboard enters the bootloader |
 | `0x18` DISPLAY_OFF | — | — |
-| `0x19` SET_HANDEDNESS | `[2]` `0` = the USB half is left, else right | — then both halves reboot |
+| `0x19` SET_HANDEDNESS | `[2]` `0` = the USB half is left, else right; `[3]` (v24) [Rev.2 mark](/reference/old-rev2-boards/) of the USB half: `0` keep, `1` remove, `2` set | — then both halves reboot (`!` if `[3]` > 2) |
 | `0x1A` SAVE_MRU | — | — (writes unsaved settings to EEPROM) |
 | `0x1C` IDLE_STYLE | `[2]` `0xFF` query, or `0` pulse, `1` jitter, `2` DOOM demo, `3` Eden | `[3]` style |
 | `0x1D` SET_OS | `[2]` `0xFF` query, `0xFE` auto, or OS: `0` unknown, `1` Windows, `2` macOS, `3` Linux, `4` Android, `6` GNOME, `7` KDE; `[3]` bit 0 = pin (manual) | `[3]` active OS, `[4]` `1` if auto |
@@ -669,6 +669,7 @@ Selected milestones:
 - **v21** — [mapping flags](#mapping-flags) on **SEND_OVERLAY_MAPPING_W** (`0x21`): the prepare and enable steps of an app switch are sent in the mapping reports instead of separate `OVERLAY_FLAGS` reports. A switch between apps whose images the keyboard already holds needs about half the reports.
 - **v22** — **REBOOT** (`0x2B`): restart both halves without saving anything, so the host's [boot-loop test](/software/reporting-problems/#catching-a-crash-that-happens-only-occasionally) can reboot the keyboard hundreds of times to catch a rare startup crash. Changing the handedness also reboots, but it writes the settings storage on every call.
 - **v23** — a [dim flag](#dimmed-icons) on **SEND_OVERLAY_MAPPING_W** (`0x21`): the keyboard draws the icons of a flagged report dimmed. The host uses it for a browser's shortcuts under a [website's overlay](/using/website-detection/#browser-keys-are-drawn-dimmed).
+- **v24** (firmware 1.9.12, host 1.17.49) — a second byte on **SET_HANDEDNESS** (`0x19`) that sets or removes the [Rev.2 mark](/reference/old-rev2-boards/) in the USB half's handedness stamp. A marked half becomes the main half only when the computer recognises it over USB, because a Rev.2 board passes USB power to both halves. `0` keeps the stored mark, so an older host that sends one byte cannot remove it.
 
 <Aside type="note">
 Not every version number above is a separate feature listed here — the list highlights the
