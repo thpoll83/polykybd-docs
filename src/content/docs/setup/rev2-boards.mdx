@@ -80,6 +80,13 @@ check each half while it is the one connected.
 
 ## Remove the mark
 
-Use **Maintenance → Fix Left/Right Side → Remove the Rev.2 mark from the connected half…**, or
-`polyctl handedness left --split-vbus off`, with only that half connected. Changing the side with
+Connect only the half to change. Use **Maintenance → Fix Left/Right Side → Remove the Rev.2 mark
+from the connected half…** and choose that half's side, or run:
+
+```bash
+polyctl handedness left --split-vbus off    # with only the left half connected
+polyctl handedness right --split-vbus off   # with only the right half connected
+```
+
+Both also save the side you name, so name the side of the connected half. Changing the side with
 **Fix Left/Right Side** alone keeps the mark.
