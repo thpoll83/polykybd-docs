@@ -1,0 +1,85 @@
+---
+title: Rev.2 Boards (2023)
+description: One-time setup that lets the two halves of a Rev.2 PolyKybd connect to each other on current firmware.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+This page is only for **Rev.2 boards**. Check the text printed on the back of each PCB:
+
+| Half | Silkscreen |
+|---|---|
+| Left | `Rev 2 04/2023` |
+| Right | `Rev.2 03/2023` |
+
+Boards marked `rev3`, `rev3.1`, `rev3.2` or `rev3.3` need nothing from this page.
+
+## Why a Rev.2 board needs a setup step
+
+A Rev.2 board sends USB power over the cable between the halves. The firmware detects which half is
+plugged into the computer by checking for USB power, so on a Rev.2 board both halves find power and
+both start as the main half. The halves then do not connect to each other: each half plays its
+startup animation, but keys and settings stay on their own half.
+
+Each half therefore stores a **Rev.2 mark** next to its [handedness](/reference/glossary/). With the
+mark, the half that the computer recognises over USB becomes the main half, and the other half waits
+about 2 seconds at startup before it continues as the second half. The mark stays stored when the
+firmware is updated.
+
+<Aside type="caution">
+The mark needs a firmware and a host app that both support **protocol 24**. Older firmware ignores
+the setting and older host apps do not offer it. Help → About shows the protocol of both.
+</Aside>
+
+## Before you start
+
+- **Flash the firmware to each half separately, over the UF2 bootloader drive.** The update from
+  the tray app sends the image to the second half over the split cable, and that link does not
+  work on a Rev.2 board until both halves have the mark. See
+  [UF2 bootloader drive](/setup/flashing/#fallback-uf2-bootloader-drive). Use the same `.uf2` file
+  for both halves.
+- **Run only one PolyKybdHost.** The tray app connects to a host that is already running in the
+  background, and an older one stays running after you start a newer tray app. If About shows a
+  protocol mismatch or the entries below are greyed out, stop the running host with
+  `polyctl shutdown`, quit the tray icon and start the app again.
+
+## Set the mark on each half
+
+<Steps>
+1. Disconnect the cable between the halves.
+2. Connect **only the left half** to the computer with USB.
+3. Wait until the tray app has finished any font-pack update it starts for this half. This can take
+   a few minutes the first time.
+4. In the tray menu, open **Maintenance → Fix Left/Right Side → Mark connected half as a Rev.2
+   board (2023)…** and choose **Left**. The half saves the mark and its side, then restarts.
+5. Disconnect the left half. Connect **only the right half**, wait for its font-pack update, and
+   repeat step 4 with **Right**.
+6. Connect the cable between the halves, then connect either half to the computer. The halves now
+   connect to each other.
+</Steps>
+
+From the command line, steps 4 and 5 are:
+
+```bash
+polyctl handedness left --split-vbus on     # with only the left half connected
+polyctl handedness right --split-vbus on    # with only the right half connected
+```
+
+## Check the result
+
+The firmware's startup messages show the mark on the `board:` line. Open the keyboard console tab
+of the log viewer (**Help & About → Log file…**). After the half connected over USB restarts, it
+prints:
+
+```text
+   board: flags=0x01 split_vbus (Rev.2: master by USB enumeration)
+```
+
+`flags=0x00` means the half has no mark. The console shows only the half connected over USB, so
+check each half while it is the one connected.
+
+## Remove the mark
+
+Use **Maintenance → Fix Left/Right Side → Remove the Rev.2 mark from the connected half…**, or
+`polyctl handedness left --split-vbus off`, with only that half connected. Changing the side with
+**Fix Left/Right Side** alone keeps the mark.

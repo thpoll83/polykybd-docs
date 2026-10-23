@@ -150,6 +150,7 @@ export default defineConfig({
           items: [
             { label: 'Install PolyKybdHost', slug: 'setup/installation' },
             { label: 'Flash the Firmware', slug: 'setup/flashing' },
+            { label: 'Rev.2 Boards (2023)', slug: 'setup/rev2-boards' },
           ],
         },
         {
