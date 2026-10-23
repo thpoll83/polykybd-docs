@@ -19,7 +19,7 @@ flowchart TB
     slave["<b>QMK firmware</b> — same image, slave role<br/>Slave half<br/>• mirrors state + overlays to its keys"]
 ```
 
-The two keyboard halves run the **same firmware image**; which half is master is decided at runtime (the half with USB power). They stay in sync over a CRC32-validated full-duplex serial link.
+The two keyboard halves run the **same firmware image**; which half is master is decided at runtime (the half with USB power; on an [old Rev.2 board](/reference/old-rev2-boards/), the half the computer recognises over USB). They stay in sync over a CRC32-validated full-duplex serial link.
 
 <Aside type="tip">
 For more depth, [System Model & Data Flow](/development/system-model/) covers the HID commands,
