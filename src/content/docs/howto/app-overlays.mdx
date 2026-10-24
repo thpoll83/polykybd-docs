@@ -52,6 +52,37 @@ The firmware has these fixed limits:
 - Put the icon in the **bottom-right** of the cell so it never covers the firmware-drawn key letter
   in the top-left.
 
+### Keys without a legend
+
+The keyboard draws the key's legend first, clears 3 px around your icon, and then draws the icon.
+An icon that fills the whole cell, such as a large program mark on Esc, would leave pieces of the
+legend around it. From **firmware 1.9.13 and PolyKybdHost 1.17.52** a key can be drawn without its
+legend: the keyboard clears the whole cell first.
+
+If you build the set with the overlay generator (`scripts/generate_app_overlays.py`), mark the key
+in the spec:
+
+```yaml
+program_icon: program.png
+program_icon_region: [72, 40]
+program_icon_legend: false        # the Esc mark, on every modifier layer
+
+bindings:
+  - { key: F5, icon: refresh.png, label: "Refresh", legend: false }
+```
+
+The generator writes the marked keys into a `polykybd-no-legend` text chunk of the PNG. A PNG
+painted by hand can carry the same chunk. The chunk is a list of `<modifier>:<keycode>` pairs,
+separated by spaces, both in decimal:
+
+- `<modifier>` is the modifier bitmask: `0` none, `1` Ctrl, `2` Shift, `4` Alt, `8` GUI. Add the
+  values for a combination, for example `3` for Ctrl+Shift.
+- `<keycode>` is the HID keycode of the key, for example `4` for A, `41` for Esc and `62` for F5.
+
+The chunk `0:62 1:62 0:41` marks F5, Ctrl+F5 and Esc. Use it only where the icon replaces the keycap: on a normal shortcut
+icon the legend tells you which key it is. With older firmware the key keeps its legend and the
+icon is drawn over it.
+
 ## Build it by hand
 
 <Steps>
