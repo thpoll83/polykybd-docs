@@ -71,9 +71,15 @@ bindings:
   - { key: F5, icon: refresh.png, label: "Refresh", legend: false }
 ```
 
-The generator writes the marked keys into a `polykybd-no-legend` text chunk of the PNG, as
-`<modifier>:<keycode>` pairs (modifier `0` = none, `1` = Ctrl, and so on). A PNG painted by hand
-can carry the same chunk. Use it only where the icon replaces the keycap: on a normal shortcut
+The generator writes the marked keys into a `polykybd-no-legend` text chunk of the PNG. A PNG
+painted by hand can carry the same chunk. The chunk is a list of `<modifier>:<keycode>` pairs,
+separated by spaces, both in decimal:
+
+- `<modifier>` is the modifier bitmask: `0` none, `1` Ctrl, `2` Shift, `4` Alt, `8` GUI. Add the
+  values for a combination, for example `3` for Ctrl+Shift.
+- `<keycode>` is the HID keycode of the key, for example `4` for A, `41` for Esc and `62` for F5.
+
+The chunk `0:62 1:62 0:41` marks F5, Ctrl+F5 and Esc. Use it only where the icon replaces the keycap: on a normal shortcut
 icon the legend tells you which key it is. With older firmware the key keeps its legend and the
 icon is drawn over it.
 
