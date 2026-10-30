@@ -15,6 +15,10 @@ PolyKybd ships with **161 keyboard-language layouts**. Press the **Language/Glob
 **`xx-YY` language code** (for example `de-DE`, `fr-FR`, `es-MX`), with a frame drawn around the
 currently selected language.
 
+The languages are sorted by continent, with one tab per continent. When a continent has more
+languages than keys, the two page keys show the current page and the page count next to the
+arrow, for example ▶ 2/3.
+
 Switching the layout redraws every keycap, accents and AltGr symbols included. Here the right
 half on French AZERTY:
 
@@ -92,7 +96,7 @@ picker on the number row.
 3. Tap **Ctrl** [ Á»Æ ]. The Ctrl keycap turns **inverted** — dark legend on a lit key — to show
    the picker is active, and the number row fills with that letter's variations.
 4. If the letter has more variations than fit in one row, step through them with the **page arrows** at either
-   end of the picker row.
+   end of the picker row. The arrow keys show the current page and the page count, for example ▶ 2/3.
 5. Press the key under the accent you want.
 
 That becomes the letter's variation from then on, and it is kept after a reboot. The picker closes as
@@ -142,7 +146,7 @@ your keycaps.
 The picker row holds 12 variations at a time on split72 and 10 on split42, so the letters with the most variations
 span several pages. The two **page arrows** are at the **outer ends** of the row — back on the far
 left of the left half, forward on the far right of the right half. They **wrap** in both
-directions.
+directions, and each shows the current page and the page count next to its arrow (◀ 2/3).
 
 | | Letters that page | Most pages |
 |---|---|---|
@@ -303,6 +307,34 @@ instead of memorising a codepoint. Your most recently used emoji are easy to rea
 Close up, a single 72×40 px keycap rendering one emoji:
 
 ![A single keycap OLED rendering a grinning-face emoji at full size](../../../assets/using/emoji-keycap.jpg)
+
+There are 12 category tabs. On split72 they fill the top row, with a page key at each outer end.
+On split42 they fill the two top rows of the left half, and the page keys are on the thumb row. A
+category with more emoji than keys has several pages. The page keys show the current page and the
+page count next to the arrow, for example ▶ 3/9, and they wrap in both directions. A category
+with one page shows blank page keys.
+
+### Symbols
+
+The **Symbols & Marks** tab [ ✔ ] has the typographic and technical symbols that a layout does
+not put on a key. In this order:
+
+| Group | Symbols |
+|---|---|
+| Most used (first page on split72) | ¹ ² ³ ° ± × ÷ µ ½ ¼ ¾ © ® ™ § ¶ · • – … « » ‹ › „ “ ” ‘ ’ ¡ ¿ € £ ¥ ¢ ‰ † ‡ |
+| Superscripts and subscripts | ⁰ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ ⁺ ⁻ ⁼ ⁽ ⁾ ⁿ ⁱ ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ₊ ₋ ₌ ₍ ₎ |
+| Fractions | ⅓ ⅔ ⅕ ⅖ ⅗ ⅘ ⅙ ⅚ ⅛ ⅜ ⅝ ⅞ |
+| Other letters and signs | ′ ″ ‚ ª º ¬ ¦ ₩ ₹ ₺ ₿ ℃ ℉ ℓ № ℗ ℠ ℮ |
+| Greek | α β γ δ ε θ λ μ π σ τ φ ω Δ Σ Φ Ω |
+| Math | − ∓ ≈ ≠ ≡ ≤ ≥ ≪ ≫ ∞ √ ∛ ∝ ∑ ∏ ∫ ∂ ∆ ∇ ∀ ∃ ∅ ∈ ∉ ∩ ∪ ⊂ ⊃ ⊆ ⊇ ∧ ∨ ⊕ ⊗ ⊥ ∠ ∴ ∵ ∘ ∙ ⋅ ∕ ⌀ |
+| Arrows | ← ↑ → ↓ ↔ ↕ ↵ ⇐ ⇒ ⇔ |
+
+After these come check marks, crosses, bracket ornaments and dingbat arrows.
+
+The math symbols and arrows are in the symbol [font pack](/firmware/font-packs/), like the emoji.
+Without a font pack their keys are blank. Everything above them is built into the firmware.
+The keyboard types each symbol as Unicode, so the [Unicode input mode](#unicode-input) must be
+set for your OS.
 
 ## Unicode input
 
