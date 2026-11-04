@@ -17,6 +17,7 @@ glyph set is far too big to compile into the firmware image, so it's split in tw
 
 - **Resident fonts** are compiled into the firmware. They cover ASCII text and the essential
   interface symbols, so the keyboard always renders basic legends **even with no font pack flashed**.
+  In the emoji picker, a key whose glyph is only in the pack then shows **Glyph missing!**.
 - **The font pack** lives in the keyboard's **external QSPI flash** (the 4–6 MB resource
   region) and holds everything else. It's flashed separately from the firmware and survives a
   firmware update.
