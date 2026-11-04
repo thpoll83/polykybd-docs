@@ -37,7 +37,7 @@ between the switch openings. So you fit one part per half instead of placing 36 
 |---|---|
 | Frame, left half | `parts/export/diffuser/diffuser_frame_left.stl` |
 | Frame, right half | `parts/export/diffuser/diffuser_frame_right.stl` |
-| Four stacked per plate | `..._left_4x.stl` / `..._right_4x.stl` |
+| Four copies stacked on a sprue | `..._left_4x.stl` / `..._right_4x.stl` |
 
 <Aside type="caution">
 Fitting the frame means using a **different spacer**: `parts/export/case/spacer_diffuser_frame.stl`
@@ -48,6 +48,23 @@ It is notched on **both** faces, so the one part serves either half — see
 
 Print it in resin (SLA). It is a thin, delicate part, and the web is deliberately close to the
 minimum wall a print service will accept.
+
+The `_4x` files stack four copies on top of each other, joined by a sprue so that a print service
+counts one part. The slicer still needs supports between the copies. Cut the pins off before fitting.
+
+### Fitting the frame
+
+Fit the frame into the plate before anything else is done with the plate, and before the plate goes
+onto the spacer. The slide needs the space under the plate.
+
+1. Hold the frame under the plate so that each diffuser goes up through its own switch opening.
+2. Slide the frame about 5.5mm, so that each diffuser moves out of the switch opening and into the
+   half-round LED hole next to it, until every diffuser sits in its half-round.
+
+The caps on the top and bottom hold the plate between them, and the switches stop the frame from
+sliding back once they are in, so no glue is needed.
+
+![Render of the diffuser frame in the left plate. Left, the top side: a cap sits in each half-round LED hole. Right, the underside: the web that connects all 36 diffusers](../../../assets/assembly/diffuser-frame-in-plate.jpg)
 
 ### Changing the plate
 
