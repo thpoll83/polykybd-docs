@@ -49,6 +49,7 @@ platform gets the default set, if the app runs there at all.
 | --- | --- | :---: | :---: | --- |
 | **Browsers** | Chrome, Chromium, Edge, Brave, Vivaldi, Opera, Arc | ✓ | | |
 | | Firefox | ✓ | ✓ | |
+| | Safari | | | macOS only. The web apps below load in Safari too |
 | **Web apps** | GitHub | ✓ | | Matched by the tab's URL, in any browser above. See [Website-Aware Overlays](/using/website-detection/) |
 | | GitLab | ✓ | | |
 | | Jira | ✓ | | |
@@ -61,24 +62,49 @@ platform gets the default set, if the app runs there at all.
 | | Claude (claude.ai) | ✓ | | |
 | | Claude Code on the web | ✓ | | |
 | | ChatGPT | ✓ | | Codex in a tab gets the browser's set |
+| | Gmail, Google Calendar, Sheets, Slides, Meet | | | |
+| | Word, Excel, PowerPoint and OneNote on the web, Teams on the web, Microsoft Copilot | | | |
+| | Figma, Trello, Linear, Overleaf, Jupyter, draw.io, Excalidraw | | | |
+| | YouTube | | | The player keys |
 | **Office & documents** | Word, Excel, PowerPoint, Outlook | ✓ | | |
+| | OneNote | ✓ | | |
+| | Visio, Microsoft 365 Copilot, Microsoft Copilot | | | |
+| | Acrobat | ✓ | | |
+| | SumatraPDF, Okular | | | |
 | | LibreOffice Writer, Calc, Impress | ✓ | | Identified by window title; Draw, Base and Math get a shared LibreOffice set |
 | **Creative** | Photoshop, Illustrator, After Effects, Premiere Pro | ✓ | | |
 | | DaVinci Resolve | ✓ | | |
 | | GIMP, Krita | ✓ | | |
 | | Inkscape | | | |
 | | Figma | ✓ | | |
+| | Lightroom Classic, InDesign | ✓ | | |
+| | Affinity, Affinity Designer, Photo, Publisher | ✓ | | |
+| | FreeCAD, OpenSCAD | ✓ | ✓ | |
+| | Autodesk Fusion | ✓ | | |
 | | [Blender](#blender-overlays-that-follow-the-mode) | ✓ | | 14 sets that follow the mode, with the add-on |
+| **Audio & music** | Ableton Live, FL Studio, REAPER | ✓ | | |
+| | MuseScore, Audacity | ✓ | ✓ | |
+| | Spotify, VLC | ✓ | | |
+| **3D printing** | PrusaSlicer (and its G-code viewer), OrcaSlicer | ✓ | | |
+| | Bambu Studio | ✓ | ✓ | |
 | **ArtCraft** | PhotoCraft, VectorCraft, DesignCraft, FigCraft, LightCraft, EffectCraft, FilmCraft, SoundCraft, DeckCraft, WordCraft, GridCraft, PDFCraft, CADCraft | ✓ | | |
 | **Development** | VS Code | ✓ | ✓ | |
 | | Visual Studio | | | |
 | | JetBrains IDEs: IntelliJ IDEA, PyCharm, CLion, WebStorm, GoLand, Rider, PhpStorm, RubyMine, DataGrip, RustRover, Android Studio | ✓ | ✓ | Linux has separate GNOME and KDE sets |
 | | Sublime Text | ✓ | ✓ | |
 | | Notepad++ | | | |
-| | KiCad | | | PCB Editor window only |
+| | KiCad | ✓ | | PCB editor, schematic, symbol and footprint editors, 3D viewer and Gerber viewer, identified by window title. The macOS set is for the PCB editor |
+| | Eclipse, Arduino IDE 2 | ✓ | ✓ | |
+| | Ghidra, Wireshark, Postman, GitHub Desktop | ✓ | | Ghidra: the CodeBrowser window |
+| | DBeaver | ✓ | ✓ | |
+| | RStudio, MATLAB | ✓ | | |
+| | Mathematica | ✓ | ✓ | |
+| | [Vim, Neovim, Emacs, GNU nano](#vim-emacs-and-nano-overlays-that-follow-the-mode) | | | In a terminal, and GUI Vim and Emacs. A set per mode, with the plugin |
 | | Cursor, Windsurf / Devin Desktop, Zed | ✓ | ✓ | |
 | **Notes** | Obsidian, Notion desktop app | ✓ | | |
 | **Communication** | Slack, Discord, Teams, Zoom | ✓ | | |
+| | Webex, Webex Meetings | ✓ | | |
+| | Thunderbird | ✓ | ✓ | The compose window has its own set |
 | **AI assistants** | Claude desktop app | ✓ | | Shows the Code tab's shortcuts in both tabs, which share one window |
 | | ChatGPT desktop app, Codex desktop app | ✓ | | |
 | | LM Studio, Jan | ✓ | | |
@@ -90,6 +116,12 @@ platform gets the default set, if the app runs there at all.
 | **Terminals & transfer** | PuTTY, WinSCP | | | |
 | **Games** | Age of Empires II: HD Edition and the CD version | | | Default hotkeys: go-to-building keys, control groups, chat, function keys |
 | | Age of Empires II: Definitive Edition | | | The same keys, its own Esc mark. Windows and Steam with Proton |
+| | Age of Empires IV | | | Default Grid Keys |
+| | Command & Conquer Remastered Collection | | | Keys drawn from your own Tiberian Dawn files when they are installed |
+| | OpenRA: Red Alert, Tiberian Dawn | | | Keys drawn from the game files OpenRA installed |
+| | Warcraft III (classic 1.26 to 1.31), Wargus | | | |
+| | RimWorld, OpenTTD, OpenRCT2 | | | |
+| | Factorio | ✓ | | |
 
 Notion, Claude and ChatGPT appear twice because the desktop app and the web version are
 matched separately.
@@ -99,10 +131,12 @@ the selection, so only keys that always do the same thing have icons. Each digit
 unit as a group (spearmen on 1, archers on 2, cavalry on 3 and so on): the bare digit selects the
 group, and with Ctrl, where the icon has a plus, it creates it. The game does not tie a group
 number to a unit type; the icons only suggest a habit. The Esc mark is drawn without the key legend
-from firmware 1.9.13; the control groups and the Definitive Edition set need PolyKybdHost 1.17.53.
+from firmware 1.9.15; the control groups and the Definitive Edition set need PolyKybdHost 1.17.82.
 
 Firefox, Blender, the ArtCraft apps, Cursor, Windsurf, Zed, LM Studio and Jan need
-**PolyKybdHost 1.17.18 or later**.
+**PolyKybdHost 1.17.18 or later**. The games, the three slicers, Eclipse, Arduino IDE 2, Ghidra,
+Wireshark, Trello, Figma on the web, YouTube, Vim, Emacs and nano need **PolyKybdHost 1.17.82 or
+later**.
 
 <Aside type="note">
 This is what ships today. The authoritative list is `overlay-mapping.poly.yaml` in
@@ -155,6 +189,34 @@ the app in front. You can pause reporting in the add-on's preferences without un
 <Aside type="note">
 If you set a `browser_report_token` in PolyKybdHost, enter the same value as *Token* in the
 add-on's preferences. The default port, 50164, matches the host's default.
+</Aside>
+
+## Vim, Emacs and nano: overlays that follow the mode
+
+In Vim the same key does different things in Normal, Insert and Visual mode, and Emacs binds
+different keys in an Org or a Dired buffer. With a small plugin the editor reports its mode, and
+the keycaps change with it. This also works when the editor runs in a terminal: while the
+terminal is the focused app, the host shows the mode of the editor you last typed in.
+
+- **Vim and Neovim** get a set per mode: Normal, Insert, Visual, Select, Replace, the command line
+  and the terminal. The plugin is in `vim-plugin/` in a PolyKybdHost checkout. Copy it to
+  `~/.vim/pack/polykybd/start/polykybd` (Vim) or load it with your plugin manager. It needs
+  Vim 8.2.3430 or later, or Neovim 0.7 or later.
+- **Emacs** gets a global set and its own sets for Org and Dired buffers. The package is in
+  `emacs-package/`. On Emacs 29 or later, install it with `package-vc-install` and turn it on
+  with `(polykybd-mode 1)`. Its README lists the other ways.
+- **GNU nano** has no plugin. The host finds it by the terminal's window title, so the shell must
+  put the running command into the title. *Updates → Show the running command in the terminal
+  title…* sets that up for bash, zsh and PowerShell, and `polyctl shell-integration install` does
+  the same.
+
+Without a plugin, a terminal shows its own overlay or the shortcuts the host finds for it. The
+plugins send only the mode, and only to `127.0.0.1` on this computer.
+
+<Aside type="caution">
+A terminal tells the editor that it lost the focus through focus events. In **tmux**, turn them on
+with `set -g focus-events on` in `~/.tmux.conf`, or the editor keeps reporting while you work in
+another tab. An editor in an SSH session cannot reach the host, so it reports nothing.
 </Aside>
 
 ## Same app, different platform
