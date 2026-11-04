@@ -211,12 +211,14 @@ terminal is the focused app, the host shows the mode of the editor you last type
   the same.
 
 Without a plugin, a terminal shows its own overlay or the shortcuts the host finds for it. The
-plugins send only the mode, and only to `127.0.0.1` on this computer.
+plugins send the editor's name, its mode, whether it has the focus, its process ID and the time
+since the last keypress, and only to `127.0.0.1` on this computer.
 
 <Aside type="caution">
 A terminal tells the editor that it lost the focus through focus events. In **tmux**, turn them on
 with `set -g focus-events on` in `~/.tmux.conf`, or the editor keeps reporting while you work in
-another tab. An editor in an SSH session cannot reach the host, so it reports nothing.
+another tab. An editor in an SSH session runs on the other computer, so its reports go to that
+computer's `127.0.0.1` and do not reach the host.
 </Aside>
 
 ## Same app, different platform
