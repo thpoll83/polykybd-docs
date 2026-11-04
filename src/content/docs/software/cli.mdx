@@ -8,8 +8,9 @@ import { Aside } from '@astrojs/starlight/components';
 `polyctl` is a small command-line tool that talks to a **running PolyKybdHost daemon** over its local control socket. It needs no GUI, so it suits headless machines, scripts and quick one-off commands.
 
 <Aside>
-`polyctl` controls an existing daemon — it does not start one. The one exception is
-`polyctl logs`, which works whether or not anything is running. Launch the daemon first with `python -m polyhost` (GUI + daemon) or `python -m polyhost --headless` (no GUI). See [Daemon & Client Model](/software/architecture/).
+`polyctl` controls an existing daemon — it does not start one. Two commands work whether or
+not anything is running: `polyctl logs`, and `polyctl shell-integration`, which only edits your
+shell startup files. Launch the daemon first with `python -m polyhost` (GUI + daemon) or `python -m polyhost --headless` (no GUI). See [Daemon & Client Model](/software/architecture/).
 </Aside>
 
 ## Subcommands
@@ -45,6 +46,7 @@ import { Aside } from '@astrojs/starlight/components';
 | `update check` / `update install` | Check for and install host updates (streams progress) |
 | `telemetry status\|preview\|enable\|disable\|send` | Inspect or turn off the anonymous [usage report](/software/telemetry/) — `preview` prints the exact report that would be sent |
 | `unicode-mode` | Re-detect the host's unicode input method ([WinCompose](/software/wincompose/) vs native) and push it to the keyboard |
+| `shell-integration install\|remove\|status` | Make bash, zsh and PowerShell put the running command into the terminal title, so the host can show the [GNU nano overlay](/using/overlays/#vim-emacs-and-nano-overlays-that-follow-the-mode). It edits your shell startup files and needs no running host. Needs host 1.17.83 |
 | `logs bundle\|show\|paths` | Collect the log files: write a support `.zip`, print recent lines, or list what was found. **Works with the host stopped**. See [Reporting a Problem](/software/reporting-problems/) |
 | `window report` | Report the current active window to the daemon |
 | `watch` | Stream live events from the daemon to the terminal |
