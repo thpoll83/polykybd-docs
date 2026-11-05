@@ -66,12 +66,17 @@ platform gets the default set, if the app runs there at all.
 | | Word, Excel, PowerPoint and OneNote on the web, Teams on the web, Microsoft Copilot | | | |
 | | Figma, Trello, Linear, Overleaf, Jupyter, draw.io, Excalidraw | | | |
 | | YouTube | | | The player keys |
+| | Google Drive, Google Keep | ✓ | | Keep: only `keep.google.com`, not its help pages |
+| | Canva | ✓ | | Only the design editor, not the home or help pages |
+| | Photopea | ✓ | | Only the editor, not the learn and blog pages |
+| | Todoist | ✓ | | Also the desktop app |
 | **Office & documents** | Word, Excel, PowerPoint, Outlook | ✓ | | |
 | | OneNote | ✓ | | |
 | | Visio, Microsoft 365 Copilot, Microsoft Copilot | | | |
 | | Acrobat | ✓ | | |
 | | SumatraPDF, Okular | | | |
 | | LibreOffice Writer, Calc, Impress | ✓ | | Identified by window title; Draw, Base and Math get a shared LibreOffice set |
+| | WPS Office Writer, Spreadsheets, Presentation | | | Windows and Linux. In the all-in-one window, the set follows the file extension in the title |
 | **Creative** | Photoshop, Illustrator, After Effects, Premiere Pro | ✓ | | |
 | | DaVinci Resolve | ✓ | | |
 | | GIMP, Krita | ✓ | | |
@@ -105,6 +110,10 @@ platform gets the default set, if the app runs there at all.
 | **Communication** | Slack, Discord, Teams, Zoom | ✓ | | |
 | | Webex, Webex Meetings | ✓ | | |
 | | Thunderbird | ✓ | ✓ | The compose window has its own set |
+| | Telegram Desktop | ✓ | | On macOS only the app named *Telegram Desktop*; the Mac App Store app named *Telegram* has other keys and keeps the generic icons |
+| | Signal Desktop | ✓ | ✓ | |
+| **Passwords** | KeePassXC | ✓ | ✓ | |
+| | KeePass 2 | | ✓ | Windows, and Linux with Mono |
 | **AI assistants** | Claude desktop app | ✓ | | Shows the Code tab's shortcuts in both tabs, which share one window |
 | | ChatGPT desktop app, Codex desktop app | ✓ | | |
 | | LM Studio, Jan | ✓ | | |
@@ -122,9 +131,15 @@ platform gets the default set, if the app runs there at all.
 | | Warcraft III (classic 1.26 to 1.31), Wargus | | | |
 | | RimWorld, OpenTTD, OpenRCT2 | | | |
 | | Factorio | ✓ | | |
+| | League of Legends | | | The in-game window, Click-to-Move defaults. Ability keys stay blank because they depend on the champion. Windows and macOS |
+| | Steam client | | | A separate set for Big Picture mode, chosen by the English window title |
 
 Notion, Claude and ChatGPT appear twice because the desktop app and the web version are
 matched separately.
+
+Google Drive, KeePassXC and KeePass 2 need PolyKybdHost 1.18.0. Canva, Photopea, Todoist,
+Google Keep, WPS Office, Telegram, Signal, League of Legends and Steam need the next
+PolyKybdHost release after 1.18.0.
 
 In Age of Empires II the letter keys build, train and give orders, and their meaning changes with
 the selection, so only keys that always do the same thing have icons. Each digit shows a different
