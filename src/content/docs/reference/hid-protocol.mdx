@@ -83,7 +83,7 @@ source commonly uses it.
 | **DISPLAY_OFF** | `0x18` (24) | Blank the keycaps. |
 | **IDLE_STYLE** | `0x1C` (28) | **v4+.** Get/set the idle style (pulse, jitter, IDDQD, Eden). |
 | **SET_OS** | `0x1D` (29) | **v7+.** Get/set the host OS, which picks the modifier legends and the [shortcut hints](/using/shortcut-hints/). The host sends it in auto mode; an OS fixed on the keyboard's settings layer takes priority. |
-| **GLYPH_SCRIPT** | `0x1E` (30) | **v9+.** Get/set the [glyph-script](/using/glyph-scripts/) override (open-ended index since v10). |
+| **GLYPH_SCRIPT** | `0x1E` (30) | **v9+.** Get/set the [glyph-script](/using/glyph-scripts/) override (open-ended index since v10). Since **v26** a second byte sets the [placement](/using/glyph-scripts/#placement-centred-or-top-left), centred or top-left. |
 | **REPLAY_ANIM** | `0x1F` (31) | **v11+.** Play the startup animation once, whatever the idle style. Used by `polyctl replay-anim`. |
 | **PROFILER** | `0x20` (32) | Read or reset the [main-loop profiler](/beyond-qmk/loop-profiler/). Only profiler builds answer it; every other build NACKs. |
 | **GLYPH_SIZE** | `0x22` (34) | **v13+.** Get/set the [legend size](/using/legend-size/) — how large a key's main legend is drawn. A closed range (0 small / 1 medium / 2 large); anything else NACKs. |
@@ -200,7 +200,7 @@ little-endian. "—" means no payload.
 | `0x1A` SAVE_MRU | — | — (writes unsaved settings to EEPROM) |
 | `0x1C` IDLE_STYLE | `[2]` `0xFF` query, or `0` pulse, `1` jitter, `2` DOOM demo, `3` Eden | `[3]` style |
 | `0x1D` SET_OS | `[2]` `0xFF` query, `0xFE` auto, or OS: `0` unknown, `1` Windows, `2` macOS, `3` Linux, `4` Android, `6` GNOME, `7` KDE; `[3]` bit 0 = pin (manual) | `[3]` active OS, `[4]` `1` if auto |
-| `0x1E` GLYPH_SCRIPT | `[2]` `0xFF` query, or script `0..0xFE` (any value accepted) | `[3]` script |
+| `0x1E` GLYPH_SCRIPT | `[2]` `0xFF` query (or, with a placement op, keep the script), or script `0..0xFE` (any value accepted); since v26 `[3]` placement op: `0` keep, `1` centre, `2` top-left, `3` and up refused | `[3]` script; since v26 `[4]` placement (`0` centre, `1` top-left) |
 | `0x1F` REPLAY_ANIM | — | — |
 | `0x20` PROFILER | `[2]` `0` reset, `1` read, `2` log; `[3]` page (read) | `[3]` page, `[4..]` snapshot. Profiler builds only; others answer `!`. See [Main-Loop Profiler](/beyond-qmk/loop-profiler/). |
 | `0x22` GLYPH_SIZE | `[2]` `0xFF` query, or `0` small, `1` medium, `2` large | `[3]` size (`!` if out of range) |
@@ -688,6 +688,7 @@ Selected milestones:
 - **v23** — a [dim flag](#dimmed-icons) on **SEND_OVERLAY_MAPPING_W** (`0x21`): the keyboard draws the icons of a flagged report dimmed. The host uses it for a browser's shortcuts under a [website's overlay](/using/website-detection/#browser-keys-are-drawn-dimmed).
 - **v24** (firmware 1.9.12, host 1.17.49) — a second byte on **SET_HANDEDNESS** (`0x19`) that sets or removes the [Rev.2 mark](/reference/old-rev2-boards/) in the USB half's handedness stamp. A marked half becomes the main half only when the computer recognises it over USB, because a Rev.2 board passes USB power to both halves. `0` keeps the stored mark, so an older host that sends one byte cannot remove it.
 - **v25** (firmware 1.9.13, host 1.17.52) — [keys without a legend](#keys-without-a-legend) on **SEND_OVERLAY_MAPPING_W** (`0x21`): a pool slot sent plus 600 draws that key's icon on a cleared keycap. No new command and no new byte; an older keyboard refuses the value, so the host sends it only from v25.
+- **v26** — a second byte on **GLYPH_SCRIPT** (`0x1e`): the [placement](/using/glyph-scripts/#placement-centred-or-top-left) of the script's letters and digits, centred or top-left. `0` keeps the stored placement, so an older host that sets a script cannot reset it. A script byte of `0xFF` with a non-zero placement changes the placement only. An older keyboard ignores the byte and always centres, so the host sends it only from v26.
 
 <Aside type="note">
 Not every version number above is a separate feature listed here — the list highlights the
