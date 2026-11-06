@@ -30,7 +30,7 @@ the icon. The label decides which icon.
 
 1. **Put every shortcut in a menu.** A menu item is the one place all three platforms read.
    On Linux and macOS a shortcut that exists only as a key handler, a toolbar button or a
-   popover is not read.
+   popover button is not read. A GTK4 popover *menu* is a menu: see [Linux](#linux).
 2. **Label the item with the action, in plain English.** The label is matched against a list
    of known actions: *Save*, *Save As*, *Open*, *New*, *Close*, *Copy*, *Cut*, *Paste*,
    *Undo*, *Redo*, *Find*, *Replace*, *Print*, *Bold*, *Italic*, *Zoom In* and many more.
@@ -38,9 +38,11 @@ the icon. The label decides which icon.
 3. **One action per label.** *Save and close* cannot be matched to one icon.
 4. **Single key combinations only.** A sequence such as Ctrl+K, Ctrl+S needs two presses and
    one key cannot show it, so it is skipped.
-5. **The menu must exist when the window is focused.** The host reads an app once, and again
-   when its window title changes. If your app adds Save, Undo and Copy only after a document
-   opens, also change the window title at that moment (for example to the document name).
+5. **The menu must exist when the window is focused.** The host reads an app once, and
+   (host 1.16.8 and later) again when its window title changes. If your app adds Save, Undo
+   and Copy only after a document opens, also change the window title at that moment (for
+   example to the document name). An older host reads the app once only, so publish the
+   shortcuts before the window is first focused.
 
 <Aside type="caution">
 **Labels in other languages get no icon today.** A German *Speichern* is read correctly as
@@ -66,7 +68,7 @@ modifier.
 | --- | --- |
 | **Win32** | Write the shortcut after a tab in the menu text: `"&Save\tCtrl+S"`. Windows reports the part after the tab as `AcceleratorKey`. The accelerator table makes the key work. The menu text makes it readable. |
 | **WinForms** | Set `ToolStripMenuItem.ShortcutKeys` (and `ShowShortcutKeys`, on by default). |
-| **WPF** | Give the `MenuItem` a command with an `InputGesture`, or set `InputGestureText`. For a control outside a menu, set `AutomationProperties.AcceleratorKey="Ctrl+S"`. |
+| **WPF** | Give the `MenuItem` a command with an `InputGesture`, or set `InputGestureText`. `InputGestureText` only shows the text: the key also needs an `InputBinding` or a key handler. For a control outside a menu, set `AutomationProperties.AcceleratorKey="Ctrl+S"`. |
 
 Write the combination the way Windows shows it: `Ctrl+Shift+S`, `Alt+F5`, `Ctrl+Plus`.
 Localized modifier names (`Strg+S`) are understood too.
@@ -108,8 +110,8 @@ gives nothing.
 | **Electron** | Give the application `Menu` items an `accelerator`. Electron builds a native menu bar on macOS. |
 
 The user must allow PolyKybdHost under **System Settings → Privacy & Security →
-Accessibility**. Until they do, every app reads as having no shortcuts. Nothing in your app
-can change that.
+Accessibility** and then restart PolyKybdHost. Until they do, every app reads as having no
+shortcuts. Nothing in your app can change that.
 
 ## The icon on Escape
 
@@ -137,9 +139,11 @@ Shortcut icons for 'myapp': 24 shortcut(s) harvested -> 20 drawn, 4 because no i
   no icon (no icon concept matched the label): Ctrl+Shift+E 'Export PDF' ...
 ```
 
-- `harvested` is how many shortcuts the host could read. **0** means none of the steps above
-  reached it: check that the shortcuts are on menu items, and on macOS that the permission is
-  granted.
+- `harvested` is how many shortcuts the host could read.
+- When it reads none, the host writes `No shortcut icons for 'myapp' (<reason>)` instead.
+  The reason says which step failed, for example *the app exposes no accelerators*, or
+  that the macOS permission is missing. Check that the shortcuts are on menu items, and on
+  macOS that the permission is granted.
 - `drawn` lists each key and the icon it got.
 - `no icon` lists shortcuts that were read but got no icon, with the reason.
   *no icon concept matched the label* means the action list does not know the label yet.
