@@ -1,0 +1,166 @@
+---
+title: Make Your App's Shortcuts Readable
+description: For application developers. How to publish shortcuts and an app icon so PolyKybd shows them on the keycaps without a hand-made overlay, on Windows, Linux and macOS.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+This page is for people who **write** desktop applications. PolyKybdHost reads the shortcuts
+of any focused app from the operating system's accessibility interface and draws an icon on
+each shortcut's key. It also puts the app's own icon on Escape. The user-side description is
+[Apps With No Overlay](/using/generic-overlays/).
+
+Nothing here needs PolyKybd-specific code. An app that publishes its shortcuts correctly for
+screen readers is already readable. The sections below list what the host reads on each
+platform, and the mistakes that make a shortcut invisible.
+
+## What the host reads
+
+| Platform | Interface | Where it looks | What it reads |
+| --- | --- | --- | --- |
+| **Windows** | UI Automation | Every element of the focused window, menus and toolbars included | `AcceleratorKey`, and `AccessKey` on menu items |
+| **Linux** | AT-SPI2 | The app's accessibility tree, up to 4,000 objects | `Action.GetKeyBinding()` on menu items |
+| **macOS** | Accessibility API | The menu bar only (`AXMenuBar`), up to 3,000 items | `AXMenuItemCmdChar`, `AXMenuItemCmdVirtualKey`, `AXMenuItemCmdModifiers` |
+
+For each shortcut the host takes two things: the **key combination** and the **label** of the
+item (the menu text, or the UI Automation `Name`). The key combination decides which key gets
+the icon. The label decides which icon.
+
+## Rules that apply on every platform
+
+1. **Put every shortcut in a menu.** A menu item is the one place all three platforms read.
+   On Linux and macOS a shortcut that exists only as a key handler, a toolbar button or a
+   popover button is not read. A GTK4 popover *menu* is a menu: see [Linux](#linux).
+2. **Label the item with the action, in plain English.** The label is matched against a list
+   of known actions: *Save*, *Save As*, *Open*, *New*, *Close*, *Copy*, *Cut*, *Paste*,
+   *Undo*, *Redo*, *Find*, *Replace*, *Print*, *Bold*, *Italic*, *Zoom In* and many more.
+   *Save* gets the save icon. *Store document* gets no icon.
+3. **One action per label.** *Save and close* cannot be matched to one icon.
+4. **Single key combinations only.** A sequence such as Ctrl+K, Ctrl+S needs two presses and
+   one key cannot show it, so it is skipped.
+5. **The menu must exist when the window is focused.** The host reads an app once, and
+   (host 1.16.8 and later) again when its window title changes. If your app adds Save, Undo
+   and Copy only after a document opens, also change the window title at that moment (for
+   example to the document name). An older host reads the app once only, so publish the
+   shortcuts before the window is first focused.
+
+<Aside type="caution">
+**Labels in other languages get no icon today.** A German *Speichern* is read correctly as
+Ctrl+S, but it does not match *Save*, so the key stays as it was. A wrong icon is worse than
+none, so the host does not guess.
+</Aside>
+
+These shortcuts are always dropped:
+
+- **Alt + one letter that appears in the item's label.** That is a menu mnemonic (Alt+F for
+  *File*), which works only while the menu is open. A real Alt+letter shortcut whose letter
+  is in its own label is dropped as well.
+- **Alt+Space and Alt+F4.** The operating system owns them.
+- **A mnemonic without a modifier**, such as the underlined letter inside an open menu.
+
+## Windows
+
+The host reads the UI Automation `AcceleratorKey` property of every element in the focused
+window. `AccessKey` counts only on menu items, menus and menu bars, and only when it has a
+modifier.
+
+| Toolkit | What to do |
+| --- | --- |
+| **Win32** | Write the shortcut after a tab in the menu text: `"&Save\tCtrl+S"`. Windows reports the part after the tab as `AcceleratorKey`. The accelerator table makes the key work. The menu text makes it readable. |
+| **WinForms** | Set `ToolStripMenuItem.ShortcutKeys` (and `ShowShortcutKeys`, on by default). |
+| **WPF** | Give the `MenuItem` a command with an `InputGesture`, or set `InputGestureText`. `InputGestureText` only shows the text: the key also needs an `InputBinding` or a key handler. For a control outside a menu, set `AutomationProperties.AcceleratorKey="Ctrl+S"`. |
+
+Write the combination the way Windows shows it: `Ctrl+Shift+S`, `Alt+F5`, `Ctrl+Plus`.
+Localized modifier names (`Strg+S`) are understood too.
+
+Windows is the only platform where a toolbar button counts, but only when it sets
+`AcceleratorKey`.
+
+## Linux
+
+The host calls `GetKeyBinding()` through AT-SPI2 on each object and uses the result only on
+menu items. What arrives depends on the toolkit:
+
+| Toolkit | What to do | Result |
+| --- | --- | --- |
+| **GTK3** | Use a `GtkMenuBar` with `GtkMenuItem`s that have an accelerator (`gtk_widget_add_accelerator()`, an accel path, or a `GtkUIManager`/`GtkBuilder` accelerator). | Read. GTK3 reports the direct shortcut in the third field of the binding string. |
+| **GTK4, 4.18 or newer** | Put the actions in a `GMenu` shown as a menu bar or popover menu, and register the keys with `gtk_application_set_accels_for_action()`. | Read (host 1.16.6+). Not yet confirmed on a real desktop. |
+| **GTK4, older than 4.18** | — | Nothing. These versions report every binding as blank. |
+| **Qt** | Call `QAction::setShortcut()` on an action that is in a `QMenuBar` or `QMenu`. | Read (host 1.16.6+). |
+
+<Aside type="note">
+**Qt publishes accessibility data only while the desktop's accessibility switch is on.**
+PolyKybdHost turns it on (setting **Shortcut → Enable Accessibility**), but an app that was
+already running at that moment does not see the change. Users restart such an app once.
+</Aside>
+
+A GTK popover button with an `<Alt>s` binding is a mnemonic, not a shortcut, and is not
+read. Keep the shortcut on the menu item.
+
+## macOS
+
+The host walks the app's menu bar and reads each item's key equivalent. Nothing outside the
+menu bar is read, and an app with no `AXMenuBar` (a non-AppKit UI that draws its own menus)
+gives nothing.
+
+| Toolkit | What to do |
+| --- | --- |
+| **AppKit** | Set `keyEquivalent` and `keyEquivalentModifierMask` on the `NSMenuItem` in the main menu. |
+| **SwiftUI** | Add `.keyboardShortcut()` to buttons inside `.commands { }`, so they appear in the menu bar. |
+| **Electron** | Give the application `Menu` items an `accelerator`. Electron builds a native menu bar on macOS. |
+
+The user must allow PolyKybdHost under **System Settings → Privacy & Security →
+Accessibility** and then restart PolyKybdHost. Until they do, every app reads as having no
+shortcuts. Nothing in your app can change that.
+
+## The icon on Escape
+
+The Escape icon appears only when at least one shortcut icon is drawn. It comes from your
+app's own icon first:
+
+| Platform | Where the host finds the icon |
+| --- | --- |
+| **Windows** | The first icon group resource (`RT_GROUP_ICON`) in the `.exe` of the window's process. |
+| **Linux** | The `Icon=` of your `.desktop` entry. The entry is found by `StartupWMClass` equal to the window's application name, then by the file name, then by the `Exec=` program. Ship a PNG in the icon theme as well as an SVG: an SVG is reduced to its outline, a PNG keeps the drawing. |
+| **macOS** | `CFBundleIconFile` in `Info.plist`, or any `.icns` file in `Contents/Resources`. An app whose icon exists only in an asset catalog has no `.icns` and gets no icon from this step. |
+
+When your app ships no usable icon, the host tries [Simple Icons](https://simpleicons.org/)
+and then Material Design Icons by app name. The icon is reduced to 1-bit at 72×40 pixels, so
+a simple shape with large areas reads best.
+
+## Check the result
+
+PolyKybdHost writes these lines to its log the first time an app is focused in a session.
+Open the log under **Help & About → Log file…** in the tray menu:
+
+```
+Shortcut icons for 'myapp': 24 shortcut(s) harvested -> 20 drawn, 4 because no icon concept matched the label
+  drawn: Ctrl+S=save Ctrl+O=open Ctrl+Z=undo ...
+  no icon (no icon concept matched the label): Ctrl+Shift+E 'Export PDF' ...
+```
+
+- `harvested` is how many shortcuts the host could read.
+- When it reads none, the host writes `No shortcut icons for 'myapp' (<reason>)` instead.
+  The reason says which step failed, for example *the app exposes no accelerators*, or
+  that the macOS permission is missing. Check that the shortcuts are on menu items, and on
+  macOS that the permission is granted.
+- `drawn` lists each key and the icon it got.
+- `no icon` lists shortcuts that were read but got no icon, with the reason.
+  *no icon concept matched the label* means the action list does not know the label yet.
+  *the keyboard has no keycap for that key* and *a bare keypress on a key that types a
+  character* are the other two reasons.
+
+In a PolyKybdHost source checkout, `tools/shortcut_probe.py` prints the full list for one
+app, raw binding strings included:
+
+```bash
+python tools/shortcut_probe.py --app myapp --json myapp.json
+```
+
+<Aside type="tip">
+If a label in your app names a common action and still gets no icon, open an issue on
+[PolyKybdHost](https://github.com/thpoll83/PolyKybdHost/issues) with the `no icon` line.
+New labels are added to the action list in `res/shortcut_hints.yaml`. For an app that
+should look exactly right, a hand-made overlay takes priority over all of this:
+[Create App Overlays](/howto/app-overlays/).
+</Aside>
