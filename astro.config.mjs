@@ -234,6 +234,7 @@ export default defineConfig({
             { label: 'Add a Keyboard Language', slug: 'howto/add-language' },
             { label: 'Add a Glyph Script', slug: 'howto/add-glyph-script' },
             { label: 'Create App Overlays', slug: 'howto/app-overlays' },
+            { label: "Make Your App's Shortcuts Readable", slug: 'howto/app-shortcuts-for-developers' },
             { label: 'Build & Flash from Source', slug: 'howto/build-and-flash' },
             { label: 'Edit the Keymap', slug: 'howto/edit-keymap' },
           ],
