@@ -90,6 +90,11 @@
 
     function layout() {
       var viewport = document.documentElement.clientWidth;
+      // unpin() removes the spacer, so the page is briefly shorter by the row's
+      // overflow. A reader near the bottom would be clamped up by that much (on
+      // a phone, every address-bar show/hide is a resize), so the scroll
+      // position is put back once the spacer is restored.
+      var keepY = window.scrollY;
       // Measure as a plain row: no pin, no scrolling padding, CSS tile size.
       unpin();
       strip.classList.remove('is-scrolling');
@@ -117,6 +122,7 @@
         panel.getBoundingClientRect().bottom - column.getBoundingClientRect().top;
       stickyTop = Math.min(headerBottom(), window.innerHeight - stripBottom);
       column.style.top = stickyTop + 'px';
+      if (window.scrollY !== keepY) window.scrollTo(0, keepY);
       update();
     }
 
