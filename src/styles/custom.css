@@ -470,3 +470,27 @@
 .pk-consent-control__btn:focus-visible {
   background: var(--sl-color-gray-5);
 }
+
+/* Landing page gallery (.pk-gallery): the desk renders at the bottom, two to a
+   row (one below 50rem), each filling its cell instead of the 55% body-image
+   width. Astro's <Image> gives them loading="lazy"; click-to-enlarge still
+   applies (public/js/photo-zoom.js). */
+.sl-markdown-content .pk-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-block: 1rem;
+}
+.sl-markdown-content .pk-gallery img:not([src$='.svg']) {
+  width: 100%;
+  height: auto;
+  margin: 0;
+}
+.sl-markdown-content .pk-gallery img:last-child:nth-child(odd) {
+  grid-column: 1 / -1;     /* an odd last picture spans the row instead of leaving a gap */
+}
+@media (max-width: 50rem) {
+  .sl-markdown-content .pk-gallery {
+    grid-template-columns: 1fr;
+  }
+}
