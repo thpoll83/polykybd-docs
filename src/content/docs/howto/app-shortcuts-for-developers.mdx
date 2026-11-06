@@ -31,8 +31,8 @@ the icon. The label decides which icon.
 1. **Put every shortcut in a menu.** A menu item is the one place all three platforms read.
    On Linux and macOS a shortcut that exists only as a key handler, a toolbar button or a
    popover button is not read. A GTK4 popover *menu* is a menu: see [Linux](#linux).
-2. **Label the item with the action, in plain English.** The label is matched against a list
-   of known actions: *Save*, *Save As*, *Open*, *New*, *Close*, *Copy*, *Cut*, *Paste*,
+2. **Label the item with the action, in a standard word.** The label is matched against a
+   list of known actions: *Save*, *Save As*, *Open*, *New*, *Close*, *Copy*, *Cut*, *Paste*,
    *Undo*, *Redo*, *Find*, *Replace*, *Print*, *Bold*, *Italic*, *Zoom In* and many more.
    *Save* gets the save icon. *Store document* gets no icon.
 3. **One action per label.** *Save and close* cannot be matched to one icon.
@@ -44,10 +44,12 @@ the icon. The label decides which icon.
    example to the document name). An older host reads the app once only, so publish the
    shortcuts before the window is first focused.
 
-<Aside type="caution">
-**Labels in other languages get no icon today.** A German *Speichern* is read correctly as
-Ctrl+S, but it does not match *Save*, so the key stays as it was. A wrong icon is worse than
-none, so the host does not guess.
+<Aside type="note">
+**Labels in 20 languages are matched** (host 1.19.37 or later): English and the 19 other
+languages PolyKybdHost's own menus are translated into, for example German *Speichern*,
+French *Enregistrer* or Japanese *保存*. Use the term the platform itself uses in that
+language. A label the host does not know, in any language, gets no icon: a wrong icon is
+worse than none, so the host does not guess. An older host matches English labels only.
 </Aside>
 
 These shortcuts are always dropped:
