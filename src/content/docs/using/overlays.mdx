@@ -66,12 +66,18 @@ platform gets the default set, if the app runs there at all.
 | | Word, Excel, PowerPoint and OneNote on the web, Teams on the web, Microsoft Copilot | | | |
 | | Figma, Trello, Linear, Overleaf, Jupyter, draw.io, Excalidraw | | | |
 | | YouTube | | | The player keys |
+| | Google Drive, Google Keep | ✓ | | Keep: only `keep.google.com`, not its help pages |
+| | Canva | ✓ | | Only the design editor, not the home or help pages |
+| | Photopea | ✓ | | Only the editor, not the learn and blog pages |
+| | Todoist | ✓ | | Also the desktop app |
 | **Office & documents** | Word, Excel, PowerPoint, Outlook | ✓ | | |
 | | OneNote | ✓ | | |
 | | Visio, Microsoft 365 Copilot, Microsoft Copilot | | | |
 | | Acrobat | ✓ | | |
 | | SumatraPDF, Okular | | | |
 | | LibreOffice Writer, Calc, Impress | ✓ | | Identified by window title; Draw, Base and Math get a shared LibreOffice set |
+| | WPS Office Writer, Spreadsheets, Presentation | | | Windows and Linux. In the all-in-one window, the set follows the file extension in the title |
+| | ONLYOFFICE Document, Spreadsheet, Presentation | ✓ | | One window for all three: the set follows the file extension in the title. On macOS the tabbed main window gets the Document set |
 | **Creative** | Photoshop, Illustrator, After Effects, Premiere Pro | ✓ | | |
 | | DaVinci Resolve | ✓ | | |
 | | GIMP, Krita | ✓ | | |
@@ -82,9 +88,13 @@ platform gets the default set, if the app runs there at all.
 | | FreeCAD, OpenSCAD | ✓ | ✓ | |
 | | Autodesk Fusion | ✓ | | |
 | | [Blender](#blender-overlays-that-follow-the-mode) | ✓ | | 14 sets that follow the mode, with the add-on |
+| | AutoCAD, Clip Studio Paint | ✓ | | Windows and macOS |
+| | CapCut | ✓ | | Windows and macOS |
+| | OBS Studio | ✓ | ✓ | |
 | **Audio & music** | Ableton Live, FL Studio, REAPER | ✓ | | |
 | | MuseScore, Audacity | ✓ | ✓ | |
 | | Spotify, VLC | ✓ | | |
+| | foobar2000, Winamp | | | Windows only |
 | **3D printing** | PrusaSlicer (and its G-code viewer), OrcaSlicer | ✓ | | |
 | | Bambu Studio | ✓ | ✓ | |
 | **ArtCraft** | PhotoCraft, VectorCraft, DesignCraft, FigCraft, LightCraft, EffectCraft, FilmCraft, SoundCraft, DeckCraft, WordCraft, GridCraft, PDFCraft, CADCraft | ✓ | | |
@@ -101,10 +111,19 @@ platform gets the default set, if the app runs there at all.
 | | Mathematica | ✓ | ✓ | |
 | | [Vim, Neovim, Emacs, GNU nano](#vim-emacs-and-nano-overlays-that-follow-the-mode) | | | In a terminal, and GUI Vim and Emacs. A set per mode, with the plugin |
 | | Cursor, Windsurf / Devin Desktop, Zed | ✓ | ✓ | |
+| | GitKraken | ✓ | | |
+| | Sourcetree | ✓ | | Windows and macOS |
+| | SQL Server Management Studio | | | Windows only |
 | **Notes** | Obsidian, Notion desktop app | ✓ | | |
+| | Joplin, Logseq | ✓ | | |
+| | Evernote | ✓ | | Windows and macOS |
 | **Communication** | Slack, Discord, Teams, Zoom | ✓ | | |
 | | Webex, Webex Meetings | ✓ | | |
 | | Thunderbird | ✓ | ✓ | The compose window has its own set |
+| | Telegram Desktop | ✓ | | On macOS only the app named *Telegram Desktop*; the Mac App Store app named *Telegram* has other keys and keeps the generic icons |
+| | Signal Desktop | ✓ | ✓ | |
+| **Passwords** | KeePassXC | ✓ | ✓ | |
+| | KeePass 2 | | ✓ | Windows, and Linux with Mono |
 | **AI assistants** | Claude desktop app | ✓ | | Shows the Code tab's shortcuts in both tabs, which share one window |
 | | ChatGPT desktop app, Codex desktop app | ✓ | | |
 | | LM Studio, Jan | ✓ | | |
@@ -112,6 +131,8 @@ platform gets the default set, if the app runs there at all.
 | | Sticky Notes | | | |
 | | Sound Recorder | | | Also matches its Windows 10 name, *Voice Recorder* |
 | | Windows Terminal, 7-Zip | | | |
+| | Everything, Total Commander | | | |
+| | PowerToys Command Palette, PowerToys Run | | | Only those two windows; the other PowerToys features are global shortcuts |
 | **Linux** | GNOME Files (Nautilus) | | | Linux only |
 | **Terminals & transfer** | PuTTY, WinSCP | | | |
 | **Games** | Age of Empires II: HD Edition and the CD version | | | Default hotkeys: go-to-building keys, control groups, chat, function keys |
@@ -122,9 +143,19 @@ platform gets the default set, if the app runs there at all.
 | | Warcraft III (classic 1.26 to 1.31), Wargus | | | |
 | | RimWorld, OpenTTD, OpenRCT2 | | | |
 | | Factorio | ✓ | | |
+| | League of Legends | | | The in-game window, Click-to-Move defaults. Ability keys stay blank because they depend on the champion. Windows and macOS |
+| | Steam client | | | A separate set for Big Picture mode, chosen by the English window title |
+| | Counter-Strike 2, Dota 2 | | | Windows and Linux. The Esc key shows the game logo in place of its legend |
 
 Notion, Claude and ChatGPT appear twice because the desktop app and the web version are
 matched separately.
+
+Google Drive, KeePassXC and KeePass 2 need PolyKybdHost 1.18.0. Canva, Photopea, Todoist,
+Google Keep, WPS Office, Telegram, Signal, League of Legends and Steam need PolyKybdHost
+1.19.11. ONLYOFFICE, AutoCAD, Clip Studio Paint, CapCut, OBS Studio, foobar2000, Winamp,
+GitKraken, Sourcetree, SQL Server Management Studio, Joplin, Logseq, Evernote, Everything,
+Total Commander, PowerToys, Counter-Strike 2 and Dota 2 need the next PolyKybdHost release
+after 1.19.11.
 
 In Age of Empires II the letter keys build, train and give orders, and their meaning changes with
 the selection, so only keys that always do the same thing have icons. Each digit shows a different
