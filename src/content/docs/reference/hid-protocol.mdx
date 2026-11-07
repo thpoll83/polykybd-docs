@@ -559,7 +559,9 @@ any other, over [BEGIN / CHUNK / COMMIT](#resource-flash-transport--begin--chunk
 <Aside type="note">
 Since v20 the GET_ID version block lists nine bundles and reports each one as the **lower** of
 the two halves' versions. A half that missed a flash therefore reports an older version, and the host
-flashes that bundle again.
+flashes that bundle again. One exception: below v27 the host does not send an icon library
+over 256 KB at all, even to a half that has none (see v27 under
+[Protocol versions](#protocol-versions)).
 </Aside>
 
 ## Mapping flags
