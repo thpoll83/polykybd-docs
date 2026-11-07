@@ -146,6 +146,11 @@ platform gets the default set, if the app runs there at all.
 | | League of Legends | | | The in-game window, Click-to-Move defaults. Ability keys stay blank because they depend on the champion. Windows and macOS |
 | | Steam client | | | A separate set for Big Picture mode, chosen by the English window title |
 | | Counter-Strike 2, Dota 2 | | | Windows and Linux. The Esc key shows the game logo in place of its legend |
+| **Emulators** | RetroArch | | | The default hotkeys and the RetroPad keys of player 1 |
+| | MAME | | | The default UI keys and the player 1 inputs |
+| | VICE (all Commodore emulators) | ✓ | | Alt shortcuts, Command on macOS. The C64 and VIC-20 emulators also switch the keycaps to the [Commodore 64 keycap lettering](/using/glyph-scripts/#per-application) |
+| | FS-UAE | ✓ | | Switches the keycaps to the [Amiga lettering](/using/glyph-scripts/#per-application) |
+| | WinUAE, Amiberry | | | Both switch the keycaps to the Amiga lettering. WinUAE runs on Windows only |
 
 Notion, Claude and ChatGPT appear twice because the desktop app and the web version are
 matched separately.
@@ -163,6 +168,9 @@ unit as a group (spearmen on 1, archers on 2, cavalry on 3 and so on): the bare 
 group, and with Ctrl, where the icon has a plus, it creates it. The game does not tie a group
 number to a unit type; the icons only suggest a habit. The Esc mark is drawn without the key legend
 from firmware 1.9.15; the control groups and the Definitive Edition set need PolyKybdHost 1.17.82.
+
+The emulators need **PolyKybdHost 1.20.0**. Their keycap lettering needs firmware 1.10.2 to sit
+in the top-left corner; older firmware draws it centred.
 
 Firefox, Blender, the ArtCraft apps, Cursor, Windsurf, Zed, LM Studio and Jan need
 **PolyKybdHost 1.17.18 or later**. The games, the three slicers, Eclipse, Arduino IDE 2, Ghidra,
