@@ -53,6 +53,8 @@ Your choice is saved on the keyboard and persists across reboots.
 
 <SupportedSince protocol={26} />
 
+Placement needs firmware 1.10.2 and host 1.19.58 or newer.
+
 By default the script's letters and digits are drawn large and centred. An app overlay draws
 its icon on the right half of the keycap and clears a small border around it, so it can cut
 into a centred letter. **Top-left** draws the letters and digits in the top-left corner
@@ -63,7 +65,7 @@ and its two PETSCII graphics move to the left half of the key.
 
 - **Tray menu** — **Keycap Script** → **Centred on the keycap** or **In the top-left corner**,
   below the list of scripts. The two entries are greyed out when the keyboard's firmware is
-  older than protocol 26.
+  older than 1.10.2.
 - **Command line** — `polyctl glyph-script --placement top-left` (or `centre`). It can be
   combined with a script: `polyctl glyph-script c64 --placement top-left`.
 
