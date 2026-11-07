@@ -49,6 +49,29 @@ normal legend — so the board never shows a blank key.
 
 Your choice is saved on the keyboard and persists across reboots.
 
+## Placement: centred or top-left
+
+<SupportedSince protocol={26} />
+
+Placement needs firmware 1.10.2 and host 1.19.58 or newer.
+
+By default the script's letters and digits are drawn large and centred. An app overlay draws
+its icon on the right half of the keycap and clears a small border around it, so it can cut
+into a centred letter. **Top-left** draws the letters and digits in the top-left corner
+instead, and they stay whole next to the icon. On the Commodore 64 (keycap) script, the letter
+and its two PETSCII graphics move to the left half of the key.
+
+![The letter P with a pause icon on the right of the keycap, in the Commodore 64 screen font (top) and the Commodore 64 keycap script (bottom). Left: centred, where the icon cuts into the letter. Right: top-left, where the letter stays whole.](../../../assets/using/glyph-script-placement.png)
+
+- **Tray menu** — **Keycap Script** → **Centred on the keycap** or **In the top-left corner**,
+  below the list of scripts. The two entries are greyed out when the keyboard's firmware is
+  older than 1.10.2.
+- **Command line** — `polyctl glyph-script --placement top-left` (or `centre`). It can be
+  combined with a script: `polyctl glyph-script c64 --placement top-left`.
+
+The placement applies to every script and is saved on the keyboard with the script.
+Choosing a script does not change the placement.
+
 ## Requirements
 
 Glyph scripts are drawn from a **`fantasy` font-pack bundle** that PolyKybdHost flashes to the
