@@ -72,6 +72,28 @@ and its two PETSCII graphics move to the left half of the key.
 The placement applies to every script and is saved on the keyboard with the script.
 Choosing a script does not change the placement.
 
+## Per application
+
+Some app overlays switch the lettering while their app is in front, and switch it back when
+you leave the app. This needs PolyKybdHost 1.20.0.
+
+| App | Script | Placement |
+|---|---|---|
+| VICE: the C64, C128, SuperCPU, DTV and VIC-20 emulators | Commodore 64 (keycap) | Top-left |
+| FS-UAE, WinUAE, Amiberry | Amiga | Top-left |
+
+VICE's Plus/4, PET and CBM-II emulators have other keyboards and keep your lettering.
+
+- **Your own choice is restored** when you switch to another app and when PolyKybdHost exits.
+  If PolyKybdHost stopped while an app was in front, it restores your choice the next time the
+  keyboard connects.
+- **A change you make while such an app is in front** (tray menu or `polyctl glyph-script`)
+  becomes the choice that is restored afterwards.
+- **On firmware older than 1.10.2** only the script changes; the letters stay centred.
+
+To give your own app overlay a script, see the `glyph_script:` key in
+[Overlays for Your Own Apps](/howto/app-overlays/).
+
 ## Requirements
 
 Glyph scripts are drawn from a **`fantasy` font-pack bundle** that PolyKybdHost flashes to the

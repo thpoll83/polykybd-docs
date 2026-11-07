@@ -244,6 +244,23 @@ icon is drawn over it.
    macOS case matches every window of that app. (The generator below does this for you.)
    </Aside>
 
+   An entry can also switch the keycap lettering while its app is in front, with
+   `glyph_script:` (a [glyph script](/using/glyph-scripts/) name, as `polyctl glyph-script`
+   takes it) and `glyph_script_position:` (`centre` or `top-left`). VICE uses both:
+
+   ```yaml
+   x64sc,x64,x128,xscpu64,x64dtv,xvic:
+     overlay: [vice_template.mods.png, vice_template.combo.mods.png]
+     glyph_script: c64keys
+     glyph_script_position: top-left
+   ```
+
+   Either key may be given alone; the part you leave out stays the user's own choice. Like
+   `title:`, both must be repeated inside an `os:` branch. These keys need PolyKybdHost 1.20.0,
+   and `glyph_script_position:` needs firmware 1.10.2. See
+   [Per application](/using/glyph-scripts/#per-application) for how the user's own lettering is
+   restored.
+
    ### One file for both platforms: `CMDCTRL`
 
    Writing the two sets by hand means maintaining the same shortcut list twice, and the two lists become different over time.
