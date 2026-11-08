@@ -135,6 +135,13 @@ platform gets the default set, if the app runs there at all.
 | | PowerToys Command Palette, PowerToys Run | | | Only those two windows; the other PowerToys features are global shortcuts |
 | **Linux** | GNOME Files (Nautilus) | | | Linux only |
 | **Terminals & transfer** | PuTTY, WinSCP | | | |
+| | kitty, WezTerm | ✓ | | The terminal's own keys. A [terminal program](#terminal-programs) named in the title takes priority |
+| | tmux, Zellij | | | The multiplexer's keys, chosen by the terminal title |
+| **Terminal programs** | Claude Code, Codex CLI, Gemini CLI, GitHub Copilot CLI, Grok Build, Kimi Code CLI, Mistral Vibe, OpenCode, Qwen Code, Aider | | | Found by the terminal title. See [Terminal programs](#terminal-programs) |
+| | GDB | | | Two sets: one at the `(gdb)` prompt and one while the program runs, with the GDB script |
+| | Helix, micro, less | | | |
+| | htop, btop, k9s | | | |
+| | Midnight Commander, lf, ranger, yazi, lazygit | | | |
 | **Games** | Age of Empires II: HD Edition and the CD version | | | Default hotkeys: go-to-building keys, control groups, chat, function keys |
 | | Age of Empires II: Definitive Edition | | | The same keys, its own Esc mark. Windows and Steam with Proton |
 | | Age of Empires IV | | | Default Grid Keys |
@@ -169,7 +176,8 @@ group, and with Ctrl, where the icon has a plus, it creates it. The game does no
 number to a unit type; the icons only suggest a habit. The Esc mark is drawn without the key legend
 from firmware 1.9.15; the control groups and the Definitive Edition set need PolyKybdHost 1.17.82.
 
-The emulators need **PolyKybdHost 1.20.0**. Their keycap lettering needs firmware 1.10.2 to sit
+The terminal programs, kitty, WezTerm, tmux and Zellij need **PolyKybdHost 1.19.58**. GDB's
+second set, for a running program, needs **PolyKybdHost 1.20.0**. The emulators need **PolyKybdHost 1.20.0**. Their keycap lettering needs firmware 1.10.2 to sit
 in the top-left corner; older firmware draws it centred.
 
 Firefox, Blender, the ArtCraft apps, Cursor, Windsurf, Zed, LM Studio and Jan need
@@ -244,10 +252,11 @@ terminal is the focused app, the host shows the mode of the editor you last type
 - **Emacs** gets a global set and its own sets for Org and Dired buffers. The package is in
   `emacs-package/`. On Emacs 29 or later, install it with `package-vc-install` and turn it on
   with `(polykybd-mode 1)`. Its README lists the other ways.
-- **GNU nano** has no plugin. The host finds it by the terminal's window title, so the shell must
-  put the running command into the title. *Updates → Show the running command in the terminal
-  title…* sets that up for bash, zsh and PowerShell, and `polyctl shell-integration install` does
-  the same.
+- **GNU nano** has no plugin. The host finds it by the terminal's window title, like the other
+  [terminal programs](#terminal-programs).
+
+*Updates → Set up the terminal and editors…* in the tray copies the Vim and Neovim plugin and the
+Emacs package for you, and `polyctl editor-plugins install` does the same.
 
 Without a plugin, a terminal shows its own overlay or the shortcuts the host finds for it. The
 plugins send the editor's name, its mode, whether it has the focus, its process ID and the time
@@ -258,6 +267,38 @@ A terminal tells the editor that it lost the focus through focus events. In **tm
 with `set -g focus-events on` in `~/.tmux.conf`, or the editor keeps reporting while you work in
 another tab. An editor in an SSH session runs on the other computer, so its reports go to that
 computer's `127.0.0.1` and do not reach the host.
+</Aside>
+
+## Terminal programs
+
+The host sees only the terminal window, not the program running in it. It finds the program by
+the terminal's **window title**, so the program's name must be in the title.
+
+- **Programs that write their own title** need no setup: Claude Code, Gemini CLI, GitHub Copilot
+  CLI, Grok Build, Kimi Code CLI, Mistral Vibe, OpenCode, Qwen Code, Midnight Commander and
+  Zellij.
+- **The other programs write no title**, so the shell must put the running command there. fish,
+  Nushell, xonsh, cmd.exe and zsh with oh-my-zsh do this already. For bash, zsh and PowerShell,
+  use *Updates → Set up the terminal and editors…* in the tray, or
+  `polyctl shell-integration install`. Open a new terminal window afterwards.
+- **Codex CLI** writes a title that does not name it. Tick *Also show Codex in the title* in the
+  same dialog (`polyctl shell-integration install --codex`), and the shell wraps the `codex`
+  command so that its title names Codex.
+- **GDB** gets one set at the `(gdb)` prompt and another, with only Ctrl+C, while the program runs.
+  For that, tick GDB in the same dialog, or run `polyctl editor-plugins install --editor gdb`.
+  The GDB script then writes GDB's state into the title. It needs GDB 8.0 or later built with
+  Python. Without the script, GDB writes no title, so it needs the shell setup above and shows
+  the prompt set in both states.
+
+A Kimi Code session that has a title, and a named Qwen Code session while it waits for input, show
+only the session name in the title, so their sets are not shown then.
+
+<Aside type="caution">
+In **tmux**, the terminal keeps the title tmux had when it started, and the tmux set is shown. Add
+`set -g set-titles on` and `set -g set-titles-string '#T'` to `~/.tmux.conf` to pass the
+program's title on. In **Windows Terminal**, keep the profile setting *Suppress title changes*
+off (the default). A program in an editor's built-in terminal, such as the one in VS Code, is not
+found: the focused window is then the editor.
 </Aside>
 
 ## Same app, different platform
