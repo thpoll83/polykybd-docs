@@ -103,6 +103,31 @@ If you assign more than one modifier, the marks fill a small grid that grows up 
 The marks are drawn at half size, so a four-modifier key (`HYPR`) is crowded. One or two modifiers are easiest to read — which is also how mod-taps are normally used.
 </Aside>
 
+## Tap-hold timing
+
+Two times decide what a dual-function key does. Change them in the tray menu under
+**Tap-Hold Timing…**, or with [`polyctl tap-terms`](/software/cli/). The keyboard stores
+both, so they stay set after a restart and work without the host running.
+
+| Setting | Range | Default | What it does |
+|---|---|---|---|
+| **Tapping term** | 100–500 ms | 200 ms | Release the key before this time and it types its tap key. Hold it longer and it acts as its hold action. |
+| **Flow Tap term** | 0–300 ms (0 = off) | 150 ms | A dual-function key pressed less than this time after the previous key always types its tap key, so fast typing does not trigger a modifier. |
+
+Both change in 10 ms steps. If modifiers trigger while you type fast, increase the
+tapping term or the Flow Tap term. If a held modifier feels slow, decrease the tapping
+term.
+
+The keyboard also uses **chordal hold**: a dual-function key followed by another key on
+the same half always types its tap key. That rule has no setting.
+
+<Aside type="note">
+Tap-hold timing needs keyboard firmware with protocol 28 or later and a host app that
+knows it. On older firmware the times are fixed at 200 ms and 150 ms, and the tray entry
+is disabled. On the Split42 the keyboard has no Flow Tap, so only the tapping term can
+be changed.
+</Aside>
+
 ## How it works
 
 PolyKybdHost uses the QMK `ID_DYNAMIC_KEYMAP_SET_KEYCODE` protocol to write individual key assignments directly to the keyboard. It does not write a full layer — only the changed key is updated, making it instant.
