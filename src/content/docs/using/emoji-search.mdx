@@ -6,8 +6,9 @@ description: Find an emoji by typing a word on the emoji layer, in 79 languages,
 import { Aside } from '@astrojs/starlight/components';
 
 <Aside type="note" title="Requirements">
-Emoji search needs a firmware release newer than 1.10.2 and a PolyKybdHost release newer than
-1.20.0. It is on **split72** only; split42 does not have it yet.
+Emoji search needs firmware 1.11.0 and PolyKybdHost 1.21.0 or newer. Space and Backspace on
+the Shift keys, and a search mode that stays set after a restart, need firmware 1.11.3. It is on
+**split72** only; split42 does not have it yet.
 </Aside>
 
 The [emoji layer](/using/languages/#emoji-layer) can find an emoji by a word. Type `smil` and
@@ -27,22 +28,25 @@ your OS.
 4. The **number row** shows up to 12 results, best match first. Press a result to type that
    emoji. **◀** (top left) and **▶** (top right) show the previous and next 12 results.
 
-![The split72 emoji layer in search mode on Qwerty and on Qwerty Stag!: results on the number row, letters at their normal positions, Space and Backspace keys, the Clear key and the mode key at Tab](../../../assets/using/emoji-search-keys.png)
+![The split72 emoji layer in search mode on Qwerty and on Qwerty Stag!: results on the number row, letters at their normal positions, Space on left Shift, Backspace on right Shift, the Clear key and the mode key at Tab](../../../assets/using/emoji-search-keys.png)
 
 | Key | Search mode |
 |---|---|
 | Tab position | Mode key: switch between tab mode and search mode |
 | Below the mode key | **Clear**: empty the query |
-| Above the right innermost thumb key | **Backspace**. On Qwerty, Backspace is on the top-right key of the base layer, so here it moves one row down, to the key below the **▶** key |
-| Beside Backspace, and above the left innermost thumb key | **Space**, to start a second word |
+| Left Shift | **Space**, to start a second word |
+| Right Shift | **Backspace** |
 | Bottom row | Your recently used emoji |
 
 The status display shows the query and the number of results. Switching between the two
-modes keeps the query. Leaving the emoji layer clears it, and the layer opens in the mode you
-used last.
+modes keeps the query. Leaving the emoji layer clears it. The layer opens in the mode you used
+last, also after a restart. The keyboard saves the mode when the computer goes to sleep or
+shuts down, and when the keyboard restarts. If you unplug the keyboard first, it opens in the
+mode it had before.
 
-A letter whose key has a search function (Backspace, Space, a result) moves to the nearest free
-key on the same half of the keyboard. For example, Russian **х** on Qwerty moves below **з**.
+A letter whose key has a search function (a result, a page key, a recent emoji) moves to the
+nearest free key on the same half of the keyboard. For example, Russian **х** and **ю** on Qwerty
+move to a free key.
 
 ### How words match
 
