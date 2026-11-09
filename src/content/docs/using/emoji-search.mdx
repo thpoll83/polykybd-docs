@@ -6,7 +6,8 @@ description: Find an emoji by typing a word on the emoji layer, in 79 languages,
 import { Aside } from '@astrojs/starlight/components';
 
 <Aside type="note" title="Requirements">
-Emoji search needs firmware 1.11.3 or newer and PolyKybdHost 1.21.0 or newer. It is on
+Emoji search needs firmware 1.11.0 and PolyKybdHost 1.21.0 or newer. Space and Backspace on
+the Shift keys, and a search mode that stays set after a restart, need firmware 1.11.3. It is on
 **split72** only; split42 does not have it yet.
 </Aside>
 
@@ -39,7 +40,9 @@ your OS.
 
 The status display shows the query and the number of results. Switching between the two
 modes keeps the query. Leaving the emoji layer clears it. The layer opens in the mode you used
-last, also after a restart.
+last, also after a restart. The keyboard saves the mode when the computer goes to sleep or
+shuts down, and when the keyboard restarts. If you unplug the keyboard first, it opens in the
+mode it had before.
 
 A letter whose key has a search function (a result, a page key, a recent emoji) moves to the
 nearest free key on the same half of the keyboard. For example, Russian **х** and **ю** on Qwerty
