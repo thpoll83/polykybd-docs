@@ -49,6 +49,7 @@ platform gets the default set, if the app runs there at all.
 | --- | --- | :---: | :---: | --- |
 | **Browsers** | Chrome, Chromium, Edge, Brave, Vivaldi, Opera, Arc | ✓ | | |
 | | Firefox | ✓ | ✓ | |
+| | qutebrowser | | | One set on every platform, because qutebrowser uses Ctrl on macOS too. The web-app sets below are not used in it |
 | | Safari | ✓ | | macOS only, so its one set is drawn for macOS (Command). The web apps below load in Safari too |
 | **Web apps** | GitHub | ✓ | | Matched by the tab's URL, in any browser above. See [Website-Aware Overlays](/using/website-detection/) |
 | | GitLab | ✓ | | |
@@ -70,6 +71,7 @@ platform gets the default set, if the app runs there at all.
 | | Canva | ✓ | | Only the design editor, not the home or help pages |
 | | Photopea | ✓ | | Only the editor, not the learn and blog pages |
 | | Todoist | ✓ | | Also the desktop app |
+| | Monkeytype, keybr | ✓ | | The typing test pages only. On macOS keybr shows only Enter. In Firefox, Monkeytype's command line key (Ctrl+Shift+P) is left out, because Firefox uses it |
 | **Office & documents** | Word, Excel, PowerPoint, Outlook | ✓ | | |
 | | OneNote | ✓ | | |
 | | Visio, Microsoft 365 Copilot, Microsoft Copilot | | | |
@@ -90,13 +92,22 @@ platform gets the default set, if the app runs there at all.
 | | [Blender](#blender-overlays-that-follow-the-mode) | ✓ | | 14 sets that follow the mode, with the add-on |
 | | AutoCAD, Clip Studio Paint | ✓ | | Windows and macOS |
 | | CapCut | ✓ | | Windows and macOS |
+| | Autodesk Maya, Cinema 4D, SideFX Houdini, Foundry Nuke, Adobe Substance 3D Painter | ✓ | | |
+| | SketchUp Pro | ✓ | | Windows and macOS |
+| | Autodesk 3ds Max, Autodesk Inventor | | | Windows only |
 | | OBS Studio | ✓ | ✓ | |
 | **Audio & music** | Ableton Live, FL Studio, REAPER | ✓ | | |
 | | MuseScore, Audacity | ✓ | ✓ | |
 | | Spotify, VLC | ✓ | | |
 | | foobar2000, Winamp | | | Windows only |
+| | Avid Pro Tools | ✓ | | Windows and macOS. The keys without a modifier work only while Commands Keyboard Focus is on |
 | **3D printing** | PrusaSlicer (and its G-code viewer), OrcaSlicer | ✓ | | |
 | | Bambu Studio | ✓ | ✓ | |
+| **Engineering & science** | QGIS, LabVIEW, COMSOL Multiphysics | ✓ | ✓ | |
+| | Simulink | ✓ | | Chosen by the Simulink Editor's window title. The other MATLAB windows keep the MATLAB set |
+| | PTC Mathcad Prime, OriginPro, Tekla Structures | | | Windows only |
+| | Altium Designer | | | Windows only. The PCB Editor set; a window whose title names a schematic document (`.SchDoc`, `.SchLib`) gets the Schematic Editor set |
+| | OrCAD X Capture | | | Windows only. The schematic page editor |
 | **ArtCraft** | PhotoCraft, VectorCraft, DesignCraft, FigCraft, LightCraft, EffectCraft, FilmCraft, SoundCraft, DeckCraft, WordCraft, GridCraft, PDFCraft, CADCraft | ✓ | | |
 | **Development** | VS Code | ✓ | ✓ | |
 | | Visual Studio | | | |
@@ -105,6 +116,9 @@ platform gets the default set, if the app runs there at all.
 | | Notepad++ | | | |
 | | KiCad | ✓ | | PCB editor, schematic, symbol and footprint editors, 3D viewer and Gerber viewer, identified by window title. The macOS set is for the PCB editor |
 | | Eclipse, Arduino IDE 2 | ✓ | ✓ | |
+| | STM32CubeIDE | ✓ | ✓ | The Eclipse set with the C/C++ editor keys |
+| | IAR Embedded Workbench for Arm | | ✓ | On Linux only if the IDE's process is named `iaridepm` |
+| | IDA Pro, Binary Ninja | ✓ | | |
 | | Ghidra, Wireshark, Postman, GitHub Desktop | ✓ | | Ghidra: the CodeBrowser window |
 | | DBeaver | ✓ | ✓ | |
 | | RStudio, MATLAB | ✓ | | |
@@ -146,7 +160,12 @@ platform gets the default set, if the app runs there at all.
 | | Age of Empires II: Definitive Edition | | | The same keys, its own Esc mark. Windows and Steam with Proton |
 | | Age of Empires IV | | | Default Grid Keys |
 | | Command & Conquer Remastered Collection | | | Keys drawn from your own Tiberian Dawn files when they are installed |
-| | OpenRA: Red Alert, Tiberian Dawn | | | Keys drawn from the game files OpenRA installed |
+| | OpenRA: Red Alert, Tiberian Dawn, Dune 2000 | | | Keys drawn from the game files OpenRA installed |
+| | Dune II (the DOS game and OpenDUNE), Dune Legacy | | | Keys drawn from your own `DUNE.PAK` |
+| | StarCraft II | | | Control groups, F1 and Backspace are drawn from your own StarCraft 1.16.1 files when they are installed |
+| | Civilization II, Civilization IV (also Warlords and Beyond the Sword), Freeciv, Freeciv21 | | | |
+| | Minecraft: Java Edition and Bedrock Edition | ✓ | ✓ | |
+| | Warzone 2100, 0 A.D., fheroes2, DevilutionX | | | |
 | | Warcraft III (classic 1.26 to 1.31), Wargus | | | |
 | | RimWorld, OpenTTD, OpenRCT2 | | | |
 | | Factorio | ✓ | | |
@@ -166,8 +185,13 @@ Google Drive, KeePassXC and KeePass 2 need PolyKybdHost 1.18.0. Canva, Photopea,
 Google Keep, WPS Office, Telegram, Signal, League of Legends and Steam need PolyKybdHost
 1.19.11. ONLYOFFICE, AutoCAD, Clip Studio Paint, CapCut, OBS Studio, foobar2000, Winamp,
 GitKraken, Sourcetree, SQL Server Management Studio, Joplin, Logseq, Evernote, Everything,
-Total Commander, PowerToys, Counter-Strike 2 and Dota 2 need the next PolyKybdHost release
-after 1.19.11.
+Total Commander, PowerToys, Counter-Strike 2 and Dota 2 need PolyKybdHost 1.19.40.
+Minecraft, StarCraft II and Warzone 2100 need PolyKybdHost 1.17.86. Civilization II and IV,
+Freeciv and the Dune sets need 1.18.0; fheroes2, DevilutionX
+and 0 A.D. need 1.19.11. qutebrowser, Monkeytype, keybr, IDA Pro, Binary Ninja, STM32CubeIDE,
+IAR Embedded Workbench, Altium Designer, OrCAD X Capture, LabVIEW, COMSOL, Simulink, OriginPro,
+Tekla Structures, SketchUp, Inventor, 3ds Max, Cinema 4D, Nuke and Substance 3D Painter need
+PolyKybdHost 1.19.58. Maya, Houdini, QGIS, Mathcad Prime and Pro Tools need 1.21.0.
 
 In Age of Empires II the letter keys build, train and give orders, and their meaning changes with
 the selection, so only keys that always do the same thing have icons. Each digit shows a different
@@ -275,6 +299,11 @@ computer's `127.0.0.1` and do not reach the host.
 
 The host sees only the terminal window, not the program running in it. It finds the program by
 the terminal's **window title**, so the program's name must be in the title.
+
+While a program's set is shown, the keys the program does not use keep the terminal's own
+shortcuts, such as new tab, copy and paste, because the terminal reads those keys first. They are
+[drawn dimmed](/using/website-detection/#browser-keys-are-drawn-dimmed), as a browser's are under
+a website, and the program's keys stay at full strength. This needs PolyKybdHost 1.19.40.
 
 - **Programs that write their own title** need no setup: Claude Code, Gemini CLI, GitHub Copilot
   CLI, Grok Build, Kimi Code CLI, Mistral Vibe, OpenCode, Qwen Code, Midnight Commander and

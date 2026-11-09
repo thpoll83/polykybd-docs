@@ -27,7 +27,7 @@ Right-click the tray icon:
 | **Maintenance** | Fix left/right sides, reset overlays or the keymap, flash a firmware file, enter the bootloader. See [below](#maintenance). |
 | **Settings** | Interface language, theme, brightness, unicode mode, daemon mode and the rest. The [Settings Reference](/software/settings/) explains each one a user may want to change. |
 | **Help & About** | About, the log viewer, **Open config folder**, and — when something goes wrong — **Report a Problem…** and **Collect logs…** (see [Reporting a Problem](/software/reporting-problems/)). |
-| **Quit** | Close the tray app. The daemon keeps running, so the keyboard stays connected. |
+| **Quit & stop background daemon** | Closes the tray app and stops the background daemon, which releases the keyboard. When daemon mode is off, the entry is a plain **Quit**. To close only the tray app and keep the keyboard connected, use **Maintenance → Only quit GUI**. |
 
 Two entries only appear when they apply: **Install WinCompose…** while
 [WinCompose](/software/wincompose/) is not running, and a **Firmware newer than this
@@ -56,6 +56,7 @@ bundles named in its tooltip. See [Font Packs](/firmware/font-packs/).
 | **Reset keymap to default…** | Puts layers 0 to 7 back to the firmware's default keymap, encoders included, and **deletes every [macro](/using/macros/)**. It asks first. There is no undo. |
 | **Flash firmware file (.bin)…** | Installs a firmware `.bin` over USB. See [Firmware updates](#firmware-updates). |
 | **Activate bootloader…** | Restarts the keyboard into its USB bootloader, for flashing a `.uf2` by hand. See [Flashing the Firmware](/setup/flashing/). |
+| **Only quit GUI** | Closes the tray app. The background daemon keeps running, so the keyboard stays connected. Shown only when a daemon owns the keyboard, which is the default, and available with the keyboard unplugged too. Needs PolyKybdHost 1.19.40; older versions have a plain **Quit** at the top level instead. |
 
 ### Developer mode
 
@@ -82,8 +83,8 @@ Switching it on **only adds** the Developer submenu. Nothing else in the menu mo
 
 <Aside type="note">
 The screenshots are rendered from the app. Your desktop draws its own menu style.
-"Quit && stop background daemon" appears when a daemon owns the keyboard, which is the
-default.
+The screenshot shows the menu without a background daemon. When a daemon owns the keyboard,
+which is the default, the last entry is "Quit & stop background daemon" instead of "Quit".
 </Aside>
 
 ## Interface language
