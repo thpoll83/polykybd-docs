@@ -93,6 +93,7 @@ source commonly uses it.
 | **MACRO_LABEL** | `0x26` (38) | **v15+.** Get/set one macro's label — the short text the keycap shows along its bottom edge. |
 | **CRASH_RECORD** | `0x27` (39) | **v16+.** Read the keyboard's last [crash record](/software/reporting-problems/#when-the-keyboard-firmware-crashes) — `0` this half, `1` the link-side half (read over the split link), `2` clears it. The reply is a flags byte (present / fresh) and the 48-byte record: crash kind, core, the faulting `pc`/`lr`/`sp`, what the firmware was doing, uptime and firmware version. |
 | **IDLE_TIMEOUT** | `0x28` (40) | **v18+.** Get/set how long the keyboard waits before it starts [fading into the idle style](/using/idle/#how-long-before-it-idles) — a preset index (0 = 15 sec … 5 = 5 min), or `0xFF` to query. A closed range like `GLYPH_SIZE`: anything else NACKs. The reply carries both the preset **and** its duration in seconds, so a host older than the keyboard can still label a preset it does not know. |
+| **TAP_TERMS** | `0x2C` (44) | **v29+.** Get/set the [tap-hold timing](/using/keymap-editor/#tap-hold-timing): the tapping term (100–500 ms) and the Flow Tap term (0–300 ms, 0 = off), in 10 ms steps. Closed ranges: a value outside them NACKs, and a report with one bad value changes neither. |
 | **REBOOT** | `0x2B` (43) | **v22+.** Restart both halves and save nothing. The keyboard answers before it resets. It exists for the host's [boot-loop test](/software/reporting-problems/#catching-a-crash-that-happens-only-occasionally), which reboots hundreds of times. |
 | **BOOTLOADER / HANDEDNESS** | `0x17` / `0x19` | Enter bootloader; set which half is which. |
 
@@ -206,6 +207,7 @@ little-endian. "—" means no payload.
 | `0x22` GLYPH_SIZE | `[2]` `0xFF` query, or `0` small, `1` medium, `2` large | `[3]` size (`!` if out of range) |
 | `0x23` GET_LAYER_NAMES | — | See [Layer names](#layer-names--the-reply-format) |
 | `0x28` IDLE_TIMEOUT | `[2]` `0xFF` query, or preset `0..5` (15 s, 30 s, 45 s, 1 min, 2 min, 5 min) | `[3]` preset, `[4..5]` `u16` seconds (`!` if out of range) |
+| `0x2C` TAP_TERMS | `[2]` `0` query, `1` set; `[3..4]` `u16` tapping term ms; `[5..6]` `u16` Flow Tap term ms; `0xFFFF` keeps a term | `[3..4]` tapping term, `[5..6]` Flow Tap term, `[7]` bit 0 = this firmware has Flow Tap (on `!` too) |
 
 `KEYPRESS` makes the keyboard type into whatever app has focus, so any program that can
 talk raw HID could use it to inject keystrokes. The firmware therefore refuses it unless
@@ -693,6 +695,8 @@ Selected milestones:
 - **v25** (firmware 1.9.13, host 1.17.52) — [keys without a legend](#keys-without-a-legend) on **SEND_OVERLAY_MAPPING_W** (`0x21`): a pool slot sent plus 600 draws that key's icon on a cleared keycap. No new command and no new byte; an older keyboard refuses the value, so the host sends it only from v25.
 - **v26** (firmware 1.10.2, host 1.19.58) — a second byte on **GLYPH_SCRIPT** (`0x1e`): the [placement](/using/glyph-scripts/#placement-centred-or-top-left) of the script's letters and digits, centred or top-left. `0` keeps the stored placement, so an older host that sets a script cannot reset it. A script byte of `0xFF` with a non-zero placement changes the placement only. An older keyboard ignores the byte and always centres, so the host sends it only from v26.
 - **v27** (firmware 1.10.2, host 1.19.58) — font-pack layout v3: the [icon library](#icon-library-fills) slot and the emoji slot grow from 256 KB to 512 KB, and the fantasy, Latin-big and icon bundles move. No new command. After the firmware update the host writes those three bundles once more if **Settings → Fontpack → Auto Flash** is on; with it off, run `polyctl fontpack sync`. The host sends an icon library over 256 KB only from v27. A keyboard with older firmware keeps its old library, but the host fills icons from the library only when the keyboard holds the shipped version, so it sends those icons as normal images instead.
+- **v28** (firmware 1.11.0, host 1.21.0) — the GET_ID reply adds a byte that says whether an Eden animation is running on the keycaps (the boot intro or the screensaver). The host waits to flash font packs until the animation has ended, so it does not draw legends over the animation. No new command. An older keyboard does not send the byte, and the host flashes at once, as before.
+- **v29** (firmware 1.11.1, host 1.21.4) — **TAP_TERMS** (`0x2c`): the [tapping term and the Flow Tap term](/using/keymap-editor/#tap-hold-timing) of dual-function keys become settings, stored on the keyboard. They were fixed at 200 ms and 150 ms when the firmware was built, and those stay the defaults. Like the idle timeout, both ranges are closed: a keyboard refuses a value outside them. An older keyboard NACKs the command, so the host disables the tray entry.
 
 <Aside type="note">
 Not every version number above is a separate feature listed here — the list highlights the
