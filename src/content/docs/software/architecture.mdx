@@ -16,7 +16,7 @@ PolyKybdHost is built around a **daemon + client** split. Understanding it helps
 A plain `python -m polyhost` launch starts the GUI and, if no daemon is running, spawns one (detached) and connects to it. If the daemon cannot start, it falls back to running the core in-process.
 
 <Aside type="tip">
-Because the daemon keeps running after the GUI closes, you can **quit the tray app and reopen it later** without losing the device connection or losing reconnect state. Quitting a client closes only its own sockets — the daemon keeps running.
+Because the daemon keeps running after the GUI closes, you can **quit the tray app and reopen it later** (*Maintenance → Only quit GUI*) without losing the device connection or losing reconnect state. Quitting a client closes only its own sockets — the daemon keeps running.
 </Aside>
 
 ## Why it exists
