@@ -161,6 +161,7 @@ export default defineConfig({
             { label: 'Apps With No Overlay', slug: 'using/generic-overlays' },
             { label: 'Shortcut Hints', slug: 'using/shortcut-hints' },
             { label: 'Languages & Unicode Input', slug: 'using/languages' },
+            { label: 'Emoji Search', slug: 'using/emoji-search' },
             { label: 'Glyph Scripts', slug: 'using/glyph-scripts' },
             { label: 'Legend Size', slug: 'using/legend-size' },
             { label: 'Macros', slug: 'using/macros' },
