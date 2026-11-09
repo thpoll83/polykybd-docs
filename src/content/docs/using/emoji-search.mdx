@@ -97,10 +97,15 @@ Any text editor can change it. A spreadsheet program can open it as tab-separate
 back as tab-separated UTF-8 text without quotes.
 
 To use your edited dictionary, build it with the `--user` option and choose the file in the
-host:
+host. The build runs in a clone of the firmware repository
+([thpoll83/qmk_firmware](https://github.com/thpoll83/qmk_firmware), branch `PolyKybd`) and
+needs Python 3. Replace `de` with the id of the dictionary you edited: the file name in
+`dict_src/` without `.tsv`, as `polyctl emoji-dict list` shows it.
 
 ```bash
-cd keyboards/polykybd/emoji
+git clone --depth 1 -b PolyKybd https://github.com/thpoll83/qmk_firmware.git
+cd qmk_firmware/keyboards/polykybd/emoji
+# edit dict_src/de.tsv, then:
 python3 emoji_dict.py build de --user -o ~/my-de.plyd
 polyctl emoji-dict file ~/my-de.plyd
 ```
@@ -113,7 +118,9 @@ In the tray, choose *Emoji Search Language* → *Own dictionary file...* instead
 - Choosing a language in the menu, or `polyctl emoji-dict file --clear`, returns to a
   dictionary that ships with the host.
 - If the host cannot read the file, or the file is not a dictionary, it writes nothing and the
-  keyboard keeps its dictionary. `polyctl emoji-dict` shows the reason.
+  keyboard keeps its dictionary. `polyctl emoji-dict file` prints the reason when you choose the
+  file, and `polyctl emoji-dict` shows it later. In the tray, the menu entry reads
+  *Own dictionary (cannot be used)*, and its tooltip gives the reason.
 
 To change a dictionary for everyone, open a pull request with the edited file. The firmware's
 [`EMOJI_SEARCH.md`](https://github.com/thpoll83/qmk_firmware/blob/PolyKybd/keyboards/polykybd/emoji/EMOJI_SEARCH.md#editing-a-dictionary)
