@@ -69,7 +69,7 @@ lists what to publish on each platform.
 <Aside type="note">
 **Qt and KDE apps only publish shortcuts while the desktop's accessibility switch is on**, and
 KDE Plasma leaves it off unless a screen reader is running. So PolyKybdHost turns it on the
-first time it reads an app (setting **Shortcut → Enable Accessibility**, on by default). It
+first time it reads an app (setting **Turn on accessibility**, on by default). It
 does not start a screen reader, and the switch stays on until you log out.
 
 If an app was already open when PolyKybdHost started and its keys show no icons, restart the
@@ -133,23 +133,23 @@ app gets nothing generic until it is updated.
 
 ## Settings
 
-All six are in **Settings…** in the tray menu and are **on** by default.
+All six are in **Settings…** in the tray menu, section **Keycap icons**, and are **on** by default.
 
 | Setting | What it controls |
 | --- | --- |
-| **Generic → Overlays Enabled** | The whole feature. Off: no Escape mark and no shortcut icons for any app. |
-| **Generic → Overlays Add Escape Mark** | Whether an app that already has artwork also gets its mark on Escape, when the artwork leaves Escape blank. |
-| **Generic → Overlays Add Shortcut Icons** | Whether such an app is also read for its shortcuts, with icons on the keys its artwork leaves blank. Off: such an app shows its artwork and its Escape mark only. |
-| **Shortcut → Icons Enabled** | Whether the focused app is read for its shortcuts at all. Off: no shortcut icons, and an app without artwork gets no Escape mark either, since that mark only accompanies shortcut icons. An app with artwork still gets its mark when **Overlays Add Escape Mark** is on. |
-| **Shortcut → Icon Auto Fetch** | Whether the icon set may be downloaded. Off: icons already downloaded keep working; new ones are skipped. |
-| **Shortcut → Enable Accessibility** | Linux only. Whether PolyKybdHost may turn on the desktop's accessibility switch so Qt and KDE apps publish their shortcuts. Off: only apps that publish anyway (GTK) are read. |
+| **Generic icons** | The whole feature. Off: no Escape mark and no shortcut icons for any app. |
+| **Apps with their own overlay → Add the Escape mark** | Whether an app that already has artwork also gets its mark on Escape, when the artwork leaves Escape blank. |
+| **Apps with their own overlay → Add shortcut icons** | Whether such an app is also read for its shortcuts, with icons on the keys its artwork leaves blank. Off: such an app shows its artwork and its Escape mark only. |
+| **Shortcut icons** | Whether the focused app is read for its shortcuts at all. Off: no shortcut icons, and an app without artwork gets no Escape mark either, since that mark only accompanies shortcut icons. An app with artwork still gets its mark when **Add the Escape mark** is on. |
+| **Download missing icons** | Whether the icon set may be downloaded. Off: icons already downloaded keep working; new ones are skipped. |
+| **Linux → Turn on accessibility** | Linux only. Whether PolyKybdHost may turn on the desktop's accessibility switch so Qt and KDE apps publish their shortcuts. Off: only apps that publish anyway (GTK) are read. |
 
-**Generic → Overlays Enabled** switches everything off: nothing generic is drawn and the
+**Generic icons** switches everything off: nothing generic is drawn and the
 other settings have no effect.
 
 <Aside type="tip">
-On a managed or offline machine the two you probably want are **Shortcut → Icons Enabled**
-(the only one that governs reading another program) and **Shortcut → Icon Auto Fetch** (the
+On a managed or offline machine the two you probably want are **Shortcut icons**
+(the only one that governs reading another program) and **Download missing icons** (the
 only one that uses the network).
 </Aside>
 

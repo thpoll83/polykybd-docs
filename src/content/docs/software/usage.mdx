@@ -62,7 +62,7 @@ bundles named in its tooltip. See [Font Packs](/firmware/font-packs/).
 
 Diagnostic and advanced tools (overlay resets, font-pack inspection, staged
 firmware, keymap dumps) are in a separate **Developer** submenu that is hidden by
-default. Turn it on in **Settings → Developer → Mode** (then restart the app), or start
+default. Turn it on in **Settings → General → Developer mode** (then restart the app), or start
 with `--dev` for one session.
 
 ![The Developer submenu: Change System Input Language, Inspect Font Packs, Refresh unicode input mode, Save MRU cache now, then Overlays, Idle, Keymap, Font Pack and Firmware submenus, and Run command file](../../../assets/software/tray-developer-submenu.png)
@@ -106,7 +106,7 @@ uses its base language: Austrian German gets German, and European Portuguese get
 Brazilian translation. Chinese follows the script your system uses, so Taiwan and Hong
 Kong get Traditional Chinese.
 
-To pick a language yourself, open **Settings → Ui → Language**. Each language is listed
+To pick a language yourself, open **Settings → General → Language**. Each language is listed
 in its own name, so you can find yours even after picking one you cannot read.
 **Automatic** goes back to following the system and shows which language that resolves
 to. A change asks to restart the tray app. The keyboard stays connected, or reconnects
@@ -140,7 +140,7 @@ The tray app is the front-end for the keyboard's live features — each has its 
 - [Glyph Scripts](/using/glyph-scripts/) — change the style of the legends from the **Keycap Script** submenu.
 
 The app also sends an anonymous once-a-day usage report, which you are told about on first
-run and can switch off under **Settings → Telemetry** — see
+run and can switch off under **Settings → Privacy and diagnostics** — see
 [Usage Data & Privacy](/software/telemetry/) for exactly what it contains.
 
 ## Firmware updates
@@ -174,9 +174,13 @@ python -m polyhost --dev 2      # developer mode + verbose HID traffic logging
 python -m polyhost --dev 0      # force developer mode off for this run
 ```
 
-`--dev` turns on developer mode **and** raises the log level. If you only want the
-developer tools without the extra logging, enable **Settings → Developer → Mode**
-instead and start the app normally.
+`--dev` turns on developer mode **and** raises the log level for that run. Without the flag,
+two settings decide them separately:
+
+- **Settings → Privacy and diagnostics → Log detail**: *Normal*, *Debug* (like `--dev`) or
+  *Detailed* (like `--dev 2`). Use it to collect a debug log from an app that starts with
+  your computer. Applies after a restart.
+- **Settings → General → Developer mode**: the developer tools, without the extra logging.
 
 The Log Viewer (tray menu → **Help & About → Log file…**) shows the same output in a GUI window. When running with the daemon, its activity appears under the **Daemon Log** tab.
 
