@@ -130,6 +130,54 @@ is disabled. On the Split42 the keyboard has no Flow Tap, so only the tapping te
 be changed.
 </Aside>
 
+## Auto Shift
+
+<SupportedSince protocol={30} note="firmware 1.11.6, host 1.21.11" />
+
+With Auto Shift on, a letter, digit or symbol key held longer than the **Auto Shift
+timeout** types its shifted character: hold `a` for `A`, hold `1` for `!`. A short
+press types the normal character. Auto Shift is off by default.
+
+Turn it on in the tray menu under **Tap-Hold Timing…**, or with
+`polyctl tap-terms --auto-shift on`. The timeout is 100–500 ms in 10 ms steps, default
+180 ms (`--auto-shift-ms`). The keyboard stores both values.
+
+You can also put these keys on a layer in the editor. They change the same stored
+setting:
+
+| Keycode | What it does |
+|---|---|
+| `AS_TOGG` | Turns Auto Shift on or off |
+| `AS_ON` / `AS_OFF` | Turns Auto Shift on / off |
+| `AS_UP` / `AS_DOWN` | Increases / decreases the timeout by 10 ms |
+| `AS_RPT` | Types the current timeout in ms |
+
+Auto Shift applies to the standard letter, digit and symbol keys. Keys on the Intl
+layer and the emoji layer type their characters directly and are not shifted.
+
+## Caps Word
+
+<SupportedSince protocol={30} note="firmware 1.11.6, host 1.21.11" />
+
+Caps Word types the next word in capitals and turns itself off at the end of the word.
+Turn it on by pressing **both Shift keys together**, or with a `CW_TOGG` key you assign
+in the editor. While it is on, the keycaps show capital letters.
+
+- Letters are typed with Shift. The letters of the selected keyboard language count,
+  for example ö, ä and ü on German.
+- Digits, Backspace, Delete and `_` keep the word going. On layouts where Shift+Minus
+  types `_`, Minus types `_`.
+- Any other key, for example Space or a punctuation key, ends the word. So does a
+  pause of 5 seconds.
+
+Caps Word does not change Caps Lock on the computer.
+
+<Aside type="note">
+Auto Shift and Caps Word need keyboard firmware 1.11.6 or later, and Auto Shift in the
+tray dialog needs PolyKybdHost 1.21.11 or later. On older firmware the tray dialog shows
+the Auto Shift fields disabled.
+</Aside>
+
 ## How it works
 
 PolyKybdHost uses the QMK `ID_DYNAMIC_KEYMAP_SET_KEYCODE` protocol to write individual key assignments directly to the keyboard. It does not write a full layer — only the changed key is updated, making it instant.
