@@ -225,7 +225,7 @@ The first question, asked every 0.25 s, is whether a read should start at all:
 
 ```mermaid
 flowchart TD
-  T["Window-tracking tick<br/>(every 0.25 s)"] --> E{"Overlays Enabled?"}
+  T["Window-tracking tick<br/>(every 0.25 s)"] --> E{"Generic icons on?"}
   E -- no --> X["No read,<br/>nothing generic"]
   E -- yes --> A{"Artwork covers<br/>this app?"}
   A -- "yes, Add Shortcut Icons off" --> N["No read: artwork, plus the<br/>Escape mark if Add Escape Mark is on"]

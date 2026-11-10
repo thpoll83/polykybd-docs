@@ -68,10 +68,10 @@ Website detection is controlled by a few settings in PolyKybdHost (Settings dial
 
 | Setting | Default | What it does |
 |---|---|---|
-| `browser_url_detection` | on | Master switch for the whole feature. Off → browser overlays match on title only. |
-| `browser_report_local_enabled` | on | Runs the loopback receiver the extension posts to. Bound to `127.0.0.1` only. |
-| `browser_report_port` | `50164` | Port the receiver listens on — must match the extension's **Host port**. |
-| `browser_report_token` | *(empty)* | Optional shared secret. When set, a report must present the same token (set it in the extension Options too) — extra defence against other local apps. |
+| **Keycap icons → Match websites** (`browser_url_detection`) | on | Switches the whole feature on or off. Off → browser overlays match on title only. |
+| **Connections → Receive browser reports** (`browser_report_local_enabled`) | on | Runs the receiver the extension posts to. It listens on `127.0.0.1` only. |
+| **Connections → Receiver port** (`browser_report_port`) | `50164` | Port the receiver listens on. It must match the extension's **Host port**. |
+| **Connections → Receiver token** (`browser_report_token`) | *(empty)* | Optional shared secret. When set, a report must present the same token (set it in the extension Options too). Other programs on the same computer then cannot send reports. |
 
 ## Mapping overlays to websites
 

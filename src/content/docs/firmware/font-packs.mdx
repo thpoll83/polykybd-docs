@@ -42,7 +42,7 @@ opened, and over HID when it cannot. The fast link moves it in about a
 quarter of the time HID needs (about 11 KB/s over HID, so about a minute and a half for all nine);
 each bundle's slot erase adds time on both paths.
 
-To manage the pack yourself instead, turn off **Settings → Fontpack → Auto Flash**
+To manage the pack yourself instead, turn off **Settings → Keyboard data → Update on connect**
 (`fontpack_auto_flash`). The host then flashes bundles only when you ask.
 
 While a bundle is being written, the keycap legends do not change. Shift, Caps Lock and layer
@@ -67,7 +67,7 @@ polyctl fontpack flash <id>    # force-flash one bundle
 polyctl fontpack wipe [id]     # empty one bundle (or all)
 ```
 
-Wiping a bundle is harmless while **Auto Flash** is on: the host re-flashes it on the next connect. With it off, restore the bundle yourself with `polyctl fontpack sync`. The same
+Wiping a bundle is harmless while **Update on connect** is on: the host re-flashes it on the next connect. With it off, restore the bundle yourself with `polyctl fontpack sync`. The same
 per-bundle view and a wipe are available in the tray under **Developer → Font Pack**
 (see [developer mode](/software/usage/#developer-mode)).
 

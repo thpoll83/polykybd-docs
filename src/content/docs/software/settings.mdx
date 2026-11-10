@@ -1,91 +1,128 @@
 ---
 title: Settings Reference
-description: The PolyKybdHost settings a user may want to change, where each sits in the Settings dialog, its default and what it changes.
+description: The PolyKybdHost settings, where each sits in the Settings dialog, its default and what it changes.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
+import SupportedSince from '../../../components/SupportedSince.astro';
 
-Open **Settings…** in the tray menu. The dialog groups each setting under the first word of
-its key, so `brightness_gamma` appears as **Brightness → Gamma**. Hold the pointer over a
-setting to see a short description of it. From the command line, read
-or change a setting by its key:
+<SupportedSince label="Host 1.21.7+" title="The PolyKybdHost version this page describes" />
+
+Open **Settings…** in the tray menu. The list on the left has the sections of this page;
+choose one to jump to it. Each setting shows its description under its name. The search
+field above the list shows only the settings with a word that starts with what you type,
+in the name or the description: `port` finds **Receiver port**, but not *transport*.
+
+A number or a list in the dialog changes with the mouse wheel only after you click it.
+Otherwise the wheel scrolls the page.
+
+From the command line, read or change a setting by its key:
 
 ```sh
 polyctl settings get problem_scan_level
 polyctl settings set ui_theme dark
 ```
 
-The tables list the settings a user may want to change. The rest are developer and
-transport tuning settings; see [the end of this page](#not-listed-here).
+In the tables, the **Dialog** column gives the subheading and the name, when the section
+has a subheading.
 
-## Appearance and language
+## General
 
 | Dialog | Key | Default | What it changes |
 | --- | --- | --- | --- |
-| **Ui → Theme** | `ui_theme` | `auto` | The tray menu and dialogs: *Automatic* follows the desktop's light or dark setting, *Light* and *Dark* always use that theme. A desktop that does not report its setting gets the dark theme. |
-| **Ui → Language** | `ui_language` | `auto` | The language of the menus and dialogs. Applies when the tray app restarts. See [Interface language](/software/usage/#interface-language). |
+| **Theme** | `ui_theme` | `auto` | The tray menu and dialogs: *Automatic* follows the desktop's light or dark setting, *Light* and *Dark* always use that theme. A desktop that does not report its setting gets the dark theme. |
+| **Language** | `ui_language` | `auto` | The language of the menus and dialogs. Applies when the tray app restarts. See [Interface language](/software/usage/#interface-language). |
+| **Background service** | `daemon_mode` | on | Runs the keyboard connection in a background service that the tray app connects to. See [Daemon & Client Model](/software/architecture/). |
+| **Developer mode** | `developer_mode` | off | Shows the [developer settings](#developer) in this dialog at once, and the [Developer submenu](/software/usage/#developer-mode) in the tray menu after a restart. |
+
+## Keycap icons
+
+| Dialog | Key | Default | What it changes |
+| --- | --- | --- | --- |
+| **Generic icons** | `generic_overlays_enabled` | on | [Icons for apps with no overlay](/using/generic-overlays/): the app's mark on Escape and an icon per shortcut. |
+| **Shortcut icons** | `shortcut_icons_enabled` | on | Whether the focused app is read for its shortcuts at all. |
+| **Download missing icons** | `shortcut_icon_auto_fetch` | on | Whether missing icons may be downloaded. |
+| **Match websites** | `browser_url_detection` | on | Matching an overlay to the focused tab's website. Off, browser overlays match on the window title only. See [Website-Aware Overlays](/using/website-detection/). |
+| **Apps with their own overlay → Add the Escape mark** | `generic_overlays_fill_gaps` | on | An app with its own overlay also gets its mark on Escape, when the overlay leaves Escape blank. |
+| **Apps with their own overlay → Add shortcut icons** | `generic_overlays_fill_shortcuts` | on | Such an app is also read for its shortcuts, with icons on the keys its overlay leaves blank. |
+| **Linux → Turn on accessibility** | `shortcut_enable_accessibility` | on | Linux only: whether the host may turn on the desktop's accessibility switch so Qt and KDE apps publish their shortcuts. |
+
+## Games
+
+| Dialog | Key | Default | What it changes |
+| --- | --- | --- | --- |
+| **Art from installed games** | `game_assets_enabled` | on | Draws some game overlays from the game's own files when the game is installed on this computer. The images stay on this computer. Off, the shipped overlays are used. |
+| **Installed games → *Game* folder** | `game_cnc_data_dir`, `game_ra_data_dir`, `game_dune2_data_dir`, `game_d2k_data_dir`, `game_sc1_data_dir` | empty | The folder with the game's files, for Command and Conquer, Red Alert, Dune II, Dune 2000 and StarCraft. The **…** button opens a folder chooser. Empty: the app searches the folders where the game, or a remake such as OpenRA, usually installs. |
+| **Installed games → *Game* faction, house or race** | `game_cnc_faction`, `game_ra_faction`, `game_dune2_house`, `game_d2k_house`, `game_sc1_race` | GDI, Allies, Atreides, Atreides, Terran | Whose units and buildings the overlay shows. |
 
 ## Brightness
 
 | Dialog | Key | Default | What it changes |
 | --- | --- | --- | --- |
-| **Brightness → Set Daylight Dependent** | `brightness_set_daylight_dependent` | on | [Adaptive brightness](/using/brightness/#adaptive-daylight): the host sets the keycap brightness from the sunlight at your location, every ten minutes. |
-| **Brightness → Allow Online Location Lookup** | `brightness_allow_online_location_lookup` | on | Looks up your approximate location from your IP address (`ip-api.com`), once per run. Off, or with no answer, the brightness follows the hour of the day instead. |
-| **Brightness → Allow Online Irradiance Request** | `brightness_allow_online_irradiance_request` | on | Asks `open-meteo.com` for the sunlight at that location this hour, which includes cloud cover. Off, the host computes a cloudless-sky value from the location and time. |
-| **Brightness → Gamma** | `brightness_gamma` | `1.0` | Shapes the daylight curve between darkest and brightest. Above 1 the middle of the day gets dimmer; below 1 it gets brighter. The end points do not move. |
-| **Irradiance → Min** / **Max** | `irradiance_min` / `irradiance_max` | `1.8` / `5.2` | The sunlight values that map to the dimmest and the brightest level. Lower *Max* to reach full brightness on a cloudy day. |
-| **Irradiance → Prescaler** | `irradiance_prescaler` | `0.75` | Multiplies the sunlight value before *Min* and *Max* apply. |
+| **Follow daylight** | `brightness_set_daylight_dependent` | on | [Adaptive brightness](/using/brightness/#adaptive-daylight): the host sets the keycap brightness from the sunlight at your location, every ten minutes. |
+| **Online location lookup** | `brightness_allow_online_location_lookup` | on | Looks up your approximate location from your IP address (`ip-api.com`), once per run. Off, or with no answer, the brightness follows the hour of the day instead. |
+| **Online sunlight data** | `brightness_allow_online_irradiance_request` | on | Asks `open-meteo.com` for the sunlight at that location this hour, which includes cloud cover. Off, the host computes a cloudless-sky value from the location and time. |
+| **Daylight curve → Sunlight at dimmest** / **Sunlight at brightest** | `irradiance_min` / `irradiance_max` | `1.8` / `5.2` | The sunlight values that map to the dimmest and the brightest level. Lower *Sunlight at brightest* to reach full brightness on a cloudy day. |
+| **Daylight curve → Sunlight scale** | `irradiance_prescaler` | `0.75` | Multiplies the sunlight value before the two values above apply. |
+| **Daylight curve → Curve gamma** | `brightness_gamma` | `1.0` | Shapes the daylight curve between dimmest and brightest. Above 1 the middle of the day gets dimmer; below 1 it gets brighter. The end points do not move. |
 
 A change to any of these is applied immediately, without waiting for the next ten-minute
 refresh.
 
-## Overlays and shortcut icons
+## Keyboard data
 
 | Dialog | Key | Default | What it changes |
 | --- | --- | --- | --- |
-| **Generic → Overlays Enabled** | `generic_overlays_enabled` | on | [Icons for apps with no overlay](/using/generic-overlays/): the app's mark on Escape and an icon per shortcut. |
-| **Generic → Overlays Add Escape Mark** | `generic_overlays_fill_gaps` | on | An app with its own overlay also gets its mark on Escape, when the overlay leaves Escape blank. |
-| **Generic → Overlays Add Shortcut Icons** | `generic_overlays_fill_shortcuts` | on | Such an app is also read for its shortcuts, with icons on the keys its overlay leaves blank. |
-| **Shortcut → Icons Enabled** | `shortcut_icons_enabled` | on | Whether the focused app is read for its shortcuts at all. |
-| **Shortcut → Icon Auto Fetch** | `shortcut_icon_auto_fetch` | on | Whether missing icons may be downloaded. |
-| **Shortcut → Enable Accessibility** | `shortcut_enable_accessibility` | on | Linux only: whether the host may turn on the desktop's accessibility switch so Qt and KDE apps publish their shortcuts. |
-| **Browser → Url Detection** | `browser_url_detection` | on | Matching an overlay to the focused tab's website. Off, browser overlays match on the window title only. See [Website-Aware Overlays](/using/website-detection/). |
-| **Browser → Report Local Enabled** | `browser_report_local_enabled` | on | The receiver the browser extension reports to. It listens on `127.0.0.1` only. |
-| **Browser → Report Port** | `browser_report_port` | `50164` | The receiver's port. It must match the extension's *Host port*. |
-| **Browser → Report Token** | `browser_report_token` | empty | A shared secret. When set, the extension must send the same token. |
+| **Send Unicode input mode** | `unicode_send_composition_mode` | on | Tells the keyboard how this computer takes Unicode input (for example [WinCompose](/software/wincompose/) or the native method), on connect and whenever it changes. Off, the keyboard keeps the mode it has stored. |
+| **Font packs → Update on connect** | `fontpack_auto_flash` | on | Flashes missing or outdated [font-pack](/firmware/font-packs/) bundles when the keyboard connects. Off, you update them yourself from **Updates → Keyboard fonts** or with `polyctl fontpack sync`. |
+| **Font packs → Font pack file** | `fontpack_path` | empty | A `.plyf` file to flash instead of the pack that ships with the app. Empty uses the shipped pack. |
+| **Emoji search → Search language** | `emoji_search_dict` | `en` | The language the keyboard's [emoji search](/using/emoji-search/) uses. |
+| **Emoji search → Own dictionary file** | `emoji_search_dict_file` | empty | A dictionary you built yourself (`.plyd`), used instead of *Search language*. |
 
-## Keyboard and connection
+## Connections
 
 | Dialog | Key | Default | What it changes |
 | --- | --- | --- | --- |
-| **Unicode → Send Composition Mode** | `unicode_send_composition_mode` | on | Tells the keyboard how this computer takes Unicode input (for example [WinCompose](/software/wincompose/) or the native method), on connect and whenever it changes. Off, the keyboard keeps the mode it has stored. |
-| **Fontpack → Auto Flash** | `fontpack_auto_flash` | on | Flashes missing or outdated [font-pack](/firmware/font-packs/) bundles when the keyboard connects. Off, you update them yourself from **Updates → Keyboard fonts** or with `polyctl fontpack sync`. |
-| **Fontpack → Path** | `fontpack_path` | empty | A `.plyf` file to flash instead of the pack that ships with the app. Empty uses the shipped pack. |
-| **Daemon → Mode** | `daemon_mode` | on | Runs the keyboard connection in a background daemon that the tray app attaches to. See [Daemon & Client Model](/software/architecture/). |
-| **Window → Report Network Enabled** | `window_report_network_enabled` | off | Accepts window reports from a forwarder on another computer. Applies after a restart. See [Multi-Machine Setup](/using/multi-machine/). |
+| **Browser extension → Receive browser reports** | `browser_report_local_enabled` | on | The receiver the browser extension reports to. It listens on `127.0.0.1` only. |
+| **Browser extension → Receiver port** | `browser_report_port` | `50164` | The receiver's port. It must match the extension's *Host port*. |
+| **Browser extension → Receiver token** | `browser_report_token` | empty | A shared secret. When set, the extension must send the same token. |
+| **Forwarders → Accept forwarders** | `window_report_network_enabled` | off | Accepts window reports from a forwarder on another computer. Applies after a restart. See [Multi-Machine Setup](/using/multi-machine/). |
 
-## Problem reports and usage data
+**USB transport → ID requests before reconnect**, **Messages before a pause** and
+**Pause length (s)** (`hid_reconnect_retries`, `max_hid_message_before_delay`,
+`delay_time_after_max_hid_messages`) tune the USB connection. Leave them at their defaults
+unless you are asked to change them while reporting a problem.
+
+## Privacy and diagnostics
 
 | Dialog | Key | Default | What it changes |
 | --- | --- | --- | --- |
-| **Problem → Scan Keyboard Console** | `problem_scan_keyboard_console` | on | Watches the keyboard's console for known failure messages. |
-| **Problem → Scan Host Logs** | `problem_scan_host_logs` | on | Watches this app's own log. |
-| **Problem → Scan Level** | `problem_scan_level` | `errors` | What counts as a problem: *Errors*, or *Errors and warnings*. |
-| **Telemetry → Enabled** | `telemetry_enabled` | on | The anonymous [daily usage report](/software/telemetry/). |
-| **Telemetry → Endpoint** | `telemetry_endpoint` | the project's collector | Where that report goes. Empty sends nothing, like turning it off. |
-| **Telemetry → Install Id** | `telemetry_install_id` | generated | The random ID of this installation. See [the random ID](/software/telemetry/#the-random-id). |
+| **Usage report → Send usage report** | `telemetry_enabled` | on | The anonymous [daily usage report](/software/telemetry/). |
+| **Usage report → Report address** | `telemetry_endpoint` | the project's collector | Where that report goes. Empty sends nothing, like turning it off. |
+| **Usage report → Installation ID** | `telemetry_install_id` | generated | The random ID of this installation. See [the random ID](/software/telemetry/#the-random-id). |
+| **Problem detection → Watch the keyboard console** | `problem_scan_keyboard_console` | on | Watches the keyboard's console for known failure messages. |
+| **Problem detection → Watch this app's log** | `problem_scan_host_logs` | on | Watches this app's own log. |
+| **Problem detection → What counts as a problem** | `problem_scan_level` | `errors` | *Errors*, or *Errors and warnings*. |
+| **Logs → Log detail** | `log_detail` | `normal` | How much the app writes to its log: *Normal*, *Debug* or *Detailed*. Applies after a restart. See [Debug logging](/software/usage/#debug-logging). |
 
 When a scan finds a problem, the tray shows one dialog per session that offers
 [Report a Problem](/software/reporting-problems/#report-a-problem). Nothing is sent unless you
 send it.
 
-## Not listed here
+## Developer
 
-- **Developer → Mode** (`developer_mode`) shows the [Developer submenu](/software/usage/#developer-mode).
-  The `dev_*` settings below it only matter with it on.
-- **Max → Hid Message Before Delay**, **Delay → Time After Max Hid Messages** and
-  **Hid → Reconnect Retries** tune the USB transport. Leave them at their defaults unless
-  you are asked to change them while reporting a problem.
+This section is shown when **Developer mode** is on. Its settings tune the app for testing
+and are off by default.
+
+<Aside type="caution">
+A developer setting takes effect whether developer mode is on or not. When one is not at its
+default, the dialog shows it in this section with developer mode off too, under a note that
+it stays in effect, so you can turn it off.
+</Aside>
+
+When you start the app with `--dev`, that flag decides developer mode and the log detail for
+that run, and the **Developer mode** and **Log detail** rows say *Set by --dev for this run*.
+The settings apply again when the app starts without the flag.
 
 <Aside type="note">
 A change made in the dialog and one made with `polyctl settings set` do not overwrite each
