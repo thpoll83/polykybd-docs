@@ -81,13 +81,13 @@ PolyKybdHost watches the keyboard's console for known failure messages and its o
 errors. The first time one appears in a session, it shows a dialog that offers
 **Report a Problem**. Nothing is sent unless you send it.
 
-Three settings control it, under **Settings → Problem**:
+Three settings control it, under **Settings → Privacy and diagnostics → Problem detection**:
 
 | Setting | Default | What it does |
 | --- | --- | --- |
-| **Scan Keyboard Console** | on | Watch the keyboard's console. |
-| **Scan Host Logs** | on | Watch this app's own log. |
-| **Scan Level** | Errors | *Errors and warnings* also counts warnings. |
+| **Watch the keyboard console** | on | Watch the keyboard's console. |
+| **Watch this app's log** | on | Watch this app's own log. |
+| **What counts as a problem** | Errors | *Errors and warnings* also counts warnings. |
 
 ## When the keyboard firmware crashes
 
@@ -128,8 +128,8 @@ Some problems show up only at startup, and only occasionally: the keyboard stops
 its boot screen and recovers by itself a few seconds later. Waiting for that to happen
 again is slow. The **boot-loop test** makes it happen on purpose.
 
-Turn on [developer mode](/software/usage/#developer-mode) (**Settings → Developer →
-Mode**) and choose **Developer → Firmware → Boot-loop test…**. Pick a
+Turn on [developer mode](/software/usage/#developer-mode) (**Settings → General →
+Developer mode**) and choose **Developer → Firmware → Boot-loop test…**. Pick a
 number of rounds (up to 9999) and start it. The app reboots the keyboard, waits for it to
 start again and reads its crash record, then does it again. It stops at the first boot that
 left a crash record, at a boot that does not finish within a minute, or after the last

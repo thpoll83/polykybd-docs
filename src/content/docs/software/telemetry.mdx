@@ -94,7 +94,7 @@ next start. The file is here:
 
 Either of these is enough:
 
-- **Settings dialog:** *Settings → Telemetry → Enabled*, untick it.
+- **Settings dialog:** *Settings → Privacy and diagnostics → Send usage report*, switch it off.
 - **Command line:** `polyctl telemetry disable`
 
 There is nothing else to clean up: switching it off stops the next report, and no
@@ -108,7 +108,7 @@ report is ever queued or stored elsewhere.
 - **One report per install, not per window.** In the usual
   [daemon setup](/software/architecture/) the background daemon sends the report, so
   restarting the tray app does not produce extra reports.
-- **You can send it to a different server.** *Settings → Telemetry → Endpoint* (`telemetry_endpoint`)
+- **You can send it to a different server.** *Settings → Privacy and diagnostics → Report address* (`telemetry_endpoint`)
   is the address the report goes to, for running your own collector. An empty address sends
   nothing.
 

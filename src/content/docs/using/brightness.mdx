@@ -12,8 +12,7 @@ the keyboard reconnects to PolyKybdHost.
 ## Manual
 
 - **On the keyboard** — the brightness preset keys step the keycap OLEDs up and down.
-- **In PolyKybdHost** — pick a level from the tray's **Brightness** submenu, or set one
-  under **Settings → Brightness**.
+- **In PolyKybdHost** — pick a level from the tray's **Brightness** submenu.
 - **Command line** — `polyctl brightness <0–100>`.
 
 A manual set switches automatic mode off, so the keyboard keeps exactly the level you picked.
@@ -35,14 +34,14 @@ the keyboard back on its own stored level.
 
 PolyKybdHost can adjust to daylight: with location access enabled it computes the solar
 irradiance for your position and time of day and slowly raises the brightness during the day and
-lowers it in the evening. Enable it under **Settings → Brightness**. It refreshes roughly every ten
+lowers it in the evening. Enable it with **Settings → Brightness → Follow daylight**. It refreshes roughly every ten
 minutes.
 
 It uses two online lookups, each with its own switch under **Settings → Brightness**:
 
-- **Allow Online Location Lookup** finds your approximate location from your IP address
+- **Online location lookup** finds your approximate location from your IP address
   (`ip-api.com`). Without a location, the brightness follows the hour of the day.
-- **Allow Online Irradiance Request** asks `open-meteo.com` for this hour's sunlight at that
+- **Online sunlight data** asks `open-meteo.com` for this hour's sunlight at that
   location, clouds included. Without it, the host computes the sunlight of a cloudless sky.
 
 If the curve does not suit your room, **Gamma** and the **Irradiance** values change it; see
