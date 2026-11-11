@@ -117,13 +117,14 @@ You can give that file to the agent and ask it to set itself up.
 ## When an agent leaves its key
 
 - An agent on this computer whose process ends is removed at once. An agent on another computer
-  is not checked this way. If it ends without a session-end event while **working**, it turns
-  stale and is removed by the 4-hour rule below. If it ended while **waiting** or **done**, its key
-  stays until you run `polyctl agents forget <agent> <session>`.
+  is not checked this way: if it ends without a session-end event, its key follows only the time
+  rules below. A **waiting** or **done** key is never removed by time. Pressing a **done** key
+  makes it **idle**; any key can be removed with `polyctl agents forget <agent> <session>`.
 - When you end a session (`/exit`, `/clear`, logout), its key is freed.
 - When an editor or the Claude desktop app restarts the agent's process, the key stays as idle
   until the agent reports again.
-- An idle or stale agent that reports nothing for 4 hours is removed.
+- An idle or stale agent that reports nothing for 4 hours is removed (**Settings → AI agents →
+  Remove idle agents after**; 0 turns this off).
 
 The keyboard clears all agent keys when the computer sleeps, and when the host sends nothing for
 30 seconds, for example after the host app was closed. The host sends them again when it runs.
