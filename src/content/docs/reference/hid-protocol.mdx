@@ -560,20 +560,26 @@ any other, over [BEGIN / CHUNK / COMMIT](#resource-flash-transport--begin--chunk
 
 <Aside type="note">
 Since v20 the GET_ID version block lists nine bundles. Since firmware 1.11.5 each bundle's
-version follows these rules:
+version follows these rules, in this order:
 
+- A COMMIT of the bundle did not finish on both halves: the block reports the lower of the
+  versions the master knows, minus 1 (the master's own, minus 1, when it has not read the
+  slave's). This holds until the master reads the slave's versions again, about 3 seconds later.
+- The master has not read the slave's versions (after boot or a split-link drop): the block
+  reports the master's version.
 - Both halves hold the same version: the block reports that version.
 - The halves hold different versions: the block reports the **lower** version minus 1. The
-  result matches neither half, so the host flashes that bundle to both halves again, and both
-  end on the same version.
-- A COMMIT that did not finish on both halves: the block reports the version minus 1 until the
-  master has read the slave's version again, about 3 seconds later.
-- The master has not read the slave's version yet (after boot or a split-link drop): the block
-  reports the master's version.
+  result is below both halves, so the host flashes that bundle to both of them again, and both
+  end on the same version. A half without the bundle has version 0, and 0 stays 0.
+
+The host flashes on its own only when **Settings → Keyboard data → Update on connect** is on.
+With it off, run `polyctl fontpack sync`.
 
 Firmware 1.11.4 and later fills pool slots from the icon library only when the master has read
 the slave's library version and it equals its own. Otherwise the keyboard refuses the whole
-report (`!` at pair 0), and the host sends those icons as normal images. One exception: below v27 the host does not send an icon library
+report (`!` at pair 0), and the host sends those icons as normal images. After a font-pack
+COMMIT (not a DOOM pack) the master reads the slave's versions again about 3 seconds later,
+and until that read succeeds every icon fill is refused. One exception: below v27 the host does not send an icon library
 over 256 KB at all, even to a half that has none (see v27 under
 [Protocol versions](#protocol-versions)).
 </Aside>
