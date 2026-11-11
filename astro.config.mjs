@@ -174,6 +174,7 @@ export default defineConfig({
             { label: 'Keymap Editor', slug: 'using/keymap-editor' },
             { label: 'Trackpad', slug: 'using/trackpad' },
             { label: 'Multi-Machine Setup', slug: 'using/multi-machine' },
+            { label: 'AI Agent Keys', slug: 'using/ai-agents' },
           ],
         },
         {
