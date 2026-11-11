@@ -1,0 +1,182 @@
+---
+title: AI Agent Keys
+description: See the state of your AI coding agents on the number row, and bring an agent's window forward with one key.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import SupportedSince from '../../../components/SupportedSince.astro';
+
+<SupportedSince protocol={31} />
+<SupportedSince label="Host 1.22.0+" title="Minimum PolyKybdHost version this feature needs" />
+
+Agent keys need firmware **1.12.0** and PolyKybdHost **1.22.0** or later.
+
+Each AI coding agent session you run (Claude Code, Codex, Gemini CLI, Copilot CLI, OpenCode,
+Qwen Code and others) gets one key of the number row, **1** to **0**. The key's light shows what
+the agent does. Hold the **AI key** and every number key shows a card for its agent: the agent's
+mark, its state and the session's title. Press a number key to bring that agent's window to the
+front.
+
+![Eight keycaps in AI mode. Keys 1 to 5 show agent cards for Claude Code, Codex, Gemini, OpenCode and Qwen, each with its mark, a state icon and the session title, and a coloured bar for its light: working amber, waiting red, done green, idle dim green, stale grey. Key minus shows a microphone for dictation, key plus a waiting icon with an arrow and the count 2, and the AI key its own legend of curves, stars and the letters AI](../../../assets/using/ai-agent-cards.png)
+
+<Aside type="note" title="split42">
+The keyboard finds the agent keys by their keycodes (**1** to **0**, **Esc**, **-** and **=**) on
+the active default layer. The split42 default layers have no number row, so only **Esc** is found
+and no agent cards are shown. To use agent keys on split42, put `KC_1` to `KC_0` on keys of the
+default layer with the [keymap editor](/using/keymap-editor/).
+</Aside>
+
+## The lights
+
+| Light | State | Meaning |
+|---|---|---|
+| Amber, slowly pulsing | **working** | The agent runs a prompt or a tool. |
+| Red, blinking | **waiting** | The agent waits for your answer, for example a permission prompt. |
+| Green | **done** | The agent finished its turn. |
+| Dim green | **idle** | The session is open and nothing happens. |
+| Dim white | **stale** | A working agent reported nothing for 30 minutes. |
+
+The lights show only while [RGB lighting](/using/rgb-lighting/) is on. Keys with no agent keep
+the running effect.
+
+While an agent waits, a ripple runs over the keycaps from its number key every 4 seconds
+(split72). When several agents wait, they take turns.
+
+## The AI key
+
+The AI key is not on any layer by default. Put it on a key of your choice. On split72, for
+example layer 0, row 4, column 7:
+
+```
+polyctl keymap set 0 4 7 0x7E2A
+```
+
+On split42 the matrix has columns 0 to 5; pick a row and column there. The
+[keymap editor](/using/keymap-editor/) shows the key as `KB(42)`.
+
+| You do | What happens |
+|---|---|
+| Tap the AI key | It sends a Hyper tap (Ctrl+Shift+Alt+Win). On Windows this opens Copilot. A tap does not show the cards. |
+| Hold the AI key | **AI mode**: the number row shows one card per agent. |
+| Hold it and press a number key | The agent of that key comes to the front, and AI mode ends. |
+| Long press and release | AI mode stays on until you press a key, or for 10 seconds. You can then reach the keys with the same hand. |
+
+In AI mode, more keys have a job:
+
+| Key | In AI mode |
+|---|---|
+| **1** to **0** | Bring that agent's window forward. |
+| **Esc** | Next page, when more than 10 agents run. It blinks red when an agent on another page waits. |
+| **-** | Start dictation. The default is Win+H on Windows; set your own shortcut in **Settings → AI agents → Dictation shortcut**. |
+| **+** (the **=** key) | Bring the next waiting agent forward. It blinks red while any agent waits. |
+
+### Hold a number key
+
+Outside AI mode, the number key of a **waiting** agent works as a hold key. Hold it longer than
+the tapping term and the agent's window comes forward, as AI key + number does. Tap it and it
+types its digit, as always. The keys of agents that do not wait are not held back at all.
+
+## Turn it on
+
+1. In the tray menu, choose **AI Agents → Show on the Number Row**, or run
+   `polyctl settings set agents_enabled true`.
+2. Unplug and replug the keyboard once.
+3. Set up the hooks for each agent you use (next section).
+
+## Set up the hooks
+
+An agent tells the host its state through a **hook**: on each event (prompt sent, tool started,
+permission asked, turn finished) the agent runs one `polyctl` command. The host writes these hooks
+for you:
+
+- Tray menu: **AI Agents → Set Up Hooks**, then the agent.
+- Command line: `polyctl agents hooks install <agent>`, where `<agent>` is `claude-code`,
+  `codex`, `copilot`, `gemini`, `qwen` or `opencode`.
+
+The installer shows the change and asks before it writes. It keeps the hooks you wrote yourself
+and saves a copy of each file as `<file>.polykybd.bak`. `--dry-run` only shows the change;
+`polyctl agents hooks uninstall <agent>` removes the hooks again.
+
+The hook sends the session id, the event, the state, the working folder and the agent's process
+id. For Claude Code it also sends the session's title, which is the text of the terminal tab and
+can describe your work. It never sends your prompt, the transcript or tool arguments.
+
+The Codex installer writes Codex's `notify` setting, which reports only that a turn finished, so a
+Codex key shows **done** but never **working** or **waiting**. If your Codex version has hooks for
+more events, write them by hand with the setup guide below.
+
+Agents without hooks (Gemini, Codex, Qwen, OpenCode, Copilot, Kimi, Grok, Vibe) are also found
+from their terminal window's title, with less detail. Once an agent has reported through a hook,
+the window title of that agent is no longer used. Turn this off in
+**Settings → AI agents → Find by window title**. This does not work on macOS.
+
+For other agents, or to write the hooks by hand, see the setup guide in the host repository:
+[`docs/agent-keys-agent-setup.md`](https://github.com/thpoll83/PolyKybdHost/blob/main/docs/agent-keys-agent-setup.md).
+You can give that file to the agent and ask it to set itself up.
+
+## When an agent leaves its key
+
+- An agent on this computer whose process ends is removed at once. An agent on another computer
+  is not checked this way: if it ends without a session-end event, its key follows only the time
+  rules below. A **waiting** or **done** key is never removed by time. Pressing a **done** key
+  makes it **idle**; any key can be removed with `polyctl agents forget <agent> <session>`.
+- When you end a session (`/exit`, `/clear`, logout), its key is freed.
+- When an editor or the Claude desktop app restarts the agent's process, the key stays as idle
+  until the agent reports again.
+- An idle or stale agent that reports nothing for 4 hours is removed (**Settings → AI agents →
+  Remove idle agents after**; 0 turns this off).
+
+The keyboard clears all agent keys when the computer sleeps, and when the host sends nothing for
+30 seconds, for example after the host app was closed. The host sends them again when it runs.
+
+## Agents on another computer
+
+With a [forwarder](/using/multi-machine/) you can also show the agents of a second computer.
+Their keys bring forward the remote-desktop viewer that shows that computer (NoMachine, Remote
+Desktop, VNC, Remmina, Parsec, AnyDesk, TeamViewer, RustDesk).
+
+1. On the keyboard computer, turn on **Settings → Forwarders → Accept forwarders** and
+   **Settings → AI agents → Agents from other computers**, then restart PolyKybdHost: the
+   network listener starts only with the background service. Allow inbound TCP on port 50163 in
+   that computer's firewall. See [Multi-Machine Setup](/using/multi-machine/#setup).
+2. On the keyboard computer, choose **AI Agents → Pair a Forwarder…** in the tray menu. It shows a
+   code.
+3. On the other computer, choose **Pair with the Keyboard Computer…** in the forwarder's tray menu
+   and enter the code. Restart the forwarder when it asks.
+4. On the other computer, choose **Set Up Agent Hooks** in the forwarder's tray menu.
+
+<Aside type="caution">
+Anyone with the pairing code can send window and agent reports to the keyboard computer. Pass it
+on only over a channel you trust.
+</Aside>
+
+The same works from the command line: `polyctl forwarder pairing-code` on the keyboard computer,
+`polyctl forwarder pair <code>` on the other one.
+
+To also bring the agent's own window forward on the other computer, turn on
+**Settings → AI agents → Raise agent windows on this computer** in the forwarder there.
+
+## Settings
+
+All in **Settings → AI agents**:
+
+| Dialog | Key | Default | What it changes |
+| --- | --- | --- | --- |
+| **Show on the number row** | `agents_enabled` | off | The whole feature. Takes effect at the next keyboard connect. |
+| **Find by window title** | `agents_title_scan` | on | Finds agents in terminal windows that have no hook. Not on macOS. |
+| **Dictation shortcut** | `agents_dictation_shortcut` | empty | The shortcut **-** sends in AI mode, for example `<cmd>+h` or `<ctrl>+<alt>+d`. Empty: Win+H on Windows, nothing on macOS and Linux. |
+| **Agents from other computers** | `agents_remote_enabled` | off | Shows the agents of computers with a paired forwarder. |
+| **Raise agent windows on this computer** | `agents_raise_here` | off | On a forwarder's computer: a key press on one of its agents also brings the agent's window forward there. |
+| **Stale after (minutes)** | `agents_stale_minutes` | 30 | A working agent that reports nothing for this long shows as stale. 0: never. |
+| **Remove idle agents after (minutes)** | `agents_forget_minutes` | 240 | An idle or stale agent that reports nothing for this long is removed. 0: never. |
+
+## From the command line
+
+| Command | What it does |
+|---|---|
+| `polyctl agents list [--json]` | The agents the host knows, by page and key. |
+| `polyctl agents label <agent> <session> <text>` | Set the text an agent's card shows. |
+| `polyctl agents forget <agent> <session>` | Remove an agent and free its key. |
+| `polyctl agents report <agent> <session> <state>` | Report a state by hand: `working`, `waiting`, `done`, `idle`, `stale` or `ended`. |
+| `polyctl agents hooks install\|uninstall <agent>` | Write or remove the hooks, as above. |
+| `polyctl attention <row> <col> [--count N] [--period-ms MS]` | Run the ripple on any key, by its matrix position (firmware protocol 32). `--cancel` ends it. |

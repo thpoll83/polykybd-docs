@@ -63,6 +63,16 @@ After the restart the log should contain:
 Window-report network listener on 0.0.0.0:50163 (auth-gated, 'window.report' only)
 ```
 
+<Aside type="tip" title="Pair instead of copying the key (PolyKybdHost 1.22.0+)">
+Instead of steps 2 and 3 you can pair the forwarder: choose **AI Agents → Pair a Forwarder…** in
+the keyboard machine's tray menu, then **Pair with the Keyboard Computer…** in the forwarder's tray
+menu, enter the code and restart the forwarder. A paired forwarder uses the authenticated
+connection without `--report-rpc` and `--report-authkey-file`, so it needs only
+`--host <IP>` or `--host-file`. Anyone with the pairing code can send window and agent reports to
+the keyboard machine, so pass the code on only over a channel you trust. See
+[Agents on another computer](/using/ai-agents/#agents-on-another-computer).
+</Aside>
+
 ### 2. Copy the authentication key to the remote machine
 
 The connection is authenticated with a shared key, so the remote machine needs a copy of the keyboard machine's key file. It is created the first time the listener starts, so do this **after** step 1.
@@ -96,7 +106,7 @@ python -m polyhost --host-file /path/to/host.txt --report-rpc --report-authkey-f
 If you moved the listener to another port, add `--report-port <n>` to match.
 
 <Aside type="caution">
-  `--report-authkey-file` is not optional across machines. Leave it out and the forwarder falls back to its *own* local key, which the keyboard machine will not accept — it logs `Using this machine's local window-report authkey` and every report then fails.
+  Without pairing, `--report-authkey-file` is not optional across machines. Leave it out and the forwarder falls back to its *own* local key, which the keyboard machine will not accept — it logs `Using this machine's local window-report authkey` and every report then fails.
 </Aside>
 
 ## The forwarder's tray menu
@@ -112,6 +122,8 @@ that needs a keyboard attached:
 | *Status line* | Where this machine is forwarding to, and whether the reports are arriving. Clicking it is a shortcut for **Pause**. |
 | **Pause** | Stop sending this machine's active window. Reads **Resume** while paused. |
 | **Updates** | **Check for host update…** updates PolyKybdHost on this machine. **Set up the terminal and editors…** sets up bash, zsh and PowerShell on this machine for the [terminal program overlays](/using/overlays/#terminal-programs), because the forwarder reports this machine's window titles. It also installs the [Vim, Neovim and Emacs plugins](/using/overlays/#vim-emacs-and-nano-overlays-that-follow-the-mode) and the GDB script here. Before PolyKybdHost 1.19.11 the entry is called **Show the running command in the terminal title…** and sets up only the shells. There is no firmware or font entry: those are only on the machine the keyboard is connected to. The Updates submenu needs PolyKybdHost 1.17.86 on this machine. |
+| **Set Up Agent Hooks** | Writes the [agent hooks](/using/ai-agents/#set-up-the-hooks) on this machine, so its AI agents show on the keyboard's number row. Needs PolyKybdHost 1.22.0. |
+| **Pair with the Keyboard Computer…** | Enter the code from the keyboard machine, so this forwarder connects without a key file. Needs PolyKybdHost 1.22.0. |
 | **Settings** | The few settings that apply here: the light/dark theme, the [interface language](/software/usage/#interface-language) and the [browser-URL](/using/website-detection/) options. Each machine follows its own system language, so the forwarder can run in a different language from the keyboard machine. |
 | **Help & About** | About, the log viewer, **Open config folder**, **Report a Problem…** and **Collect logs…** — the same set, for *this* machine's logs. |
 | **Quit** | Stop forwarding and close. |
