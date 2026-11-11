@@ -17,6 +17,15 @@ the agent does. Hold the **AI key** and every number key shows a card for its ag
 mark, its state and the session's title. Press a number key to bring that agent's window to the
 front.
 
+![Eight keycaps in AI mode. Keys 1 to 5 show agent cards for Claude Code, Codex, Gemini, OpenCode and Qwen, each with its mark, a state icon and the session title, and a coloured bar for its light: working amber, waiting red, done green, idle dim green, stale grey. Key minus shows a microphone for dictation, key plus a waiting icon with an arrow and the count 2, and the AI key its own legend of curves, stars and the letters AI](../../../assets/using/ai-agent-cards.png)
+
+<Aside type="note" title="split42">
+The keyboard finds the agent keys by their keycodes (**1** to **0**, **Esc**, **-** and **=**) on
+the active default layer. The split42 default layers have no number row, so only **Esc** is found
+and no agent cards are shown. To use agent keys on split42, put `KC_1` to `KC_0` on keys of the
+default layer with the [keymap editor](/using/keymap-editor/).
+</Aside>
+
 ## The lights
 
 | Light | State | Meaning |
@@ -35,14 +44,15 @@ While an agent waits, a ripple runs over the keycaps from its number key every 4
 
 ## The AI key
 
-The AI key is not on any layer by default. Put it on a key of your choice, for example layer 0,
-row 4, column 7:
+The AI key is not on any layer by default. Put it on a key of your choice. On split72, for
+example layer 0, row 4, column 7:
 
 ```
 polyctl keymap set 0 4 7 0x7E2A
 ```
 
-The [keymap editor](/using/keymap-editor/) shows it as `KB(42)`.
+On split42 the matrix has columns 0 to 5; pick a row and column there. The
+[keymap editor](/using/keymap-editor/) shows the key as `KB(42)`.
 
 | You do | What happens |
 |---|---|
@@ -58,7 +68,7 @@ In AI mode, more keys have a job:
 | **1** to **0** | Bring that agent's window forward. |
 | **Esc** | Next page, when more than 10 agents run. It blinks red when an agent on another page waits. |
 | **-** | Start dictation. The default is Win+H on Windows; set your own shortcut in **Settings → AI agents → Dictation shortcut**. |
-| **+** | Bring the next waiting agent forward. It blinks red while any agent waits. |
+| **+** (the **=** key) | Bring the next waiting agent forward. It blinks red while any agent waits. |
 
 ### Hold a number key
 
@@ -91,8 +101,13 @@ The hook sends the session id, the event, the state, the working folder and the 
 id. For Claude Code it also sends the session's title, which is the text of the terminal tab and
 can describe your work. It never sends your prompt, the transcript or tool arguments.
 
+The Codex installer writes Codex's `notify` setting, which reports only that a turn finished, so a
+Codex key shows **done** but never **working** or **waiting**. If your Codex version has hooks for
+more events, write them by hand with the setup guide below.
+
 Agents without hooks (Gemini, Codex, Qwen, OpenCode, Copilot, Kimi, Grok, Vibe) are also found
-from their terminal window's title, with less detail. Turn this off in
+from their terminal window's title, with less detail. Once an agent has reported through a hook,
+the window title of that agent is no longer used. Turn this off in
 **Settings → AI agents → Find by window title**. This does not work on macOS.
 
 For other agents, or to write the hooks by hand, see the setup guide in the host repository:
@@ -101,7 +116,9 @@ You can give that file to the agent and ask it to set itself up.
 
 ## When an agent leaves its key
 
-- An agent whose process ends is removed at once.
+- An agent on this computer whose process ends is removed at once. An agent on another computer
+  is not checked this way: if it ends without a session-end event, its key stays until it is
+  removed after 4 hours, or until you run `polyctl agents forget <agent> <session>`.
 - When you end a session (`/exit`, `/clear`, logout), its key is freed.
 - When an editor or the Claude desktop app restarts the agent's process, the key stays as idle
   until the agent reports again.
@@ -117,7 +134,9 @@ Their keys bring forward the remote-desktop viewer that shows that computer (NoM
 Desktop, VNC, Remmina, Parsec, AnyDesk, TeamViewer, RustDesk).
 
 1. On the keyboard computer, turn on **Settings → Forwarders → Accept forwarders** and
-   **Settings → AI agents → Agents from other computers**.
+   **Settings → AI agents → Agents from other computers**, then restart PolyKybdHost: the
+   network listener starts only with the background service. Allow inbound TCP on port 50163 in
+   that computer's firewall. See [Multi-Machine Setup](/using/multi-machine/#setup).
 2. On the keyboard computer, choose **AI Agents → Pair a Forwarder…** in the tray menu. It shows a
    code.
 3. On the other computer, choose **Pair with the Keyboard Computer…** in the forwarder's tray menu

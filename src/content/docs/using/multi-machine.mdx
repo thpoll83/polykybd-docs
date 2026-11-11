@@ -63,6 +63,16 @@ After the restart the log should contain:
 Window-report network listener on 0.0.0.0:50163 (auth-gated, 'window.report' only)
 ```
 
+<Aside type="tip" title="Pair instead of copying the key (PolyKybdHost 1.22.0+)">
+Instead of steps 2 and 3 you can pair the forwarder: choose **AI Agents → Pair a Forwarder…** in
+the keyboard machine's tray menu, then **Pair with the Keyboard Computer…** in the forwarder's tray
+menu, enter the code and restart the forwarder. A paired forwarder uses the authenticated
+connection without `--report-rpc` and `--report-authkey-file`, so it needs only
+`--host <IP>` or `--host-file`. Anyone with the pairing code can send window and agent reports to
+the keyboard machine, so pass the code on only over a channel you trust. See
+[Agents on another computer](/using/ai-agents/#agents-on-another-computer).
+</Aside>
+
 ### 2. Copy the authentication key to the remote machine
 
 The connection is authenticated with a shared key, so the remote machine needs a copy of the keyboard machine's key file. It is created the first time the listener starts, so do this **after** step 1.
@@ -96,14 +106,8 @@ python -m polyhost --host-file /path/to/host.txt --report-rpc --report-authkey-f
 If you moved the listener to another port, add `--report-port <n>` to match.
 
 <Aside type="caution">
-  `--report-authkey-file` is not optional across machines. Leave it out and the forwarder falls back to its *own* local key, which the keyboard machine will not accept — it logs `Using this machine's local window-report authkey` and every report then fails.
+  Without pairing, `--report-authkey-file` is not optional across machines. Leave it out and the forwarder falls back to its *own* local key, which the keyboard machine will not accept — it logs `Using this machine's local window-report authkey` and every report then fails.
 </Aside>
-
-From PolyKybdHost 1.22.0 you can pair the forwarder instead of copying the key file: choose
-**AI Agents → Pair a Forwarder…** in the keyboard machine's tray menu, then
-**Pair with the Keyboard Computer…** in the forwarder's tray menu, and enter the code. A paired
-forwarder uses the authenticated connection without `--report-rpc` and `--report-authkey-file`.
-See [Agents on another computer](/using/ai-agents/#agents-on-another-computer).
 
 ## The forwarder's tray menu
 
