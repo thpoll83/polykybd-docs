@@ -63,7 +63,7 @@ After the restart the log should contain:
 Window-report network listener on 0.0.0.0:50163 (auth-gated, 'window.report' only)
 ```
 
-<Aside type="tip" title="Pair instead of copying the key (PolyKybdHost 1.22.0+)">
+<Aside type="tip" title="Pair instead of copying the key (PolyKybdHost 1.22.1+)">
 Instead of steps 2 and 3 you can pair the forwarder: choose **AI Agents → Pair a Forwarder…** in
 the keyboard machine's tray menu, then **Pair with the Keyboard Computer…** in the forwarder's tray
 menu, enter the code and restart the forwarder. A paired forwarder uses the authenticated
@@ -122,8 +122,8 @@ that needs a keyboard attached:
 | *Status line* | Where this machine is forwarding to, and whether the reports are arriving. Clicking it is a shortcut for **Pause**. |
 | **Pause** | Stop sending this machine's active window. Reads **Resume** while paused. |
 | **Updates** | **Check for host update…** updates PolyKybdHost on this machine. **Set up the terminal and editors…** sets up bash, zsh and PowerShell on this machine for the [terminal program overlays](/using/overlays/#terminal-programs), because the forwarder reports this machine's window titles. It also installs the [Vim, Neovim and Emacs plugins](/using/overlays/#vim-emacs-and-nano-overlays-that-follow-the-mode) and the GDB script here. Before PolyKybdHost 1.19.11 the entry is called **Show the running command in the terminal title…** and sets up only the shells. There is no firmware or font entry: those are only on the machine the keyboard is connected to. The Updates submenu needs PolyKybdHost 1.17.86 on this machine. |
-| **Set Up Agent Hooks** | Writes the [agent hooks](/using/ai-agents/#set-up-the-hooks) on this machine, so its AI agents show on the keyboard's number row. Needs PolyKybdHost 1.22.0. |
-| **Pair with the Keyboard Computer…** | Enter the code from the keyboard machine, so this forwarder connects without a key file. Needs PolyKybdHost 1.22.0. |
+| **Set Up Agent Hooks** | Writes the [agent hooks](/using/ai-agents/#set-up-the-hooks) on this machine, so its AI agents show on the keyboard's number row. Needs PolyKybdHost 1.22.1. |
+| **Pair with the Keyboard Computer…** | Enter the code from the keyboard machine, so this forwarder connects without a key file. Needs PolyKybdHost 1.22.1. |
 | **Settings** | The few settings that apply here: the light/dark theme, the [interface language](/software/usage/#interface-language) and the [browser-URL](/using/website-detection/) options. Each machine follows its own system language, so the forwarder can run in a different language from the keyboard machine. |
 | **Help & About** | About, the log viewer, **Open config folder**, **Report a Problem…** and **Collect logs…** — the same set, for *this* machine's logs. |
 | **Quit** | Stop forwarding and close. |
