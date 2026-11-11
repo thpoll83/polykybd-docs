@@ -559,9 +559,21 @@ never changes, because only the id is sent. The host flashes the bundle like
 any other, over [BEGIN / CHUNK / COMMIT](#resource-flash-transport--begin--chunk--commit).
 
 <Aside type="note">
-Since v20 the GET_ID version block lists nine bundles and reports each one as the **lower** of
-the two halves' versions. A half that missed a flash therefore reports an older version, and the host
-flashes that bundle again. One exception: below v27 the host does not send an icon library
+Since v20 the GET_ID version block lists nine bundles. Since firmware 1.11.5 each bundle's
+version follows these rules:
+
+- Both halves hold the same version: the block reports that version.
+- The halves hold different versions: the block reports the **lower** version minus 1. The
+  result matches neither half, so the host flashes that bundle to both halves again, and both
+  end on the same version.
+- A COMMIT that did not finish on both halves: the block reports the version minus 1 until the
+  master has read the slave's version again, about 3 seconds later.
+- The master has not read the slave's version yet (after boot or a split-link drop): the block
+  reports the master's version.
+
+Firmware 1.11.4 and later fills pool slots from the icon library only when the master has read
+the slave's library version and it equals its own. Otherwise the keyboard refuses the whole
+report (`!` at pair 0), and the host sends those icons as normal images. One exception: below v27 the host does not send an icon library
 over 256 KB at all, even to a half that has none (see v27 under
 [Protocol versions](#protocol-versions)).
 </Aside>
@@ -687,7 +699,7 @@ Selected milestones:
 - **v17** — a **volatile** flag on `SET_UNICODE_MODE` (`0x14`): apply a unicode mode for this session only, without storing it. It exists for the Windows logon screen, where the host cannot yet tell *WinCompose is not installed* from *WinCompose has not started yet* — so it applies its first reading volatile and only stores the mode once it can tell the two apart. Before this, every logon on a WinCompose machine stored `Windows` and then wrote `WinCompose` back over it.
 - **v18** — **IDLE_TIMEOUT** (`0x28`): how long the keyboard waits before it starts fading into the [idle style](/using/idle/#how-long-before-it-idles) becomes a setting — six presets from 15 seconds to 5 minutes — where it used to be fixed at 2 minutes when the firmware was built. 2 minutes stays the default, so a keyboard with default settings behaves as before. Like the legend size and unlike the glyph script, the range is closed: a keyboard refuses a preset it doesn't know, because an accepted one would be stored and then changed to a different duration without any message.
 - **v19** — **SEND_PRC_OVERLAY** (`0x29`): [PRC](#prc-predictive-range-coding) (Predictive Range Coding), a fifth keycap-image encoding that codes a typical icon to a payload of about 28 bytes. The host uses it per image, only where it saves a report; the older encodings stay.
-- **v20** — **FILL_POOL_FROM_ICON** (`0x2A`): the [icon library](#icon-library-fills). Icons the app templates share are stored in the keyboard's flash, and the host sends `(pool slot, icon id)` pairs instead of their bitmaps. A cold switch into a JetBrains IDE drops from 84 reports to 32. The GET_ID version block now reports the lower of the two halves' versions per bundle.
+- **v20** — **FILL_POOL_FROM_ICON** (`0x2A`): the [icon library](#icon-library-fills). Icons the app templates share are stored in the keyboard's flash, and the host sends `(pool slot, icon id)` pairs instead of their bitmaps. A cold switch into a JetBrains IDE drops from 84 reports to 32. The GET_ID version block now reports the lower of the two halves' versions per bundle (firmware 1.11.5 changed this rule, see [Icon library fills](#icon-library-fills)).
 - **v21** — [mapping flags](#mapping-flags) on **SEND_OVERLAY_MAPPING_W** (`0x21`): the prepare and enable steps of an app switch are sent in the mapping reports instead of separate `OVERLAY_FLAGS` reports. A switch between apps whose images the keyboard already holds needs about half the reports.
 - **v22** — **REBOOT** (`0x2B`): restart both halves without saving anything, so the host's [boot-loop test](/software/reporting-problems/#catching-a-crash-that-happens-only-occasionally) can reboot the keyboard hundreds of times to catch a rare startup crash. Changing the handedness also reboots, but it writes the settings storage on every call.
 - **v23** — a [dim flag](#dimmed-icons) on **SEND_OVERLAY_MAPPING_W** (`0x21`): the keyboard draws the icons of a flagged report dimmed. The host uses it for a browser's shortcuts under a [website's overlay](/using/website-detection/#browser-keys-are-drawn-dimmed).
