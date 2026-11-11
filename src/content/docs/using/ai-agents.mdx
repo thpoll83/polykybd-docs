@@ -117,8 +117,9 @@ You can give that file to the agent and ask it to set itself up.
 ## When an agent leaves its key
 
 - An agent on this computer whose process ends is removed at once. An agent on another computer
-  is not checked this way: if it ends without a session-end event, its key stays until it is
-  removed after 4 hours, or until you run `polyctl agents forget <agent> <session>`.
+  is not checked this way. If it ends without a session-end event while **working**, it turns
+  stale and is removed by the 4-hour rule below. If it ended while **waiting** or **done**, its key
+  stays until you run `polyctl agents forget <agent> <session>`.
 - When you end a session (`/exit`, `/clear`, logout), its key is freed.
 - When an editor or the Claude desktop app restarts the agent's process, the key stays as idle
   until the agent reports again.
