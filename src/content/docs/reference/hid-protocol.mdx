@@ -285,7 +285,7 @@ most significant bit first.
 | `0x42` FW_UP_COMMIT | `[2]` `x` cancels a pending prompt, else `0` | `[2]` `.` accepted, `?` waiting for the keypress (send again), `S` not validly signed, `!` CRC mismatch |
 | `0x43` FW_UP_GET_VERSION | — | `[3..18]` version, ASCII, NUL-padded; `[19..22]` `u32` size; `[23..26]` `u32` CRC |
 | `0x44` FW_UP_APPLY | — | `.` then both halves install and reboot; `!` nothing valid staged |
-| `0x50` FONTPACK_BEGIN | `[2..5]` `u32` size; `[6..9]` `u32` CRC-32; `[10]` target: bundle slot `0..8`, `0x7F` DOOM WAD, `0x7E` DOOM engine pack | `[2]` `.` / `~` / `!`, as `0x40` |
+| `0x50` FONTPACK_BEGIN | `[2..5]` `u32` size; `[6..9]` `u32` CRC-32; `[10]` target: bundle slot `0..9` (`9` is the emoji-search dictionary), `0x7F` DOOM WAD, `0x7E` DOOM engine pack | `[2]` `.` / `~` / `!`, as `0x40` |
 | `0x51` FONTPACK_CHUNK | As `0x41` | As `0x41` |
 | `0x52` FONTPACK_COMMIT | — | `[2]` `.` both halves done, `R` rejected, `L` the other half did not confirm (send again); `[3..4]` `u16` content version (font bundles) |
 | `0x53` FONTPACK_STATUS | — | `[3]` `1` if a pack is present, `[4]` ABI version, `[5..6]` `u16` content version, `[7]` font count |
@@ -562,10 +562,10 @@ report, which reads as pair 0, so a keyboard that missed the bundle still shows 
 load an icon as a character. Each icon is stored cropped to its set pixels, with its position on
 the 72 × 40 keycap. The icon ids are frozen: a new icon takes the next id, and an existing id
 never changes, because only the id is sent. The host flashes the bundle like
-any other, over [BEGIN / CHUNK / COMMIT](#resource-flash-transport--begin--chunk--commit).
+any other, over [BEGIN / CHUNK / COMMIT](#resource-flash-transport).
 
 <Aside type="note">
-Since v20 the GET_ID version block lists nine bundles. Since firmware 1.11.5 each bundle's
+Since v20 the GET_ID version block lists one version per bundle slot: ten slots (`0..9`) in current firmware, slot 9 being the emoji-search dictionary. Since firmware 1.11.5 each bundle's
 version follows these rules, in this order:
 
 - A COMMIT of the bundle did not finish on both halves: the block reports the lower of the
@@ -581,7 +581,7 @@ version follows these rules, in this order:
 The host flashes on its own only when **Settings → Keyboard data → Update on connect** is on.
 With it off, run `polyctl fontpack sync`.
 
-Firmware 1.11.4 and later fills pool slots from the icon library only when the master has read
+Firmware 1.11.5 and later fills pool slots from the icon library only when the master has read
 the slave's library version and it equals its own. Otherwise the keyboard refuses the whole
 report (`!` at pair 0), and the host sends those icons as normal images. After a font-pack
 COMMIT (not a DOOM pack) the master reads the slave's versions again about 3 seconds later,
@@ -592,7 +592,7 @@ over 256 KB at all, even to a half that has none (see v27 under
 
 ## Mapping flags
 
-Since **v21** (firmware 1.3.0, host 1.7.0) an app switch no longer needs its own reports to
+Since **v21** (firmware 1.3.1, host 1.7.0) an app switch no longer needs its own reports to
 prepare and switch on the overlays. Two bits of `SEND_OVERLAY_MAPPING_W`'s width byte do it:
 
 | Bit | Value | Effect |
@@ -628,7 +628,7 @@ get the separate `OVERLAY_FLAGS on` reports as before.
 
 ### Dimmed icons
 
-Since **v23** (firmware 1.8.3, host 1.16.2) bit 7 of the width byte (`0x80`) marks every pair in
+Since **v23** (firmware 1.8.4, host 1.17.0) bit 7 of the width byte (`0x80`) marks every pair in
 the report as **dim**. The keyboard stores one dim bit per display position, beside the usage
 bits, and the prepare step clears it. A dimmed icon is drawn with only its even rows and even
 columns lit, a quarter of its pixels. The area kept clear for the legend is still computed from the full icon, so
@@ -645,7 +645,7 @@ masks the width with `0x1F` and would draw a flagged report at full strength any
 
 ### Keys without a legend
 
-Since **v25** (firmware 1.9.13, host 1.17.52) a mapping pair can mark a key whose icon replaces
+Since **v25** (firmware 1.9.15, host 1.17.82) a mapping pair can mark a key whose icon replaces
 the whole keycap. The pair's `to` value is the pool slot **plus 600** (the pool size), so a `to` of
 600–1199 means slot `to − 600`, drawn without the key legend. Before it draws such an icon, the
 keyboard clears the whole 72×40 cell instead of the 3 px around the icon, so no part of the legend
@@ -716,7 +716,7 @@ Selected milestones:
 - **v22** — **REBOOT** (`0x2B`): restart both halves without saving anything, so the host's [boot-loop test](/software/reporting-problems/#catching-a-crash-that-happens-only-occasionally) can reboot the keyboard hundreds of times to catch a rare startup crash. Changing the handedness also reboots, but it writes the settings storage on every call.
 - **v23** — a [dim flag](#dimmed-icons) on **SEND_OVERLAY_MAPPING_W** (`0x21`): the keyboard draws the icons of a flagged report dimmed. The host uses it for a browser's shortcuts under a [website's overlay](/using/website-detection/#browser-keys-are-drawn-dimmed).
 - **v24** (firmware 1.9.12, host 1.17.49) — a second byte on **SET_HANDEDNESS** (`0x19`) that sets or removes the [Rev.2 mark](/reference/old-rev2-boards/) in the USB half's handedness stamp. A marked half becomes the main half only when the computer recognises it over USB, because a Rev.2 board passes USB power to both halves. `0` keeps the stored mark, so an older host that sends one byte cannot remove it.
-- **v25** (firmware 1.9.13, host 1.17.52) — [keys without a legend](#keys-without-a-legend) on **SEND_OVERLAY_MAPPING_W** (`0x21`): a pool slot sent plus 600 draws that key's icon on a cleared keycap. No new command and no new byte; an older keyboard refuses the value, so the host sends it only from v25.
+- **v25** (firmware 1.9.15, host 1.17.82) — [keys without a legend](#keys-without-a-legend) on **SEND_OVERLAY_MAPPING_W** (`0x21`): a pool slot sent plus 600 draws that key's icon on a cleared keycap. No new command and no new byte; an older keyboard refuses the value, so the host sends it only from v25.
 - **v26** (firmware 1.10.2, host 1.19.58) — a second byte on **GLYPH_SCRIPT** (`0x1e`): the [placement](/using/glyph-scripts/#placement-centred-or-top-left) of the script's letters and digits, centred or top-left. `0` keeps the stored placement, so an older host that sets a script cannot reset it. A script byte of `0xFF` with a non-zero placement changes the placement only. An older keyboard ignores the byte and always centres, so the host sends it only from v26.
 - **v27** (firmware 1.10.2, host 1.19.58) — font-pack layout v3: the [icon library](#icon-library-fills) slot and the emoji slot grow from 256 KB to 512 KB, and the fantasy, Latin-big and icon bundles move. No new command. After the firmware update the host writes those three bundles once more if **Settings → Keyboard data → Update on connect** is on; with it off, run `polyctl fontpack sync`. The host sends an icon library over 256 KB only from v27. A keyboard with older firmware keeps its old library, but the host fills icons from the library only when the keyboard holds the shipped version, so it sends those icons as normal images instead.
 - **v28** (firmware 1.11.0, host 1.21.0) — the GET_ID reply adds a byte that says whether an Eden animation is running on the keycaps (the boot intro or the screensaver). The host waits to flash font packs until the animation has ended, so it does not draw legends over the animation. No new command. An older keyboard does not send the byte, and the host flashes at once, as before.

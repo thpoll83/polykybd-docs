@@ -47,7 +47,7 @@ draws a small icon in the bottom-right corner of that key, clear of the key's ow
 | --- | --- | --- |
 | **Windows** | UI Automation | Supported |
 | **Linux** | AT-SPI2 | Supported; depends on the app's toolkit, see below |
-| **macOS** | Accessibility API | Supported (host 1.1.0+), after a one-off permission |
+| **macOS** | Accessibility API | Supported (host 1.2.8+), after a one-off permission |
 
 ### Linux: which apps work
 
@@ -56,9 +56,9 @@ What an app publishes depends on its toolkit, so on Linux it varies by app famil
 | App family | Example | What PolyKybd gets |
 | --- | --- | --- |
 | **GTK3** with a menu bar | Mousepad | Every shortcut in the menu bar |
-| **GTK4**, version 4.18 or newer | — | The shortcuts its menus show (host 1.16.6+; not yet confirmed on a real desktop) |
+| **GTK4**, version 4.18 or newer | — | The shortcuts its menus show (host 1.17.0+; not yet confirmed on a real desktop) |
 | **GTK4**, older than 4.18 | Ubuntu 24.04's GTK 4.14 | Nothing: these versions report every shortcut as blank |
-| **Qt / KDE** | Kate | The shortcuts in its menus (host 1.16.6+) |
+| **Qt / KDE** | Kate | The shortcuts in its menus (host 1.17.0+) |
 
 Nothing breaks when an app publishes nothing — the keyboard simply stays as it was,
 Escape included.
@@ -77,7 +77,7 @@ app once.
 </Aside>
 
 <Aside type="tip">
-**Shortcuts that appear later are detected too** (host 1.16.8+). Some apps only add items
+**Shortcuts that appear later are detected too** (host 1.17.0+). Some apps only add items
 like Save, Undo and Copy once a document is open — Kate's welcome page has none of them.
 PolyKybdHost reads the app again when its window title changes, for example when a document
 opens.
@@ -106,7 +106,7 @@ confidently gets no icon, because a plausible but wrong icon is
 worse than none. Key combinations that the operating system uses (such as Alt+Tab) are skipped too.
 
 Labels are matched in English and in the 19 other languages PolyKybdHost's menus are
-translated into (host 1.19.37 or later), so a German *Speichern* gets the same save icon as
+translated into (host 1.19.40 or later), so a German *Speichern* gets the same save icon as
 *Save*. The app's language does not have to match the system language. An older host
 matches English labels only.
 
