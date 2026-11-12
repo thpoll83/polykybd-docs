@@ -12,7 +12,7 @@ Layers work like the Shift key but for your entire layout. You can define multip
 and switch between them with a dedicated key. PolyKybd's per-key displays make layers instantly
 visible — every key shows its current function on the active layer.
 
-PolyKybd uses QMK's **dynamic keymap** with **8 host-remappable layers**, so remaps can be written
+PolyKybd uses QMK's **dynamic keymap** with **9 host-remappable layers**, so remaps can be written
 to the keyboard at runtime without recompiling. Remapping is done with the keymap editor built into
 [PolyKybdHost](/software/overview/) — see [Keymap Editor](/using/keymap-editor/).
 
@@ -42,8 +42,9 @@ Two layers hold the keyboard's own controls, and one rule decides which layer a 
 **how often you use it.**
 
 **Utility** holds what you use while working — media and volume, the display brightness presets,
-[legend size](/using/legend-size/), mute, scroll lock. Nothing here changes how the keyboard is
-set up; it all changes what it is doing right now.
+[legend size](/using/legend-size/), mute, scroll lock, and the key that opens the
+[MIDI layer](/using/midi/). Nothing here changes how the keyboard is set up; it all changes
+what it is doing right now.
 
 **Settings** is set-once or destructive — setting the [OS](#the-operating-system) by hand, picking a base
 layout, [RGB](/using/rgb-lighting/), and the keys that reboot the board. The part you use most is
@@ -226,9 +227,10 @@ See [Keyboard Variants](/firmware/variants/) for why the logic is shared.
 
 ## Customizing with PolyKybdHost
 
-<Aside type="caution" title="Updating to v0.15.14 clears a customised keymap, once">
-Updating from an older version clears your remaps once, on the first boot. Apply them again
-after the update. Later updates keep them. The layout editor offers **eight** remappable layers.
+<Aside type="caution" title="Updating to 1.13.0 resets the keymap and macros once">
+Firmware 1.13.0 adds the [MIDI layer](/using/midi/) as a ninth remappable layer. On the first
+start after the update, the keyboard resets your remaps **and deletes your macros**. Apply them
+again after the update. Later updates keep them.
 </Aside>
 
 The easiest way to remap keys is through the PolyKybdHost keymap editor, which writes changes
