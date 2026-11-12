@@ -21,7 +21,7 @@ Signature enforcement is **on**, and the two ways an image can fail it are treat
 ## The workflow
 
 <Steps>
-1. **Generate a keypair** once with `keyboards/polykybd/tools/gen_signing_key.py`. It writes `base/fw_pubkey.h` (the **public** key, committed to the repo) and a **private** key you keep out of the repo. The shipped `fw_pubkey.h` is an all-zero placeholder until you do this.
+1. **Generate a keypair** once with `keyboards/polykybd/tools/gen_signing_key.py`. It writes `base/fw_pubkey.h` (the **public** key, committed to the repo) and a **private** key you keep out of the repo. The committed `fw_pubkey.h` holds the maintainer's public key, so a build from the repo treats only the maintainer's signed images as signed. Replace it with your own key to sign your own builds. A keyboard that runs a build with the maintainer's key refuses an image signed with your key. Install your first own-key build unsigned and accept it on the keyboard, or flash it over BOOTSEL. After that, your signed builds verify, and the maintainer's signed releases and DOOM packs no longer do.
 2. **Sign a build** with `keyboards/polykybd/tools/sign_firmware.py`, which produces a detached `<image>.bin.sig` (64 raw Ed25519 bytes) next to the `.bin`.
 3. **Flash normally.** When a `.bin.sig` sits beside the `.bin`, PolyKybdHost sends the signature to the keyboard during the flash, so the firmware can verify it before applying.
 </Steps>

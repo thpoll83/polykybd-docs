@@ -83,7 +83,7 @@ slave all counters are zero, because the slave never starts a transaction.
 ## Rules for adding a synced field
 
 <Aside type="caution">
-`RPC_M2S_BUFFER_SIZE` (96 bytes) is a size limit that reports no error. A struct bigger than that is not
+`RPC_M2S_BUFFER_SIZE` (252 bytes) is a size limit that reports no error. A struct bigger than that is not
 sent at all, and the overlay path discards the result, so the master applies the change
 and the slave never receives it, and nothing is logged. Add a
 `static_assert(sizeof(your_struct) <= RPC_M2S_BUFFER_SIZE)` for any struct that can grow.

@@ -115,7 +115,7 @@ newer features unavailable — rather than refusing to connect at all.
 The same three-command flow, with a different target, drives **firmware update**,
 **font-pack bundles**, and the **engine packs** — see [Resource flashing](#resource-flashing-firmware--font-packs) below.
 When the host has the fast link, the data of `FW_UP_CHUNK` (`0x41`) and, from host
-1.17.29, of `FONTPACK_CHUNK` (`0x51`) goes as 236-byte `FW_CHUNK` frames on the serial
+1.17.31, of `FONTPACK_CHUNK` (`0x51`) goes as 236-byte `FW_CHUNK` frames on the serial
 port ([Firmware Update](/beyond-qmk/firmware-update/#the-fast-link)); the keyboard writes
 a frame into whatever target BEGIN selected. A keyboard or host without the link, and the
 host's developer setting that forces HID, use the 56-byte HID reports. Overlays always

@@ -29,8 +29,9 @@ The keyboard-specific files live at:
 keyboards/polykybd/
 ```
 
-The shared keymap logic — display rendering, the HID command handler, language selection,
-idle/suspend, split synchronisation — lives in `poly_keymap.c` and is compiled for every variant.
+The shared keymap logic — display rendering, language selection, idle/suspend — is in
+`poly_keymap.c`. The HID command handler is in `hid_com.c`, and split synchronisation in
+`split_sync.c`. All of it is compiled for every variant.
 
 ## The hardware it targets
 

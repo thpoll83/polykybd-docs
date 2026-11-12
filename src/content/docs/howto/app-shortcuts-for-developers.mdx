@@ -39,13 +39,13 @@ the icon. The label decides which icon.
 4. **Single key combinations only.** A sequence such as Ctrl+K, Ctrl+S needs two presses and
    one key cannot show it, so it is skipped.
 5. **The menu must exist when the window is focused.** The host reads an app once, and
-   (host 1.16.8 and later) again when its window title changes. If your app adds Save, Undo
+   (host 1.17.0 and later) again when its window title changes. If your app adds Save, Undo
    and Copy only after a document opens, also change the window title at that moment (for
    example to the document name). An older host reads the app once only, so publish the
    shortcuts before the window is first focused.
 
 <Aside type="note">
-**Labels in 20 languages are matched** (host 1.19.37 or later): English and the 19 other
+**Labels in 20 languages are matched** (host 1.19.40 or later): English and the 19 other
 languages PolyKybdHost's own menus are translated into, for example German *Speichern*,
 French *Enregistrer* or Japanese *保存*. Use the term the platform itself uses in that
 language. A label the host does not know, in any language, gets no icon: a wrong icon is
@@ -86,9 +86,9 @@ menu items. What arrives depends on the toolkit:
 | Toolkit | What to do | Result |
 | --- | --- | --- |
 | **GTK3** | Use a `GtkMenuBar` with `GtkMenuItem`s that have an accelerator (`gtk_widget_add_accelerator()`, an accel path, or a `GtkUIManager`/`GtkBuilder` accelerator). | Read. GTK3 reports the direct shortcut in the third field of the binding string. |
-| **GTK4, 4.18 or newer** | Put the actions in a `GMenu` shown as a menu bar or popover menu, and register the keys with `gtk_application_set_accels_for_action()`. | Read (host 1.16.6+). Not yet confirmed on a real desktop. |
+| **GTK4, 4.18 or newer** | Put the actions in a `GMenu` shown as a menu bar or popover menu, and register the keys with `gtk_application_set_accels_for_action()`. | Read (host 1.17.0+). Not yet confirmed on a real desktop. |
 | **GTK4, older than 4.18** | — | Nothing. These versions report every binding as blank. |
-| **Qt** | Call `QAction::setShortcut()` on an action that is in a `QMenuBar` or `QMenu`. | Read (host 1.16.6+). |
+| **Qt** | Call `QAction::setShortcut()` on an action that is in a `QMenuBar` or `QMenu`. | Read (host 1.17.0+). |
 
 <Aside type="note">
 **Qt publishes accessibility data only while the desktop's accessibility switch is on.**
