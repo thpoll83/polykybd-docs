@@ -1,0 +1,87 @@
+---
+title: MIDI Layer
+description: Play notes into a music program from the PolyKybd. The keyboard is a USB MIDI device, and its MIDI layer shows each note's name and position on a staff.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import SupportedSince from '../../../components/SupportedSince.astro';
+
+<SupportedSince firmware="1.13.0" note="MIDI layer" />
+
+The PolyKybd is also a USB MIDI device. On its MIDI layer the keys send notes and controls
+to a music program (a DAW such as Ableton Live, Logic Pro, Reaper or Bitwig, or a software
+synthesizer), and every keycap shows what it plays: the note name with its octave and the
+note on a treble staff.
+
+![The MIDI layer on a split72. The left home row plays C4 to G4 with the black keys above it, the right half continues from A4 to F5. The outer keys hold All Off, the sustain pedal, legato and the channel, the number row has pitch bend, modulation and the channel keys, and the right number row has the dynamics marks pp to ff](../../../assets/using/midi-layer.png)
+
+<Aside type="caution" title="Updating to 1.13.0 resets the keymap and macros once">
+The MIDI layer is stored with the other remappable layers, so the stored keymap changes
+format. On the first start after the update, the keyboard resets your remaps **and deletes
+your macros**. Write down your remaps and macro texts before you update, and enter them
+again after it. Later updates keep them.
+</Aside>
+
+## Open and leave the layer
+
+1. Hold **Fn** and tap **Util** (the top-left key of the Fn layer) to open the Utility layer
+   for one key press.
+2. Tap the key with the **treble clef**. On split72 it is the first key of the media row on
+   the right half.
+
+The keyboard stays on the MIDI layer until you press **Base** (bottom left), which returns
+to your base layer.
+
+## Play notes
+
+The keys are laid out like the computer-keyboard mode of Ableton Live and Logic Pro: the
+home row plays the white keys from **C4** (middle C) upwards, and the row above it plays the
+black keys. Blank keys are the gaps between the black keys, and they send nothing. On
+split72 the left half plays C4 to G4 and the right half continues from A4 to F5. The split42
+has the same piano on its main keys, with the pedals on the thumbs.
+
+A note keycap shows the note it plays now. When you change the octave or transpose, every
+note keycap changes to the new note. Past the top or bottom of the MIDI range a note wraps
+to the other end, and its keycap shows the note that is sent.
+
+## The control keys
+
+| Keycap | What it does |
+|---|---|
+| **OCT** with *8vb* / *8va* | One octave down or up. The keycap shows the current octave. |
+| **OCT** with a number | Sets that octave for the `C` key directly. **OCT 4** puts middle C on the home row again. |
+| **TRNS** with ♭ / ♯ | Transposes one semitone down or up. The keycap shows the current transposition. |
+| **VEL** with > / < | Lowers or raises the velocity (how hard each note is played). The knob does the same. |
+| **pp** to **ff** | Sets a fixed velocity: pp, p, mp, mf, f, ff. |
+| **CHAN − 1** / **CHAN + 1** | Changes the MIDI channel (1–16). The keycap shows the current channel. |
+| **Ped.** | Sustain pedal, while held. |
+| **Sost.** | Sostenuto pedal, while held. |
+| **u.c.** | Soft pedal (*una corda*), while held. |
+| **LEG** | Legato, while held. |
+| **PORT** | Portamento, while held. |
+| **MOD** | Modulation wheel, while held. **MOD spd − / +** sets how fast it moves. |
+| **BEND** | Pitch bend down or up, while held. |
+| **All Off** | Stops every sounding note. |
+
+Changing the channel first stops the notes and releases the pedals, the bend and the
+modulation on the old channel, so nothing stays on there.
+
+The octave, transposition, velocity and channel are reset when the keyboard starts: middle C
+on the home row, velocity 127, channel 1.
+
+## Use it in a music program
+
+The keyboard appears as a MIDI input device under its own name, next to its keyboard and
+mouse functions. No driver or host software is needed. Select it as the MIDI input in your
+program, open the MIDI layer and play.
+
+The keyboard only sends MIDI. It does not receive anything from the computer, so a program
+cannot change its keycaps, lights or settings over MIDI.
+
+## Change the layer
+
+The MIDI layer is one of the nine layers you can remap in the
+[Keymap Editor](/using/keymap-editor/). The keycode browser lists every MIDI keycode under
+**Midi**: notes over six octaves, the octave, transpose, velocity and channel keys, and the
+pedals and controls above. Any MIDI key you put on another layer works there too, and shows
+the same legend.

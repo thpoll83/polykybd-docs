@@ -111,7 +111,7 @@ knows when it has the whole thing without waiting for a timeout:
 | `1` | 1 | **count** — how many layers are named |
 | `2…` | rest | `count` NUL-terminated ASCII names, at most 8 characters each |
 
-With today's eight remappable layers that is 54 bytes, which fits a single 64-byte
+With today's nine remappable layers that is 59 bytes, which fits a single 64-byte
 report (three of which are the `P`, command and status header). A longer set simply
 spans more reports; the reader concatenates each report's payload and stops once it
 holds `total` bytes.
