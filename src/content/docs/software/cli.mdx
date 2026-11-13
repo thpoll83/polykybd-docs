@@ -40,6 +40,7 @@ startup files (`status`) or edits them (`install`, `remove`) and nothing else. L
 | `agents hooks install\|uninstall <agent> [--dry-run]` | Write or remove the [agent hooks](/using/ai-agents/#set-up-the-hooks) in the config of `claude-code`, `codex`, `copilot`, `gemini`, `qwen` or `opencode`. Shows the change and asks first. Needs no running host |
 | `forwarder pairing-code` / `forwarder pair <code>` / `forwarder unpair` | [Pair a forwarder](/using/ai-agents/#agents-on-another-computer) with the keyboard computer: print the code on the keyboard computer, save it on the forwarder's computer. Needs no running host |
 | `attention <row> <col> [--count N] [--period-ms MS]` / `attention --cancel` | Run the first-run tutorial's ripple on one key, by its matrix position (split72). Needs firmware 1.13.0 and host 1.22.4 (protocol 32) |
+| `attention --midi [--reset]` | Run the [MIDI guide](/using/midi/#first-time-guide) now: the ripple on Fn, then on the key that opens the MIDI layer. `--reset` also forgets which programs and web pages already had the guide, so each one shows it again. Needs firmware 1.13.4 and host 1.22.16 (protocol 34) |
 | `commands <file>` | Run device commands from a file, one command per line |
 | `newer-policy ignore\|safe` | Choose what the host does with a keyboard whose firmware is newer than the host knows. `ignore` connects fully; `safe` allows only firmware update and debugging |
 | `replay-anim` | Replay the one-time [startup animation](/using/idle/) on the keycaps |
