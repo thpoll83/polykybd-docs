@@ -5,7 +5,7 @@ description: What the PolyKybd Website Reporter browser extension accesses, and 
 
 import { Aside } from '@astrojs/starlight/components';
 
-_Last updated: 2026-07-27_
+_Last updated: 2026-11-13 (extension version 1.1.0)_
 
 This is the privacy policy for the **PolyKybd Website Reporter** browser extension, which
 helps [PolyKybdHost](/software/overview/) show [website-specific keycap overlays](/using/website-detection/).
@@ -15,9 +15,18 @@ It describes exactly what the extension accesses and where that data goes.
 
 - The **URL** and **title** of your **currently active browser tab**.
 - Whether the browser window is **focused**.
+- Since version 1.1.0, only when PolyKybdHost asks it to switch to a Claude Code cloud session
+  (you pressed that session's agent key on the keyboard): the **URLs of your open tabs**. The
+  extension compares them, inside the browser, with the one session address
+  (`https://claude.ai/code/session_…`) that PolyKybdHost sent. The other tabs' URLs are not
+  sent anywhere. It then activates that tab and focuses its window. Its answer to
+  PolyKybdHost says whether it found the tab and gives that tab's title. Because the tab is
+  now the active one, the usual active-tab report (its URL and title) follows, as after any
+  tab switch.
 
-It does **not** read page content, form data, cookies, history, or any other tab. It activates
-only on tab switches, navigation, and window-focus changes.
+It does **not** read page content, form data, cookies or history. It sends a report when the
+browser starts, when the extension is installed, and on tab switches, navigation and
+window-focus changes. It never opens a page.
 
 ## Where the data goes
 
@@ -25,8 +34,8 @@ only on tab switches, navigation, and window-focus changes.
   running on the **same computer**.
 - **Nothing is transmitted over the internet.** The data is not sent to the developer, to
   PolyKybd / PolyTasten, or to any third party.
-- The data is used only at that moment to pick the matching keyboard overlay. The extension
-  does not log or retain your browsing activity.
+- The data is used only at that moment to pick the matching keyboard overlay, or to switch to
+  the tab PolyKybdHost asked for. The extension does not log or retain your browsing activity.
 
 ## What it stores
 
@@ -39,8 +48,8 @@ None. The extension does not sell data and does not share it with anyone.
 
 <Aside type="note">
 Under both Chrome and Mozilla policies, active-tab URLs are classified as **web browsing
-activity**. The extension collects it only for the website-aware overlay feature and
-transmits it only to the local PolyKybdHost app.
+activity**. The extension collects it only for the website-aware overlay feature and the agent
+keys, and transmits it only to the local PolyKybdHost app.
 </Aside>
 
 ## Contact
