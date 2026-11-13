@@ -42,6 +42,10 @@ the running effect.
 While an agent waits, a ripple runs over the keycaps from its number key every 4 seconds
 (split72). When several agents wait, they take turns.
 
+From firmware 1.13.6, an agent that finishes its turn (working to done) rings its key three
+times, 4 seconds apart, so you see when to check the result. A waiting agent rings first. Press
+the key to stop it.
+
 ## The AI key
 
 From firmware 1.13.2, the split72 layouts QWERTY, Stag, Colemak DH and Workman have the AI key
@@ -74,7 +78,8 @@ In AI mode, more keys have a job:
 
 Outside AI mode, the number key of a **waiting** agent works as a hold key. Hold it longer than
 the tapping term and the agent's window comes forward, as AI key + number does. Tap it and it
-types its digit, as always. The keys of agents that do not wait are not held back at all.
+types its digit, as always. From firmware 1.13.6, the key of a **finished** agent works the same
+way while it rings. The keys of other agents are not held back at all.
 
 ## Turn it on
 
