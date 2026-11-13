@@ -24,6 +24,13 @@ again after it. Later updates keep them.
 
 ## Open and leave the layer
 
+On split72 with firmware 1.13.4 or later, hold **Fn** and press the key above the right
+Shift (`\` on a QWERTY layout). On the first start of 1.13.4, a keyboard that already
+stored a keymap gets this key on its Fn layer too, unless you had changed that key on the
+Fn layer before.
+
+The Utility layer also opens the MIDI layer:
+
 1. Hold **Fn** and tap **Util** (the top-left key of the Fn layer) to open the Utility layer
    for one key press.
 2. Tap **MIDI**. Since firmware 1.13.2 it is in the right half's outer column, directly
@@ -83,6 +90,44 @@ program, open the MIDI layer and play.
 
 The keyboard only sends MIDI. It does not receive anything from the computer, so a program
 cannot change its keycaps, lights or settings over MIDI.
+
+## First-time guide
+
+<SupportedSince label="Firmware 1.13.4+, PolyKybdHost 1.22.16+" title="Minimum firmware and PolyKybdHost versions this feature needs" note="split72" />
+
+The first time a music program that takes MIDI input is in front, the keycaps show how to
+open the MIDI layer. The focus ripple runs on **Fn**. While you hold Fn, it moves to the key
+that opens the MIDI layer, and when you let go of Fn it moves back. It stops when the MIDI
+layer opens, after about 30 seconds (12 ripples, 2.5 seconds apart), or when the program is
+no longer in front.
+
+The guide follows the keymap stored on the keyboard. If you moved Fn or the MIDI key in
+the [Keymap Editor](/using/keymap-editor/), it shows your keys. It needs a path of at most
+four layer keys from your base layer to the MIDI layer; without one, there is no guide.
+
+Each program gets the guide once. A web page counts by its site: each site below gets it
+once, whichever browser it is open in.
+
+| | Programs and sites |
+|---|---|
+| **Programs** | Ableton Live, Ardour, Bitwig Studio, Cubase, FL Studio, GarageBand, LMMS, Logic Pro, MuseScore, Pro Tools, REAPER, SoundCraft |
+| **Web pages** | Ableton Learning Synths, AI Duet, Amped Studio, Audiotool, BandLab Studio, Chrome Music Lab (Shared Piano, Song Maker), Flat, flowkey, Hookpad, musictheory.net exercises, muted.io piano, Noteflight, Online Sequencer, Patatap (with `?midi` in the address), Recursive Arts Virtual Piano, Sight Reading Trainer, Signal, Soundation, Soundtrap, Teoria exercises, Virtual Piano |
+
+<Aside type="note" title="Safari">
+Safari does not support Web MIDI, so these web pages cannot receive the keyboard's notes in
+Safari, and the guide does not run there.
+</Aside>
+
+To see the guide again, run `polyctl attention --midi` (see [polyctl](/software/cli/)). With
+`--reset`, every program and site gets the guide again the next time it is in front. The
+host keeps the list of programs and sites that had the guide in `midi_guide_seen.json`, in
+the same folder as `settings.yaml`:
+
+| Platform | Folder |
+|---|---|
+| Windows | `%LOCALAPPDATA%\PolyHost\PolyHost\` |
+| macOS | `~/Library/Application Support/PolyHost/` |
+| Linux | `~/.config/PolyHost/` |
 
 ## Change the layer
 
