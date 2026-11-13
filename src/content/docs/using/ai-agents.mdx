@@ -140,7 +140,7 @@ is not restored.
 ## Remove an agent
 
 A session that ends without telling the host (a closed terminal, a crashed agent, a cloud
-session you deleted) keeps its key. From PolyKybdHost 1.23.1:
+session you deleted) keeps its key. From PolyKybdHost 1.23.2:
 
 - Tray menu: **AI Agents → Remove Agent** lists every agent. Click one to free its key.
 - **AI Agents → Remove Agent → Remove All Inactive** removes every agent that is **idle**,
@@ -152,7 +152,7 @@ A removed agent comes back when its session reports again.
 
 ## Claude Code cloud sessions
 
-From PolyKybdHost 1.23.1, Claude Code sessions that run in the cloud (claude.ai/code, also
+From PolyKybdHost 1.23.2, Claude Code sessions that run in the cloud (claude.ai/code, also
 when you start them from the Claude desktop app) get agent keys too. A cloud session cannot
 reach your computer, so its hooks send their reports to the PolyKybd relay, a small service on
 Cloudflare, and the host keeps a connection to it.
@@ -259,8 +259,8 @@ All in **Settings → AI agents**:
 | `polyctl agents list [--json]` | The agents the host knows, by page and key. |
 | `polyctl agents label <agent> <session> <text>` | Set the text an agent's card shows. |
 | `polyctl agents forget <agent> <session>` | Remove an agent and free its key. |
-| `polyctl agents forget --inactive` | Remove every idle, done or stale agent (1.23.1). |
-| `polyctl agents cloud [connect\|disconnect]` | Show, create or delete the cloud-session channel (1.23.1). |
+| `polyctl agents forget --inactive` | Remove every idle, done or stale agent (1.23.2). |
+| `polyctl agents cloud [connect\|disconnect]` | Show, create or delete the cloud-session channel (1.23.2). |
 | `polyctl agents report <agent> <session> <state>` | Report a state by hand: `working`, `waiting`, `done`, `idle`, `stale` or `ended`. |
 | `polyctl agents hooks install\|uninstall <agent>` | Write or remove the hooks, as above. |
 | `polyctl attention <row> <col> [--count N] [--period-ms MS]` | Run the ripple on any key, by its matrix position (firmware protocol 32). `--cancel` ends it. |
