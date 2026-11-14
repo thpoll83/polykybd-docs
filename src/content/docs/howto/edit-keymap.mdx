@@ -37,8 +37,9 @@ firmware update changes the EEPROM layout or you clear the EEPROM.
 
 ## Route 2 — QMK firmware source
 
-Editing the firmware does **much more than remap keys**: new layers, macros, tap-dance, encoder
-behaviour and any custom QMK logic. It also makes your change the compiled default, so it is on a
+Editing the firmware does **much more than remap keys**: new layers, encoder behaviour and any
+custom QMK logic. Macros, combos and tap dances (16 of each) need no firmware change: set them in
+the [Keymap Editor](/using/keymap-editor/#combos-and-tap-dance). It also makes your change the compiled default, so it is on a
 fresh board and is what you share or submit to the main project.
 
 The keymap *data* — the `keymaps[]` array, `g_led_config`, and `encoder_map[]` — is stored per variant:
@@ -73,9 +74,10 @@ The shared keymap *logic* (rendering, HID handling, the QMK callbacks) is in
        Editor. QMK's keycode reference is at [docs.qmk.fm/keycodes](https://docs.qmk.fm/keycodes).
      </TabItem>
      <TabItem label="Macro / tap-dance / custom">
-       These need firmware logic, not just data — implement them via the QMK callbacks and reference
-       them from `keymaps[]`. This is the main reason to use route 2. See
-       [Firmware Development](/development/firmware/).
+       A macro, combo or tap dance that the Keymap Editor's Macros, Combos and Tap Dance tabs can
+       hold needs no firmware change. Use the firmware for more than 16 of each, or for behaviour
+       those tabs cannot express: implement it via the QMK callbacks and reference it from
+       `keymaps[]`. See [Firmware Development](/development/firmware/).
      </TabItem>
    </Tabs>
 
