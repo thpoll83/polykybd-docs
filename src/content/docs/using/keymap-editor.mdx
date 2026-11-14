@@ -178,6 +178,52 @@ tray dialog needs PolyKybdHost 1.21.14 or later. On older firmware the tray dial
 the Auto Shift fields disabled.
 </Aside>
 
+## Combos and tap dance
+
+<SupportedSince protocol={33} note="firmware 1.13.4, host 1.22.16" />
+
+The keycode browser has a **Combos** tab and a **Tap Dance** tab. Each has 16 slots.
+Select a slot, fill in the fields and press **Save**; **Clear** empties the slot. A
+save is stored in the keyboard's flash on both halves at once, so it stays after a
+power cycle.
+
+Write a key as it is on the keymap: `KC_J`, `KC_ESC`, `S(KC_9)`, `MO(1)`.
+
+### Combos
+
+A combo sends one key when you press 2 to 4 keys together. Fill in **Key 1** to
+**Key 4** (Key 3 and Key 4 are optional) and **Sends**. For example, `KC_J` + `KC_K`
+sends `KC_ESC`. A combo works on the keys it lists, wherever they are on the keymap, so
+it needs no key of its own. Press the keys within the time the tab shows. A combo cannot
+list the same key twice.
+
+### Tap dance
+
+A tap dance is one key that sends a different key depending on how you press it:
+
+| Field | When | If empty |
+|---|---|---|
+| **Tap** | one tap | nothing |
+| **Hold** | while held | the Tap key |
+| **Double tap** | two taps | the Tap key twice |
+| **Tap, then hold** | a tap, then hold | the Tap key, then held |
+| **Decide after** | how long the keyboard waits to tell these apart | the [tapping term](#tap-hold-timing) |
+
+Three or more taps send the Tap key that many times. **Decide after** can be 100 to
+500 ms, in 10 ms steps. An action can be a key, a key with
+modifiers such as `S(KC_9)`, or `MO`, `TO` or `TG`.
+
+A tap dance does nothing until a key sends it. Select a key on the board and press
+**Use on selected key** to put it there. Slot 1 is the keycode `TD(0)`, and the keycap
+shows **Tap dance 1**.
+
+<Aside type="note">
+If the tab says the record was **saved on this half only**, the other half did not
+answer. Connect both halves and save again. The DOOM developer build has no combos or tap
+dance. The same settings are available from the command line: `polyctl combo` and
+`polyctl tapdance` (see [polyctl](/software/cli/)).
+</Aside>
+
 ## How it works
 
 PolyKybdHost uses the QMK `ID_DYNAMIC_KEYMAP_SET_KEYCODE` protocol to write individual key assignments directly to the keyboard. It does not write a full layer — only the changed key is updated, making it instant.
@@ -187,8 +233,8 @@ The dynamic keymap stored in the keyboard persists across power cycles **and acr
 ## Limitations
 
 - The editor cannot add new layers beyond those defined in the firmware
-- Tap-dance assignments require firmware changes (see [Firmware Development](/development/firmware/)).
-  **Macros do not** — write them in the editor's own **Macros** tab and assign them like any
-  other keycode; see [Macros](/using/macros/)
+- Macros, combos and tap dances need no firmware changes: write them in the editor's
+  **Macros**, **Combos** and **Tap Dance** tabs (see [Macros](/using/macros/) and
+  [Combos and tap dance](#combos-and-tap-dance)). Each tab has 16 slots
 - The behaviour picker covers the common composed keycodes — layer switching, mod-tap, layer-tap, one-shot modifiers, modified keys. Anything outside that set can still be entered as a raw keycode
 

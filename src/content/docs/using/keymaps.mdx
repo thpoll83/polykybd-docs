@@ -247,7 +247,10 @@ held modifier as a small corner mark. See [Keymap Editor](/using/keymap-editor/)
 
 ## Customizing in QMK source
 
-For deeper changes (new layers, macros, tap-dance), edit the variant's `keymap.c` directly. The
+For deeper changes (new layers, or macros beyond the Keymap Editor's 16 slots), edit the
+variant's `keymap.c` directly. Combos and tap dances are set only in the
+[Keymap Editor](/using/keymap-editor/#combos-and-tap-dance), 16 of each: the firmware ignores
+`key_combos[]` and `tap_dance_actions[]` in `keymap.c`. The
 `keymaps[]` array is data only:
 
 ```c
