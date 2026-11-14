@@ -73,11 +73,12 @@ The shared keymap *logic* (rendering, HID handling, the QMK callbacks) is in
        layer also needs that count raised. Only layers 0–8 can be changed later in the Keymap
        Editor. QMK's keycode reference is at [docs.qmk.fm/keycodes](https://docs.qmk.fm/keycodes).
      </TabItem>
-     <TabItem label="Macro / tap-dance / custom">
-       A macro, combo or tap dance that the Keymap Editor's Macros, Combos and Tap Dance tabs can
-       hold needs no firmware change. Use the firmware for more than 16 of each, or for behaviour
-       those tabs cannot express: implement it via the QMK callbacks and reference it from
-       `keymaps[]`. See [Firmware Development](/development/firmware/).
+     <TabItem label="Macro / custom">
+       Macros, combos and tap dances need no firmware change: set them in the Keymap Editor's
+       Macros, Combos and Tap Dance tabs. Combos and tap dances come only from those tabs (16 of
+       each); the firmware ignores `key_combos[]` and `tap_dance_actions[]` in `keymap.c`. For
+       more than 16 macros, or other custom behaviour, implement it via the QMK callbacks and
+       reference it from `keymaps[]`. See [Firmware Development](/development/firmware/).
      </TabItem>
    </Tabs>
 
