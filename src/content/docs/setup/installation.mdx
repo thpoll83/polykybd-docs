@@ -56,8 +56,11 @@ on its own line first. In bash: `POLYKYBD_DIR=~/apps/polykybd` in front of `bash
 **Updating.** The app updates itself from **Updates → Check for host update…** in its tray menu.
 Running the install command again also updates the folder to the latest release.
 
-**Removing.** Quit PolyKybdHost and delete the install folder. On Linux, the udev rule
-(`/etc/udev/rules.d/99-hid.rules`) and the `hidapi` package stay installed.
+**Removing.** First remove the start-at-login entry: quit PolyKybdHost, start it once with
+`--portable` from the install folder (`.venv\Scripts\python.exe -m polyhost --portable` on
+Windows, `.venv/bin/python -m polyhost --portable` on macOS and Linux), and quit it again. Then
+delete the install folder. On Linux, the udev rule (`/etc/udev/rules.d/99-hid.rules`) and the
+`hidapi` package stay installed.
 
 ## Developer install
 
@@ -74,8 +77,10 @@ A one-line version of these steps is in the
        git clone https://github.com/thpoll83/PolyKybdHost.git
        cd PolyKybdHost
        ```
-    3. **Install dependencies:**
+    3. **Create a virtual environment and install:**
        ```sh
+       python -m venv .venv
+       .venv\Scripts\activate
        pip install -e .
        ```
     4. **Run:**
