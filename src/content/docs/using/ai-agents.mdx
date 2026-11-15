@@ -84,7 +84,7 @@ agents are not held back at all.
 
 ## Turn it on
 
-![The AI Agents tray submenu: Show on the Number Row is ticked, then one line per agent (Key 1: Claude Code, working, Fix the login test; Key 2: Codex, waiting, Refactor the parser; Key 3: Gemini CLI, done, Release notes; Key 4: OpenCode, idle, docs), then Set Up Hooks and Pair a Forwarder](../../../assets/using/tray-menu-ai-agents.png)
+![The AI Agents tray submenu: Show on the Number Row is ticked, then one line per agent (Key 1: Claude Code, working, Fix the login test; Key 2: Codex, waiting, Refactor the parser; Key 3: Gemini CLI, done, Release notes; Key 4: OpenCode, idle, docs), then Remove Agent, Set Up Hooks, Pair a Forwarder and Connect Cloud Sessions](../../../assets/using/tray-menu-ai-agents.png)
 
 Click an agent in the list to bring its window forward, as its key does.
 
@@ -99,7 +99,9 @@ An agent tells the host its state through a **hook**: on each event (prompt sent
 permission asked, turn finished) the agent runs one `polyctl` command. The host writes these hooks
 for you:
 
-- Tray menu: **AI Agents → Set Up Hooks**, then the agent.
+- Tray menu: **AI Agents → Set Up Hooks…**, or **Integrations… → AI agents**. Tick the agents and
+  click **Install**. Each row shows the agent's settings file and whether the hooks are set up.
+  **Remove** takes them out again. Needs PolyKybdHost 1.25.0.
 - Command line: `polyctl agents hooks install <agent>`, where `<agent>` is `claude-code`,
   `codex`, `copilot`, `gemini`, `qwen` or `opencode`.
 
@@ -201,8 +203,8 @@ The extension that reports [websites](/using/website-detection/) also switches t
 session's tab. Until it is in the browser stores, the host installs it for Chromium browsers
 (Chrome, Edge, Brave, Vivaldi, Opera, Arc):
 
-1. Choose **AI Agents → Install Browser Extension…** in the tray menu. Choose an empty folder
-   that stays where it is, and click **Copy Extension**.
+1. Choose **Integrations… → Browser** in the tray menu. Choose an empty folder that stays where
+   it is, and click **Copy Extension**.
 2. Open `chrome://extensions` (Edge: `edge://extensions`), turn on **Developer mode**, click
    **Load unpacked** and choose that folder.
 3. In the extension's **Options**, the port must be the host's **Receiver port** (default
@@ -231,7 +233,8 @@ Desktop, VNC, Remmina, Parsec, AnyDesk, TeamViewer, RustDesk).
    code.
 3. On the other computer, choose **Pair with the Keyboard Computer…** in the forwarder's tray menu
    and enter the code. Restart the forwarder when it asks.
-4. On the other computer, choose **Set Up Agent Hooks** in the forwarder's tray menu.
+4. On the other computer, choose **Integrations… → AI agents** in the forwarder's tray menu, tick
+   the agents and click **Install**.
 
 <Aside type="caution">
 Anyone with the pairing code can send window and agent reports to the keyboard computer. Pass it

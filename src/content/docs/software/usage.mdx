@@ -11,7 +11,7 @@ Once PolyKybdHost is running, it runs in your system tray (Windows) or menu bar 
 
 Right-click the tray icon:
 
-![The PolyKybdHost tray menu: a status line naming the connected Split72 and its firmware, then Pause, Selected Language, Brightness, Idle Display, Keycap Script, Keycap Size, Tap-Hold Timing, AI Agents, Configure Keymap, Updates, Maintenance, Settings, Help & About and Quit & stop background daemon](../../../assets/software/tray-menu.png)
+![The PolyKybdHost tray menu: a status line naming the connected Split72 and its firmware, then Pause, Selected Language, Brightness, Idle Display, Keycap Script, Keycap Size, Tap-Hold Timing, AI Agents, Configure Keymap, Updates, Maintenance, Integrations, Settings, Help & About and Quit & stop background daemon](../../../assets/software/tray-menu.png)
 
 | Entry | What it does |
 |---|---|
@@ -23,10 +23,11 @@ Right-click the tray icon:
 | **Keycap Script** | Change the style of the letter legends — see [Glyph Scripts](/using/glyph-scripts/). |
 | **Keycap Size** | How large a key's main legend is drawn — see [Legend Size](/using/legend-size/). |
 | **Tap-Hold Timing…** | The tapping term and the Flow Tap term of dual-function keys — see [Tap-hold timing](/using/keymap-editor/#tap-hold-timing). Disabled when the keyboard firmware is too old for it. |
-| **AI Agents** | The [agent keys](/using/ai-agents/): show them on the number row, the list of agents (click one to bring its window forward), **Set Up Hooks** and **Pair a Forwarder…**. Needs PolyKybdHost 1.22.4. |
+| **AI Agents** | The [agent keys](/using/ai-agents/): show them on the number row, the list of agents (click one to bring its window forward), **Set Up Hooks…** (opens [Integrations](#integrations) at **AI agents**), **Pair a Forwarder…** and **Connect Cloud Sessions…**. Needs PolyKybdHost 1.22.4. |
 | **Configure Keymap** | Remap keys without reflashing — see [Keymap Editor](/using/keymap-editor/). |
-| **Updates** | Host app, keyboard firmware, keyboard fonts, [WinCompose](/software/wincompose/) (Windows), and **Set up the terminal and editors…**, which makes the shell show the running command in the terminal title for the [terminal program overlays](/using/overlays/#terminal-programs), and installs the Vim, Neovim and Emacs plugins and the GDB script. |
+| **Updates** | Host app, keyboard firmware, keyboard fonts, and [WinCompose](/software/wincompose/) (Windows). On Linux also **Allow access to the keyboard (udev rule)…**. |
 | **Maintenance** | Fix left/right sides, reset overlays or the keymap, flash a firmware file, enter the bootloader. See [below](#maintenance). |
+| **Integrations…** | Installs the PolyKybd parts for other programs: agent hooks, the terminal title line, editor plugins and the browser extension. See [below](#integrations). Needs PolyKybdHost 1.25.0. |
 | **Settings** | Interface language, theme, brightness, unicode mode, daemon mode and the rest. The [Settings Reference](/software/settings/) explains each one a user may want to change. |
 | **Help & About** | About, the log viewer, **Open config folder**, and — when something goes wrong — **Report a Problem…** and **Collect logs…** (see [Reporting a Problem](/software/reporting-problems/)). |
 | **Quit & stop background daemon** | Closes the tray app and stops the background daemon, which releases the keyboard. When daemon mode is off, the entry is a plain **Quit**. To close only the tray app and keep the keyboard connected, use **Maintenance → Only quit GUI**. |
@@ -48,6 +49,25 @@ fully know yet (click it to choose how to handle that).
 *"Keyboard fonts: up to date"* or *"Update keyboard fonts (2)…"* with the outdated
 bundles named in its tooltip. See [Font Packs](/firmware/font-packs/).
 </Aside>
+
+### Integrations
+
+**Integrations…** opens one window for everything PolyKybdHost installs into other
+programs, so that the keyboard can follow them. It has the layout of the Settings window: the
+categories on the left, one page per category on the right. Needs PolyKybdHost 1.25.0.
+
+| Category | What it installs |
+| --- | --- |
+| **AI agents** | The [agent hooks](/using/ai-agents/#set-up-the-hooks) for Claude Code, Codex, Copilot CLI, Gemini CLI, Qwen Code and OpenCode. |
+| **Terminals** | The line that makes bash, zsh and PowerShell show the running command in the terminal title, for the [terminal program overlays](/using/overlays/#terminal-programs). |
+| **Editors** | The [Vim, Neovim and Emacs plugins](/using/overlays/#vim-emacs-and-nano-overlays-that-follow-the-mode) and the GDB script. |
+| **Browser** | The [browser extension](/using/website-detection/#installing-the-browser-extension) folder for Chromium browsers. |
+
+On the AI agents, Terminals and Editors pages, each program has a row with the file that
+changes and its state (**Set up**, **Not set up**, or set up for another copy of the app). Tick
+the rows and click **Install** or **Remove**. A copy of each file is saved before it changes.
+Restart the program, or open a new terminal window, for the change to take effect. Everything
+here changes files on this computer only, so it works without the keyboard connected.
 
 ### Maintenance
 
