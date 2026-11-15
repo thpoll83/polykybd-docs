@@ -5,12 +5,65 @@ description: How to install PolyKybdHost on Windows, macOS, and Linux.
 
 import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
-## Prerequisites
+## Install with one command
 
-- Python 3.10 or later
-- The PolyKybd keyboard connected via USB
+This needs neither Python nor git. Open a terminal and paste the line for your system.
 
-## Installation
+<Tabs>
+  <TabItem label="Windows">
+    In **PowerShell**:
+    ```powershell
+    irm https://raw.githubusercontent.com/thpoll83/PolyKybdHost/main/scripts/install-app.ps1 | iex
+    ```
+  </TabItem>
+  <TabItem label="macOS and Linux">
+    In a terminal:
+    ```sh
+    curl -fsSL https://raw.githubusercontent.com/thpoll83/PolyKybdHost/main/scripts/install-app.sh | bash
+    ```
+  </TabItem>
+</Tabs>
+
+The installer:
+
+1. asks for the install folder: `%LOCALAPPDATA%\PolyKybdHost` on Windows, `~/PolyKybdHost` on
+   macOS and Linux (press Enter to accept it);
+2. downloads [uv](https://docs.astral.sh/uv/) to a temporary folder, checks it against a fixed
+   SHA-256 and deletes it at the end. uv downloads Python 3.13 into the install folder;
+3. downloads the latest PolyKybdHost release and installs its packages into the install folder;
+4. on Linux, installs the `hidapi` library and the keyboard's udev rule. `sudo` asks for your
+   password. Unplug the keyboard and plug it in again afterwards;
+5. on macOS, runs `brew install hidapi`;
+6. offers to start PolyKybdHost. On its first start it registers itself to start at login
+   (see [Autostart](#autostart)).
+
+Nothing is added to your `PATH`, and no other Python on the computer is used or changed.
+
+<Aside type="caution">
+On **macOS** the app needs the `hidapi` library to talk to the keyboard, and the installer gets it
+from [Homebrew](https://brew.sh). Without Homebrew it only prints a note: install Homebrew, run
+`brew install hidapi`, and restart PolyKybdHost.
+</Aside>
+
+**Options.** Set these before the command. In PowerShell: `$env:POLYKYBD_DIR = "D:\Tools\PolyKybd"`
+on its own line first. In bash: `POLYKYBD_DIR=~/apps/polykybd` in front of `bash`.
+
+| Variable | Effect |
+|---|---|
+| `POLYKYBD_DIR` | Install into this folder, without asking. |
+| `POLYKYBD_NO_LAUNCH=1` | Do not start the app at the end. |
+
+**Updating.** The app updates itself from **Updates → Check for host update…** in its tray menu.
+Running the install command again also updates the folder to the latest release.
+
+**Removing.** Quit PolyKybdHost and delete the install folder. On Linux, the udev rule
+(`/etc/udev/rules.d/99-hid.rules`) and the `hidapi` package stay installed.
+
+## Developer install
+
+For working on the code: a git clone of the `main` branch, with your own Python 3.10 or later.
+A one-line version of these steps is in the
+[PolyKybdHost README](https://github.com/thpoll83/PolyKybdHost#developer-install-git--python-one-line).
 
 <Tabs>
   <TabItem label="Windows">
@@ -101,7 +154,9 @@ Always run PolyKybdHost from the virtual environment (`source .venv/bin/activate
 
 ## Startup options
 
-A plain `python -m polyhost` launch starts the **tray GUI** and brings up the background **daemon** that owns the keyboard (spawning it if one isn't already running). The other flags select different startup modes:
+These commands use the Python in the install folder's `.venv`: run them as
+`.venv\Scripts\python.exe -m polyhost` (Windows) or `.venv/bin/python -m polyhost` (macOS and Linux)
+from that folder, or activate the virtual environment first. A plain `python -m polyhost` launch starts the **tray GUI** and brings up the background **daemon** that owns the keyboard (spawning it if one isn't already running). The other flags select different startup modes:
 
 ```sh
 python -m polyhost                  # GUI + daemon (default)
