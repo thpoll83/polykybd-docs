@@ -174,11 +174,29 @@ platform gets the default set, if the app runs there at all.
 | | League of Legends | | | The in-game window, Click-to-Move defaults. Ability keys stay blank because they depend on the champion. Windows and macOS |
 | | Steam client | | | A separate set for Big Picture mode, chosen by the English window title |
 | | Counter-Strike 2, Dota 2 | | | Windows and Linux. The Esc key shows the game logo in place of its legend |
+| | Battle for Wesnoth | ✓ | | macOS has its own set, because Wesnoth uses Command there |
+| | VCMI (Heroes of Might and Magic III), FreeOrion | | | |
+| | Unciv, FreeCol | | | Java programs: the host picks the set by the window title |
+| | Dungeon Crawl Stone Soup, NetHack, Cataclysm: Dark Days Ahead | | | The graphical window, or the terminal build, which is found by the terminal title like the [terminal programs](#terminal-programs): the shell must put the command in the title. The commands are `crawl`, `crawl-console`, `nethack`, `nethack-console`, `cataclysm` and `cataclysm-launcher`, started without a path. A terminal title that has the game's name only as a folder name can match too |
+| | Shattered Pixel Dungeon, Mindustry | | | Java programs: the host picks the set by the window title |
+| | Luanti (Minetest), Veloren, OpenMW, OpenXcom | | | |
+| | Xonotic, Unvanquished, Red Eclipse | | | |
+| | Beyond All Reason, KeeperFX | | | Beyond All Reason runs in the Recoil engine, so any other Spring or Recoil game gets its set too |
+| | Widelands | ✓ | | macOS has its own set, because Widelands uses Command there |
+| | Simutrans, OpenLoco, Julius, Augustus, CorsixTH | | | |
+| | GZDoom, UZDoom, Chocolate Doom, Crispy Doom, DSDA-Doom, Woof!, Ironwail, vkQuake, QuakeSpasm | | | |
+| | SuperTuxKart, Hedgewars, FlightGear, Thrive | | | FlightGear: the global default keys only. An aircraft adds and replaces keys |
+| | Endless Sky, Naev, Oolite | | | |
+| | osu!, StepMania 5, Etterna | | | osu! is the open source lazer client. The closed-source osu!stable has the same process name and also gets this set, but its keys were not checked |
 | **Emulators** | RetroArch | | | The default hotkeys and the RetroPad keys of player 1 |
 | | MAME | | | The default UI keys and the player 1 inputs |
 | | VICE (all Commodore emulators) | ✓ | | Alt shortcuts, Command on macOS. The C64 and VIC-20 emulators also switch the keycaps to the [Commodore 64 keycap lettering](/using/glyph-scripts/#per-application) |
 | | FS-UAE | ✓ | | Switches the keycaps to the [Amiga lettering](/using/glyph-scripts/#per-application) |
 | | WinUAE, Amiberry | | | Both switch the keycaps to the Amiga lettering. WinUAE runs on Windows only |
+| | ScummVM, PPSSPP | ✓ | ✓ | |
+| | Dolphin | | | The default hotkeys and the GameCube controller keys. A Wii game uses the Wii Remote, where some of the same keys press other buttons |
+| | PCSX2, DuckStation | | | The default hotkeys and the keyboard's controller keys |
+| | OpenGOAL, Ship of Harkinian, sm64ex, sm64coopdx | | | The default keyboard map of each port |
 
 Notion, Claude and ChatGPT appear twice because the desktop app and the web version are
 matched separately.
@@ -208,6 +226,11 @@ Claude Code, Codex CLI, Gemini CLI, GitHub Copilot CLI, OpenCode, Qwen Code and 
 **PolyKybdHost 1.19.11**. The other terminal programs, kitty, WezTerm, tmux and Zellij need
 **PolyKybdHost 1.19.58**. GDB's second set, for a running program, needs **PolyKybdHost 1.20.0**. The emulators need **PolyKybdHost 1.20.0**. Their keycap lettering needs firmware 1.10.2 to sit
 in the top-left corner; older firmware draws it centred.
+
+The games in the rows from Battle for Wesnoth to osu!, and the emulators and ports
+ScummVM, PPSSPP, Dolphin, PCSX2, DuckStation, OpenGOAL, Ship of Harkinian, sm64ex and
+sm64coopdx need **PolyKybdHost 1.25.10**. None of these sets was checked on an installed copy of
+the game: the process names come from each project's build files.
 
 Firefox, Blender, the ArtCraft apps (except AniCraft, TextureCraft and MaterialCraft), Cursor,
 Windsurf, Zed, LM Studio and Jan need
