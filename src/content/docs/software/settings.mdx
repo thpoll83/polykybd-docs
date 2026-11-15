@@ -51,8 +51,8 @@ has a subheading.
 
 | Dialog | Key | Default | What it changes |
 | --- | --- | --- | --- |
-| **Art from installed games** | `game_assets_enabled` | on | Draws some game overlays from the game's own files when the game is installed on this computer. The images stay on this computer. Off, the shipped overlays are used. |
-| **Installed games → *Game* folder** | `game_cnc_data_dir`, `game_ra_data_dir`, `game_dune2_data_dir`, `game_d2k_data_dir`, `game_sc1_data_dir` | empty | The folder with the game's files, for Command and Conquer, Red Alert, Dune II, Dune 2000 and StarCraft. The **…** button opens a folder chooser. Empty: the app searches the folders where the game, or a remake such as OpenRA, usually installs. |
+| **Art from installed games** | `game_assets_enabled` | on | Draws some game overlays from the game's own files when the game is installed on this computer, and, for Unreal Tournament 2004 and Warcraft III, puts each icon on the key the game uses: the player's own bindings, or the installed language's hotkeys. The images and keys stay on this computer. Off, the shipped overlays with the default keys are used. |
+| **Installed games → *Game* folder** | `game_cnc_data_dir`, `game_ra_data_dir`, `game_dune2_data_dir`, `game_d2k_data_dir`, `game_sc1_data_dir`, `game_ut2004_dir`, `game_wc3_dir` | empty | The folder with the game's files, for Command and Conquer, Red Alert, Dune II, Dune 2000, StarCraft, Unreal Tournament 2004 (the folder that holds `System` and `Textures`) and Warcraft III (the folder that holds `war3.mpq`). The **…** button opens a folder chooser. Empty: the app searches the folder of the running game and the folders where the game, or a remake such as OpenRA, usually installs. The Unreal Tournament 2004 and Warcraft III folders need PolyKybdHost 1.24.0 or later. |
 | **Installed games → *Game* faction, house or race** | `game_cnc_faction`, `game_ra_faction`, `game_dune2_house`, `game_d2k_house`, `game_sc1_race` | GDI, Allies, Atreides, Atreides, Terran | Whose units and buildings the overlay shows. |
 
 ## Brightness
