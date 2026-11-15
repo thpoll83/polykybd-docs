@@ -285,8 +285,8 @@ terminal is the focused app, the host shows the mode of the editor you last type
 - **GNU nano** has no plugin. The host finds it by the terminal's window title, like the other
   [terminal programs](#terminal-programs).
 
-*Updates → Set up the terminal and editors…* in the tray copies the Vim and Neovim plugin and the
-Emacs package for you. `polyctl editor-plugins install` does the same for every editor it finds,
+*Integrations… → Editors* in the tray (PolyKybdHost 1.25.0) copies the Vim and Neovim plugin and
+the Emacs package for you. `polyctl editor-plugins install` does the same for every editor it finds,
 including GDB; repeat `--editor vim`, `--editor emacs` and so on to choose.
 
 Without a plugin, a terminal shows its own overlay or the shortcuts the host finds for it. The
@@ -315,10 +315,10 @@ a website, and the program's keys stay at full strength. This needs PolyKybdHost
   Zellij.
 - **The other programs write no title**, so the shell must put the running command there. fish,
   Nushell, xonsh, cmd.exe and zsh with oh-my-zsh do this already. For bash, zsh and PowerShell,
-  use *Updates → Set up the terminal and editors…* in the tray, or
+  use *Integrations… → Terminals* in the tray (PolyKybdHost 1.25.0), or
   `polyctl shell-integration install`. Open a new terminal window afterwards.
 - **Codex CLI** writes a title that does not name it. Tick *Also show Codex in the title* in the
-  same dialog (`polyctl shell-integration install --codex`), and the shell wraps the `codex`
+  same page (`polyctl shell-integration install --codex`), and the shell wraps the `codex`
   command so that its title names Codex.
 - **GDB** gets one set at the `(gdb)` prompt and another, with only Ctrl+C, while the program runs.
   For that, tick GDB in the same dialog, or run `polyctl editor-plugins install --editor gdb`.
