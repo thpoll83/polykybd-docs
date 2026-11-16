@@ -46,6 +46,10 @@ From firmware 1.13.6, when an agent finishes its turn (working to done), the sam
 from its number key three times, 4 seconds apart (split72), so you see when to check the result.
 The ripple of a waiting agent runs first. Press the key to stop it.
 
+From firmware 1.13.9 and PolyKybdHost 1.27.6, an agent on another page gets the ripple too: it
+runs from the **AI key**, every 4 seconds while the agent waits and three times when it
+finishes. Hold the AI key and press **Esc** to get to that page. Paging rings no key.
+
 ## The AI key
 
 From firmware 1.13.2, the split72 layouts QWERTY, Stag, Colemak DH and Workman have the AI key
@@ -70,7 +74,7 @@ In AI mode, more keys have a job:
 | Key | In AI mode |
 |---|---|
 | **1** to **0** | Bring that agent's window forward. |
-| **Esc** | Next page, when more than 10 agents run. It blinks red when an agent on another page waits. |
+| **Esc** | Next page, when more than 10 agents run. From firmware 1.13.9 it shows the page, for example **Next 1/2**. It blinks red when an agent on another page waits. When AI mode ends, the keys show page 1 again. |
 | **-** | Start dictation. The default is Win+H on Windows; set your own shortcut in **Settings → AI agents → Dictation shortcut**. |
 | **+** (the **=** key) | Bring the next waiting agent forward. It blinks red while any agent waits. |
 
