@@ -157,6 +157,7 @@ export default defineConfig({
           label: 'Using the Keyboard',
           items: [
             { label: 'First Start & Tutorial', slug: 'using/first-run' },
+            { label: 'Tutorials', slug: 'using/tutorials' },
             { label: 'Context-Aware Overlays', slug: 'using/overlays' },
             { label: 'Website-Aware Overlays', slug: 'using/website-detection' },
             { label: 'Apps With No Overlay', slug: 'using/generic-overlays' },

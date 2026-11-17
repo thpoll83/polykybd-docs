@@ -1,0 +1,116 @@
+---
+title: Tutorials
+description: Step-by-step guides in the host app that ring the keys to press, show each step on the status displays and darken the keys you do not need.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import SupportedSince from '../../../components/SupportedSince.astro';
+
+<SupportedSince label="Host 1.26.0+" title="Minimum PolyKybdHost version this feature needs" />
+
+Some features of the PolyKybd are on layers you open with a key combination, such as the
+brightness keys on the Utility layer or the RGB keys on the Settings layer. A tutorial in the
+host app shows you the way: it rings the key to press next, writes the step on the status
+displays, and waits until you have pressed it.
+
+## Start a tutorial
+
+Open the tray menu and choose **Help & About → Tutorials…**. The dialog lists the tutorials by
+category, each with a short description. Select one and click **Start**.
+
+While a tutorial runs, the dialog shows the current step with **Back**, **Next** and **Stop**.
+On the keyboard:
+
+- **The key to press rings.** For a key on another layer, the ring starts on the layer key
+  (for example Fn) and moves to the next key while you hold it, as in the
+  [MIDI guide](/using/midi/#first-time-guide).
+- **The status displays show the step** in one or two short lines.
+- **The other keys go dark**, so only the keys the step is about stay lit. At the end, a wave
+  from the last key lights the board again.
+- **A step that waits for a key or a layer ends by itself** when you press it. Other steps end
+  with **Next**.
+
+If you leave the layer a step is about, for example with a key that opens a layer for one key
+press only, the tutorial goes back to the step that opens the layer.
+
+<Aside type="note" title="What needs which version">
+The ringing key needs firmware 1.13.0 (protocol 32). The text on the status displays, the
+dark keys and the steps that end by themselves need **firmware 1.13.7** (protocol 35). With
+older firmware the dialog shows the text, and every step ends with **Next**.
+</Aside>
+
+## The tutorials
+
+| Tutorial | Category | What it shows |
+|---|---|---|
+| The MIDI layer | Layers | Open the MIDI layer, the note keys, octave and velocity, All Notes Off, and back to typing |
+| Display brightness | Light and displays | The Utility layer's fixed brightness steps, `-` and `+`, and AUTO or MAN |
+| RGB lighting | Light and displays | The [lighting keys](/using/rgb-lighting/) on the Settings layer: on/off, effects, hue, saturation, brightness and speed |
+| Accented letters | Languages and accents | Hold Intl, type an accented letter, choose the accent with Ctrl, and the remap key ([Intl layer](/using/languages/#the-intl-layer-accented-letters-on-demand)) |
+| Keyboard language | Languages and accents | The Lang key, the continent row and picking a [language](/using/languages/) |
+| Qwerty, Colemak and other layouts | Languages and accents | The five letter layouts on the Settings layer |
+| Emoji search | Emoji | Search mode, typing a word, the results and the Clear, Space and Backspace keys ([emoji search](/using/emoji-search/)) |
+| Record a macro | Other | REC on the Utility layer, picking a slot, recording, stopping and playing the [macro](/using/macros/) |
+
+The first two need host 1.26.0. The other six need host 1.27.6.
+
+<Aside type="caution" title="split72 only for five of them">
+RGB lighting, Accented letters, Keyboard language, the layouts and Emoji search use the
+Settings, Language, Intl and Emoji layers. The host takes the keys of those layers from the
+split72 keymap, so on a split42 these steps ring nothing and end with **Next**.
+</Aside>
+
+## Write your own
+
+A tutorial is one YAML file. Click **Open tutorials folder** in the dialog, put the file there
+and open the dialog again. The folder is `tutorials/` beside `settings.yaml`:
+
+| Platform | Folder |
+|---|---|
+| Windows | `%LOCALAPPDATA%\PolyHost\PolyHost\tutorials\` |
+| macOS | `~/Library/Application Support/PolyHost/tutorials/` |
+| Linux | `~/.config/PolyHost/tutorials/` |
+
+A file with the same `id` as a shipped tutorial replaces it. A file the host cannot use is
+listed in the dialog with the reason, for example a status line that is too wide.
+
+```yaml
+id: utility-media
+category: other            # layers, languages, light, emoji, editor or other
+title: Media keys
+summary: Play, pause and change the volume from the Utility layer.
+steps:
+  - guide_to_layer: Utility
+    say: ["Hold Fn, then tap", "the ringed key"]
+    text: Hold Fn and tap the ringed key. The keyboard stays on the Utility layer.
+    wait: {layer: Utility}
+  - point: {keycode: KC_MPLY}
+    spotlight: [{keycode: KC_MPRV}, {keycode: KC_MNXT}, {keycode: KC_VOLD}, {keycode: KC_VOLU}]
+    say: ["Play / pause", ""]
+    text: The media keys are on the right half. Press Next when you are done.
+  - point: {keycode: KC_BASE}
+    say: ["This key goes", "back to typing"]
+    wait: {press: KC_BASE}
+```
+
+The fields of a step:
+
+| Field | What it does |
+|---|---|
+| `say` | One or two lines for the status displays: ASCII only, at most 128 pixels wide each and 59 characters together |
+| `text` | The longer text in the dialog |
+| `point` | The key that rings: `{keycode: KC_...}`, `{layer_key: NAME}` (the key that opens that layer) or `{key: [row, col]}` |
+| `guide_to_layer` | Ring the way to a layer, key by key |
+| `spotlight` | The keys that stay lit; `[]` keeps only the ringing key lit, `{layer: NAME}` every key of that layer |
+| `reveal` | `{from: {keycode: ...}}`: the wave that lights all keys again |
+| `wait` | `next` (the default), `{seconds: N}`, `{layer: NAME}`, `{press: KC_...}`, `{key: {keycode: ...}}` (that key position, whatever it types) or `{leave: NAME}` |
+
+Keycodes use QMK's names, PolyKybd's own names (`KC_BASE`, `KC_DAUTO`, ...), `MO(n)`, `TO(n)`,
+`TG(n)` or `OSL(n)`. A keycode is looked up in the keymap the keyboard holds, so a key you
+moved in the [Keymap Editor](/using/keymap-editor/) is found at its new place. Layer names
+are the ones the Keymap Editor shows, plus `Settings`, `Language`, `Intl` and `Emoji`.
+
+## From the command line
+
+`polyctl tutorial list`, `status`, `start <id>`, `next`, `back` and `stop` drive the same
+tutorials from a terminal (see [polyctl](/software/cli/)).
