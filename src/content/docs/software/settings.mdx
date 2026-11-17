@@ -9,7 +9,7 @@ import SupportedSince from '../../../components/SupportedSince.astro';
 <SupportedSince label="Host 1.21.7+" title="The PolyKybdHost version this page describes" />
 
 Open **Settings…** in the tray menu. The list on the left has the sections of this page;
-choose one to jump to it. From host 1.28.1 each section has a colour: the band behind its
+choose one to jump to it. From host 1.28.2 each section has a colour: the band behind its
 title, a light tint behind its settings, and the stripe of its entry in the list. Each setting shows its description under its name. The search
 field above the list shows only the settings with a word that starts with what you type,
 in the name or the description: `port` finds **Receiver port**, but not *transport*.
@@ -58,6 +58,12 @@ has a subheading.
 
 ## Brightness
 
+From host 1.28.6 the section starts with **Keycap brightness**: pictures for
+**Automatic**, **Off**, **1%**, **50%** and **100%**. It is not a setting with a key: the
+choice is sent to the keyboard when you click **OK** (like `polyctl brightness`), and
+the keyboard does not report its level, so no picture is selected when the dialog
+opens. See [Display Brightness](/using/brightness/).
+
 | Dialog | Key | Default | What it changes |
 | --- | --- | --- | --- |
 | **Follow daylight** | `brightness_set_daylight_dependent` | on | [Adaptive brightness](/using/brightness/#adaptive-daylight): the host sets the keycap brightness from the sunlight at your location, every ten minutes. |
@@ -76,11 +82,11 @@ The settings of the [agent keys](/using/ai-agents/#settings), described on that 
 
 ## Keyboard
 
-Called *Keyboard data* before host 1.28.1. From host 1.28.1 the section starts with the
+Called *Keyboard data* before host 1.28.2. From host 1.28.2 the section starts with the
 settings that the keyboard itself stores. They have no key in `settings.yaml`: the dialog
 reads them from the keyboard when it opens and sends a changed value when you click **OK**.
 A row stays greyed out until the keyboard answers, and stays greyed out when the keyboard's
-firmware does not have that setting. Before 1.28.1 they were in the tray menu.
+firmware does not have that setting. Before 1.28.2 they were in the tray menu.
 
 ![Settings, Keyboard section: Idle display with the idle animation as four keycap pictures (Pulse, Jitter, IDDQD, Eden) and Idle After, then Keycaps with the keycap scripts as keycap pictures](../../../assets/software/settings-keyboard.png)
 

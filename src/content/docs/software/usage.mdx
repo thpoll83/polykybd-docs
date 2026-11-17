@@ -11,25 +11,25 @@ Once PolyKybdHost is running, it runs in your system tray (Windows) or menu bar 
 
 Right-click the tray icon:
 
-![The PolyKybdHost tray menu: a status line naming the connected Split72 and its firmware, then Pause, Selected Language, Brightness, AI Agents, Configure Keymap, Tutorials, Updates, Maintenance, Integrations, Settings, Help & About and Quit & stop background daemon](../../../assets/software/tray-menu.png)
+![The PolyKybdHost tray menu: a status line naming the connected Split72 and its firmware, then Pause, Selected Language, AI Agents, Configure Keymap, Tutorials, Updates, Maintenance, Integrations, Settings, Help & About and Quit & stop background daemon](../../../assets/software/tray-menu.png)
 
-The menu as of host 1.28.1. Older hosts also have **Idle Display**, **Keycap Script**,
-**Keycap Size** and **Tap-Hold Timing…** in the menu; they are now in
-[Settings → Keyboard](/software/settings/#keyboard).
+The menu as of host 1.28.6. Hosts older than 1.28.6 also have **Brightness**, now in
+[Settings → Brightness](/software/settings/#brightness). Hosts older than 1.28.2 also
+have **Idle Display**, **Keycap Script**, **Keycap Size** and **Tap-Hold Timing…**, now
+in [Settings → Keyboard](/software/settings/#keyboard).
 
 | Entry | What it does |
 |---|---|
 | *Status line* | The connected keyboard and its firmware. Clicking it is a shortcut for **Pause** below. |
 | **Pause** | Stop communicating with the keyboard. The keys still type, but the overlays stop updating. Reads **Resume** while paused. |
 | **Language** | Pick the keyboard's layout language, grouped by region. |
-| **Brightness** | Keycap brightness presets, plus **Back to automatic** — see [Display Brightness](/using/brightness/). |
 | **AI Agents** | The [agent keys](/using/ai-agents/): show them on the number row, the list of agents (click one to bring its window forward), **Set Up Hooks…** (opens [Integrations](#integrations) at **AI agents**), **Pair a Forwarder…** and **Connect Cloud Sessions…**. Needs PolyKybdHost 1.22.4. |
 | **Configure Keymap** | Remap keys without reflashing — see [Keymap Editor](/using/keymap-editor/). |
 | **Tutorials…** | Step-by-step guides that ring the keys to press — see [Tutorials](/using/tutorials/). |
 | **Updates** | Host app, keyboard firmware, keyboard fonts, and [WinCompose](/software/wincompose/) (Windows). On Linux also **Allow access to the keyboard (udev rule)…**. |
 | **Maintenance** | Fix left/right sides, reset overlays or the keymap, flash a firmware file, enter the bootloader, read the keyboard's crash record, open the config folder. See [below](#maintenance). |
 | **Integrations…** | Installs the PolyKybd parts for other programs: agent hooks, the terminal title line, editor plugins and the browser extension. See [below](#integrations). Needs PolyKybdHost 1.25.0. |
-| **Settings** | Interface language, theme, brightness, daemon mode, and in the **Keyboard** section the settings stored on the keyboard: idle display, keycap script and size, tap-hold timing. The [Settings Reference](/software/settings/) explains each one a user may want to change. |
+| **Settings** | Interface language, theme, the keycap brightness and daylight brightness, daemon mode, and in the **Keyboard** section the settings stored on the keyboard: idle display, keycap script and size, tap-hold timing. The [Settings Reference](/software/settings/) explains each one a user may want to change. |
 | **Help & About** | About, the log viewer, and — when something goes wrong — **Report a Problem…** and **Collect logs…** (see [Reporting a Problem](/software/reporting-problems/)). |
 | **Quit & stop background daemon** | Closes the tray app and stops the background daemon, which releases the keyboard. When daemon mode is off, the entry is a plain **Quit**. To close only the tray app and keep the keyboard connected, use **Maintenance → Only quit GUI**. |
 
@@ -79,8 +79,8 @@ here changes files on this computer only, so it works without the keyboard conne
 | **Reset keymap to default…** | Puts layers 0 to 8 back to the firmware's default keymap, encoders included, and **deletes every [macro](/using/macros/)**. It asks first. There is no undo. |
 | **Flash firmware file (.bin)…** | Installs a firmware `.bin` over USB. See [Firmware updates](#firmware-updates). |
 | **Activate bootloader…** | Restarts the keyboard into its USB bootloader, for flashing a `.uf2` by hand. See [Flashing the Firmware](/setup/flashing/). |
-| **Read keyboard crash record** | Reads the keyboard's last [crash record](/software/reporting-problems/#when-the-keyboard-firmware-crashes) from both halves. Was in **Help & About** before host 1.28.1. |
-| **Open config folder** | Opens the folder with `settings.yaml` and the overlay mapping. Works with the keyboard unplugged. Was in **Help & About** before host 1.28.1. |
+| **Read keyboard crash record** | Reads the keyboard's last [crash record](/software/reporting-problems/#when-the-keyboard-firmware-crashes) from both halves. Was in **Help & About** before host 1.28.2. |
+| **Open config folder** | Opens the folder with `settings.yaml` and the overlay mapping. Works with the keyboard unplugged. Was in **Help & About** before host 1.28.2. |
 | **Only quit GUI** | Closes the tray app. The background daemon keeps running, so the keyboard stays connected. Shown only when a daemon owns the keyboard, which is the default, and available with the keyboard unplugged too. Needs PolyKybdHost 1.19.40; older versions have a plain **Quit** at the top level instead. |
 
 ### Developer mode
@@ -160,7 +160,7 @@ The tray app is the front-end for the keyboard's live features — each has its 
 **Using the Keyboard**:
 
 - [Context-Aware Overlays](/using/overlays/) — the keycaps follow your active window automatically.
-- [Display Brightness](/using/brightness/) — presets in the **Brightness** submenu, adaptive daylight (**Settings → Brightness**), or the optional light sensor.
+- [Display Brightness](/using/brightness/) — a level or Automatic, and adaptive daylight, in **Settings → Brightness**, or the optional light sensor.
 - [Languages & Unicode Input](/using/languages/) — the OS unicode mode selected on the keyboard is synced here, and settable from the Settings dialog.
 - [Glyph Scripts](/using/glyph-scripts/) — change the style of the legends from the **Keycap Script** submenu.
 
