@@ -9,7 +9,8 @@ import SupportedSince from '../../../components/SupportedSince.astro';
 <SupportedSince label="Host 1.21.7+" title="The PolyKybdHost version this page describes" />
 
 Open **Settings…** in the tray menu. The list on the left has the sections of this page;
-choose one to jump to it. Each setting shows its description under its name. The search
+choose one to jump to it. From host 1.28.1 each section has a colour: the band behind its
+title, a light tint behind its settings, and the stripe of its entry in the list. Each setting shows its description under its name. The search
 field above the list shows only the settings with a word that starts with what you type,
 in the name or the description: `port` finds **Receiver port**, but not *transport*.
 
@@ -73,11 +74,31 @@ refresh.
 
 The settings of the [agent keys](/using/ai-agents/#settings), described on that page: `agents_enabled`, `agents_title_scan`, `agents_dictation_shortcut`, `agents_remote_enabled`, `agents_raise_here`, `agents_stale_minutes` and `agents_forget_minutes`. Needs host 1.22.4.
 
-## Keyboard data
+## Keyboard
+
+Called *Keyboard data* before host 1.28.1. From host 1.28.1 the section starts with the
+settings that the keyboard itself stores. They have no key in `settings.yaml`: the dialog
+reads them from the keyboard when it opens and sends a changed value when you click **OK**.
+A row stays greyed out until the keyboard answers, and stays greyed out when the keyboard's
+firmware does not have that setting. Before 1.28.1 they were in the tray menu.
+
+![Settings, Keyboard section: Idle display with the idle animation as four keycap pictures (Pulse, Jitter, IDDQD, Eden) and Idle After, then Keycaps with the keycap scripts as keycap pictures](../../../assets/software/settings-keyboard.png)
+
+| Dialog | Command line | What it changes |
+| --- | --- | --- |
+| **Idle display → Idle animation** | `polyctl idle-style` | What the keycaps show while you are away. See [Idle & Burn-in Protection](/using/idle/). |
+| **Idle display → Idle After** | `polyctl idle-timeout` | How long the keyboard waits before the idle animation starts. |
+| **Keycaps → Keycap Script** | `polyctl glyph-script` | The script of the letter and digit legends. See [Glyph Scripts](/using/glyph-scripts/). |
+| **Keycaps → Script placement** | `polyctl glyph-script --placement` | Centred, or in the top-left corner beside an app icon. |
+| **Keycaps → Keycap Size** | `polyctl glyph-size` | How large a key's main legend is drawn. See [Legend Size](/using/legend-size/). |
+| **Tap-Hold Timing → Tapping term, Flow Tap term** | `polyctl tap-terms` | The times of dual-function keys. See [Tap-hold timing](/using/keymap-editor/#tap-hold-timing). |
+| **Tap-Hold Timing → Auto Shift, Auto Shift timeout** | `polyctl tap-terms --auto-shift` | Hold a key to type its shifted character. See [Auto Shift](/using/keymap-editor/#auto-shift). |
+
+The settings of the host:
 
 | Dialog | Key | Default | What it changes |
 | --- | --- | --- | --- |
-| **Send Unicode input mode** | `unicode_send_composition_mode` | on | Tells the keyboard how this computer takes Unicode input (for example [WinCompose](/software/wincompose/) or the native method), on connect and whenever it changes. Off, the keyboard keeps the mode it has stored. |
+| **Unicode input → Send Unicode input mode** | `unicode_send_composition_mode` | on | Tells the keyboard how this computer takes Unicode input (for example [WinCompose](/software/wincompose/) or the native method), on connect and whenever it changes. Off, the keyboard keeps the mode it has stored. |
 | **Font packs → Update on connect** | `fontpack_auto_flash` | on | Flashes missing or outdated [font-pack](/firmware/font-packs/) bundles when the keyboard connects. Off, you update them yourself from **Updates → Keyboard fonts** or with `polyctl fontpack sync`. |
 | **Font packs → Font pack file** | `fontpack_path` | empty | A `.plyf` file to flash instead of the pack that ships with the app. Empty uses the shipped pack. |
 | **Emoji search → Search language** | `emoji_search_dict` | `en` | The language the keyboard's [emoji search](/using/emoji-search/) uses. |

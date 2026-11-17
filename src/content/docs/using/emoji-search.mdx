@@ -75,8 +75,8 @@ names and keywords. English is the default.
 
 ### Choosing the dictionary
 
-- **Tray menu**: *Selected Language* → *Emoji Search Language*, then a language.
-- **Settings dialog**: *Keyboard data* → *Search language*.
+- **Settings dialog**: *Keyboard* → *Emoji search* → *Search language*. Hosts older than
+  1.28.1 also have it in the tray menu: *Selected Language* → *Emoji Search Language*.
 - **Command line**: `polyctl emoji-dict list` shows the dictionaries and
   `polyctl emoji-dict set de` chooses one. `polyctl emoji-dict` shows which dictionary the
   keyboard holds.
@@ -114,19 +114,17 @@ python3 emoji_dict.py build de --user -o ~/my-de.plyd
 polyctl emoji-dict file ~/my-de.plyd
 ```
 
-In the tray, choose *Emoji Search Language* → *Own dictionary file...* instead of the
+In the Settings dialog, set *Keyboard* → *Emoji search* → *Own dictionary file* instead of the
 `polyctl` command.
 
 - After the next edit, build the file again and choose it again. Choosing the file that is
   already in use writes it to the keyboard again.
-- Choosing a language in the menu, or `polyctl emoji-dict file --clear`, returns to a
+- Clearing *Own dictionary file*, or `polyctl emoji-dict file --clear`, returns to a
   dictionary that ships with the host.
 - If the host cannot read the file, or the file is not a dictionary, it refuses the file, writes
-  nothing, and the keyboard keeps its dictionary. `polyctl emoji-dict file` prints the reason,
-  and the tray shows it in a message.
+  nothing, and the keyboard keeps its dictionary. `polyctl emoji-dict file` prints the reason.
 - If a file you chose earlier is moved, deleted or replaced by one that is not a dictionary, the
-  host stops writing it. `polyctl emoji-dict` shows the reason, and the tray menu entry reads
-  *Own dictionary (cannot be used)* with the reason in its tooltip.
+  host stops writing it. `polyctl emoji-dict` shows the reason.
 
 To change a dictionary for everyone, open a pull request with the edited file. The firmware's
 [`EMOJI_SEARCH.md`](https://github.com/thpoll83/qmk_firmware/blob/PolyKybd/keyboards/polykybd/emoji/EMOJI_SEARCH.md#editing-a-dictionary)
