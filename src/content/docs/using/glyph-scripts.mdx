@@ -44,7 +44,7 @@ normal legend — so the board never shows a blank key.
   it names the active value — `SCRIPT:` over the current script — and each tap moves to the
   next one, and after the last one it returns to Standard.
 - **Settings dialog** — tray menu → **Settings… → Keyboard → Keycap Script**, pick a script
-  (or **Standard** to turn it off) and click **OK** (host 1.28.0; older hosts: tray menu →
+  (or **Standard** to turn it off) and click **OK** (host 1.28.1; older hosts: tray menu →
   **Keycap Script**).
 - **Command line** — `polyctl glyph-script tengwar` (or `standard`, `runes`, `c64`, `c64keys`, `braille`, …).
 
@@ -66,7 +66,7 @@ and its two PETSCII graphics move to the left half of the key.
 
 - **Settings dialog** — **Settings… → Keyboard → Script placement**: **Centred on the keycap**
   or **In the top-left corner**. The row is greyed out when the keyboard's firmware is older
-  than 1.10.2. Hosts older than 1.28.0 have the two entries at the bottom of the tray's
+  than 1.10.2. Hosts older than 1.28.1 have the two entries at the bottom of the tray's
   **Keycap Script** menu.
 - **Command line** — `polyctl glyph-script --placement top-left` (or `centre`). It can be
   combined with a script: `polyctl glyph-script c64 --placement top-left`.

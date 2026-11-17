@@ -13,7 +13,7 @@ Right-click the tray icon:
 
 ![The PolyKybdHost tray menu: a status line naming the connected Split72 and its firmware, then Pause, Selected Language, Brightness, AI Agents, Configure Keymap, Tutorials, Updates, Maintenance, Integrations, Settings, Help & About and Quit & stop background daemon](../../../assets/software/tray-menu.png)
 
-The menu as of host 1.28.0. Older hosts also have **Idle Display**, **Keycap Script**,
+The menu as of host 1.28.1. Older hosts also have **Idle Display**, **Keycap Script**,
 **Keycap Size** and **Tap-Hold Timing…** in the menu; they are now in
 [Settings → Keyboard](/software/settings/#keyboard).
 
@@ -79,8 +79,8 @@ here changes files on this computer only, so it works without the keyboard conne
 | **Reset keymap to default…** | Puts layers 0 to 8 back to the firmware's default keymap, encoders included, and **deletes every [macro](/using/macros/)**. It asks first. There is no undo. |
 | **Flash firmware file (.bin)…** | Installs a firmware `.bin` over USB. See [Firmware updates](#firmware-updates). |
 | **Activate bootloader…** | Restarts the keyboard into its USB bootloader, for flashing a `.uf2` by hand. See [Flashing the Firmware](/setup/flashing/). |
-| **Read keyboard crash record** | Reads the keyboard's last [crash record](/software/reporting-problems/#when-the-keyboard-firmware-crashes) from both halves. Was in **Help & About** before host 1.28.0. |
-| **Open config folder** | Opens the folder with `settings.yaml` and the overlay mapping. Works with the keyboard unplugged. Was in **Help & About** before host 1.28.0. |
+| **Read keyboard crash record** | Reads the keyboard's last [crash record](/software/reporting-problems/#when-the-keyboard-firmware-crashes) from both halves. Was in **Help & About** before host 1.28.1. |
+| **Open config folder** | Opens the folder with `settings.yaml` and the overlay mapping. Works with the keyboard unplugged. Was in **Help & About** before host 1.28.1. |
 | **Only quit GUI** | Closes the tray app. The background daemon keeps running, so the keyboard stays connected. Shown only when a daemon owns the keyboard, which is the default, and available with the keyboard unplugged too. Needs PolyKybdHost 1.19.40; older versions have a plain **Quit** at the top level instead. |
 
 ### Developer mode
