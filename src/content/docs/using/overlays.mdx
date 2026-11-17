@@ -176,6 +176,9 @@ platform gets the default set, if the app runs there at all.
 | | League of Legends | | | The in-game window, Click-to-Move defaults. Ability keys stay blank because they depend on the champion. Windows and macOS |
 | | Steam client | | | A separate set for Big Picture mode, chosen by the English window title |
 | | Counter-Strike 2, Dota 2 | | | Windows and Linux. The Esc key shows the game logo in place of its legend |
+| | Team Fortress 2, Apex Legends | | | Icons follow the keys in your own `tf/cfg/config.cfg` (Team Fortress 2) or `Saved Games/Respawn/Apex/local/settings.cfg` (Apex Legends). W, A, S and D show the movement keys |
+| | Path of Exile, Path of Exile 2 | | | Icons follow the keys in your own `production_Config.ini` or `poe2_production_Config.ini`, also in Path of Exile 2's WASD mode. The window title picks the game |
+| | Rocket League, Overwatch 2, Genshin Impact | | | The default keys: these games keep your own key bindings where the host cannot read them |
 | | Battle for Wesnoth | ✓ | | macOS has its own set, because Wesnoth uses Command there |
 | | VCMI (Heroes of Might and Magic III), FreeOrion | | | |
 | | Unciv, FreeCol | | | Java programs: the host picks the set by the window title |
@@ -228,6 +231,11 @@ Claude Code, Codex CLI, Gemini CLI, GitHub Copilot CLI, OpenCode, Qwen Code and 
 **PolyKybdHost 1.19.11**. The other terminal programs, kitty, WezTerm, tmux and Zellij need
 **PolyKybdHost 1.19.58**. GDB's second set, for a running program, needs **PolyKybdHost 1.20.0**. The emulators need **PolyKybdHost 1.20.0**. Their keycap lettering needs firmware 1.10.2 to sit
 in the top-left corner; older firmware draws it centred.
+
+Team Fortress 2, Apex Legends, Path of Exile, Path of Exile 2, Rocket League, Overwatch 2 and
+Genshin Impact need **PolyKybdHost 1.27.6**. None of these sets was checked on an installed copy
+of the game: the process names and the key files come from the games' depot listings and from
+players' published config files.
 
 The games in the rows from Battle for Wesnoth to osu!, and the emulators and ports
 ScummVM, PPSSPP, Dolphin, PCSX2, DuckStation, OpenGOAL, Ship of Harkinian, sm64ex and
