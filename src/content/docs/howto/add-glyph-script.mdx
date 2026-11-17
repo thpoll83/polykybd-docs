@@ -64,8 +64,8 @@ indexed by the `poly_glyph_script` enum) maps a script to its block base; letter
 
 4. **Update the host.** In [PolyKybdHost](https://github.com/thpoll83/PolyKybdHost): add the same
    value to the `GlyphScript` enum (`command_ids.py`) and a label to `GLYPH_SCRIPT_LABELS`
-   (`host.py`). The tray's **Keycap Script** submenu lists scripts in the order of that label
-   list, so add the label where it belongs: the C64 keycap script comes directly after the C64 screen
+   (`gui/keyboard_settings.py`). **Settings → Keyboard → Keycap Script** shows the scripts in the
+   order of that label list, so add the label where it belongs: the C64 keycap script comes directly after the C64 screen
    font. A test fails if a script has no label. The `polyctl glyph-script <name>` choices come
    from the enum — see the [Command Line](/software/cli/) page.
 

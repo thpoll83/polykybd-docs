@@ -107,8 +107,9 @@ The marks are drawn at half size, so a four-modifier key (`HYPR`) is crowded. On
 
 <SupportedSince protocol={29} note="firmware 1.11.3, host 1.21.4" />
 
-Two times decide what a dual-function key does. Change them in the tray menu under
-**Tap-Hold Timing…**, or with [`polyctl tap-terms`](/software/cli/). The keyboard stores
+Two times decide what a dual-function key does. Change them in **Settings… → Keyboard →
+Tap-Hold Timing** (host 1.28.0; older hosts: the tray menu's **Tap-Hold Timing…**), or with
+[`polyctl tap-terms`](/software/cli/). The keyboard stores
 both, so they stay set after a restart and work without the host running.
 
 | Setting | Range | Default | What it does |
@@ -125,8 +126,8 @@ the same half always types its tap key. That rule has no setting.
 
 <Aside type="note">
 Tap-hold timing needs keyboard firmware 1.11.3 or later and PolyKybdHost 1.21.4 or
-later. On older firmware the times are fixed at 200 ms and 150 ms, and the tray entry
-is disabled. On the Split42 the keyboard has no Flow Tap, so only the tapping term can
+later. On older firmware the times are fixed at 200 ms and 150 ms, and the settings
+rows are disabled. On the Split42 the keyboard has no Flow Tap, so only the tapping term can
 be changed.
 </Aside>
 
@@ -138,7 +139,7 @@ With Auto Shift on, a letter, digit or symbol key held longer than the **Auto Sh
 timeout** types its shifted character: hold `a` for `A`, hold `1` for `!`. A short
 press types the normal character. Auto Shift is off by default.
 
-Turn it on in the tray menu under **Tap-Hold Timing…**, or with
+Turn it on in **Settings… → Keyboard → Auto Shift**, or with
 `polyctl tap-terms --auto-shift on`. The timeout is 100–500 ms in 10 ms steps, default
 180 ms (`--auto-shift-ms`). The keyboard stores both values.
 

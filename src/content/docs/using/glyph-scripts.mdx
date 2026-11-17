@@ -43,8 +43,9 @@ normal legend — so the board never shows a blank key.
 - **On the keyboard** — a key on the settings layer, under **More…**. Like the idle-style key
   it names the active value — `SCRIPT:` over the current script — and each tap moves to the
   next one, and after the last one it returns to Standard.
-- **Tray menu** — right-click the PolyKybdHost tray icon → **Keycap Script** → pick a script
-  (or **Standard** to turn it off).
+- **Settings dialog** — tray menu → **Settings… → Keyboard → Keycap Script**, pick a script
+  (or **Standard** to turn it off) and click **OK** (host 1.28.0; older hosts: tray menu →
+  **Keycap Script**).
 - **Command line** — `polyctl glyph-script tengwar` (or `standard`, `runes`, `c64`, `c64keys`, `braille`, …).
 
 Your choice is saved on the keyboard and persists across reboots.
@@ -63,9 +64,10 @@ and its two PETSCII graphics move to the left half of the key.
 
 ![The letter P with a pause icon on the right of the keycap, in the Commodore 64 screen font (top) and the Commodore 64 keycap script (bottom). Left: centred, where the icon cuts into the letter. Right: top-left, where the letter stays whole.](../../../assets/using/glyph-script-placement.png)
 
-- **Tray menu** — **Keycap Script** → **Centred on the keycap** or **In the top-left corner**,
-  below the list of scripts. The two entries are greyed out when the keyboard's firmware is
-  older than 1.10.2.
+- **Settings dialog** — **Settings… → Keyboard → Script placement**: **Centred on the keycap**
+  or **In the top-left corner**. The row is greyed out when the keyboard's firmware is older
+  than 1.10.2. Hosts older than 1.28.0 have the two entries at the bottom of the tray's
+  **Keycap Script** menu.
 - **Command line** — `polyctl glyph-script --placement top-left` (or `centre`). It can be
   combined with a script: `polyctl glyph-script c64 --placement top-left`.
 
