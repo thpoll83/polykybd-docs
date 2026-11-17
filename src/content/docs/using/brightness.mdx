@@ -13,7 +13,7 @@ the keyboard reconnects to PolyKybdHost.
 
 - **On the keyboard** — the brightness preset keys step the keycap OLEDs up and down.
 - **In PolyKybdHost** — **Settings… → Brightness → Keycap brightness**: pick a level and
-  click **OK** (host 1.28.5; older hosts: the tray's **Brightness** submenu).
+  click **OK** (host 1.28.6; older hosts: the tray's **Brightness** submenu).
 - **Command line** — `polyctl brightness <0–50>` (50 is full brightness).
 
 A manual set switches automatic mode off, so the keyboard keeps exactly the level you picked.
@@ -24,7 +24,7 @@ A manual level stays until you turn automatic mode back on, or until the keyboar
 reconnects to PolyKybdHost (after a reboot, a replug or a host restart): on every connect
 the host sets its brightness mode again. To turn automatic mode back on yourself, choose
 **Automatic** in **Settings… → Brightness → Keycap brightness** and click **OK** (or run
-`polyctl brightness --auto`). Hosts older than 1.28.5 have **Brightness → Back to
+`polyctl brightness --auto`). Hosts older than 1.28.6 have **Brightness → Back to
 automatic** in the tray menu instead.
 
 ![Settings, Brightness section: Keycap brightness with the pictures Automatic, Off, 1%, 50% and 100%, then the Follow daylight, Online location lookup and Online sunlight data switches](../../../assets/software/settings-brightness.png)
