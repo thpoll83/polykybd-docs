@@ -33,6 +33,7 @@ polyctl telemetry preview
 | **Your system** | Operating system and coarse release (e.g. `Windows 11`), CPU architecture, Python version — and on Linux, the session type (`x11` / `wayland`) and desktop (`gnome`, `kde`, `xfce`, …) |
 | **Which window tracker** | Which of the three window-tracking backends this machine uses (`pywinctl`, `kde_win_reporter`, `gnome_wayland_reporter`) |
 | **Your keyboard** | Model name, firmware version, protocol version, hardware revision, font-pack versions — and whether one was connected at all |
+| **A keyboard ID** | One hash for each keyboard half whose ID is available, so one keyboard counts once on every computer it is used with (see [The keyboard ID](#the-keyboard-id)) |
 | **Counts since the last report** | App starts, keyboard connects, connection drops, firmware flashes, font-pack flashes, host updates |
 | **A random ID** | A random number generated on your machine, so one install counts once per day |
 
@@ -51,7 +52,8 @@ PolyKybdHost can see all of the following while it runs. **None of it is collect
   your device's location services. The only geographic information in the report is
   the **two-letter country code** the server derives from your connection (see
   above) — the same information any website you visit can detect.
-- Your user name, computer name, MAC address, or keyboard serial number.
+- Your user name, computer name, or MAC address.
+- The keyboard's hardware IDs themselves. Only their hashes are sent.
 - File paths, overlay images, or your keymap.
 
 <Aside type="note">
@@ -83,6 +85,30 @@ next start. The file is here:
 | Windows | `%LOCALAPPDATA%\PolyHost\PolyHost\settings.yaml` |
 | macOS | `~/Library/Application Support/PolyHost/settings.yaml` |
 | Linux | `~/.config/PolyHost/settings.yaml` |
+
+## The keyboard ID
+
+The random ID counts computers, not keyboards. To count keyboards, PolyKybdHost reads
+the unique ID of the flash chip in each keyboard half and sends a hash of each one.
+This needs firmware with protocol v37 or later. Older firmware sends no keyboard ID. If
+the other half is unplugged or runs older firmware, the report has one hash, not two.
+
+- The hash is the same on every computer, so a keyboard used on two computers counts
+  once.
+- The two hashes are ordered by the numeric value of the raw IDs they come from, not by
+  the hash text. So it does not matter which half is connected to the computer.
+- If you replace one half, one hash changes and the other stays the same. The hash that
+  stays can move to the other position.
+- The raw hardware IDs never leave your computer. The hash key is public, so anyone who
+  has your keyboard can compute the same hash. The report contains no name, but the hash
+  does not change, so someone who knows who owns a keyboard and can read the reports can
+  link those reports to that owner.
+
+To see the IDs of your keyboard and the hashes that are sent:
+
+```bash
+polyctl hwid
+```
 
 <Aside type="caution" title="A small number of users limits anonymity">
   While only a small number of PolyKybd keyboards exist, "anonymous" means the report
@@ -120,3 +146,4 @@ report is ever queued or stored elsewhere.
 | `polyctl telemetry preview` | Print the exact report that would be sent |
 | `polyctl telemetry enable` / `disable` | Turn it on or off |
 | `polyctl telemetry send` | Send one now, ignoring the once-a-day limit |
+| `polyctl hwid` | Show the available hardware IDs of the keyboard halves and their hashes |
