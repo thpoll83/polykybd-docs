@@ -133,23 +133,23 @@ app gets nothing generic until it is updated.
 
 ## Settings
 
-All six are in **Settings…** in the tray menu, section **Keycap icons**, and are **on** by default.
+All six are in **Settings…** in the tray menu, section **Keycap icons**, and are **on** by default. The names are those of host 1.28.9; older hosts use the names in brackets. **Turn on accessibility** shows after you turn on the section's **Advanced** switch.
 
 | Setting | What it controls |
 | --- | --- |
-| **Generic icons** | The whole feature. Off: no Escape mark and no shortcut icons for any app. |
+| **Icons for apps without an overlay** (*Generic icons*) | The whole feature. Off: no Escape mark and no shortcut icons for any app. |
 | **Apps with their own overlay → Add the Escape mark** | Whether an app that already has artwork also gets its mark on Escape, when the artwork leaves Escape blank. |
-| **Apps with their own overlay → Add shortcut icons** | Whether such an app is also read for its shortcuts, with icons on the keys its artwork leaves blank. Off: such an app shows its artwork and its Escape mark only. |
-| **Shortcut icons** | Whether the focused app is read for its shortcuts at all. Off: no shortcut icons, and an app without artwork gets no Escape mark either, since that mark only accompanies shortcut icons. An app with artwork still gets its mark when **Add the Escape mark** is on. |
-| **Download missing icons** | Whether the icon set may be downloaded. Off: icons already downloaded keep working; new ones are skipped. |
+| **Apps with their own overlay → Add icons from the app's menus** (*Add shortcut icons*) | Whether such an app is also read for its shortcuts, with icons on the keys its artwork leaves blank. Off: such an app shows its artwork and its Escape mark only. |
+| **Read shortcuts from app menus** (*Shortcut icons*) | Whether the focused app's menus are read for its shortcuts at all. Off: no shortcut icons, and an app without artwork gets no Escape mark either, since that mark only accompanies shortcut icons. An app with artwork still gets its mark when **Add the Escape mark** is on. |
+| **Download icons from the internet** (*Download missing icons*) | Whether app logos and shortcut icons may be downloaded from simple-icons and Iconify. Off: icons already downloaded keep working; new ones are skipped. |
 | **Linux → Turn on accessibility** | Linux only. Whether PolyKybdHost may turn on the desktop's accessibility switch so Qt and KDE apps publish their shortcuts. Off: only apps that publish anyway (GTK) are read. |
 
-**Generic icons** switches everything off: nothing generic is drawn and the
+**Icons for apps without an overlay** switches everything off: nothing generic is drawn and the
 other settings have no effect.
 
 <Aside type="tip">
-On a managed or offline machine the two you probably want are **Shortcut icons**
-(the only one that governs reading another program) and **Download missing icons** (the
+On a managed or offline machine the two you probably want are **Read shortcuts from app menus**
+(the only one that governs reading another program) and **Download icons from the internet** (the
 only one that uses the network).
 </Aside>
 
