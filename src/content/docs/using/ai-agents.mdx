@@ -17,7 +17,19 @@ the agent does. Hold the **AI key** and every number key shows a card for its ag
 mark, its state and the session's title. Press a number key to bring that agent's window to the
 front.
 
-![Eight keycaps in AI mode. Keys 1 to 5 show agent cards for Claude Code, Codex, Gemini, OpenCode and Qwen, each with its mark, a state icon and the session title, and a coloured bar for its light: working amber, waiting red, done green, idle dim green, stale grey. Key minus shows a microphone for dictation, key plus a waiting icon with an arrow and the count 2, and the AI key its own legend of curves, stars and the letters AI](../../../assets/using/ai-agent-cards.png)
+![Eight keycaps in AI mode. Keys 1 to 5 show agent cards for Claude Code, Codex, Gemini, a Claude Code cloud session and Qwen. Each card has the lower part of the agent's mark at the top left, the session title in up to three lines, and a small state icon at the bottom right. The cloud session's mark has a cloud outline drawn over it. A coloured bar under each card shows its light: working amber, waiting red, done green, idle dim green, stale grey. Key minus shows a microphone for dictation, key plus a waiting icon with an arrow and the count 2, and the AI key its own legend of curves, stars and the letters AI](../../../assets/using/ai-agent-cards.png)
+
+### The cards
+
+From PolyKybdHost 1.28.2, a card shows:
+
+- the agent's mark at the top left, cut by the top edge of the display;
+- the session's title in up to three lines. A longer title is split into pages, and the card
+  shows the next page every 3 seconds;
+- a state icon at the bottom right: an arrow for **working**, **!** for **waiting**, a check
+  mark for **done**, a moon for **idle** and **?** for **stale**;
+- for a [Claude Code cloud session](#claude-code-cloud-sessions), a cloud outline over the mark,
+  so you can tell it from a session on your computer.
 
 <Aside type="note" title="split42">
 The keyboard finds the agent keys by their keycodes (**1** to **0**, **Esc**, **-** and **=**) on
@@ -126,6 +138,25 @@ from their terminal window's title, with less detail. Once an agent has reported
 the window title of that agent is no longer used. Turn this off in
 **Settings → AI agents → Find by window title**. This does not work on macOS.
 
+### Check the hooks
+
+When an agent's key does not change, run `polyctl agents hooks check` (PolyKybdHost 1.28.2). It
+shows:
+
+- where the hooks send their reports, and whether that host answers within 4 seconds;
+- for each agent, whether its hooks are installed;
+- the last three hook runs of each agent.
+
+`polyctl agents hooks check claude-code` checks one agent. The command exits with code 1 when the
+host does not answer or a hook file is broken.
+
+Each hook run writes one line to `agent_hooks.log` in the PolyKybdHost config folder: the agent,
+the event, the state, the start of the session id, where the report went and how it ended. The
+log has no prompt text, title or file content. A report that does not finish in 4 seconds shows
+as `timeout in connect` (the host cannot be reached, for example from a container) or
+`timeout in report` (the host accepted the connection and did not answer). The log is part of
+**Collect logs…** and `polyctl logs bundle`, and the log viewer shows it.
+
 For other agents, or to write the hooks by hand, see the setup guide in the host repository:
 [`docs/agent-keys-agent-setup.md`](https://github.com/thpoll83/PolyKybdHost/blob/main/docs/agent-keys-agent-setup.md).
 You can give that file to the agent and ask it to set itself up.
@@ -185,6 +216,11 @@ session has no title the hook can read, so the key shows the first words of the 
 prompt (at most 40 characters). To send no prompt words, set `POLYKYBD_CLOUD_PROMPT_TITLE=0` in
 the cloud environment; the key then shows `user`.
 
+If a company policy does not allow the title or prompt words to leave the cloud environment,
+even encrypted, set `POLYKYBD_CLOUD_ANONYMOUS=1` in the cloud environment. The hook then sends
+only the state and the session address, and the keys show **Agent 1**, **Agent 2** and so on,
+in key order (PolyKybdHost 1.28.2; an older host shows **Claude Code**).
+
 Pressing the key of a cloud session only brings an open window forward:
 
 - With the [PolyKybd browser extension](#the-browser-extension) 1.1.0 or newer, the browser
@@ -194,8 +230,35 @@ Pressing the key of a cloud session only brings an open window forward:
 - When neither is open, the host asks whether to open the session's page in the browser. It
   opens nothing without your click.
 
-**Disconnect** in the same dialog (or `polyctl agents cloud disconnect`) deletes the channel on
-the relay and removes the cloud sessions from the keys. Remove the variable in claude.ai too.
+### Cloud sessions on more than one computer
+
+From PolyKybdHost 1.28.2, several computers can show the same cloud sessions. They share one
+channel on the relay, which sends every report to each of them (at most 4 computers).
+
+1. On the computer that is connected, open **AI Agents → Connect Cloud Sessions…** and click
+   **Copy Join Code** (or run `polyctl agents cloud join-code`).
+2. On the other computer, open the same dialog and click **Join with a Code…**, then paste the
+   code. From the command line, run `polyctl agents cloud join`: it asks for the code without
+   showing it, or reads it from stdin. The host checks the code with the relay before it saves
+   it.
+
+<Aside type="caution">
+The join code holds the channel's keys. Anyone with it can read the cloud sessions' reports and
+send their own. Pass it on only over a channel you trust, as you would a password.
+</Aside>
+
+A computer that already has a channel of its own joins another one only when you confirm it
+(`--replace` on the command line).
+
+### Disconnect or delete
+
+The dialog has two buttons:
+
+- **Disconnect This Computer…** (`polyctl agents cloud leave`) removes the channel from this
+  computer only. The other computers and the cloud environment keep it.
+- **Delete Channel…** (`polyctl agents cloud disconnect`) deletes the channel on the relay. Every
+  computer that uses it removes the cloud sessions from its keys and stops connecting. The dialog
+  tells you when the relay did not confirm the delete. Remove the variable in claude.ai too.
 
 A cloud session you delete in claude.ai sends no last report, so its key stays. Remove it with
 **AI Agents → Remove Agent**: for a cloud session the host also deletes it on the relay, so it
@@ -274,6 +337,10 @@ All in **Settings → AI agents**:
 | `polyctl agents forget <agent> <session>` | Remove an agent and free its key. |
 | `polyctl agents forget --inactive` | Remove every idle, done or stale agent (1.23.3). |
 | `polyctl agents cloud [connect\|disconnect]` | Show, create or delete the cloud-session channel (1.23.3). |
+| `polyctl agents cloud join-code` | Print the join code of this computer's channel (1.28.2). |
+| `polyctl agents cloud join [CODE] [--replace]` | Join the channel of another computer (1.28.2). |
+| `polyctl agents cloud leave` | Remove the channel from this computer only (1.28.2). |
 | `polyctl agents report <agent> <session> <state>` | Report a state by hand: `working`, `waiting`, `done`, `idle`, `stale` or `ended`. |
 | `polyctl agents hooks install\|uninstall <agent>` | Write or remove the hooks, as above. |
+| `polyctl agents hooks check [agent]` | Check the hooks, the host they report to and the last hook runs (1.28.2). |
 | `polyctl attention <row> <col> [--count N] [--period-ms MS]` | Run the ripple on any key, by its matrix position (firmware protocol 32). `--cancel` ends it. |
