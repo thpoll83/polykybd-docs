@@ -133,13 +133,13 @@ app gets nothing generic until it is updated.
 
 ## Settings
 
-All six are in **Settings…** in the tray menu, section **Keycap icons**, and are **on** by default. The names are those of host 1.28.9; older hosts use the names in brackets. **Turn on accessibility** shows after you turn on the section's **Advanced** switch.
+All six are in **Settings…** in the tray menu, section **Keycap icons**, and are **on** by default. The names are those of host 1.28.11; older hosts use the names in brackets. **Turn on accessibility** applies to Linux only, so other systems show five of the six. On Linux it shows after you turn on the section's **Advanced** switch.
 
 | Setting | What it controls |
 | --- | --- |
 | **Icons for apps without an overlay** (*Generic icons*) | The whole feature. Off: no Escape mark and no shortcut icons for any app. |
 | **Apps with their own overlay → Add the Escape mark** | Whether an app that already has artwork also gets its mark on Escape, when the artwork leaves Escape blank. |
-| **Apps with their own overlay → Add icons from the app's menus** (*Add shortcut icons*) | Whether such an app is also read for its shortcuts, with icons on the keys its artwork leaves blank. Off: such an app shows its artwork and its Escape mark only. |
+| **Apps with their own overlay → Fill blank keys from the app's menus** (*Add icons from the app's menus* in 1.28.9, *Add shortcut icons* before) | Whether such an app is also read for its shortcuts, with icons on the keys its artwork leaves blank. Off: such an app shows its artwork and its Escape mark only. |
 | **Read shortcuts from app menus** (*Shortcut icons*) | Whether the focused app's menus are read for its shortcuts at all. Off: no shortcut icons, and an app without artwork gets no Escape mark either, since that mark only accompanies shortcut icons. An app with artwork still gets its mark when **Add the Escape mark** is on. |
 | **Download icons from the internet** (*Download missing icons*) | Whether app logos and shortcut icons may be downloaded from simple-icons and Iconify. Off: icons already downloaded keep working; new ones are skipped. |
 | **Linux → Turn on accessibility** | Linux only. Whether PolyKybdHost may turn on the desktop's accessibility switch so Qt and KDE apps publish their shortcuts. Off: only apps that publish anyway (GTK) are read. |

@@ -109,18 +109,18 @@ unless you are asked to change them while reporting a problem. All three are *Ad
 ## Keycap icons
 
 An overlay is a set of icons for one app. **Help & About → Basics** (host 1.28.9) shows an
-example. The names below are those of host 1.28.9; older hosts use the names in brackets.
+example. The names below are those of host 1.28.11; older hosts use the names in brackets.
 
 ![Settings, Keycap icons section: the Advanced switch in the title band, a note that Help & About, Basics shows an example, then Icons for apps without an overlay, Read shortcuts from app menus, Download icons from the internet and Match the website in the browser, each with its description and a switch](../../../assets/software/settings-keycap-icons.png)
 
 | Dialog | Key | Default | What it changes |
 | --- | --- | --- | --- |
 | **Icons for apps without an overlay** (*Generic icons*) | `generic_overlays_enabled` | on | [Icons for apps with no overlay](/using/generic-overlays/): the app's logo on Escape and an icon per shortcut. |
-| **Read shortcuts from app menus** (*Shortcut icons*) | `shortcut_icons_enabled` | on | Reads the shortcuts listed in the focused app's menus, through the accessibility interface of the operating system. The shortcuts stay on this computer. |
+| **Read shortcuts from app menus** (*Shortcut icons*) | `shortcut_icons_enabled` | on | The main switch for shortcut icons: an app without its own overlay also gets icons on its shortcut keys, when its menus can be read through the accessibility interface of the operating system. The reading runs in the background, one app at a time, and stops after 3 minutes on Windows, and after 4,000 parts of the app's window on Linux (3,000 on macOS). The shortcuts stay on this computer. Off: no app's menus are read, and an app with its own overlay still shows it. |
 | **Download icons from the internet** (*Download missing icons*) | `shortcut_icon_auto_fetch` | on | Downloads app logos and shortcut icons that this computer does not have yet, from simple-icons and Iconify. They are stored on this computer. Off: icons already downloaded keep working. |
 | **Match the website in the browser** (*Match websites*) | `browser_url_detection` | on | Matching an overlay to the focused tab's website. Off, browser overlays match on the window title only. See [Website-Aware Overlays](/using/website-detection/). |
 | **Apps with their own overlay → Add the Escape mark** | `generic_overlays_fill_gaps` | on | An app with its own overlay also gets its mark on Escape, when the overlay leaves Escape blank. |
-| **Apps with their own overlay → Add icons from the app's menus** (*Add shortcut icons*) | `generic_overlays_fill_shortcuts` | on | Such an app is also read for its shortcuts, with icons on the keys its overlay leaves blank. |
+| **Apps with their own overlay → Fill blank keys from the app's menus** (*Add icons from the app's menus* in 1.28.9, *Add shortcut icons* before) | `generic_overlays_fill_shortcuts` | on | Only for an app that comes with its own overlay: the keys its overlay leaves blank also get icons from the app's menus. Needs **Read shortcuts from app menus**. |
 | **Linux → Turn on accessibility** *(Advanced)* | `shortcut_enable_accessibility` | on | Linux only: whether the host may turn on the desktop's accessibility switch so Qt and KDE apps publish their shortcuts. |
 
 ## AI agents
