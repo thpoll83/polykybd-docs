@@ -31,7 +31,7 @@ flowchart LR
 - `core1` runs on its own static stack of `CORE1_STACK_SIZE` bytes: 384 B before
   firmware 1.5.0, and 512 B from 1.5.0, the release that moves Eden onto `core1`.
 - The first instruction `core1` executes is `cpsid i`, and `core1_entry()`
-  (`keyboards/polykybd/multicore_exec.c`) masks interrupts again. They stay masked for
+  (`keyboards/polykybd/display/multicore_exec.c`) masks interrupts again. They stay masked for
   the life of `core1`. ChibiOS's handler for the core1 FIFO interrupt ends by raising
   an NMI, and that NMI runs the RTOS context switch on a core that has no thread
   state, which hung `core1`. `core1` polls the FIFO, so it never needs an interrupt to
@@ -99,7 +99,7 @@ and its stack is 384 B.
 
 ## Running your own job on core1
 
-The pattern every existing job follows is in `keyboards/polykybd/multicore_exec.c`. A job
+The pattern every existing job follows is in `keyboards/polykybd/display/multicore_exec.c`. A job
 is a FIFO command word, optionally followed by one argument word, and a `case` in the
 `switch` inside `core1_entry()`.
 

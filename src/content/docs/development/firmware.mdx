@@ -24,19 +24,25 @@ keyboards/polykybd/
 ├── halconf.h           — HAL configuration (RP2040)
 ├── mcuconf.h           — MCU configuration
 ├── rules.mk            — build flags, enabled QMK features
-├── poly_keymap.c       — shared keymap logic for BOTH variants:
+├── keymap/
+│   └── poly_keymap.c   — shared keymap logic for BOTH variants:
 │                          rendering, HID/overlay handling, language
 │                          selection, idle/suspend, split-sync glue,
 │                          firmware-update state machine, QMK callbacks
-├── hid_com.c           — raw_hid_receive(): HID command dispatcher
+├── hid/
+│   └── hid_com.c       — raw_hid_receive(): HID command dispatcher
 │                          (21 command IDs, 0x01–0x15)
-├── fill_overlay.c      — receives overlay segments, RLE decompress
-├── split_sync.c        — CRC32-validated split-half synchronisation
-├── state.c             — shared state structs (EEPROM-persisted)
-├── multicore_exec.c    — core1 service loop: overlay decompression and region jobs
+├── display/
+│   ├── fill_overlay.c  — receives overlay segments, RLE decompress
+│   └── multicore_exec.c — core1 service loop: overlay decompression and region jobs
+├── split_link/
+│   └── split_sync.c    — CRC32-validated split-half synchronisation
+├── system/
+│   └── state.c         — shared state structs (EEPROM-persisted)
 ├── base/
-│   ├── overlay.c       — overlay image pool (600 × 360 B), addressed via
-│   │                     90 keys × 16 modifier variants
+│   └── overlay.c       — overlay image pool (600 × 360 B), addressed via
+│                         90 keys × 16 modifier variants
+├── drivers/
 │   └── disp_array.c    — per-keycap OLED driver
 ├── lang/
 │   └── lang_lut.c      — language lookup table (code-generated via cog)
@@ -116,7 +122,7 @@ Keep keymap files **data only** — behaviour belongs in the shared `poly_keymap
 
 ## Display rendering
 
-The per-key OLED displays (72×40 px monochrome) are driven via a custom Adafruit GFX fork. The rendering and overlay logic lives in `poly_keymap.c` / `base/disp_array.c`.
+The per-key OLED displays (72×40 px monochrome) are driven via a custom Adafruit GFX fork. The rendering and overlay logic lives in `keymap/poly_keymap.c` / `drivers/disp_array.c`.
 
 See [Display Graphics & Fonts](/development/display-graphics/) for the rendering pipeline and the font-generation workflow.
 
