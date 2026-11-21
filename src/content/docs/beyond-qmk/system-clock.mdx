@@ -48,7 +48,7 @@ sets that value. 200 MHz comes from a 1200 MHz PLL VCO divided by 6 and then by 
 The vendored pico-sdk predates the SDK's automatic voltage raise and does not compile
 `hardware_vreg`. The firmware therefore writes the regulator register itself
 (`POLYKYBD_VREG_VSEL`) before the first `clocks_init()` runs. The patch is listed in
-`UPSTREAM_PATCHES.md` under `platforms/chibios/bootloaders/rp2040.c`.
+`keyboards/polykybd/docs/build/upstream-patches.md` under `platforms/chibios/bootloaders/rp2040.c`.
 
 Peripherals needed no rework. SPI, I2C, the PIO split UART and the WS2812 driver compute
 their dividers from the live `clock_get_hz(clk_sys)`, and USB runs from its own 48 MHz
