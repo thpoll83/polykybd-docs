@@ -4,4 +4,6 @@ Source of the PolyKybd website, www.polykybd.org (Astro Starlight).
 
 ## AI-assisted development
 
-Since this repository was created in May 2026, the site content and code are written with AI assistance, mainly with Claude Code. CI and AI review bots check most pull requests, but not every change, and AI-written code can contain mistakes that these checks do not find. Please report problems as GitHub issues.
+This repository started in May 2026, and the site content and code have been written with AI tools from the start. The PolyKybd code base has grown too large for one person to write alone, and AI tools let me move faster towards the vision of the project.
+
+I decide on every change. I review the changes, check the pages myself, and write the summaries based on the results. AI-written content can still contain mistakes. Please report problems as GitHub issues.
