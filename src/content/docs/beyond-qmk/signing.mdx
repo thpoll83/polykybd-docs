@@ -21,8 +21,8 @@ Signature enforcement is **on**, and the two ways an image can fail it are treat
 ## The workflow
 
 <Steps>
-1. **Generate a keypair** once with `keyboards/polykybd/tools/gen_signing_key.py`. It writes `base/fw_pubkey.h` (the **public** key, committed to the repo) and a **private** key you keep out of the repo. The committed `fw_pubkey.h` holds the maintainer's public key, so a build from the repo treats only the maintainer's signed images as signed. Replace it with your own key to sign your own builds. A keyboard that runs a build with the maintainer's key refuses an image signed with your key. Install your first own-key build unsigned and accept it on the keyboard, or flash it over BOOTSEL. After that, your signed builds verify, and the maintainer's signed releases and DOOM packs no longer do.
-2. **Sign a build** with `keyboards/polykybd/tools/sign_firmware.py`, which produces a detached `<image>.bin.sig` (64 raw Ed25519 bytes) next to the `.bin`.
+1. **Generate a keypair** once with `keyboards/polykybd/dev/tools/gen_signing_key.py`. It writes `base/fw_pubkey.h` (the **public** key, committed to the repo) and a **private** key you keep out of the repo. The committed `fw_pubkey.h` holds the maintainer's public key, so a build from the repo treats only the maintainer's signed images as signed. Replace it with your own key to sign your own builds. A keyboard that runs a build with the maintainer's key refuses an image signed with your key. Install your first own-key build unsigned and accept it on the keyboard, or flash it over BOOTSEL. After that, your signed builds verify, and the maintainer's signed releases and DOOM packs no longer do.
+2. **Sign a build** with `keyboards/polykybd/dev/tools/sign_firmware.py`, which produces a detached `<image>.bin.sig` (64 raw Ed25519 bytes) next to the `.bin`.
 3. **Flash normally.** When a `.bin.sig` sits beside the `.bin`, PolyKybdHost sends the signature to the keyboard during the flash, so the firmware can verify it before applying.
 </Steps>
 
@@ -47,7 +47,7 @@ A firmware you compiled yourself is unsigned, so the keyboard will not apply it 
 
    ```sh
    arm-none-eabi-objcopy -O binary .build/polykybd_split72_default.elf out.bin
-   python3 keyboards/polykybd/tools/sign_firmware.py --privkey fw_signing_key.bin out.bin
+   python3 keyboards/polykybd/dev/tools/sign_firmware.py --privkey fw_signing_key.bin out.bin
    ```
 
 2. **Or confirm it on the keyboard.** Just flash. PolyKybdHost tells you as soon as you pick the `.bin` that no `.sig` sits beside it, so the prompt does not arrive as a surprise. At the end of the transfer the keyboard **turns its keycaps into a dialog**: every key goes dark except one on each half — a big **A / ACCEPT** on the left home-row index key (`D`) and a big **R / REJECT** on the right one (`J`). The status OLED spells out the question (*"Unsigned firmware! — A = ACCEPT"* / *"R = REJECT"*), the backlight breathes orange, and the host shows *"Confirm on the KEYBOARD…"* while it waits. Press **A** to accept the image.
