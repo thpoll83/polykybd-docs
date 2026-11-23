@@ -1,6 +1,6 @@
 ---
 title: 200 MHz System Clock
-description: Why the PolyKybd firmware runs the RP2040 at 200 MHz with the core voltage raised to 1.15 V, what it gains, and how to build the old 125 MHz image.
+description: Why the PolyKybd firmware runs the RP2040 at 200 MHz with the core voltage raised to 1.15 V, and what it gains.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
@@ -10,14 +10,6 @@ explicitly, because drawing 72 keycap displays and decompressing overlay images 
 compute-bound work that scales with the clock.
 
 The firmware runs the RP2040 at **200 MHz**, and has done since v0.11.0. Raspberry Pi certified the chip for that in 2025; it is a supported operating point, not an overclock — but only with the core voltage raised from 1.10 V to **1.15 V**, so the build does both: it selects the 200 MHz PLL setting *and* raises the regulator before the clock comes up. There is nothing to configure.
-
-If a board ever misbehaves at the higher clock, one flag builds the old one:
-
-```sh
-qmk compile -kb polykybd/split72 -km default -e POLYKYBD_SYS_CLK=125
-```
-
-This build is verified **byte-for-byte identical** to the pre-v0.11.0 firmware, so it is the same image that shipped before, not only a similar rebuild.
 
 Measured on the [test rig](/development/test-rig/), against a 125 MHz build on the same hardware:
 
@@ -53,9 +45,9 @@ The vendored pico-sdk predates the SDK's automatic voltage raise and does not co
 Peripherals needed no rework. SPI, I2C, the PIO split UART and the WS2812 driver compute
 their dividers from the live `clock_get_hz(clk_sys)`, and USB runs from its own 48 MHz
 PLL. The one fixed divider is the XIP flash clock: boot2 runs it at `clk_sys / 4`, which
-is 50 MHz at 200 MHz and 31.25 MHz at 125 MHz. Both are well inside the QSPI part's rating.
+is 50 MHz at 200 MHz, well inside the QSPI part's rating.
 
 <Aside type="caution">
-If you add a third clock setting, check the XIP divider again. It is the only divider
+If you change the clock, check the XIP divider again. It is the only divider
 that does not follow the system clock.
 </Aside>

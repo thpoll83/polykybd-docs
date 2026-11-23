@@ -58,17 +58,3 @@ still crosses the screen.
 
 A tap has to be a real press. Resting contact and hover are ignored, so the pad will not click
 because your thumb happens to be lying on it.
-
-## Going back to the default Cirque behaviour
-
-The default Cirque gestures are still available as a build option. They are **not**
-recommended: the right-click corner is at 11 o'clock and scrolling does not work.
-
-If you want to build them anyway:
-
-```bash
-qmk compile -kb polykybd/split72 -km default -e POLYKYBD_CIRQUE_RELATIVE=yes
-```
-
-This is a **build-time** choice, not a setting — there is nothing in the host app or on the
-keyboard that switches between the two.
