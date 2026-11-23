@@ -89,7 +89,7 @@ has.
 ## Editing a dictionary
 
 Every dictionary is a text file in the firmware repository,
-[`keyboards/polykybd/emoji/dict_src/`](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd/keyboards/polykybd/emoji/dict_src),
+[`keyboards/polykybd/features/emoji/dict_src/`](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd/keyboards/polykybd/features/emoji/dict_src),
 with one line per emoji: the codepoint, the name and the keywords, separated by tabs. Keywords
 are separated by ` | `:
 
@@ -108,7 +108,7 @@ needs Python 3. Replace `de` with the id of the dictionary you edited: the file 
 
 ```bash
 git clone --depth 1 -b PolyKybd https://github.com/thpoll83/qmk_firmware.git
-cd qmk_firmware/keyboards/polykybd/emoji
+cd qmk_firmware/keyboards/polykybd/features/emoji
 # edit dict_src/de.tsv, then:
 python3 emoji_dict.py build de --user -o ~/my-de.plyd
 polyctl emoji-dict file ~/my-de.plyd
