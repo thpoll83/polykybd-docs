@@ -138,7 +138,7 @@ for a Remote Desktop or NoMachine connection)** while nobody is connected. It wo
 Windows remote machines. It reads the system's connection table directly, so it starts no extra
 program and does not depend on the language of Windows.
 
-It looks only while you use the remote computer:
+It looks only while you use the remote computer (PolyKybdHost 1.28.32 and later; 1.28.31 looked every 5 seconds, always, and used the `ss` command on Linux and PowerShell on Windows):
 
 - Each window change starts a look, at most one every 5 seconds.
 - While an address is found, it looks again every 60 seconds, to notice a closed connection or
@@ -160,7 +160,7 @@ status reads **no host (finding the keyboard computer needs a paired forwarder)*
   An address in `--host-file` or `--host` takes priority: the connection is used only when neither
   names one, so a forwarder you already start with `--host-file` needs only the checkbox. Only
   IPv4 addresses are used, because the forwarder's connection is IPv4. With clients on both ports,
-  NoMachine wins. If the system command cannot run, the forwarder keeps the last address.
+  NoMachine wins. If the connection table cannot be read, the forwarder keeps the last address.
 </Aside>
 
 #### Older way: a timer and a file (PolyKybdHost 1.28.29, Linux)
