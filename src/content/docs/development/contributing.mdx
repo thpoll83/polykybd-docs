@@ -59,6 +59,7 @@ the line is true.
 ```mermaid
 flowchart TD
   OPEN["<b>Open a PR</b> against <code>PolyKybd</code><br/>with one bump label, or none for a patch"]
+  PUSH(["Push to the PR branch"])
   CHECKS["<b>Checks on every push</b>, in parallel<br/>lint and format · cppcheck<br/>PolyKybd unit tests, incl. the fuzz corpus replay<br/>Build firmware · Build release shape<br/>J-Bot review"]
   FUZZ["<b>Fuzz</b>, 5 targets × 60 s"]
   HIL["<b>HIL test</b> on the rig<br/>flash both halves, default tier"]
@@ -68,15 +69,16 @@ flowchart TD
   MERGE["<b>Merge</b>"]
   BUMP["Version increase from the bump label"]
 
-  OPEN --> CHECKS
-  OPEN -.->|"PR changes a fuzzed parser"| FUZZ
+  OPEN --> PUSH
+  PUSH --> CHECKS
+  PUSH -.->|"PR changes a fuzzed parser"| FUZZ
   CHECKS -->|"after Build firmware"| HIL
   HIL -.->|"add a label"| OPT
   HIL --> FIX
   FUZZ -.-> FIX
   OPT -.-> FIX
   REV -.->|"post a comment"| FIX
-  FIX -.->|"push: the checks run again"| CHECKS
+  FIX -.->|"push the fixes"| PUSH
   FIX -->|"all checks green,<br/>findings handled"| MERGE
   MERGE --> BUMP
 ```
