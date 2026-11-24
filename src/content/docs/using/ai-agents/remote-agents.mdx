@@ -1,0 +1,130 @@
+---
+title: "AI Agents in the Cloud and on Other Computers"
+description: "Light up the AI keys for Claude Code cloud sessions and for agents that run on another computer."
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import SupportedSince from '../../../../components/SupportedSince.astro';
+
+Part of [AI Agent Keys](/using/ai-agents/).
+
+## Claude Code cloud sessions
+
+From PolyKybdHost 1.23.3, Claude Code sessions that run in the cloud (claude.ai/code, also
+when you start them from the Claude desktop app) get agent keys too. A cloud session cannot
+reach your computer, so its hooks send their reports to the PolyKybd relay, a small service on
+Cloudflare, and the host keeps a connection to it.
+
+1. In the tray menu, choose **AI Agents → Connect Cloud Sessions…** and click **Connect**
+   (or run `polyctl agents cloud connect`). The dialog then shows three values, each with a
+   Copy button.
+2. In claude.ai, open the settings of the cloud environment you use, and enter the three values:
+   the environment variable `POLYKYBD_CLOUD_RELAY`, the allowed host
+   `polyhost-agent-relay.polykybd.workers.dev` (only when the network access is Limited), and
+   the setup script. Add the script at the end of an existing setup script.
+3. Start a new cloud session in that environment. A session that started before you saved the
+   environment does not get the hooks.
+
+The relay sees only an ID per session and encrypted data: the state, the title and the session
+address are encrypted with a key that only your host and your cloud environment have. A cloud
+session has no title the hook can read, so the key shows the first words of the session's first
+prompt (at most 40 characters). To send no prompt words, set `POLYKYBD_CLOUD_PROMPT_TITLE=0` in
+the cloud environment; the key then shows `user`.
+
+If a company policy does not allow the title or prompt words to leave the cloud environment,
+even encrypted, set `POLYKYBD_CLOUD_ANONYMOUS=1` in the cloud environment. The hook then sends
+only the state and the session address, and the keys show **Agent 1**, **Agent 2** and so on,
+in key order (PolyKybdHost 1.28.2; an older host shows **Claude Code**).
+
+Pressing the key of a cloud session only brings an open window forward:
+
+- With the [PolyKybd browser extension](#the-browser-extension) 1.1.0 or newer, the browser
+  switches to the tab that shows the session, also a background tab or one in another window.
+- Without it, the host looks for a browser window whose active tab shows the session, and then
+  for the Claude desktop app.
+- When neither is open, the host asks whether to open the session's page in the browser. It
+  opens nothing without your click.
+
+### Cloud sessions on more than one computer
+
+From PolyKybdHost 1.28.2, several computers can show the same cloud sessions. They share one
+channel on the relay, which sends every report to each of them (at most 4 computers).
+
+1. On the computer that is connected, open **AI Agents → Connect Cloud Sessions…** and click
+   **Copy Join Code** (or run `polyctl agents cloud join-code`).
+2. On the other computer, open the same dialog and click **Join with a Code…**, then paste the
+   code. From the command line, run `polyctl agents cloud join`: it asks for the code without
+   showing it, or reads it from stdin. The host checks the code with the relay before it saves
+   it.
+
+<Aside type="caution">
+The join code holds the channel's keys. Anyone with it can read the cloud sessions' reports and
+send their own. Pass it on only over a channel you trust, as you would a password.
+</Aside>
+
+A computer that already has a channel of its own joins another one only when you confirm it
+(`--replace` on the command line).
+
+### Disconnect or delete
+
+The dialog has two buttons:
+
+- **Disconnect This Computer…** (`polyctl agents cloud leave`) removes the channel from this
+  computer only. The other computers and the cloud environment keep it.
+- **Delete Channel…** (`polyctl agents cloud disconnect`) deletes the channel on the relay. Every
+  computer that uses it removes the cloud sessions from its keys and stops connecting. The dialog
+  tells you when the relay did not confirm the delete. Remove the variable in claude.ai too.
+
+A cloud session you delete in claude.ai sends no last report, so its key stays. Remove it with
+**AI Agents → Remove Agent**: for a cloud session the host also deletes it on the relay, so it
+does not come back.
+
+### The browser extension
+
+The extension that reports [websites](/using/website-detection/) also switches to a cloud
+session's tab. Until it is in the browser stores, the host installs it for Chromium browsers
+(Chrome, Edge, Brave, Vivaldi, Opera, Arc):
+
+1. Choose **Integrations… → Browser** in the tray menu. Choose an empty folder that stays where
+   it is, and click **Copy Extension**.
+2. Open `chrome://extensions` (Edge: `edge://extensions`), turn on **Developer mode**, click
+   **Load unpacked** and choose that folder.
+3. In the extension's **Options**, the port must be the host's **Receiver port** (default
+   50164). Click **Test connection**.
+
+After a host update, the host copies the new version into the same folder. Click **Reload** on
+the extension's card, or restart the browser, to run it.
+
+<Aside type="caution">
+If the key opens the "open the page?" question although the session's tab is open, the browser
+probably runs an old copy of the extension. Click **Reload** on its card and check that it shows
+version 1.1.0 or newer, and that it was loaded from the folder the host writes.
+</Aside>
+
+## Agents on another computer
+
+With a [forwarder](/using/multi-machine/) you can also show the agents of a second computer.
+Their keys bring forward the remote-desktop viewer that shows that computer (NoMachine, Remote
+Desktop, VNC, Remmina, Parsec, AnyDesk, TeamViewer, RustDesk).
+
+1. On the keyboard computer, turn on **Settings → Forwarders → Accept forwarders** and
+   **Settings → AI agents → Agents from other computers**, then restart PolyKybdHost: the
+   network listener starts only with the background service. Allow inbound TCP on port 50163 in
+   that computer's firewall. See [Multi-Machine Setup](/using/multi-machine/#setup).
+2. On the keyboard computer, choose **AI Agents → Pair a Forwarder…** in the tray menu. It shows a
+   code.
+3. On the other computer, choose **Pair with the Keyboard Computer…** in the forwarder's tray menu
+   and enter the code. Restart the forwarder when it asks.
+4. On the other computer, choose **Integrations… → AI agents** in the forwarder's tray menu, tick
+   the agents and click **Install**.
+
+<Aside type="caution">
+Anyone with the pairing code can send window and agent reports to the keyboard computer. Pass it
+on only over a channel you trust.
+</Aside>
+
+The same works from the command line: `polyctl forwarder pairing-code` on the keyboard computer,
+`polyctl forwarder pair <code>` on the other one.
+
+To also bring the agent's own window forward on the other computer, turn on
+**Settings → AI agents → Raise agent windows on this computer** in the forwarder there.

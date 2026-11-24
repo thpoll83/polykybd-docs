@@ -38,7 +38,7 @@ const text =
       ? `Firmware v${firmware}+`
       : 'Firmware');
 // Protocol tags deep-link to the protocol reference; version-only tags don't.
-const href = protocol != null ? '/reference/hid-protocol/' : undefined;
+const href = protocol != null ? '/reference/hid-protocol/protocol-versions/' : undefined;
 const Tag = href ? 'a' : 'span';
 ---
 
@@ -66,7 +66,9 @@ const Tag = href ? 'a' : 'span';
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    margin-block: -0.3rem 1.2rem;
+    /* A positive top margin keeps the tag clear of the rule under an h2
+       (its border-bottom is 0.3rem below the heading text). */
+    margin-block: 0.7rem 1.2rem;
     padding: 0.2rem 0.6rem 0.2rem 0.45rem;
     border: 1px solid var(--sl-color-accent);
     border-radius: 999px;

@@ -1,17 +1,9 @@
 ---
 title: Firmware Overview
-description: Introduction to the PolyKybd QMK firmware — a customised QMK fork running on the RP2040.
+description: "Hub for the PolyKybd firmware - the QMK fork, the RP2040 hardware it targets and where to find each firmware topic."
 ---
 
 The PolyKybd runs [QMK firmware](https://qmk.fm/) — the most widely used open-source keyboard firmware, with excellent documentation and a large community.
-
-## What QMK gives you
-
-- **Layers** — define completely different keymaps activated by a hold or tap
-- **Macros** — send multi-key sequences with a single keypress
-- **Tap-dance** — different actions based on how many times a key is tapped
-- **Unicode input** — send emoji and international characters on any OS
-- **Per-key display control** — PolyKybd extends QMK with display rendering via the custom Adafruit GFX fork
 
 ## A customised QMK fork
 
@@ -55,13 +47,15 @@ protocol**. The host connects to any firmware from protocol 2 on and turns on ea
 only when the firmware supports it. See the [HID Protocol Reference](/reference/hid-protocol/)
 for the commands and the per-version feature history.
 
-## Further reading
+## In this section
 
-- [Keyboard Variants](/firmware/variants/)
-- [Font Packs & Resources](/firmware/font-packs/)
-- [Flashing the Firmware](/setup/flashing/)
-- [Keymaps & Layers](/using/keymaps/)
-- [Languages & Unicode Input](/using/languages/)
+- [Keyboard Variants](/firmware/variants/): split72 and split42.
+- [Font Packs & Resources](/firmware/font-packs/): glyph bundles in flash.
+- [What PolyKybd Adds to QMK](/beyond-qmk/overview/): update over HID, signing, crash handler, second core and more.
+
+## Related pages
+
+- [Flash the Firmware](/setup/flashing/) and [Build & Flash from Source](/howto/build-and-flash/)
+- [Keymaps & Layers](/using/keymaps/) and [Languages & Unicode Input](/using/languages/)
 - [Firmware Development](/development/firmware/)
-- [What PolyKybd Adds to QMK](/beyond-qmk/overview/)
 - [QMK official documentation](https://docs.qmk.fm/)

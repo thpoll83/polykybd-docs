@@ -19,7 +19,7 @@ The module holds three things:
 
 This page covers the module: its API, the exact bitstream, the tables, and the tool.
 Why the coder works and how much each pixel costs are shown on worked examples in
-[HID Protocol → PRC](/reference/hid-protocol/#prc-predictive-range-coding). That page also
+[HID Protocol → PRC](/reference/hid-protocol/image-encodings/#prc-predictive-range-coding). That page also
 has the 6-byte record header that HID command `0x29` puts in front of each image. The
 header is PolyKybd's wire format, so it is not part of the module. It lives in
 `keyboards/polykybd/base/prc_record.c`.
@@ -203,7 +203,7 @@ host program that sends images to your keyboard.
 
 3. Send `top`, `left`, `height`, `width` and the payload length alongside the payload.
    How you frame them is up to your protocol. PolyKybd packs them into a 6-byte header,
-   [described on the HID protocol page](/reference/hid-protocol/#prc-predictive-range-coding).
+   [described on the HID protocol page](/reference/hid-protocol/image-encodings/#prc-predictive-range-coding).
 
 The module lives in the PolyKybd fork of QMK. Copy `modules/polykybd/polymod_prc/` into
 your tree under the same path.

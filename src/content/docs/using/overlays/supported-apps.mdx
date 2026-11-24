@@ -1,39 +1,11 @@
 ---
-title: Context-Aware Overlays
-description: How PolyKybd re-labels every key for the app you're using — the keyboard's main feature.
+title: "Supported Apps for Overlays"
+description: "The apps, games and terminal programs that PolyKybd ships overlays for, by platform."
 ---
 
-import { Aside, Steps } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
-The main PolyKybd feature: every key's OLED shows an image ("overlay") that matches
-**the app you are currently using**. Switch from your browser to your editor and all 72
-keycaps re-label themselves to that app's shortcuts, with no action from you.
-
-Overlays are driven by [PolyKybdHost](/software/overview/) — the keyboard on its own shows the
-static legends built into the firmware; the host is what makes them dynamic.
-
-![Close-up of the left half's keycaps with GIMP's overlay active: each key shows its letter in the top-left and that key's GIMP tool in the bottom-right, rendered from the KiCad models](../../../assets/using/overlay-icons-on-keys.jpg)
-
-## How it works
-
-1. PolyKybdHost watches which window is focused on your computer.
-2. When the active app changes, it sends that app's keycap images to the keyboard over USB,
-   and both halves update.
-
-## Modifier variants
-
-An overlay isn't a single image per key — each key stores **16 variants**, one for every
-combination of Ctrl, Shift, Alt and GUI (Command on macOS, Win elsewhere). Hold a modifier and
-the keycaps update to show what each key does *with that modifier down*, so a shortcut layer is
-visible before you press a key.
-
-## What you need
-
-- **PolyKybdHost running** on the machine you're typing on (or relayed from another machine —
-  see [Multi-Machine Setup](/using/multi-machine/)).
-- An overlay set for the app. PolyKybdHost ships overlays for the apps listed
-  [below](#which-apps-are-covered), and adding one is a plain image plus a one-line mapping
-  entry — [Create App Overlays](/howto/app-overlays/) explains the steps.
+Part of [Context-Aware Overlays](/using/overlays/).
 
 ## Which apps are covered
 
@@ -42,7 +14,7 @@ configure.
 
 Every app has a default set, drawn with `Ctrl` shortcuts. A ✓ under macOS or Linux means
 the app also has its own set for that platform, which the host picks there instead (see
-[Same app, different platform](#same-app-different-platform)). An empty cell means that
+[Same app, different platform](/using/overlays/#same-app-different-platform)). An empty cell means that
 platform gets the default set, if the app runs there at all.
 
 | | App | macOS | Linux | Notes |
@@ -89,7 +61,7 @@ platform gets the default set, if the app runs there at all.
 | | Affinity, Affinity Designer, Photo, Publisher | ✓ | | |
 | | FreeCAD, OpenSCAD | ✓ | ✓ | |
 | | Autodesk Fusion | ✓ | | |
-| | [Blender](#blender-overlays-that-follow-the-mode) | ✓ | | 14 sets that follow the mode, with the add-on |
+| | [Blender](/using/overlays/mode-aware-apps/#blender-overlays-that-follow-the-mode) | ✓ | | 14 sets that follow the mode, with the add-on |
 | | AutoCAD, Clip Studio Paint | ✓ | | Windows and macOS |
 | | CapCut | ✓ | | Windows and macOS |
 | | Autodesk Maya, Cinema 4D, SideFX Houdini, Foundry Nuke, Adobe Substance 3D Painter | ✓ | | |
@@ -125,7 +97,7 @@ platform gets the default set, if the app runs there at all.
 | | DBeaver | ✓ | ✓ | |
 | | RStudio, MATLAB | ✓ | | |
 | | Mathematica | ✓ | ✓ | |
-| | [Vim, Neovim, Emacs, GNU nano](#vim-emacs-and-nano-overlays-that-follow-the-mode) | | | In a terminal, and GUI Vim and Emacs. A set per mode, with the plugin |
+| | [Vim, Neovim, Emacs, GNU nano](/using/overlays/mode-aware-apps/#vim-emacs-and-nano-overlays-that-follow-the-mode) | | | In a terminal, and GUI Vim and Emacs. A set per mode, with the plugin |
 | | Cursor, Windsurf / Devin Desktop, Zed | ✓ | ✓ | |
 | | GitKraken | ✓ | | |
 | | Sourcetree | ✓ | | Windows and macOS |
@@ -151,9 +123,9 @@ platform gets the default set, if the app runs there at all.
 | | PowerToys Command Palette, PowerToys Run | | | Only those two windows; the other PowerToys features are global shortcuts |
 | **Linux** | GNOME Files (Nautilus) | | | Linux only |
 | **Terminals & transfer** | PuTTY, WinSCP | | | |
-| | kitty, WezTerm | ✓ | | The terminal's own keys. A [terminal program](#terminal-programs) named in the title takes priority |
+| | kitty, WezTerm | ✓ | | The terminal's own keys. A [terminal program](/using/overlays/mode-aware-apps/#terminal-programs) named in the title takes priority |
 | | tmux, Zellij | | | The multiplexer's keys, chosen by the terminal title |
-| **Terminal programs** | Claude Code, Codex CLI, Gemini CLI, GitHub Copilot CLI, Grok Build, Kimi Code CLI, Mistral Vibe, OpenCode, Qwen Code, Aider | | | Found by the terminal title. See [Terminal programs](#terminal-programs) |
+| **Terminal programs** | Claude Code, Codex CLI, Gemini CLI, GitHub Copilot CLI, Grok Build, Kimi Code CLI, Mistral Vibe, OpenCode, Qwen Code, Aider | | | Found by the terminal title. See [Terminal programs](/using/overlays/mode-aware-apps/#terminal-programs) |
 | | GDB | | | Two sets: one at the `(gdb)` prompt and one while the program runs, with the GDB script |
 | | Helix, micro, less | | | |
 | | htop, btop, k9s | | | |
@@ -182,7 +154,7 @@ platform gets the default set, if the app runs there at all.
 | | Battle for Wesnoth | ✓ | | macOS has its own set, because Wesnoth uses Command there |
 | | VCMI (Heroes of Might and Magic III), FreeOrion | | | |
 | | Unciv, FreeCol | | | Java programs: the host picks the set by the window title |
-| | Dungeon Crawl Stone Soup, NetHack, Cataclysm: Dark Days Ahead | | | The graphical window, or the terminal build, which is found by the terminal title like the [terminal programs](#terminal-programs): the shell must put the command in the title. The commands are `crawl`, `crawl-console`, `nethack`, `nethack-console`, `cataclysm` and `cataclysm-launcher`, started without a path. A terminal title that has the game's name only as a folder name can match too |
+| | Dungeon Crawl Stone Soup, NetHack, Cataclysm: Dark Days Ahead | | | The graphical window, or the terminal build, which is found by the terminal title like the [terminal programs](/using/overlays/mode-aware-apps/#terminal-programs): the shell must put the command in the title. The commands are `crawl`, `crawl-console`, `nethack`, `nethack-console`, `cataclysm` and `cataclysm-launcher`, started without a path. A terminal title that has the game's name only as a folder name can match too |
 | | Shattered Pixel Dungeon, Mindustry | | | Java programs: the host picks the set by the window title |
 | | Luanti (Minetest), Veloren, OpenMW, OpenXcom | | | |
 | | Xonotic, Unvanquished, Red Eclipse | | | |
@@ -262,137 +234,4 @@ itself: the app's own icon on Escape, and an icon on each shortcut the app publi
 <Aside type="note">
 The icons for the operating system's own shortcuts, such as Win+L or Cmd+Tab, are not part of an
 app overlay. The firmware draws them for every app. See [Shortcut Hints](/using/shortcut-hints/).
-</Aside>
-
-## Blender: overlays that follow the mode
-
-Blender's shortcuts depend on the mode you are in and on the editor under the mouse. `Ctrl+R`
-is Loop Cut in Edit Mode, Sculpt Mode has its own brush keys, and the Node Editor binds a
-different set again. With the **PolyKybd Context Reporter** add-on, the keycaps change with the mode:
-there are 14 shortcut sets, from Object and Edit Mesh to Sculpt, Pose, the paint modes, Node,
-UV, Dope Sheet and Graph Editor.
-
-Without the add-on, Blender still gets an overlay, but only with the keys every 3D View mode
-shares.
-
-<Steps>
-
-1. **Build the add-on.** In a PolyKybdHost checkout, run `./build.sh` in the `blender-addon/`
-   folder. It writes `dist/polykybd_context_reporter-<version>.zip`.
-
-2. **Install it in Blender 4.2 or later.** Open *Edit → Preferences → Get Extensions*, then the
-   drop-down at the top right, *Install from Disk…*, and pick the zip. On Blender 3.6–4.1, use
-   *Edit → Preferences → Add-ons → Install…* and tick *PolyKybd Context Reporter*. That older
-   path is untested.
-
-3. **Keep PolyKybdHost running.** The add-on reports to the same local receiver as the
-   [browser extension](/using/website-detection/), which is on by default. Nothing else needs
-   configuring.
-
-</Steps>
-
-The add-on sends only the mode and the editor name, and only to `127.0.0.1` on this computer.
-It sends no file names, object or scene data, and no window title. The host uses a report only
-while Blender is the focused app, so a Blender in the background never changes the keycaps of
-the app in front. You can pause reporting in the add-on's preferences without uninstalling it.
-
-<Aside type="note">
-If you set a `browser_report_token` in PolyKybdHost, enter the same value as *Token* in the
-add-on's preferences. The default port, 50164, matches the host's default.
-</Aside>
-
-## Vim, Emacs and nano: overlays that follow the mode
-
-In Vim the same key does different things in Normal, Insert and Visual mode, and Emacs binds
-different keys in an Org or a Dired buffer. With a small plugin the editor reports its mode, and
-the keycaps change with it. This also works when the editor runs in a terminal: while the
-terminal is the focused app, the host shows the mode of the editor you last typed in.
-
-- **Vim and Neovim** get a set per mode: Normal, Insert, Visual, Select, Replace, the command line
-  and the terminal. The plugin is in `vim-plugin/` in a PolyKybdHost checkout. Copy it to
-  `~/.vim/pack/polykybd/start/polykybd` (Vim) or load it with your plugin manager. It needs
-  Vim 8.2.3430 or later, or Neovim 0.7 or later.
-- **Emacs** gets a global set and its own sets for Org and Dired buffers. The package is in
-  `emacs-package/`. On Emacs 29 or later, install it with `package-vc-install` and turn it on
-  with `(polykybd-mode 1)`. Its README lists the other ways.
-- **GNU nano** has no plugin. The host finds it by the terminal's window title, like the other
-  [terminal programs](#terminal-programs).
-
-*Integrations… → Editors* in the tray (PolyKybdHost 1.25.0) copies the Vim and Neovim plugin and
-the Emacs package for you. `polyctl editor-plugins install` does the same for every editor it finds,
-including GDB; repeat `--editor vim`, `--editor emacs` and so on to choose.
-
-Without a plugin, a terminal shows its own overlay or the shortcuts the host finds for it. The
-plugins send the editor's name, its mode, whether it has the focus, its process ID and the time
-since the last keypress, and only to `127.0.0.1` on this computer.
-
-<Aside type="caution">
-A terminal tells the editor that it lost the focus through focus events. In **tmux**, turn them on
-with `set -g focus-events on` in `~/.tmux.conf`, or the editor keeps reporting while you work in
-another tab. An editor in an SSH session runs on the other computer, so its reports go to that
-computer's `127.0.0.1` and do not reach the host.
-</Aside>
-
-## Terminal programs
-
-The host sees only the terminal window, not the program running in it. It finds the program by
-the terminal's **window title**, so the program's name must be in the title.
-
-While a program's set is shown, the keys the program does not use keep the terminal's own
-shortcuts, such as new tab, copy and paste, because the terminal reads those keys first. They are
-[drawn dimmed](/using/website-detection/#browser-keys-are-drawn-dimmed), as a browser's are under
-a website, and the program's keys stay at full strength. This needs PolyKybdHost 1.19.40.
-
-- **Programs that write their own title** need no setup: Claude Code, Gemini CLI, GitHub Copilot
-  CLI, Grok Build, Kimi Code CLI, Mistral Vibe, OpenCode, Qwen Code, Midnight Commander and
-  Zellij.
-- **The other programs write no title**, so the shell must put the running command there. fish,
-  Nushell, xonsh, cmd.exe and zsh with oh-my-zsh do this already. For bash, zsh and PowerShell,
-  use *Integrations… → Terminals* in the tray (PolyKybdHost 1.25.0), or
-  `polyctl shell-integration install`. Open a new terminal window afterwards.
-- **Codex CLI** writes a title that does not name it. Tick *Also show Codex in the title* in the
-  same page (`polyctl shell-integration install --codex`), and the shell wraps the `codex`
-  command so that its title names Codex.
-- **GDB** gets one set at the `(gdb)` prompt and another, with only Ctrl+C, while the program runs.
-  For that, tick GDB in the same dialog, or run `polyctl editor-plugins install --editor gdb`.
-  The GDB script then writes GDB's state into the title. It needs GDB 8.0 or later built with
-  Python, and is tested on Linux only. Without the script, GDB writes no title, so it needs the shell setup above and shows
-  the prompt set in both states.
-
-A Kimi Code session that has a title, and a named Qwen Code session while it waits for input, show
-only the session name in the title, so their sets are not shown then.
-
-<Aside type="caution">
-In **tmux**, the terminal keeps the title tmux had when it started, and the tmux set is shown. Add
-`set -g set-titles on` and `set -g set-titles-string '#T'` to `~/.tmux.conf` to pass the
-program's title on. In **Windows Terminal**, keep the profile setting *Suppress title changes*
-off (the default). A program in an editor's built-in terminal, such as the one in VS Code, is not
-found: the focused window is then the editor.
-</Aside>
-
-## Same app, different platform
-
-Which shortcuts an app uses depends on the platform it runs on: Sublime Text binds `Cmd+P` on
-macOS and `Ctrl+P` on Windows and Linux. A single set of artwork therefore can't be right
-everywhere, so where an app has per-OS overlays the host picks the one matching your OS —
-`Cmd` artwork on macOS, `Ctrl` artwork elsewhere — with nothing to configure.
-
-<Aside type="tip">
-This follows the machine the **app** runs on, not the one your keyboard is plugged into. If you
-use the keyboard with a Mac over a [multi-machine setup](/using/multi-machine/), you still get
-the Mac artwork.
-</Aside>
-
-<Aside type="tip">
-Browsers are a special case: many web apps share one browser process, so matching on the app
-name alone isn't enough. [Website-Aware Overlays](/using/website-detection/) match the overlay
-to the focused tab's **URL** instead, so Jira, GitHub and Miro each get their own layer. The
-website's layer sits [on top of the browser's](/using/website-detection/#the-browsers-shortcuts-stay-underneath),
-so the browser's own shortcuts stay on the keys the website doesn't use.
-</Aside>
-
-<Aside type="note">
-For the technical details (the exact HID commands, the compression path, and how both
-halves stay in sync), see [System Model & Data Flow](/development/system-model/#overlay-data-path--an-app-switch)
-and the [HID Protocol Reference](/reference/hid-protocol/#overlay-addressing).
 </Aside>

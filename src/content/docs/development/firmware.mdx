@@ -1,6 +1,6 @@
 ---
 title: Firmware Development
-description: Setting up the QMK development environment for PolyKybd firmware.
+description: Layout of the PolyKybd firmware repository, signing, QMK base version and development skills.
 ---
 
 import { Aside, Steps } from '@astrojs/starlight/components';
@@ -53,59 +53,11 @@ keyboards/polykybd/
 
 All behaviour lives in the keyboard-level `poly_keymap.c` (compiled for both variants via `rules.mk`). Each variant's `<variant>/keymaps/default/keymap.c` is **data only** — `keymaps[]`, `encoder_map[]`, and (on RGB variants) `g_led_config`. A feature added to `poly_keymap.c` applies to both keyboards at once, so they always stay the same. The legacy `polykybd.c` / `polykybd.h` still exist, but the bulk of the logic now lives in `poly_keymap.c`.
 
-## Setting up the dev environment
+## Build and flash
 
-```sh
-# Clone and switch to the PolyKybd branch
-git clone https://github.com/thpoll83/qmk_firmware.git
-cd qmk_firmware
-git checkout PolyKybd
-
-# Pull in the git submodules (empty in a fresh clone)
-make git-submodule
-
-# Install the ARM toolchain (this is what `qmk setup` installs on Debian/Ubuntu)
-sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi
-
-# Install the QMK CLI (the pip package is just the bootstrapper;
-# the full CLI lives in this repo's lib/python)
-pip install qmk
-pip install -r requirements.txt
-
-# Point QMK at this clone
-qmk config user.qmk_home=$(pwd)
-```
-
-<Aside type="note">
-There is no `bin/qmk` in this fork — the full CLI lives in `lib/python`, which `qmk config user.qmk_home=<repo>` (or `export QMK_HOME=<repo>`) makes discoverable. The PyPI `qmk` package does **not** bundle the ARM compiler; install `gcc-arm-none-eabi` separately as shown above.
-</Aside>
-
-## Building
-
-Build a specific variant — `split72` or `split42`:
-
-```sh
-qmk compile -kb polykybd/split72 -km default
-# or equivalently:
-make polykybd/split72:default
-```
-
-The build writes the `.uf2` to the repo root and `.build/`. The `.uf2` is used for manual bootloader-drive recovery — see [Flashing the Firmware](/setup/flashing/).
-
-### Producing a `.bin` for HID flashing
-
-The deliverable for in-place flashing over HID (via PolyKybdHost's firmware updater) is the raw RP2040 **`.bin`**, not the `.uf2`. Convert the build's ELF:
-
-```sh
-arm-none-eabi-objcopy -O binary .build/polykybd_split72_default.elf \
-    .build/polykybd_split72_default.bin
-```
-
-PolyKybdHost flashes this raw image over the HID firmware-update protocol; the `.uf2` is only needed if you have to recover through the RP2040 bootloader drive.
-
-### System clock
-
-The firmware runs the RP2040 at 200 MHz with the core voltage raised to 1.15 V. The measurements and how the build sets the clock are on [200 MHz System Clock](/beyond-qmk/system-clock/).
+Toolchain, QMK CLI, submodules, the `.uf2` and `.bin` outputs and the flash commands are in
+[Build & Flash from Source](/howto/build-and-flash/). The firmware runs the RP2040 at 200 MHz with the
+core voltage raised to 1.15 V; see [200 MHz System Clock](/beyond-qmk/system-clock/).
 
 ## Firmware signing
 
@@ -113,13 +65,8 @@ Released firmware is signed with Ed25519, and the keyboard checks the signature 
 
 ## Adding a new keymap
 
-```sh
-qmk new-keymap -kb polykybd/split72 -km my_keymap
-# Edit keyboards/polykybd/split72/keymaps/my_keymap/keymap.c
-qmk compile -kb polykybd/split72 -km my_keymap
-```
-
-Keep keymap files **data only** — behaviour belongs in the shared `poly_keymap.c` so both variants stay in sync.
+Create and edit a keymap as described in [Edit the Keymap](/howto/edit-keymap/#route-2--qmk-firmware-source).
+Keep keymap files **data only**. Behaviour belongs in the shared `poly_keymap.c` so both variants stay in sync.
 
 ## Display rendering
 

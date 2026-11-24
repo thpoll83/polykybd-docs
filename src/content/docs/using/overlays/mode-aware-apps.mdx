@@ -1,0 +1,114 @@
+---
+title: "Overlays That Follow the Mode"
+description: "Overlays for Blender, Vim, Emacs, nano and terminal programs, which change with the mode of the program."
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+Part of [Context-Aware Overlays](/using/overlays/).
+
+## Blender: overlays that follow the mode
+
+Blender's shortcuts depend on the mode you are in and on the editor under the mouse. `Ctrl+R`
+is Loop Cut in Edit Mode, Sculpt Mode has its own brush keys, and the Node Editor binds a
+different set again. With the **PolyKybd Context Reporter** add-on, the keycaps change with the mode:
+there are 14 shortcut sets, from Object and Edit Mesh to Sculpt, Pose, the paint modes, Node,
+UV, Dope Sheet and Graph Editor.
+
+Without the add-on, Blender still gets an overlay, but only with the keys every 3D View mode
+shares.
+
+<Steps>
+
+1. **Build the add-on.** In a PolyKybdHost checkout, run `./build.sh` in the `blender-addon/`
+   folder. It writes `dist/polykybd_context_reporter-<version>.zip`.
+
+2. **Install it in Blender 4.2 or later.** Open *Edit → Preferences → Get Extensions*, then the
+   drop-down at the top right, *Install from Disk…*, and pick the zip. On Blender 3.6–4.1, use
+   *Edit → Preferences → Add-ons → Install…* and tick *PolyKybd Context Reporter*. That older
+   path is untested.
+
+3. **Keep PolyKybdHost running.** The add-on reports to the same local receiver as the
+   [browser extension](/using/website-detection/), which is on by default. Nothing else needs
+   configuring.
+
+</Steps>
+
+The add-on sends only the mode and the editor name, and only to `127.0.0.1` on this computer.
+It sends no file names, object or scene data, and no window title. The host uses a report only
+while Blender is the focused app, so a Blender in the background never changes the keycaps of
+the app in front. You can pause reporting in the add-on's preferences without uninstalling it.
+
+<Aside type="note">
+If you set a `browser_report_token` in PolyKybdHost, enter the same value as *Token* in the
+add-on's preferences. The default port, 50164, matches the host's default.
+</Aside>
+
+## Vim, Emacs and nano: overlays that follow the mode
+
+In Vim the same key does different things in Normal, Insert and Visual mode, and Emacs binds
+different keys in an Org or a Dired buffer. With a small plugin the editor reports its mode, and
+the keycaps change with it. This also works when the editor runs in a terminal: while the
+terminal is the focused app, the host shows the mode of the editor you last typed in.
+
+- **Vim and Neovim** get a set per mode: Normal, Insert, Visual, Select, Replace, the command line
+  and the terminal. The plugin is in `vim-plugin/` in a PolyKybdHost checkout. Copy it to
+  `~/.vim/pack/polykybd/start/polykybd` (Vim) or load it with your plugin manager. It needs
+  Vim 8.2.3430 or later, or Neovim 0.7 or later.
+- **Emacs** gets a global set and its own sets for Org and Dired buffers. The package is in
+  `emacs-package/`. On Emacs 29 or later, install it with `package-vc-install` and turn it on
+  with `(polykybd-mode 1)`. Its README lists the other ways.
+- **GNU nano** has no plugin. The host finds it by the terminal's window title, like the other
+  [terminal programs](#terminal-programs).
+
+*Integrations… → Editors* in the tray (PolyKybdHost 1.25.0) copies the Vim and Neovim plugin and
+the Emacs package for you. `polyctl editor-plugins install` does the same for every editor it finds,
+including GDB; repeat `--editor vim`, `--editor emacs` and so on to choose.
+
+Without a plugin, a terminal shows its own overlay or the shortcuts the host finds for it. The
+plugins send the editor's name, its mode, whether it has the focus, its process ID and the time
+since the last keypress, and only to `127.0.0.1` on this computer.
+
+<Aside type="caution">
+A terminal tells the editor that it lost the focus through focus events. In **tmux**, turn them on
+with `set -g focus-events on` in `~/.tmux.conf`, or the editor keeps reporting while you work in
+another tab. An editor in an SSH session runs on the other computer, so its reports go to that
+computer's `127.0.0.1` and do not reach the host.
+</Aside>
+
+## Terminal programs
+
+The host sees only the terminal window, not the program running in it. It finds the program by
+the terminal's **window title**, so the program's name must be in the title.
+
+While a program's set is shown, the keys the program does not use keep the terminal's own
+shortcuts, such as new tab, copy and paste, because the terminal reads those keys first. They are
+[drawn dimmed](/using/website-detection/#browser-keys-are-drawn-dimmed), as a browser's are under
+a website, and the program's keys stay at full strength. This needs PolyKybdHost 1.19.40.
+
+- **Programs that write their own title** need no setup: Claude Code, Gemini CLI, GitHub Copilot
+  CLI, Grok Build, Kimi Code CLI, Mistral Vibe, OpenCode, Qwen Code, Midnight Commander and
+  Zellij.
+- **The other programs write no title**, so the shell must put the running command there. fish,
+  Nushell, xonsh, cmd.exe and zsh with oh-my-zsh do this already. For bash, zsh and PowerShell,
+  use *Integrations… → Terminals* in the tray (PolyKybdHost 1.25.0), or
+  `polyctl shell-integration install`. Open a new terminal window afterwards.
+- **Codex CLI** writes a title that does not name it. Tick *Also show Codex in the title* in the
+  same page (`polyctl shell-integration install --codex`), and the shell wraps the `codex`
+  command so that its title names Codex.
+- **GDB** gets one set at the `(gdb)` prompt and another, with only Ctrl+C, while the program runs.
+  For that, tick GDB in the same dialog, or run `polyctl editor-plugins install --editor gdb`.
+  The GDB script then writes GDB's state into the title. It needs GDB 8.0 or later built with
+  Python, and is tested on Linux only. Without the script, GDB writes no title, so it needs the shell setup above and shows
+  the prompt set in both states.
+
+A Kimi Code session that has a title, and a named Qwen Code session while it waits for input, show
+only the session name in the title, so their sets are not shown then.
+
+<Aside type="caution">
+In **tmux**, the terminal keeps the title tmux had when it started, and the tmux set is shown. Add
+`set -g set-titles on` and `set -g set-titles-string '#T'` to `~/.tmux.conf` to pass the
+program's title on. In **Windows Terminal**, keep the profile setting *Suppress title changes*
+off (the default). A program in an editor's built-in terminal, such as the one in VS Code, is not
+found: the focused window is then the editor.
+</Aside>
