@@ -75,6 +75,9 @@ export default defineConfig({
     // Hardware got its own top-level section; the modification page moved out
     // of Development.
     '/development/hardware': '/hardware/modification/',
+    // WinCompose is a Windows setup step; the old Rev.2 boards are hardware.
+    '/software/wincompose': '/setup/wincompose/',
+    '/reference/old-rev2-boards': '/hardware/old-rev2-boards/',
   },
   integrations: [
     // Renders ```mermaid code blocks; must come before Starlight.
@@ -132,23 +135,10 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Assembly',
-          items: [
-            { label: 'Overview', slug: 'assembly/overview' },
-            { label: 'Parts List', slug: 'assembly/parts-list' },
-            { label: 'PCB & Gerber Files', slug: 'assembly/pcb' },
-            { label: 'Case & Spacer', slug: 'assembly/case' },
-            { label: 'Displays & FPC Extension', slug: 'assembly/displays' },
-            { label: 'Compatible Switches', slug: 'assembly/compatible-switches' },
-            { label: 'Keycap Stems', slug: 'assembly/keycap-stems' },
-            { label: 'Tenting Legs & LED Diffuser', slug: 'assembly/printed-extras' },
-            { label: 'Step-by-Step Build Guide', slug: 'assembly/step-by-step' },
-          ],
-        },
-        {
           label: 'Setup',
           items: [
             { label: 'Install PolyKybdHost', slug: 'setup/installation' },
+            { label: 'Install WinCompose (Windows)', slug: 'setup/wincompose' },
             { label: 'Flash the Firmware', slug: 'setup/flashing' },
             { label: 'Flash from an Android Phone', slug: 'setup/flashing-android' },
           ],
@@ -156,28 +146,69 @@ export default defineConfig({
         {
           label: 'Using the Keyboard',
           items: [
-            { label: 'First Start & Tutorial', slug: 'using/first-run' },
-            { label: 'Tutorials', slug: 'using/tutorials' },
-            { label: 'Context-Aware Overlays', slug: 'using/overlays' },
-            { label: 'Website-Aware Overlays', slug: 'using/website-detection' },
-            { label: 'Apps With No Overlay', slug: 'using/generic-overlays' },
-            { label: 'Shortcut Hints', slug: 'using/shortcut-hints' },
-            { label: 'Languages & Unicode Input', slug: 'using/languages' },
-            { label: 'Emoji Search', slug: 'using/emoji-search' },
-            { label: 'Glyph Scripts', slug: 'using/glyph-scripts' },
-            { label: 'Legend Size', slug: 'using/legend-size' },
-            { label: 'Macros', slug: 'using/macros' },
-            { label: 'MIDI Layer', slug: 'using/midi' },
-            { label: 'Display Brightness', slug: 'using/brightness' },
-            { label: 'RGB Lighting', slug: 'using/rgb-lighting' },
-            { label: 'Idle & Burn-in Protection', slug: 'using/idle' },
-            { label: 'Demo Mode', slug: 'using/demo-mode' },
-            { label: 'Mines', slug: 'using/mines' },
-            { label: 'Keymaps & Layers', slug: 'using/keymaps' },
-            { label: 'Keymap Editor', slug: 'using/keymap-editor' },
-            { label: 'Trackpad', slug: 'using/trackpad' },
-            { label: 'Multi-Machine Setup', slug: 'using/multi-machine' },
-            { label: 'AI Agent Keys', slug: 'using/ai-agents' },
+            {
+              label: 'Getting Started',
+              items: [
+                { label: 'First Start & Tutorial', slug: 'using/first-run' },
+                { label: 'Tutorials', slug: 'using/tutorials' },
+              ],
+            },
+            {
+              label: 'App-Aware Keys',
+              items: [
+                { label: 'Context-Aware Overlays', slug: 'using/overlays' },
+                { label: 'Supported Apps', slug: 'using/overlays/supported-apps' },
+                { label: 'Overlays That Follow the Mode', slug: 'using/overlays/mode-aware-apps' },
+                { label: 'Website-Aware Overlays', slug: 'using/website-detection' },
+                { label: 'Apps With No Overlay', slug: 'using/generic-overlays' },
+                { label: 'Shortcut Hints', slug: 'using/shortcut-hints' },
+              ],
+            },
+            {
+              label: 'Typing & Legends',
+              items: [
+                { label: 'Languages & Unicode Input', slug: 'using/languages' },
+                { label: 'The Intl Layer', slug: 'using/languages/intl-layer' },
+                { label: 'Japanese & Korean Input', slug: 'using/languages/cjk-input' },
+                { label: 'Emoji Layer', slug: 'using/languages/emoji-layer' },
+                { label: 'Emoji Search', slug: 'using/emoji-search' },
+                { label: 'Glyph Scripts', slug: 'using/glyph-scripts' },
+                { label: 'Legend Size', slug: 'using/legend-size' },
+              ],
+            },
+            {
+              label: 'Keymaps & Layers',
+              items: [
+                { label: 'Keymaps & Layers', slug: 'using/keymaps' },
+                { label: 'Keymap Editor', slug: 'using/keymap-editor' },
+                { label: 'Macros', slug: 'using/macros' },
+                { label: 'MIDI Layer', slug: 'using/midi' },
+                { label: 'Trackpad', slug: 'using/trackpad' },
+              ],
+            },
+            {
+              label: 'Display & Lighting',
+              items: [
+                { label: 'Display Brightness', slug: 'using/brightness' },
+                { label: 'RGB Lighting', slug: 'using/rgb-lighting' },
+                { label: 'Idle & Burn-in Protection', slug: 'using/idle' },
+                { label: 'Demo Mode', slug: 'using/demo-mode' },
+              ],
+            },
+            {
+              label: 'Workflows',
+              items: [
+                { label: 'Multi-Machine Setup', slug: 'using/multi-machine' },
+                { label: 'AI Agent Keys', slug: 'using/ai-agents' },
+                { label: 'AI Agents in the Cloud', slug: 'using/ai-agents/remote-agents' },
+              ],
+            },
+            {
+              label: 'Extras',
+              items: [
+                { label: 'Mines', slug: 'using/mines' },
+              ],
+            },
           ],
         },
         {
@@ -188,9 +219,7 @@ export default defineConfig({
             { label: 'Settings Reference', slug: 'software/settings' },
             { label: 'Daemon & Client Model', slug: 'software/architecture' },
             { label: 'Command Line (polyctl)', slug: 'software/cli' },
-            { label: 'WinCompose', slug: 'software/wincompose' },
             { label: 'Reporting a Problem', slug: 'software/reporting-problems' },
-            { label: 'Usage Data & Privacy', slug: 'software/telemetry' },
           ],
         },
         {
@@ -199,28 +228,56 @@ export default defineConfig({
             { label: 'Overview', slug: 'firmware/overview' },
             { label: 'Keyboard Variants', slug: 'firmware/variants' },
             { label: 'Font Packs & Resources', slug: 'firmware/font-packs' },
+            {
+              label: 'Beyond Stock QMK',
+              collapsed: true,
+              items: [
+                { label: 'What PolyKybd Adds', slug: 'beyond-qmk/overview' },
+                { label: 'Firmware Update over HID', slug: 'beyond-qmk/firmware-update' },
+                { label: 'Firmware Signing', slug: 'beyond-qmk/signing' },
+                { label: 'Crash Handler & Watchdog', slug: 'beyond-qmk/crash-handler' },
+                { label: 'The Second Core (core1)', slug: 'beyond-qmk/core1' },
+                { label: '200 MHz System Clock', slug: 'beyond-qmk/system-clock' },
+                { label: 'Split Link Sync', slug: 'beyond-qmk/split-link' },
+                { label: 'Main-Loop Profiler', slug: 'beyond-qmk/loop-profiler' },
+                { label: 'Community Modules', slug: 'beyond-qmk/community-modules' },
+                { label: 'PRC Image Decoder', slug: 'beyond-qmk/prc-decoder' },
+              ],
+            },
           ],
         },
         {
-          label: 'Beyond Stock QMK',
-          items: [
-            { label: 'What PolyKybd Adds', slug: 'beyond-qmk/overview' },
-            { label: 'Firmware Update over HID', slug: 'beyond-qmk/firmware-update' },
-            { label: 'Firmware Signing', slug: 'beyond-qmk/signing' },
-            { label: 'Crash Handler & Watchdog', slug: 'beyond-qmk/crash-handler' },
-            { label: 'The Second Core (core1)', slug: 'beyond-qmk/core1' },
-            { label: '200 MHz System Clock', slug: 'beyond-qmk/system-clock' },
-            { label: 'Split Link Sync', slug: 'beyond-qmk/split-link' },
-            { label: 'Main-Loop Profiler', slug: 'beyond-qmk/loop-profiler' },
-            { label: 'Community Modules', slug: 'beyond-qmk/community-modules' },
-            { label: 'PRC Image Decoder', slug: 'beyond-qmk/prc-decoder' },
-          ],
-        },
-        {
-          label: 'Hardware',
+          label: 'Hardware & Assembly',
           items: [
             { label: 'Electronics & Schematics', slug: 'hardware/electronics' },
             { label: 'PCB & Case Modification', slug: 'hardware/modification' },
+            { label: 'Old Rev.2 Boards (2023)', slug: 'hardware/old-rev2-boards' },
+            {
+              label: 'Assembly Guide',
+              collapsed: true,
+              items: [
+                { label: 'Overview', slug: 'assembly/overview' },
+                { label: 'Parts List', slug: 'assembly/parts-list' },
+                { label: 'PCB & Gerber Files', slug: 'assembly/pcb' },
+                { label: 'Case & Spacer', slug: 'assembly/case' },
+                { label: 'Displays & FPC Extension', slug: 'assembly/displays' },
+                { label: 'Compatible Switches', slug: 'assembly/compatible-switches' },
+                { label: 'Keycap Stems', slug: 'assembly/keycap-stems' },
+                { label: 'Tenting Legs & LED Diffuser', slug: 'assembly/printed-extras' },
+                { label: 'Step-by-Step Build Guide', slug: 'assembly/step-by-step' },
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Customize & Extend',
+          items: [
+            { label: 'Edit the Keymap', slug: 'howto/edit-keymap' },
+            { label: 'Add a Keyboard Language', slug: 'howto/add-language' },
+            { label: 'Add a Glyph Script', slug: 'howto/add-glyph-script' },
+            { label: 'Create App Overlays', slug: 'howto/app-overlays' },
+            { label: "Make Your App's Shortcuts Readable", slug: 'howto/app-shortcuts-for-developers' },
+            { label: 'Build & Flash from Source', slug: 'howto/build-and-flash' },
           ],
         },
         {
@@ -234,24 +291,27 @@ export default defineConfig({
           ],
         },
         {
-          label: 'HowTo',
+          label: 'Reference',
           items: [
-            { label: 'Add a Keyboard Language', slug: 'howto/add-language' },
-            { label: 'Add a Glyph Script', slug: 'howto/add-glyph-script' },
-            { label: 'Create App Overlays', slug: 'howto/app-overlays' },
-            { label: "Make Your App's Shortcuts Readable", slug: 'howto/app-shortcuts-for-developers' },
-            { label: 'Build & Flash from Source', slug: 'howto/build-and-flash' },
-            { label: 'Edit the Keymap', slug: 'howto/edit-keymap' },
+            {
+              label: 'HID Protocol',
+              items: [
+                { label: 'Overview & Report Format', slug: 'reference/hid-protocol' },
+                { label: 'Message Formats', slug: 'reference/hid-protocol/message-formats' },
+                { label: 'Image Encodings', slug: 'reference/hid-protocol/image-encodings' },
+                { label: 'Overlay Mapping & Addressing', slug: 'reference/hid-protocol/overlay-mapping' },
+                { label: 'Protocol Versions', slug: 'reference/hid-protocol/protocol-versions' },
+              ],
+            },
+            { label: 'Glossary', slug: 'reference/glossary' },
           ],
         },
         {
-          label: 'Reference',
+          label: 'Privacy',
           items: [
-            { label: 'HID Protocol', slug: 'reference/hid-protocol' },
+            { label: 'Usage Data & Privacy', slug: 'software/telemetry' },
             { label: 'Website Analytics', slug: 'reference/website-analytics' },
             { label: 'Browser Extension Privacy', slug: 'reference/browser-extension-privacy' },
-            { label: 'Glossary', slug: 'reference/glossary' },
-            { label: 'Old Rev.2 Boards (2023)', slug: 'reference/old-rev2-boards' },
           ],
         },
       ],

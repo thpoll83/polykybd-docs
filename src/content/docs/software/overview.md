@@ -18,15 +18,13 @@ Without PolyKybdHost, the keyboard works as a standard QMK keyboard — all keys
 
 ## Daemon and client model
 
-PolyKybdHost runs in two parts. A background **daemon** owns the keyboard connection and tracks the active window. The **tray app** attaches to it as a client, and starts it if it is not running. You can quit and reopen the tray app without losing the keyboard connection. The [`polyctl`](/software/cli/) command-line tool talks to the same daemon, so you can script the keyboard without the tray app. See [Daemon & Client Model](/software/architecture/).
+A background daemon owns the keyboard connection. The tray app and the [`polyctl`](/software/cli/) command are clients of it, so you can quit the tray app without losing the connection. See [Daemon & Client Model](/software/architecture/).
 
 ## Operating modes
 
 **Normal mode (default):** PolyKybdHost runs on the machine the keyboard is physically plugged into. It owns the HID device, tracks the active window, and pushes overlay, icon, and keymap updates directly to the keyboard.
 
 **Forwarder mode:** PolyKybdHost runs on a second computer with no keyboard attached and sends that computer's active window over TCP to the instance the keyboard is plugged into. One keyboard then serves several computers. See [Multi-Machine](/using/multi-machine/).
-
-See [Multi-Machine Setup](/using/multi-machine/) for details.
 
 ## System requirements
 

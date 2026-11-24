@@ -60,7 +60,7 @@ key** (Win, Cmd or Super):
 - **On macOS the GUI and Alt keys swap**, so the modifier row reads Ctrl, Option, Command as on
   a Mac keyboard. The keycaps show ⌥ and ⌘, and each key sends what its keycap shows.
 - The same OS picks the [shortcut hints](/using/shortcut-hints/) and what the
-  [IME key](/using/languages/#the-ime-key-korean-japanese-and-us-english) sends.
+  [IME key](/using/languages/cjk-input/#the-ime-key-korean-japanese-and-us-english) sends.
 
 PolyKybdHost reports the OS automatically. On the split72 you can set one by hand instead: the settings
 layer's second row has **Auto**, **Windows**, **macOS**, **Linux** and **Android**, and the
@@ -206,26 +206,7 @@ The keyboard uses a 200 ms tapping term by default, with QMK's **chordal hold** 
 fast overlapping key presses do not trigger a modifier. You can change the tapping term
 and the Flow Tap term; see [Tap-hold timing](/using/keymap-editor/#tap-hold-timing).
 
-## Where the keymap code is
-
-The shared keymap *logic* (rendering, HID handling, language selection, and the QMK callbacks) is in:
-
-```
-keyboards/polykybd/keys_com/poly_keymap.c
-```
-
-Each variant's default keymap *data* — the `keymaps[]` array and `encoder_map[]` — is in its own
-variant directory:
-
-```
-keyboards/polykybd/split72/keymaps/default/keymap.c
-keyboards/polykybd/split42/keymaps/default/keymap.c
-```
-
-Both are in the [PolyKybd firmware repo](https://github.com/thpoll83/qmk_firmware/tree/PolyKybd).
-See [Keyboard Variants](/firmware/variants/) for why the logic is shared.
-
-## Customizing with PolyKybdHost
+## Changing the keymap
 
 <Aside type="caution" title="Updating from 1.11 or older resets the keymap and macros once">
 Firmware 1.13.0 adds the [MIDI layer](/using/midi/) as a ninth remappable layer. On the first
@@ -233,41 +214,16 @@ start after the update, the keyboard resets your remaps **and deletes your macro
 again after the update. Later updates keep them.
 </Aside>
 
-The easiest way to remap keys is through the PolyKybdHost keymap editor, which writes changes
-directly to the keyboard's dynamic keymap without needing to recompile firmware:
+There are two routes:
 
-1. Open PolyKybdHost (system tray icon → **Configure Keymap**)
-2. Click any key to select it
-3. Choose the new keycode from the browser
-4. The change is written immediately to the keyboard
+- **PolyKybdHost [Keymap Editor](/using/keymap-editor/).** Tray icon → **Configure Keymap**, click a key,
+  pick a keycode. The change is written to the keyboard at once, without a rebuild. This is also where
+  you set dual-function keys, combos and tap dances.
+- **QMK source.** For new layers, encoder behaviour or more than 16 macros. Steps, file paths and
+  limits are in [Edit the Keymap](/howto/edit-keymap/).
 
-This is also where you assign **dual-function keys** — a key that types a letter on a tap and
-acts as a modifier (or switches layer) when held. The keycap keeps its letter and shows the
-held modifier as a small corner mark. See [Keymap Editor](/using/keymap-editor/) for details.
-
-## Customizing in QMK source
-
-For deeper changes (new layers, or macros beyond the Keymap Editor's 16 slots), edit the
-variant's `keymap.c` directly. Combos and tap dances are set only in the
-[Keymap Editor](/using/keymap-editor/#combos-and-tap-dance), 16 of each: the firmware ignores
-`key_combos[]` and `tap_dance_actions[]` in `keymap.c`. The
-`keymaps[]` array is data only:
-
-```c
-const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-    [0] = LAYOUT(
-        KC_ESC,  KC_1,  KC_2,  /* ... */
-    ),
-    [1] = LAYOUT(
-        /* function layer */
-    ),
-};
-```
-
-Then rebuild and flash the firmware (target `polykybd/split72` or `/split42`).
-
-QMK's full keycode reference is at [docs.qmk.fm/keycodes](https://docs.qmk.fm/keycodes). Everything
-documented there works on PolyKybd.
+QMK's keycode reference is at [docs.qmk.fm/keycodes](https://docs.qmk.fm/keycodes). Every keycode
+there works on PolyKybd.
 
 ## Layer indicator on the status display
 

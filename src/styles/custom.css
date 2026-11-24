@@ -151,6 +151,9 @@
    --------------------------------------------------------------------------- */
 
 :root {
+  /* Widest a diagram grows. The root font size is 80%, so 85rem is 1088 px. */
+  --pk-diagram-max-width: 85rem;
+
   /* Fill the full reclaimed width. This is a cap, not a fixed width: on normal
      and wide screens (up to ~1960px) the content pane is narrower than this, so
      the content spans it edge-to-edge with no right-hand gap; only on very wide
@@ -166,13 +169,25 @@
 .sl-markdown-content .mermaid {
   text-align: center;
   margin-inline: auto;
+  max-width: var(--pk-diagram-max-width);
 }
 .sl-markdown-content .mermaid svg {
   width: 100%;
   height: auto;
-  /* Override Mermaid's inline max-width (the diagram's natural size) so it can
-     use the whole column rather than capping at its rendered pixel width. */
-  max-width: 100% !important;
+  /* Mermaid sets an inline max-width equal to the diagram's natural size. Keep
+     it: a small diagram stays at natural size, and a wide one fills its
+     container, which is capped at --pk-diagram-max-width. Wider than that, the
+     eye travels too far and the diagram is hard to read. */
+  margin-inline: auto;
+}
+
+/* A standalone SVG image (a figure, not a badge or an inline icon) gets the
+   same cap and is centred. */
+.sl-markdown-content p > img[src$='.svg']:only-child {
+  display: block;
+  max-width: min(100%, var(--pk-diagram-max-width));
+  height: auto;
+  margin-inline: auto;
 }
 
 /* ---------------------------------------------------------------------------

@@ -19,7 +19,7 @@ flowchart TB
     slave["<b>QMK firmware</b> — same image, slave role<br/>Slave half<br/>• mirrors state + overlays to its keys"]
 ```
 
-The two keyboard halves run the **same firmware image**; which half is master is decided at runtime (the half with USB power; on an [old Rev.2 board](/reference/old-rev2-boards/), the half the computer recognises over USB). They stay in sync over a CRC32-validated full-duplex serial link.
+The two keyboard halves run the **same firmware image**; which half is master is decided at runtime (the half with USB power; on an [old Rev.2 board](/hardware/old-rev2-boards/), the half the computer recognises over USB). They stay in sync over a CRC32-validated full-duplex serial link.
 
 <Aside type="tip">
 For more depth, [System Model & Data Flow](/development/system-model/) covers the HID commands,
@@ -46,7 +46,7 @@ the flash map and the main runtime processes.
 Those four are the stack itself. Four more repositories support it without being a layer of it:
 
 - [thpoll83/polykybd-ctnd](https://github.com/thpoll83/polykybd-ctnd) — a Raspberry Pi **hardware-in-the-loop** rig that flashes and tests firmware on real hardware as part of CI. Development infrastructure rather than something you need to use the keyboard; see [Test Rig & CI](/development/test-rig/).
-- [thpoll83/wincompose](https://github.com/thpoll83/wincompose) — a maintained fork of Sam Hocevar's **WinCompose**, maintained because compose-key [unicode input on Windows](/software/wincompose/) is a hard dependency for PolyKybd.
+- [thpoll83/wincompose](https://github.com/thpoll83/wincompose) — a maintained fork of Sam Hocevar's **WinCompose**, maintained because compose-key [unicode input on Windows](/setup/wincompose/) is a hard dependency for PolyKybd.
 - [thpoll83/gnome-wayland-winreader](https://github.com/thpoll83/gnome-wayland-winreader) — a **read-only** GNOME Shell extension that reports the focused window over D-Bus. On GNOME/Wayland, Mutter does not expose the active window over X11/EWMH, so the usual window-tracking libraries cannot see native Wayland windows.
 - [thpoll83/polykybd-docs](https://github.com/thpoll83/polykybd-docs) — this documentation site.
 

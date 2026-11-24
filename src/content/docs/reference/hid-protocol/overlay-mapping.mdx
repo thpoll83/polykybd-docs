@@ -1,0 +1,161 @@
+---
+title: HID Overlay Mapping and Addressing
+description: "The icon library, mapping flags, dimmed icons, keys without a legend and the overlay index space used by the HID overlay commands."
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+This page is part of the [HID Protocol Reference](/reference/hid-protocol/).
+
+## Icon library fills
+
+Since **v20** the icons that the app templates share are stored in the keyboard's flash, on both
+halves, as one more font-pack bundle: `icons.plyi`, bundle 8, a 512 KB slot since
+**v27** (256 KB before). When the host
+switches app, it no longer uploads such an icon. It sends a pair instead: which pool slot to
+fill, and which icon to draw there. Each half draws the icon from its own flash.
+
+The host decides by exact pixels. It fills a slot only when the image it would upload is,
+byte for byte, a glyph in the bundle it shipped, and only when the keyboard reports that same
+bundle version. So the keycap shows exactly what an upload would have shown. Anything else
+(an app's own drawings, text labels, the ESC program mark) is uploaded as before, with PRC.
+
+**What it saves.** Counted through the host's own send path, for a cold switch into each app
+(nothing in the keyboard's image pool yet), on top of PRC:
+
+| App | Reports with PRC | With the icon library |
+|---|---|---|
+| JetBrains IDEs | 84 | 32 |
+| Calculator | 64 | 9 |
+| paint.net | 59 | 11 |
+| Photoshop | 46 | 15 |
+| All 60 template sets | 1,868 | 744 |
+
+**The report** uses the same packing as `SEND_OVERLAY_MAPPING_W`: byte 2 is the value width
+(8–16 bits), then 61 bytes of `(pool slot, icon id)` pairs, padded by repeating the last pair.
+At 10 bits that is 24 pairs per report.
+
+**The reply** is `P` `0x2A` `.` when every pair was applied on both halves. Otherwise it is
+`P` `0x2A` `!`, and byte 3 names the first pair the keyboard did not apply. The host uploads
+that image and every one after it as a normal upload. A half without the icon bundle refuses the whole
+report, which reads as pair 0, so a keyboard that missed the bundle still shows every icon.
+
+**The bundle** has the font-pack layout with its own magic, `PlyI`, so the font loader can never
+load an icon as a character. Each icon is stored cropped to its set pixels, with its position on
+the 72 × 40 keycap. The icon ids are frozen: a new icon takes the next id, and an existing id
+never changes, because only the id is sent. The host flashes the bundle like
+any other, over [BEGIN / CHUNK / COMMIT](/reference/hid-protocol/#resource-flash-transport).
+
+<Aside type="note">
+Since v20 the GET_ID version block lists one version per bundle slot: ten slots (`0..9`) in current firmware, slot 9 being the emoji-search dictionary. Since firmware 1.11.5 each bundle's
+version follows these rules, in this order:
+
+- A COMMIT of the bundle did not finish on both halves: the block reports the lower of the
+  versions the master knows, minus 1 (the master's own, minus 1, when it has not read the
+  slave's). This holds until the master reads the slave's versions again, about 3 seconds later.
+- The master has not read the slave's versions (after boot or a split-link drop): the block
+  reports the master's version.
+- Both halves hold the same version: the block reports that version.
+- The halves hold different versions: the block reports the **lower** version minus 1. The
+  result is below both halves, so the host flashes that bundle to both of them again, and both
+  end on the same version. A half without the bundle has version 0, and 0 stays 0.
+
+The host flashes on its own only when **Settings → Keyboard → Send font packs on connect** (*Update on connect* before host 1.28.9) is on.
+With it off, run `polyctl fontpack sync`.
+
+Firmware 1.11.5 and later fills pool slots from the icon library only when the master has read
+the slave's library version and it equals its own. Otherwise the keyboard refuses the whole
+report (`!` at pair 0), and the host sends those icons as normal images. After a font-pack
+COMMIT (not a DOOM pack) the master reads the slave's versions again about 3 seconds later,
+and until that read succeeds every icon fill is refused. One exception: below v27 the host does not send an icon library
+over 256 KB at all, even to a half that has none (see v27 under
+[Protocol versions](/reference/hid-protocol/protocol-versions/#protocol-versions)).
+</Aside>
+
+## Mapping flags
+
+Since **v21** (firmware 1.3.1, host 1.7.0) an app switch no longer needs its own reports to
+prepare and switch on the overlays. Two bits of `SEND_OVERLAY_MAPPING_W`'s width byte do it:
+
+| Bit | Value | Effect |
+|---|---|---|
+| 6 | `0x40` | **Prepare**, before the report's pairs are applied: clear the old mapping and usage bits, the same as `OVERLAY_FLAGS on` with the reset bits. |
+| 5 | `0x20` | **Enable**, after the pairs are applied: show the overlays, the same as `OVERLAY_FLAGS on` with the display bit. |
+| 7 | `0x80` | **Dim** (v23+): draw every icon this report maps dimmed. See [dimmed icons](#dimmed-icons). |
+
+The keyboard masks the width with `0x1F` before it decodes the pairs, so the value width is
+unchanged (8–16 bits). A report whose masked width is out of range is refused before either flag
+is applied, so a malformed report changes nothing.
+
+The host puts the prepare flag on the first mapping report of a switch and the enable flag on the
+last. When the switch has to upload images first, the host still sends the prepare as its own
+report, just before the first image: an image written into a slot the old mapping still shows
+would otherwise appear on the old key for a moment.
+
+**What it saves.** Counted through the host's own send path over all 60 template sets:
+
+| Switch | Before v21 | v21 |
+|---|---|---|
+| Warm (every image already in the keyboard's pool) | 249 reports | 129 |
+| Cold (nothing in the pool yet) | 744 reports | 684 |
+
+A warm switch, the common case when you move between apps you use all the time, is now its
+mapping reports only.
+
+<Aside type="note">
+A keyboard older than v21 would read a flagged width byte as a width above 16 and drop the
+report, so the host sets the flags only when the keyboard reports v21 or later. Older keyboards
+get the separate `OVERLAY_FLAGS on` reports as before.
+</Aside>
+
+### Dimmed icons
+
+Since **v23** (firmware 1.8.4, host 1.17.0) bit 7 of the width byte (`0x80`) marks every pair in
+the report as **dim**. The keyboard stores one dim bit per display position, beside the usage
+bits, and the prepare step clears it. A dimmed icon is drawn with only its even rows and even
+columns lit, a quarter of its pixels. The area kept clear for the legend is still computed from the full icon, so
+the legend sits where it always does, and the legend itself is never dimmed.
+
+The keyboard dims at draw time, so the image in the pool is the same whether it is shown dimmed
+or not. A browser icon dimmed under one website and drawn full in the plain browser is one pool
+entry, and switching between the two uploads nothing.
+
+The host puts dimmed and plain pairs in separate reports. It dims the keys that still show a
+browser's shortcut under a [website's overlay](/using/website-detection/#browser-keys-are-drawn-dimmed),
+except the program icon on Esc. Below v23 the host never sets the bit: a v21 or v22 keyboard
+masks the width with `0x1F` and would draw a flagged report at full strength anyway.
+
+### Keys without a legend
+
+Since **v25** (firmware 1.9.15, host 1.17.82) a mapping pair can mark a key whose icon replaces
+the whole keycap. The pair's `to` value is the pool slot **plus 600** (the pool size), so a `to` of
+600–1199 means slot `to − 600`, drawn without the key legend. Before it draws such an icon, the
+keyboard clears the whole 72×40 cell instead of the 3 px around the icon, so no part of the legend
+shows. Every pair sets or clears the mark, so a key that moves to a plain pair gets its legend back.
+
+The marked pairs travel in the same reports as the plain ones. A slot below 424 still fits a
+10-bit value; a higher slot needs 11 bits, which the host already chooses per pair. The host marks
+the keys an overlay file lists (see [keys without a legend](/howto/app-overlays/#keys-without-a-legend)
+in the overlay how-to), such as the full-cell mark on Esc of the Age of Empires II sets.
+
+A keyboard before v25 refuses a `to` of 600 or more as outside the pool and leaves the key blank,
+so the host adds the 600 only from v25. With an older keyboard the host sends the plain slot: the
+legend is still drawn, and the icon is drawn over it with the usual 3 px clear margin around the icon.
+
+## Overlay addressing
+
+A keycap image is addressed by **90 keycap slots × 16 modifier variants**:
+
+```
+overlay_index = keycode_slot + 90 * modifier_variant
+```
+
+Since **v12** the modifier variant is simply the modifier bitmask — bit 0 Ctrl, bit 1 Shift,
+bit 2 Alt, bit 3 GUI — so all 16 combinations are addressable and the numbering is self-describing
+(variant 0 = bare, 5 = Ctrl+Alt, 10 = GUI+Shift, 15 = all four). Before v12 there were 9 variants
+and GUI could not be combined with anything.
+
+That index is an **address, not storage**. It selects an entry in a lookup table that points at
+one of **600 slots** in the image pool (360 bytes each, ≈ 211 KiB). Variants that share the same
+artwork share a slot, so adding variants costs address space rather than image memory — which is
+why v12 grew the addressable set from 810 to 1440 without needing more room for pixels.

@@ -1,0 +1,182 @@
+---
+title: HID Protocol Reference
+description: "The raw HID report protocol used by PolyKybdHost to communicate with the PolyKybd firmware: report format, command areas and protocol versions."
+---
+
+
+import { Aside } from '@astrojs/starlight/components';
+
+PolyKybdHost communicates with the firmware over a custom **raw HID** report protocol. The same protocol is used by the [HIL test rig](/development/test-rig/) to test the firmware in CI.
+
+<Aside type="tip">
+For an overview of these commands, grouped by purpose (overlays, identity & language,
+configuration, resource flashing) and how they fit the wider system, see the
+[System Model & Data Flow](/development/system-model/#the-hid-command-set) page.
+</Aside>
+
+## Report format
+
+Every message is one 64-byte report on the keyboard's raw HID interface (usage page
+`0xFF61`, usage `0x62`). The host's HID library puts a report-ID byte `0x00` in front of
+each write; the offsets on this page are the 64 bytes the firmware sees, after that byte.
+
+| Offset | Request | Reply |
+|---|---|---|
+| `[0]` | `0x50` (`P`) | `0x50` (`P`) |
+| `[1]` | Command ID | Command ID, echoed |
+| `[2]` | First payload byte | Status: `.` (`0x2E`) accepted, `!` (`0x21`) refused |
+| `[3..63]` | Payload | Reply body |
+
+- Unused bytes are `0` in both directions.
+- PolyKybd's own multi-byte fields are **little-endian**. The QMK keymap commands
+  ([below](/reference/hid-protocol/message-formats/#qmk-keymap-commands)) keep QMK's big-endian order.
+- A report whose `[0]` is not `0x50` goes to the QMK keymap handler instead. (`0x09` in
+  `[0]` is also accepted as `P`, for historical reasons.)
+- An unknown command is answered with the request echoed back and `[2]` set to `!`.
+- The bulk overlay commands get no reply at all; see the note under
+  [Resource-flash transport](#resource-flash-transport).
+
+The main dispatcher is in the firmware's `hid_com.c` (`raw_hid_receive()`); firmware
+update (`0x40`–`0x45`) is in `hid_fw_up.c` and the font-pack transport (`0x50`–`0x53`) in
+`hid_fontpack.c`. Exact byte layouts for every command are under
+[Message formats](/reference/hid-protocol/message-formats/#message-formats). The `PROTOCOL_VERSION`, reported inside the
+**GET_ID** identity string, tells the host which commands this keyboard understands, so each
+feature can be enabled or greyed out individually.
+
+## Command areas
+
+The commands are grouped below by purpose. IDs are shown in hex, with the decimal form where the
+source commonly uses it.
+
+### Identity & language
+
+| Command | ID | Notes |
+|---|---|---|
+| **GET_ID** | `0x06` | Identity string incl. `PROTOCOL_VERSION` and firmware version, plus (v6+) a per-bundle [font-pack](/firmware/font-packs/) version block after the string's NUL. The connect handshake and liveness check. |
+| **GET_LANG** | `0x07` | Query the active keyboard language. |
+| **CHANGE_LANG** | `0x09` | Select the active language. |
+| **GET_LANG_LIST_PACKED** | `0x1b` (27) | **v2+.** Language list as a count byte plus one 2-byte `(ISO 639-1 index, ISO 3166-1 alpha-2 index)` pair per language. The only language-list command on current firmware. |
+| **GET_LANG_LIST (ASCII)** | `0x08` | **Retired.** Returned 4 ASCII chars per language; now NACKs (`P\x08!`). |
+| **GET_DEFAULT_LAYER** | `0x16` (22) | Read/select the persisted default layer. |
+
+### Overlays — the bulk data path
+
+| Command | ID | Notes |
+|---|---|---|
+| **SEND_OVERLAY** | `0x0A` | Plain overlay: each 360-byte keycap in 6 × 60-byte segments. (v11 packs modifier + segment into one header byte so a 60-byte segment fits the report exactly.) |
+| **START / SEND_COMPRESSED_OVERLAY** | `0x10` / `0x11` | RLE-compressed keycap in 1–2 packets; decompressed in firmware (optionally on RP2040 core1). The common case. |
+| **START / SEND_ROI_OVERLAY** | `0x12` / `0x13` | Partial refresh of a region of a keycap's display. |
+| **SEND_PRC_OVERLAY** | `0x29` (41) | **v19+.** [PRC](/reference/hid-protocol/image-encodings/#prc-predictive-range-coding)-coded keycap images, several records per report. A typical icon codes to about a third of the bytes of the best older encoding. |
+| **FILL_POOL_FROM_ICON** | `0x2A` (42) | **v20+.** Fills pool slots from the [icon library](/reference/hid-protocol/overlay-mapping/#icon-library-fills) in the keyboard's flash: `(pool slot, icon id)` pairs instead of bitmaps. The one bulk overlay command that replies. |
+| **SEND_OVERLAY_MAPPING** | `0x15` (21) | Maps overlay pool slots to displays / usage bits, at a fixed 10 bits per index. **No reply since v3** (no per-chunk ACK). The only mapping command a pre-v12 keyboard understands. |
+| **SEND_OVERLAY_MAPPING_W** | `0x21` (33) | **v12+.** The same mapping stream, but a width byte says how many bits each index uses (8–11), so the host packs each group of pairs as tightly as it fits. Also sends no reply. Since **v21** two bits of the width byte can also trigger the prepare and enable steps of an app switch, and since **v23** a third draws the report's icons dimmed; see [mapping flags](/reference/hid-protocol/overlay-mapping/#mapping-flags). Since **v25** a pool slot sent plus 600 draws that key [without its legend](/reference/hid-protocol/overlay-mapping/#keys-without-a-legend). |
+| **OVERLAY_FLAGS on / off** | `0x0B` / `0x0C` | Enable/disable overlay rendering; enable forces a sync of the overlay state to the slave. From v21 the prepare and enable steps of an app switch can be sent in the mapping reports as [flags](/reference/hid-protocol/overlay-mapping/#mapping-flags) instead. The host still sends the prepare as its own report before any image upload, and sends both as their own reports when a switch has no mapping report. `off` is unchanged. |
+| **SAVE_MRU** | `0x1A` (26) | Persist the keyboard's most-recently-used emoji / language picks. Unrelated to the host's overlay cache. |
+
+### Configuration & display
+
+| Command | ID | Notes |
+|---|---|---|
+| **SET_BRIGHTNESS** | `0x0D` (13) | Keycap OLED contrast; a flags byte selects volatile / host-auto (**v5+**). |
+| **KEYPRESS** | `0x0E` (14) | Host-injected key event. Refused (`!`) unless debug mode is on. |
+| **IDLE_STATE** | `0x0F` (15) | Start / stop the [idle](/using/idle/) animation. |
+| **SET_UNICODE_MODE** | `0x14` (20) | Select the OS unicode-input mode. Since **v17** a flag byte can apply it for this session only, leaving the stored mode alone. |
+| **DISPLAY_OFF** | `0x18` (24) | Blank the keycaps. |
+| **IDLE_STYLE** | `0x1C` (28) | **v4+.** Get/set the idle style (pulse, jitter, IDDQD, Eden). |
+| **SET_OS** | `0x1D` (29) | **v7+.** Get/set the host OS, which picks the modifier legends and the [shortcut hints](/using/shortcut-hints/). The host sends it in auto mode; an OS fixed on the keyboard's settings layer takes priority. |
+| **GLYPH_SCRIPT** | `0x1E` (30) | **v9+.** Get/set the [glyph-script](/using/glyph-scripts/) override (open-ended index since v10). Since **v26** a second byte sets the [placement](/using/glyph-scripts/#placement-centred-or-top-left), centred or top-left. |
+| **REPLAY_ANIM** | `0x1F` (31) | **v11+.** Play the startup animation once, whatever the idle style. Used by `polyctl replay-anim`. |
+| **PROFILER** | `0x20` (32) | Read or reset the [main-loop profiler](/beyond-qmk/loop-profiler/). Only profiler builds answer it; every other build NACKs. |
+| **GLYPH_SIZE** | `0x22` (34) | **v13+.** Get/set the [legend size](/using/legend-size/) — how large a key's main legend is drawn. A closed range (0 small / 1 medium / 2 large); anything else NACKs. |
+| **GET_LAYER_NAMES** | `0x23` (35) | **v14+.** Read-only. The keyboard reports how many layers it lets you remap and what each is called — the labels the [layout editor](/using/keymap-editor/) puts on its layer tabs. The reply starts with its own total length, then the count, then one NUL-terminated name per layer. |
+| **MACRO_INFO** | `0x24` (36) | **v15+.** How many [macros](/using/macros/) the keyboard holds, how long a label may be, and how much of the shared body buffer is used. Read-only. |
+| **MACRO_BODY** | `0x25` (37) | **v15+.** Read or write a window of the shared macro body buffer — offset, count, bytes. The bodies are NUL-separated, so the host reads the whole buffer, edits one and writes it back. |
+| **MACRO_LABEL** | `0x26` (38) | **v15+.** Get/set one macro's label — the short text the keycap shows along its bottom edge. |
+| **CRASH_RECORD** | `0x27` (39) | **v16+.** Read the keyboard's last [crash record](/software/reporting-problems/#when-the-keyboard-firmware-crashes) — `0` this half, `1` the link-side half (read over the split link), `2` clears it. The reply is a flags byte (present / fresh) and the 48-byte record: crash kind, core, the faulting `pc`/`lr`/`sp`, what the firmware was doing, uptime and firmware version. |
+| **IDLE_TIMEOUT** | `0x28` (40) | **v18+.** Get/set how long the keyboard waits before it starts [fading into the idle style](/using/idle/#how-long-before-it-idles) — a preset index (0 = 15 sec … 5 = 5 min), or `0xFF` to query. A closed range like `GLYPH_SIZE`: anything else NACKs. The reply carries both the preset **and** its duration in seconds, so a host older than the keyboard can still label a preset it does not know. |
+| **TAP_TERMS** | `0x2C` (44) | **v29+.** Get/set the [tap-hold timing](/using/keymap-editor/#tap-hold-timing): the tapping term (100–500 ms) and the Flow Tap term (0–300 ms, 0 = off), in 10 ms steps. **v30+:** also [Auto Shift](/using/keymap-editor/#auto-shift) on/off and its timeout (100–500 ms). Closed ranges: a value outside them NACKs, and a report with one bad value changes nothing. |
+| **REBOOT** | `0x2B` (43) | **v22+.** Restart both halves and save nothing. The keyboard answers before it resets. It exists for the host's [boot-loop test](/software/reporting-problems/#catching-a-crash-that-happens-only-occasionally), which reboots hundreds of times. |
+| **AI** | `0x2D` (45) | **v31+.** [Agent keys](/using/ai-agents/): query the AI-mode state, set the state and card of each number key, and read the key presses made in AI mode. Op and states are closed ranges; anything else NACKs. |
+| **AI_CARD** | `0x2E` (46) | **v31+.** Upload one 60-byte segment of an agent card (a 72×40 keycap image) straight into a pool slot. |
+| **KEY_ATTENTION** | `0x2F` (47) | **v32+.** Run the focus ripple on one key, a number of times or until cancelled. split72 only; split42 accepts a valid request and draws nothing. **v34+:** op 2 GUIDE runs the ripple along a path of up to four layer keys to a target layer, for the [MIDI guide](/using/midi/#first-time-guide). |
+| **COMBOS** | `0x30` (48) | **v33+.** Read and set the runtime combos and tap dances (16 of each), then commit them to the flash of both halves. Records are a closed range: a bad record NACKs. The DOOM build NACKs every op. |
+| **HOST_TUTORIAL** | `0x31` (49) | **v35+.** The host's [tutorials](/using/tutorials/): two lines of text on the status displays, a spotlight that darkens every key but a set of keys, the reveal wave, and up to four key, keycode or layer conditions the host polls. Kept in RAM; the keyboard ends the session after 10 s without a report. The DOOM build NACKs it. |
+| **BOOTLOADER / HANDEDNESS** | `0x17` / `0x19` | Enter bootloader; set which half is which. |
+
+### Layer names — the reply format
+
+`GET_LAYER_NAMES` answers with a payload that describes its own length, so a reader
+knows when it has the whole thing without waiting for a timeout:
+
+| Offset | Bytes | Meaning |
+| --- | --- | --- |
+| `0` | 1 | **total** — the whole payload length, this byte included |
+| `1` | 1 | **count** — how many layers are named |
+| `2…` | rest | `count` NUL-terminated ASCII names, at most 8 characters each |
+
+With today's nine remappable layers that is 59 bytes, which fits a single 64-byte
+report (three of which are the `P`, command and status header). A longer set simply
+spans more reports; the reader concatenates each report's payload and stops once it
+holds `total` bytes.
+
+Two details follow from carrying the total rather than padding each name to a fixed
+width. The zero fill at the end of the final report is never examined, because the
+total already says where the names stop — so it can't be mistaken for a separator.
+And a layer with **no** name is expressible: it is simply an empty entry, which stays
+distinguishable from that fill.
+
+### Resource-flash transport
+
+Two command sets share one BEGIN / CHUNK / COMMIT flow and one staging code path in the
+firmware:
+
+| Command | ID | Notes |
+|---|---|---|
+| **FW_UP_BEGIN** | `0x40` | Firmware image: size and CRC; both halves start erasing staging. |
+| **FW_UP_CHUNK** | `0x41` | 56 bytes at an offset; relayed to the slave. |
+| **FW_UP_COMMIT** | `0x42` | Check CRC and signature on both halves. |
+| **FW_UP_GET_VERSION** | `0x43` | Running version, size and CRC. |
+| **FW_UP_APPLY** | `0x44` | Install the staged image on both halves and reboot. |
+| **FW_UP_SIGNATURE** | `0x45` | Ed25519 signature, two 32-byte parts, before COMMIT. |
+| **FONTPACK_BEGIN** | `0x50` | Font-pack bundle, DOOM WAD or DOOM engine pack: size, CRC and target slot. |
+| **FONTPACK_CHUNK** | `0x51` | 56 bytes at an offset; relayed to the slave. The same data goes as 236-byte frames on the fast link when the host has it. |
+| **FONTPACK_COMMIT** | `0x52` | Check CRC on both halves and reload the fonts. No reboot. |
+| **FONTPACK_STATUS** | `0x53` | Whether a pack is present, its ABI, content version and font count. |
+
+The whole update flow is described in [Firmware Update over HID](/beyond-qmk/firmware-update/).
+
+A firmware update may additionally carry an **Ed25519 image signature** (command `0x45`, sent
+before COMMIT) that the keyboard verifies against a key built into its firmware. It is **additive**
+— older hosts do not send it, so the `PROTOCOL_VERSION` did not change — and it is now
+**enforced**. See [Firmware Signing](/beyond-qmk/signing/) and
+[Firmware Update over HID](/beyond-qmk/firmware-update/).
+
+Enforcement gives the firmware COMMIT four status bytes rather than two:
+
+| Byte | Meaning |
+|---|---|
+| `.` | Accepted — the staged image verified. |
+| `?` | Awaiting a physical **ACCEPT/REJECT** on the keycaps (unsigned image). Re-poll COMMIT until it changes; the staged image and its CRC are untouched between polls. |
+| `S` | Refused — not validly signed (rejected at the prompt, timed out, or the signature failed to verify). |
+| `!` | Staged-CRC mismatch. |
+
+`?` and `S` are why the refusal reason is no longer guessed from a NACK alone. A COMMIT carrying
+`'x'` in `[2]` **cancels** a pending prompt — safe to expose over HID because it can only ever
+deny, whereas accepting stays a keypress on the board.
+
+<Aside type="caution">
+A host that predates `?` has no case for it, falls into its generic failure branch and leaves the
+progress dialog stuck while the keyboard keeps showing the prompt for the full 60 s. Update
+PolyKybdHost before flashing an unsigned image.
+</Aside>
+
+<Aside type="note">
+The bulk overlay commands (`0x0A`, `0x10`/`0x11`, `0x12`/`0x13`, `0x29`, and mapping on v3) are **not** ACK'd per chunk — the host follows a burst with a `GET_ID` liveness check rather than waiting for replies. `0x2A` is the exception: the host needs its answer to know which icons it still has to upload.
+</Aside>
+
+## Other pages
+
+- [Message formats](/reference/hid-protocol/message-formats/): byte layout of each command.
+- [Image encodings](/reference/hid-protocol/image-encodings/): RLE and PRC.
+- [Overlay mapping and addressing](/reference/hid-protocol/overlay-mapping/): icon library, mapping flags, overlay index space.
+- [Protocol versions](/reference/hid-protocol/protocol-versions/): compatibility rules and what each version added.

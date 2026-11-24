@@ -26,7 +26,7 @@ in [Settings → Keyboard](/software/settings/#keyboard).
 | **AI Agents** | The [agent keys](/using/ai-agents/): show them on the number row, the list of agents (click one to bring its window forward), **Set Up Hooks…** (opens [Integrations](#integrations) at **AI agents**), **Pair a Forwarder…** and **Connect Cloud Sessions…**. Needs PolyKybdHost 1.22.4. |
 | **Configure Keymap** | Remap keys without reflashing — see [Keymap Editor](/using/keymap-editor/). |
 | **Tutorials…** | Step-by-step guides that ring the keys to press — see [Tutorials](/using/tutorials/). |
-| **Updates** | Host app, keyboard firmware, keyboard fonts, and [WinCompose](/software/wincompose/) (Windows). On Linux also **Allow access to the keyboard (udev rule)…**. |
+| **Updates** | Host app, keyboard firmware, keyboard fonts, and [WinCompose](/setup/wincompose/) (Windows). On Linux also **Allow access to the keyboard (udev rule)…**. |
 | **Maintenance** | Fix left/right sides, reset overlays or the keymap, flash a firmware file, enter the bootloader, read the keyboard's crash record, open the config folder. See [below](#maintenance). |
 | **Integrations…** | Installs the PolyKybd parts for other programs: agent hooks, the terminal title line, editor plugins and the browser extension. See [below](#integrations). Needs PolyKybdHost 1.25.0. |
 | **Settings** | Interface language, theme, the keycap brightness and daylight brightness, daemon mode, and in the **Keyboard** section the settings stored on the keyboard: idle display, keycap script and size, tap-hold timing. The [Settings Reference](/software/settings/) explains each one a user may want to change. |
@@ -34,7 +34,7 @@ in [Settings → Keyboard](/software/settings/#keyboard).
 | **Quit & stop background daemon** | Closes the tray app and stops the background daemon, which releases the keyboard. When daemon mode is off, the entry is a plain **Quit**. To close only the tray app and keep the keyboard connected, use **Maintenance → Only quit GUI**. |
 
 Two entries only appear when they apply: **Install WinCompose…** while
-[WinCompose](/software/wincompose/) is not running, and a **Firmware newer than this
+[WinCompose](/setup/wincompose/) is not running, and a **Firmware newer than this
 app** warning if the keyboard is running firmware this version of PolyKybdHost doesn't
 fully know yet (click it to choose how to handle that).
 
@@ -60,8 +60,8 @@ categories on the left, one page per category on the right. Needs PolyKybdHost 1
 | Category | What it installs |
 | --- | --- |
 | **AI agents** | The [agent hooks](/using/ai-agents/#set-up-the-hooks) for Claude Code, Codex, Copilot CLI, Gemini CLI, Qwen Code and OpenCode. |
-| **Terminals** | The line that makes bash, zsh and PowerShell show the running command in the terminal title, for the [terminal program overlays](/using/overlays/#terminal-programs). |
-| **Editors** | The [Vim, Neovim and Emacs plugins](/using/overlays/#vim-emacs-and-nano-overlays-that-follow-the-mode) and the GDB script. |
+| **Terminals** | The line that makes bash, zsh and PowerShell show the running command in the terminal title, for the [terminal program overlays](/using/overlays/mode-aware-apps/#terminal-programs). |
+| **Editors** | The [Vim, Neovim and Emacs plugins](/using/overlays/mode-aware-apps/#vim-emacs-and-nano-overlays-that-follow-the-mode) and the GDB script. |
 | **Browser** | The [browser extension](/using/website-detection/#installing-the-browser-extension) folder for Chromium browsers. |
 
 On the AI agents, Terminals and Editors pages, each program has a row with the file that
@@ -74,7 +74,7 @@ here changes files on this computer only, so it works without the keyboard conne
 
 | Entry | What it does |
 | --- | --- |
-| **Fix Left/Right Side** | Tells the keyboard which half the USB cable is plugged into, when a half started as the wrong side. Both halves restart with the new setting. Same as `polyctl handedness`. Its last two entries set or remove the mark an [old Rev.2 board](/reference/old-rev2-boards/) needs, one half at a time. |
+| **Fix Left/Right Side** | Tells the keyboard which half the USB cable is plugged into, when a half started as the wrong side. Both halves restart with the new setting. Same as `polyctl handedness`. Its last two entries set or remove the mark an [old Rev.2 board](/hardware/old-rev2-boards/) needs, one half at a time. |
 | **Reset overlays** | Clears the overlay images the keyboard holds. |
 | **Reset keymap to default…** | Puts layers 0 to 8 back to the firmware's default keymap, encoders included, and **deletes every [macro](/using/macros/)**. It asks first. There is no undo. |
 | **Flash firmware file (.bin)…** | Installs a firmware `.bin` over USB. See [Firmware updates](#firmware-updates). |
@@ -180,7 +180,7 @@ keyboard's protocol does not match this app. From the command line, use
 
 ## Installing WinCompose (Windows)
 
-[WinCompose](/software/wincompose/) is what lets the keyboard type arbitrary unicode
+[WinCompose](/setup/wincompose/) is what lets the keyboard type arbitrary unicode
 on Windows — emoji, accents and the language layers all go through it. When it is not
 running, the tray menu offers **Install WinCompose…**: it downloads PolyKybd's build
 from GitHub and starts the installer (Windows asks you to confirm the elevation).
