@@ -118,32 +118,46 @@ python -m polyhost --host-file /path/to/host.txt --report-rpc --report-authkey-f
 
 If you moved the listener to another port, add `--report-port <n>` to match.
 
-### Let the remote machine find the keyboard machine's address (Linux, PolyKybdHost 1.28.29)
+### Let the forwarder find the keyboard machine's address (NoMachine and Remote Desktop, PolyKybdHost 1.28.31)
 
-When the remote machine is a Linux computer that you reach with NoMachine or with RDP (for
-example xrdp), the forwarder can read the keyboard machine's address from the connection itself,
-so you do not type it, and it changes by itself when you connect from another computer.
+When you reach the remote machine through NoMachine or Remote Desktop (RDP), the connection comes
+from the keyboard machine, so the forwarder can read the keyboard machine's address from it. You
+do not type the address, and it changes by itself when you connect from another computer.
 
-1. On the **remote** machine, run `autorun_forwarder/remote_deploy_scripts.sh` from the
-   [PolyKybdHost folder](https://github.com/thpoll83/PolyKybdHost/tree/main/autorun_forwarder), as the
-   user who runs the forwarder. It installs a systemd user timer that checks every 30 seconds for a
-   connection on port 4000 (NoMachine) or 3389 (RDP). It also turns off the older NoMachine-only
-   timer (`nx-ip-poll`), because both write the same file.
-2. Start the forwarder with `--host-file ~/.config/PolyHost/host_ip`.
+On the **remote** machine, open the forwarder's **Settings → Connections → Forwarders** and turn on
+**Find the keyboard computer from the connection**. Or start the forwarder with `--detect-host`
+instead of `--host` or `--host-file`:
 
-The timer writes the address of the connected computer to `~/.config/PolyHost/host_ip` and removes
-the file when nobody is connected, so the forwarder waits and reconnects by itself. Set
-`REMOTE_PORTS="<port> <port>"` when you run the script to use other ports.
+```bash
+python -m polyhost --detect-host
+```
+
+The forwarder looks every few seconds for a connection to port 4000 (NoMachine) or 3389 (RDP) on
+this machine. It uses the address of the computer at the other end, and the tray status reads
+**no host (waiting for a Remote Desktop or NoMachine connection)** while nobody is connected. It
+works on Linux and Windows remote machines. It needs the `ss` command on Linux and PowerShell on
+Windows, which both systems have.
+
+It is used only over the authenticated connection: **pair the forwarder** with the keyboard
+machine (see the tip above), or start it with `--report-rpc` and the key file. A computer that can
+reach port 3389 or 4000 gets a connection before it has logged in, so the forwarder does not send
+window titles to an address it found until the connection is authenticated. Without pairing the
+status reads **no host (finding the keyboard computer needs a paired forwarder)**.
 
 <Aside type="note">
-  Only IPv4 addresses are used, because the forwarder's connection is IPv4. With clients on both
-  ports, the first one (NoMachine) wins. If the timer cannot run `ss`, it leaves the file as it
-  is.
+  An address in `--host-file` or `--host` takes priority: the connection is used only when neither
+  names one, so a forwarder you already start with `--host-file` needs only the checkbox. Only
+  IPv4 addresses are used, because the forwarder's connection is IPv4. With clients on both ports,
+  NoMachine wins. If the system command cannot run, the forwarder keeps the last address.
 </Aside>
 
-<Aside type="caution">
-  Without pairing, `--report-authkey-file` is not optional across machines. Leave it out and the forwarder falls back to its *own* local key, which the keyboard machine will not accept — it logs `Using this machine's local window-report authkey` and every report then fails.
-</Aside>
+#### Older way: a timer and a file (PolyKybdHost 1.28.29, Linux)
+
+On a Linux remote machine you can run `autorun_forwarder/remote_deploy_scripts.sh` from the
+[PolyKybdHost folder](https://github.com/thpoll83/PolyKybdHost/tree/main/autorun_forwarder), as the
+user who runs the forwarder. It installs a systemd user timer that writes the connected computer's
+address to `~/.config/PolyHost/host_ip` every 30 seconds, and the forwarder starts with
+`--host-file ~/.config/PolyHost/host_ip`. The setting above does the same without the timer.
 
 ## The forwarder's tray menu
 
@@ -160,7 +174,7 @@ that needs a keyboard attached:
 | **Updates** | **Check for host update…** updates PolyKybdHost on this machine. There is no firmware or font entry: those are only on the machine the keyboard is connected to. |
 | **Pair with the Keyboard Computer…** | Enter the code from the keyboard machine, so this forwarder connects without a key file. Needs PolyKybdHost 1.22.4. |
 | **Integrations…** | The same [Integrations](/software/usage/#integrations) window as on the keyboard machine, for this machine: **AI agents** writes the [agent hooks](/using/ai-agents/#set-up-the-hooks) here, so its agents show on the keyboard's number row. **Terminals** sets up bash, zsh and PowerShell for the [terminal program overlays](/using/overlays/mode-aware-apps/#terminal-programs), because the forwarder reports this machine's window titles. **Editors** installs the [Vim, Neovim and Emacs plugins](/using/overlays/mode-aware-apps/#vim-emacs-and-nano-overlays-that-follow-the-mode) and the GDB script. **Browser** copies the [browser extension](/using/website-detection/#installing-the-browser-extension) for the browsers on this machine. Needs PolyKybdHost 1.25.0 on this machine. |
-| **Settings** | The few settings that apply here: the light/dark theme, the [interface language](/software/usage/#interface-language) and the [browser-URL](/using/website-detection/) options. Each machine follows its own system language, so the forwarder can run in a different language from the keyboard machine. |
+| **Settings** | The few settings that apply here: the light/dark theme, the [interface language](/software/usage/#interface-language), the [browser-URL](/using/website-detection/) options and, from 1.28.31, [finding the keyboard machine from the connection](#let-the-forwarder-find-the-keyboard-machines-address-nomachine-and-remote-desktop-polykybdhost-12831). Each machine follows its own system language, so the forwarder can run in a different language from the keyboard machine. |
 | **Help & About** | About, the log viewer, **Open config folder**, **Report a Problem…** and **Collect logs…** — the same set, for *this* machine's logs. |
 | **Quit** | Stop forwarding and close. |
 
@@ -229,6 +243,8 @@ legacy relay in the next section does not send the URL.
 | Forwarder: `Window-report RPC to … failed: timed out` | Nothing is listening, or a firewall is dropping the connection | Confirm step 1 on the keyboard machine (`polyctl settings get window_report_network_enabled`), that it was restarted afterwards, and that port 50163 is allowed |
 | Forwarder: `Using this machine's local window-report authkey` | `--report-authkey-file` was omitted | Add it, pointing at the key copied in step 2 |
 | Forwarder: `control protocol mismatch … restart so versions match` | The two machines run incompatible PolyKybdHost versions | Update both to the same version |
+| Forwarder tray: **no host (finding the keyboard computer needs a paired forwarder)** | The detection is on, but the forwarder is not paired and has no `--report-rpc` | Pair it (**Pair with the Keyboard Computer…**), or start it with `--report-rpc` and `--report-authkey-file` |
+| Forwarder tray: **no host (waiting for a Remote Desktop or NoMachine connection)** | The detection is on and nobody is connected to port 4000 or 3389 on this machine | Connect with NoMachine or Remote Desktop, and check that the remote-desktop server really listens on those ports |
 | Forwarder: `Connection timed out` on port 50162 | The forwarder is still using the legacy relay | Add `--report-rpc` (and the key file), or see the legacy section below |
 | Keyboard machine: `Remote overlay entries are configured but the legacy plaintext window relay (TCP 50162) is disabled` | Same as above, seen from the other side | As above |
 | Both logs look fine, keycaps do not change | The keyboard machine's focused window is not a `remote` mapping entry | Focus your remote-desktop client, and check it has a `remote: true` entry (see [Before you start](#before-you-start)) |
