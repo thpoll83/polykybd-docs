@@ -107,6 +107,11 @@ export default defineConfig({
           tag: 'script',
           attrs: { src: versioned('/js/showcase-strip.js'), defer: true },
         },
+        // Forwards an old #fragment to the sub-page its heading moved to.
+        {
+          tag: 'script',
+          attrs: { src: versioned('/js/legacy-anchors.js'), defer: true },
+        },
         // Google Analytics, consent-gated and build-only — see the tag list at
         // the top of this file. Spread so a dev run injects nothing at all.
         ...(isProductionBuild ? googleAnalyticsTags : []),
