@@ -142,6 +142,9 @@ only a short code made from it. The keys show the agent's name, for example **Cl
 computer finds the remote-desktop window by it. Two things follow:
 
 - An agent that already reported keeps the title and folder the keyboard computer has until it is
-  removed, so the setting applies to agents that start after you change it.
+  removed, so the setting applies to agents that start after you change it. An agent that has no
+  session ID of its own is known by its folder, so after the change it can show twice, once with
+  the old title and once without, until the old key is removed (**Remove Agent**, or after the
+  forget time in the settings). Restart such an agent after you change the setting.
 - A key press can bring forward the agent's own window on that computer only by its process, not
   by its folder, so with **Raise agent windows on this computer** on, a press may find no window.
