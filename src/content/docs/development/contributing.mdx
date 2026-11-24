@@ -61,7 +61,7 @@ flowchart TD
   OPEN["<b>Open a PR</b> against <code>PolyKybd</code><br/>with one bump label, or none for a patch"]
   PUSH(["Push to the PR branch"])
   CHECKS["<b>Checks on every push</b>, in parallel<br/>lint and format · cppcheck<br/>PolyKybd unit tests, incl. the fuzz corpus replay<br/>Build firmware · Build release shape<br/>J-Bot review"]
-  FUZZ["<b>Fuzz</b>, 5 targets × 60 s"]
+  FUZZ["<b>Fuzz</b>, 11 targets × 60 s"]
   HIL["<b>HIL test</b> on the rig<br/>flash both halves, default tier"]
   OPT["<b>Optional HIL runs</b><br/><code>hil-extended</code><br/><code>hil-perf</code><br/><code>hil-doom</code><br/><code>hil-fwapply</code><br/><code>hil-tutorial</code>"]
   REV["<b>Reviews on request</b><br/><code>@coderabbitai review</code><br/><code>@revix-ai-review review</code>"]
@@ -85,10 +85,13 @@ flowchart TD
 
 - **cppcheck and the unit tests** run when the PR changes `keyboards/polykybd/` or
   `modules/polykybd/`.
-- **The fuzz jobs** run when the PR changes a parser they test, a harness under
-  `keyboards/polykybd/dev/fuzz/` or their workflow. They run in parallel with the builds
-  and finish before *Build firmware*. To fuzz longer, start *PolyKybd fuzz* from the
-  Actions tab and set the run time per target.
+- **The fuzz jobs** run when the PR changes a parser they test, a header those parsers
+  include, a harness under `keyboards/polykybd/dev/fuzz/` or their workflow. They run in
+  parallel with the builds. To fuzz longer, start *PolyKybd fuzz* from the Actions tab and
+  set the run time per target (up to about 5 h 30 min).
+- **Every Wednesday and Sunday at 01:43 UTC** the fuzz workflow runs each target for 5 h
+  on `PolyKybd`, continuing from the inputs the previous long run found. A crash opens an
+  issue `Fuzz crash: <target>` with the label `fuzz-crash` and a link to the crash input.
 - **The HIL test** waits for *Build firmware*, then flashes the build to the test rig. Each
   optional HIL label starts its own run with the slower checks.
 - **A push cancels a running CodeRabbit review.** Push the fixes for one review together,
