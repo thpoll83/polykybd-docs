@@ -7,15 +7,15 @@ hero:
   image:
     file: ../../assets/polytasten-badge.svg
   actions:
+    - text: Using PolyKybd
+      link: /using/first-run/
+      icon: laptop
+      variant: primary
     - text: Building PolyKybd
       link: /assembly/overview/
       icon: right-arrow
-      variant: primary
-    - text: Using PolyKybd
-      link: /using/overlays/
-      icon: laptop
       variant: secondary
-    - text: PolyHost Software
+    - text: Host Software
       link: /software/overview/
       icon: setting
       variant: secondary
@@ -84,39 +84,34 @@ import deskGamer from '../../assets/landing/desk-gamer.jpg';
     description="How the keyboard, firmware and host app fit together."
   />
   <LinkCard
-    title="Assembly"
-    href="/assembly/overview/"
-    description="Parts list, PCB, case, displays, switches and the step-by-step build."
-  />
-  <LinkCard
     title="Setup"
     href="/setup/installation/"
-    description="Install PolyKybdHost and flash the firmware onto a finished board."
+    description="Install PolyKybdHost and WinCompose, and flash the firmware onto a finished board."
   />
   <LinkCard
     title="Using the Keyboard"
-    href="/using/overlays/"
-    description="Overlays, languages, glyph scripts, brightness, idle, keymaps and multi-machine use."
+    href="/using/first-run/"
+    description="First start and tutorials, overlays, languages, keymaps, macros, brightness, idle and multi-machine use."
   />
   <LinkCard
     title="Host Software"
     href="/software/overview/"
-    description="The tray app, the daemon/client model, the polyctl CLI and WinCompose."
+    description="The tray app, settings, the daemon/client model, the polyctl CLI and problem reports."
   />
   <LinkCard
     title="Firmware"
     href="/firmware/overview/"
-    description="What runs on the RP2040 — keyboard variants and font packs."
+    description="What runs on the RP2040: keyboard variants, font packs and what PolyKybd adds to QMK."
   />
   <LinkCard
-    title="Hardware"
-    href="/hardware/electronics/"
-    description="Schematics, electronics and PCB / case modification."
+    title="Hardware & Assembly"
+    href="/assembly/overview/"
+    description="Parts list, PCB, case, displays, switches, the step-by-step build, schematics and modification."
   />
   <LinkCard
-    title="HowTo"
-    href="/howto/add-language/"
-    description="Add a language or glyph script, create app overlays, build from source, edit the keymap."
+    title="Customize & Extend"
+    href="/howto/edit-keymap/"
+    description="Edit the keymap, add a language or glyph script, create app overlays, build from source."
   />
   <LinkCard
     title="Development"
@@ -126,7 +121,12 @@ import deskGamer from '../../assets/landing/desk-gamer.jpg';
   <LinkCard
     title="Reference"
     href="/reference/hid-protocol/"
-    description="HID protocol, browser-extension privacy and the glossary."
+    description="The HID protocol and the glossary."
+  />
+  <LinkCard
+    title="Privacy"
+    href="/software/telemetry/"
+    description="What the host app sends, website analytics and the browser extension."
   />
 </CardGrid>
 
