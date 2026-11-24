@@ -141,6 +141,10 @@ only a short code made from it. The keys show the agent's name, for example **Cl
 **Claude Code 2**. The name of the computer still goes with each report, because the keyboard
 computer finds the remote-desktop window by it. Two things follow:
 
+- The setting covers only what the agent hooks send. The forwarder's normal window report still
+  carries the title of the focused window, and a terminal that runs an agent can show the task or
+  the folder in its title. Use **Pause** in the forwarder's tray menu, or leave the title out of
+  the terminal, when that must stay private.
 - An agent that already reported keeps the title and folder the keyboard computer has until it is
   removed, so the setting applies to agents that start after you change it. An agent that has no
   session ID of its own is known by its folder, so after the change it can show twice, once with
