@@ -39,6 +39,19 @@ nxplayer:
 The title pattern matches a session window, which NoMachine titles `<host> - NoMachine`. The
 connection chooser, titled `NoMachine` alone, is not a remote session and does not match.
 
+From PolyKybdHost 1.28.29 it also covers the Windows Remote Desktop Connection client:
+
+```yaml
+mstsc:
+  remote: true
+  title: ' - Remote Desktop Connection$'
+```
+
+A session window is titled `<computer> - <address> - Remote Desktop Connection`. The connection
+dialog, titled `Remote Desktop Connection` alone, does not match. The title is in the display
+language of Windows, so on a localized Windows, change the end of the pattern to that language's
+title.
+
 Add an entry the same way for whichever client you use. While that window has focus, the keycaps follow the app focused *inside* the remote session; when you switch back to a local window, they follow that local window again.
 
 ## Setup
@@ -104,6 +117,29 @@ python -m polyhost --host-file /path/to/host.txt --report-rpc --report-authkey-f
 ```
 
 If you moved the listener to another port, add `--report-port <n>` to match.
+
+### Let the remote machine find the keyboard machine's address (Linux, PolyKybdHost 1.28.29)
+
+When the remote machine is a Linux computer that you reach with NoMachine or with RDP (for
+example xrdp), the forwarder can read the keyboard machine's address from the connection itself,
+so you do not type it, and it changes by itself when you connect from another computer.
+
+1. On the **remote** machine, run `autorun_forwarder/remote_deploy_scripts.sh` from the
+   [PolyKybdHost folder](https://github.com/thpoll83/PolyKybdHost/tree/main/autorun_forwarder), as the
+   user who runs the forwarder. It installs a systemd user timer that checks every 30 seconds for a
+   connection on port 4000 (NoMachine) or 3389 (RDP). It also turns off the older NoMachine-only
+   timer (`nx-ip-poll`), because both write the same file.
+2. Start the forwarder with `--host-file ~/.config/PolyHost/host_ip`.
+
+The timer writes the address of the connected computer to `~/.config/PolyHost/host_ip` and removes
+the file when nobody is connected, so the forwarder waits and reconnects by itself. Set
+`REMOTE_PORTS="<port> <port>"` when you run the script to use other ports.
+
+<Aside type="note">
+  Only IPv4 addresses are used, because the forwarder's connection is IPv4. With clients on both
+  ports, the first one (NoMachine) wins. If the timer cannot run `ss`, it leaves the file as it
+  is.
+</Aside>
 
 <Aside type="caution">
   Without pairing, `--report-authkey-file` is not optional across machines. Leave it out and the forwarder falls back to its *own* local key, which the keyboard machine will not accept — it logs `Using this machine's local window-report authkey` and every report then fails.

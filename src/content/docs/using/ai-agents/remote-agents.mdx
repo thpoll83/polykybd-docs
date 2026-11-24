@@ -34,7 +34,11 @@ the cloud environment; the key then shows `user`.
 If a company policy does not allow the title or prompt words to leave the cloud environment,
 even encrypted, set `POLYKYBD_CLOUD_ANONYMOUS=1` in the cloud environment. The hook then sends
 only the state and the session address, and the keys show **Agent 1**, **Agent 2** and so on,
-in key order (PolyKybdHost 1.28.2; an older host shows **Claude Code**).
+in key order (PolyKybdHost 1.28.2; an older host shows **Claude Code**). From PolyKybdHost
+1.28.30, the **Connect Cloud Sessions** dialog has the box **Do not send titles or folder
+names**. Tick it and the dialog shows this variable with a Copy button. The box stores nothing:
+the choice is the variable in the cloud environment, and a session that already runs keeps its
+title.
 
 Pressing the key of a cloud session only brings an open window forward:
 
@@ -128,3 +132,16 @@ The same works from the command line: `polyctl forwarder pairing-code` on the ke
 
 To also bring the agent's own window forward on the other computer, turn on
 **Settings → AI agents → Raise agent windows on this computer** in the forwarder there.
+
+To keep what the agents there work on off the keyboard computer, turn on
+**Settings → AI agents → Hide agent titles and folders** in the forwarder (PolyKybdHost 1.28.30,
+off by default). The agent hooks then send no title, no folder name and no window title. A
+session that has no ID of its own is known by its folder, and the keyboard computer then gets
+only a short code made from it. The keys show the agent's name, for example **Claude Code 1**,
+**Claude Code 2**. The name of the computer still goes with each report, because the keyboard
+computer finds the remote-desktop window by it. Two things follow:
+
+- An agent that already reported keeps the title and folder the keyboard computer has until it is
+  removed, so the setting applies to agents that start after you change it.
+- A key press can bring forward the agent's own window on that computer only by its process, not
+  by its folder, so with **Raise agent windows on this computer** on, a press may find no window.
