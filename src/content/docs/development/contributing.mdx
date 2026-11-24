@@ -50,6 +50,56 @@ new skills.
 
 See [Firmware Development](/development/firmware/) for setup instructions. For significant changes, open an issue first to discuss the approach.
 
+## From pull request to merge
+
+This is what happens to a firmware pull request on `thpoll83/qmk_firmware`, from opening it
+until it is merged. Solid lines run on every PR. Dashed lines run only when the condition on
+the line is true.
+
+```mermaid
+flowchart TD
+  OPEN["<b>Open a PR</b> against <code>PolyKybd</code><br/>with one bump label, or none for a patch"]
+  PUSH(["Push to the PR branch"])
+  CHECKS["<b>Checks on every push</b>, in parallel<br/>lint and format · cppcheck<br/>PolyKybd unit tests, incl. the fuzz corpus replay<br/>Build firmware · Build release shape<br/>J-Bot review"]
+  FUZZ["<b>Fuzz</b>, 5 targets × 60 s"]
+  HIL["<b>HIL test</b> on the rig<br/>flash both halves, default tier"]
+  OPT["<b>Optional HIL runs</b><br/><code>hil-extended</code><br/><code>hil-perf</code><br/><code>hil-doom</code><br/><code>hil-fwapply</code><br/><code>hil-tutorial</code>"]
+  REV["<b>Reviews on request</b><br/><code>@coderabbitai review</code><br/><code>@revix-ai-review review</code>"]
+  FIX["<b>Fix the true findings</b><br/>answer the false ones on the thread"]
+  MERGE["<b>Merge</b>"]
+  BUMP["Version increase from the bump label"]
+
+  OPEN --> PUSH
+  PUSH --> CHECKS
+  PUSH -.->|"PR changes a fuzzed parser"| FUZZ
+  CHECKS -->|"after Build firmware"| HIL
+  HIL -.->|"add a label"| OPT
+  HIL --> FIX
+  FUZZ -.-> FIX
+  OPT -.-> FIX
+  REV -.->|"post a comment"| FIX
+  FIX -.->|"push the fixes"| PUSH
+  FIX -->|"all checks green,<br/>findings handled"| MERGE
+  MERGE --> BUMP
+```
+
+- **cppcheck and the unit tests** run when the PR changes `keyboards/polykybd/` or
+  `modules/polykybd/`.
+- **The fuzz jobs** run when the PR changes a parser they test, a harness under
+  `keyboards/polykybd/dev/fuzz/` or their workflow. They run in parallel with the builds
+  and finish before *Build firmware*. To fuzz longer, start *PolyKybd fuzz* from the
+  Actions tab and set the run time per target.
+- **The HIL test** waits for *Build firmware*, then flashes the build to the test rig. Each
+  optional HIL label starts its own run with the slower checks.
+- **A push cancels a running CodeRabbit review.** Push the fixes for one review together,
+  after it has finished.
+- **A merge does not publish a release.** The version increases when the PR merges, and the
+  release is published later, see [Releases](#releases).
+
+A host app pull request on `thpoll83/PolyKybdHost` follows the same steps without the rig:
+CodeQL, the J-Bot review, and the installer and plugin builds for the files the PR changes.
+The unit suite runs locally with `scripts/run_tests.py`.
+
 ## Releases
 
 Both the firmware and the host app ship as **GitHub Releases** — a tagged version with
