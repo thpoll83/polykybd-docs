@@ -135,8 +135,14 @@ python -m polyhost --detect-host
 The forwarder looks every few seconds for a connection to port 4000 (NoMachine) or 3389 (RDP) on
 this machine. It uses the address of the computer at the other end, and the tray status reads
 **no host (waiting for a Remote Desktop or NoMachine connection)** while nobody is connected. It
-works on Linux and Windows remote machines. It needs the `ss` command on Linux and `netstat` on
+works on Linux and Windows remote machines. It needs the `ss` command on Linux and PowerShell on
 Windows, which both systems have.
+
+It is used only over the authenticated connection: **pair the forwarder** with the keyboard
+machine (see the tip above), or start it with `--report-rpc` and the key file. A computer that can
+reach port 3389 or 4000 gets a connection before it has logged in, so the forwarder does not send
+window titles to an address it found until the connection is authenticated. Without pairing the
+status reads **no host (finding the keyboard computer needs a paired forwarder)**.
 
 <Aside type="note">
   An address in `--host-file` or `--host` takes priority: the connection is used only when neither
@@ -237,6 +243,7 @@ legacy relay in the next section does not send the URL.
 | Forwarder: `Window-report RPC to … failed: timed out` | Nothing is listening, or a firewall is dropping the connection | Confirm step 1 on the keyboard machine (`polyctl settings get window_report_network_enabled`), that it was restarted afterwards, and that port 50163 is allowed |
 | Forwarder: `Using this machine's local window-report authkey` | `--report-authkey-file` was omitted | Add it, pointing at the key copied in step 2 |
 | Forwarder: `control protocol mismatch … restart so versions match` | The two machines run incompatible PolyKybdHost versions | Update both to the same version |
+| Forwarder tray: **no host (finding the keyboard computer needs a paired forwarder)** | The detection is on, but the forwarder is not paired and has no `--report-rpc` | Pair it (**Pair with the Keyboard Computer…**), or start it with `--report-rpc` and `--report-authkey-file` |
 | Forwarder tray: **no host (waiting for a Remote Desktop or NoMachine connection)** | The detection is on and nobody is connected to port 4000 or 3389 on this machine | Connect with NoMachine or Remote Desktop, and check that the remote-desktop server really listens on those ports |
 | Forwarder: `Connection timed out` on port 50162 | The forwarder is still using the legacy relay | Add `--report-rpc` (and the key file), or see the legacy section below |
 | Keyboard machine: `Remote overlay entries are configured but the legacy plaintext window relay (TCP 50162) is disabled` | Same as above, seen from the other side | As above |
