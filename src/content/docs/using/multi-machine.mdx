@@ -132,11 +132,23 @@ instead of `--host` or `--host-file`:
 python -m polyhost --detect-host
 ```
 
-The forwarder looks every few seconds for a connection to port 4000 (NoMachine) or 3389 (RDP) on
-this machine. It uses the address of the computer at the other end, and the tray status reads
-**no host (waiting for a Remote Desktop or NoMachine connection)** while nobody is connected. It
-works on Linux and Windows remote machines. It needs the `ss` command on Linux and PowerShell on
-Windows, which both systems have.
+The forwarder looks for a connection to port 4000 (NoMachine) or 3389 (RDP) on this machine. It
+uses the address of the computer at the other end, and the tray status reads **no host (waiting
+for a Remote Desktop or NoMachine connection)** while nobody is connected. It works on Linux and
+Windows remote machines. It reads the system's connection table directly, so it starts no extra
+program and does not depend on the language of Windows.
+
+It looks only while you use the remote computer:
+
+- Each window change starts a look, at most one every 5 seconds.
+- While an address is found, it looks again every 60 seconds, to notice a closed connection or
+  another client (for example you switch from NoMachine to Remote Desktop).
+- After 10 minutes without a window change it stops looking. The next window change starts it
+  again, so an idle computer, for example over a weekend, runs no look at all.
+- If a report to the found address fails, it looks again at once.
+
+The first report after a long idle time can still go to the old address. It reaches the new one
+after that look finishes.
 
 It is used only over the authenticated connection: **pair the forwarder** with the keyboard
 machine (see the tip above), or start it with `--report-rpc` and the key file. A computer that can
