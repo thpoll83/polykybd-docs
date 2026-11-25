@@ -131,7 +131,7 @@ flowchart TD
   REDO["Fix the rig or the test, then start <i>Build and HIL Test</i><br/>on the release commit with <code>tier: fwapply</code><br/>and re-run the release job"]
 
   MERGE --> BUMP
-  MERGE --> APPLY
+  MERGE -.->|"changes a file the build<br/>or the rig reads"| APPLY
   BUMP --> NOTES
   NOTES --> PUB
   PUB --> GATE
@@ -141,14 +141,16 @@ flowchart TD
   REDO -.-> GATE
 ```
 
-- **Every merge to `PolyKybd` runs the firmware apply job on the rig.** It runs the extended
-  HIL suite (animation, idle, link soak, USB suspend, power-cycle reboot), then installs a
-  signed firmware over HID the way the host app does. A red test in the suite skips the
-  update, and the job fails.
+- **Every merge to `PolyKybd` that changes a file the build or the rig reads runs the
+  firmware apply job on the rig.** It runs the extended HIL suite (animation, idle, link
+  soak, USB suspend, power-cycle reboot), then installs a signed firmware over HID the way
+  the host app does. A red test in the suite skips the update, and the job fails. A merge
+  that changes only Markdown files, `scripts/`, `.claude/` or other workflows starts no run.
 - **The release gate accepts only a finished green run.** It accepts the release commit or
   an earlier commit when the only differences are the version increase and files that the
-  build and the rig do not read, such as docs. Publish after the merge's run has finished,
-  about 11 minutes after the merge.
+  build and the rig do not read, such as docs. So a release after a docs-only merge uses the
+  run of the last firmware merge. Publish after that run has finished, about 11 minutes
+  after the merge.
 - **When the gate refuses,** the release is published without files. If the cause is on the
   rig or in the test, fix it there, start *Build and HIL Test* from the Actions tab on the
   release commit with `tier: fwapply`, and when it is green, re-run the release job. It
