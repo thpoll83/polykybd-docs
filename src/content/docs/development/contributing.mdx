@@ -103,11 +103,58 @@ A host app pull request on `thpoll83/PolyKybdHost` follows the same steps withou
 CodeQL, the J-Bot review, and the installer and plugin builds for the files the PR changes.
 The unit suite runs locally with `scripts/run_tests.py`.
 
+- **The host fuzz job** runs the Hypothesis property tests in `tests/fuzz/` when the PR
+  changes one of the files they test, `tests/fuzz/` or the workflow. It also checks that the
+  workflow's file list still matches what the tests import (`scripts/fuzz_paths.py --check`).
+- **Every Wednesday and Sunday at 02:17 UTC** each host fuzz module runs with 200,000
+  examples per test on `main`, as its own job. A failure opens an issue
+  `Fuzz failure: <module>` with the label `fuzz-crash`.
+
 ## Releases
 
 Both the firmware and the host app ship as **GitHub Releases** — a tagged version with
 customer-facing release notes, and (for the firmware) CI-built `.bin`/`.uf2` assets. Maintainers
 draft the notes newest-version-first, keep them concise, then publish.
+
+This is the path of a firmware release, from the merge to the files on the release page.
+Dashed lines run only when the condition on the line is true.
+
+```mermaid
+flowchart TD
+  MERGE["<b>Merge</b> to <code>PolyKybd</code>"]
+  BUMP["Version increase<br/><code>chore: bump firmware version … [skip ci]</code>"]
+  APPLY["<b>Firmware apply run</b> on the rig, about 11 min<br/>extended HIL suite, then a firmware update over HID"]
+  NOTES["<b>Release notes</b> reviewed<br/>and staged on the <code>release-notes</code> branch"]
+  PUB["<b>Publish</b><br/><code>python scripts/publish_release.py</code>"]
+  GATE{"<b>Release gate</b><br/>a green firmware apply run<br/>for this firmware?"}
+  BUILD["<b>Build, sign and attach</b><br/><code>.bin</code> · <code>.bin.sig</code> · <code>.uf2</code> · <code>.plyx</code>"]
+  REDO["Fix the red test, then start <i>Build and HIL Test</i><br/>with <code>tier: fwapply</code> and re-run the release job"]
+
+  MERGE --> BUMP
+  MERGE --> APPLY
+  BUMP --> NOTES
+  NOTES --> PUB
+  PUB --> GATE
+  APPLY -.->|"green"| GATE
+  GATE -->|"yes"| BUILD
+  GATE -.->|"no"| REDO
+  REDO -.-> GATE
+```
+
+- **Every merge to `PolyKybd` runs the firmware apply job on the rig.** It runs the extended
+  HIL suite (animation, idle, link soak, USB suspend, power-cycle reboot), then installs a
+  signed firmware over HID the way the host app does. A red test in the suite skips the
+  update, and the job fails.
+- **The release gate accepts only a finished green run.** It accepts the release commit or
+  an earlier commit when the only differences are the version increase and files that the
+  build and the rig do not read, such as docs. Publish after the merge's run has finished,
+  about 11 minutes after the merge.
+- **When the gate refuses,** the release is published without files. Fix the cause of the
+  red test, start *Build and HIL Test* from the Actions tab with `tier: fwapply`, and when it
+  is green, re-run the release job. It attaches the files to the published release.
+- **When the protocol version changes, publish the host app first.** A host app release
+  has no rig gate: the release job checks that the version matches the tag and applies the
+  staged notes.
 
 <AiSkill name="polykybd-github-release">
 **`polykybd-github-release`** drives the whole release — it drafts the
