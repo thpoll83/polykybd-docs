@@ -128,7 +128,7 @@ flowchart TD
   PUB["<b>Publish</b><br/><code>python scripts/publish_release.py</code>"]
   GATE{"<b>Release gate</b><br/>a green firmware apply run<br/>for this firmware?"}
   BUILD["<b>Build, sign and attach</b><br/><code>.bin</code> · <code>.bin.sig</code> · <code>.uf2</code> · <code>.plyx</code>"]
-  REDO["Fix the red test, then start <i>Build and HIL Test</i><br/>with <code>tier: fwapply</code> and re-run the release job"]
+  REDO["Fix the rig or the test, then start <i>Build and HIL Test</i><br/>on the release commit with <code>tier: fwapply</code><br/>and re-run the release job"]
 
   MERGE --> BUMP
   MERGE --> APPLY
@@ -149,9 +149,13 @@ flowchart TD
   an earlier commit when the only differences are the version increase and files that the
   build and the rig do not read, such as docs. Publish after the merge's run has finished,
   about 11 minutes after the merge.
-- **When the gate refuses,** the release is published without files. Fix the cause of the
-  red test, start *Build and HIL Test* from the Actions tab with `tier: fwapply`, and when it
-  is green, re-run the release job. It attaches the files to the published release.
+- **When the gate refuses,** the release is published without files. If the cause is on the
+  rig or in the test, fix it there, start *Build and HIL Test* from the Actions tab on the
+  release commit with `tier: fwapply`, and when it is green, re-run the release job. It
+  attaches the files to the published release.
+- **If the firmware itself fails the test,** a re-run cannot help: the fix is a later commit
+  that changes the firmware, and the gate does not accept it for this release. Merge the fix
+  and publish the next version.
 - **When the protocol version changes, publish the host app first.** A host app release
   has no rig gate: the release job checks that the version matches the tag and applies the
   staged notes.
