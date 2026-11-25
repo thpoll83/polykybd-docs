@@ -186,7 +186,9 @@ keyboard computer needs a paired forwarder)** until you pair it.
 
 To go back, choose **Switch to Keyboard Mode…** in the forwarder's tray menu. The entry is there
 only for a forwarder that started from the setting. A forwarder you started with `--host`,
-`--host-file` or `--detect-host` goes back when you take that option out of its startup command.
+`--host-file` or `--detect-host` goes back to keyboard mode when you take that option out of its
+startup command, but only while **Start as a forwarder** is off. If the setting is on, the next plain
+launch is a forwarder again. Turn the setting off in the settings dialog to stop that.
 
 A start option always wins over the setting: `--host`, `--host-file`, `--detect-host`,
 `--headless` and `--connect` keep their meaning. `--no-forwarder` starts the normal app once,
