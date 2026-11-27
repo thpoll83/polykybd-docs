@@ -138,14 +138,15 @@ v39 sends no reply to these four ids.
 
 | `[0]` | Command | Request | Reply |
 |---|---|---|---|
-| `0x02` | get keyboard value | `[1]` `0x01` uptime | `[2..5]` milliseconds since boot of the USB half |
-| `0x02` | get keyboard value | `[1]` `0x03` switch matrix, `[2]` first row | `[3..]` one byte per row, bit n = column n. Answered only while debug mode is on (DB_TOGG), otherwise `0xFF` |
+| `0x02` | get keyboard value | `[1]` `0x01` uptime | `[2..5]` milliseconds since boot of the USB half. Wraps to 0 after about 49.7 days |
+| `0x02` | get keyboard value | `[1]` `0x03` switch matrix, `[2]` first row | `[3..]` one byte per row from the first row to the last (at most 28, in `[3..30]`), bit n = column n. Answered only while debug mode is on (DB_TOGG), otherwise `0xFF` |
 | `0x03` | set keyboard value | `[1]` `0x05` device indication, `[2]` call index | echo. Toggles the RGB matrix once |
 | `0x07` | set custom value | `[1]` `3` (RGB matrix), `[2]` value id, `[3..]` value | echo |
 | `0x08` | get custom value | `[1]` `3` (RGB matrix), `[2]` value id | `[3..]` value |
 
 RGB matrix value ids: `1` brightness (0–255), `2` effect (`0` = off; any other number
-switches the lights on with that effect), `3` speed (0–255), `4` colour (`[3]` hue,
+switches the lights on with that effect; a number past the built effects is set to the
+last one, which a following read returns), `3` speed (0–255), `4` colour (`[3]` hue,
 `[4]` saturation). The keyboard keeps these changes until it restarts; it stores none of
 them.
 
