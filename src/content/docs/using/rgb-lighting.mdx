@@ -38,6 +38,32 @@ and splash effects that ripple outward from it.
 Your choices are stored on the keyboard and survive a reboot, and the on/off state is shared with
 the other half so both sides stay in sync.
 
+## From the host
+
+With firmware 1.13.40 and PolyKybdHost 1.28.49 or newer, **Settings → Keyboard → Key lighting**
+controls the lights from the computer:
+
+| Row | What it does |
+|---|---|
+| **Lights on** | Switches the LEDs on or off |
+| **Lighting brightness** | 0 to 255 |
+| **Lighting effect** *(Advanced)* | The number of the effect, from 1 |
+| **Effect speed** *(Advanced)* | 0 to 255 |
+| **Lighting hue**, **Lighting saturation** *(Advanced)* | The colour, 0 to 255 each |
+| **Find this keyboard → Blink** | Blinks the LEDs three times, so you can see which keyboard the dialog changes |
+
+The dialog reads the current values when it opens and sends the changed ones when you click
+**OK**. With older firmware the rows stay greyed out.
+
+<Aside type="caution">
+The keyboard keeps changes made from the host only until it restarts. Then it uses the settings
+stored with the keys above again.
+</Aside>
+
+The command line does the same: `polyctl rgb` shows the state, `polyctl rgb on`, `off` and
+`indicate` switch or blink the lights, and `polyctl rgb set --brightness 128` sets one or more
+values. See [Command Line](/software/cli/).
+
 <Aside type="note">
 RGB brightness is separate from the **keycap display** brightness, which is covered in
 [Display Brightness](/using/brightness/).
