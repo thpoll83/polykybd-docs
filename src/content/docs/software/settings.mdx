@@ -102,6 +102,8 @@ The settings of the host:
 | **Browser extension → Receiver port** *(Advanced)* | `browser_report_port` | `50164` | The receiver's port. It must match the extension's *Host port*. |
 | **Browser extension → Receiver token** *(Advanced)* | `browser_report_token` | empty | A shared secret. When set, the extension must send the same token. From 1.23.3, **Generate** fills in a new one and copies it. |
 | **Forwarders → Accept forwarders** | `window_report_network_enabled` | off | Accepts window reports from a forwarder on another computer. Applies after a restart. See [Multi-Machine Setup](/using/multi-machine/). |
+| **Forwarders → Find the keyboard computer from the connection** | `forwarder_detect_host` | off | On a forwarder's computer: finds the keyboard computer from the NoMachine or Remote Desktop connection, for a forwarder that is paired (1.28.31). See [Multi-Machine Setup](/using/multi-machine/#let-the-forwarder-find-the-keyboard-machines-address-nomachine-and-remote-desktop-polykybdhost-12831). |
+| **Forwarders → Start as a forwarder** | `start_as_forwarder` | off | A plain launch starts as a forwarder instead of the tray app for a keyboard. Set by the tray's **Switch to Forwarder…** and **Switch to Keyboard Mode…**. A start option such as `--host` or `--headless` wins, and `--no-forwarder` ignores it for one run. Applies after a restart (1.28.44). See [Multi-Machine Setup](/using/multi-machine/#switch-an-installed-polykybdhost-to-a-forwarder-polykybdhost-12844). |
 
 **USB transport → ID requests before reconnect**, **Messages before a pause** and
 **Pause length (s)** (`hid_reconnect_retries`, `max_hid_message_before_delay`,

@@ -171,6 +171,29 @@ user who runs the forwarder. It installs a systemd user timer that writes the co
 address to `~/.config/PolyHost/host_ip` every 30 seconds, and the forwarder starts with
 `--host-file ~/.config/PolyHost/host_ip`. The setting above does the same without the timer.
 
+### Switch an installed PolyKybdHost to a forwarder (PolyKybdHost 1.28.44)
+
+You do not have to start the forwarder from a terminal. On the remote machine, open the tray
+menu of the normal PolyKybdHost app and choose **Maintenance → Switch to Forwarder…**. After you
+confirm, PolyKybdHost turns on the setting **Start as a forwarder**, stops a background keyboard
+service if one runs on this machine, and restarts as a forwarder. It uses the same detection as
+`--detect-host`, so you need no option and no change to the autostart entry.
+
+After the restart the forwarder offers to **pair with the keyboard computer**. Choose **Yes** and
+enter the code from **AI Agents → Pair a Forwarder…** on the keyboard machine. A forwarder that is
+not paired cannot use the address it finds, so its status line reads **no host (finding the
+keyboard computer needs a paired forwarder)** until you pair it.
+
+To go back, choose **Switch to Keyboard Mode…** in the forwarder's tray menu. The entry is there
+only for a forwarder that started from the setting. A forwarder you started with `--host`,
+`--host-file` or `--detect-host` goes back to keyboard mode when you take that option out of its
+startup command, but only while **Start as a forwarder** is off. If the setting is on, the next plain
+launch is a forwarder again. Turn the setting off in the settings dialog to stop that.
+
+A start option always wins over the setting: `--host`, `--host-file`, `--detect-host`,
+`--headless` and `--connect` keep their meaning. `--no-forwarder` starts the normal app once,
+without changing the setting.
+
 ## The forwarder's tray menu
 
 The forwarder puts its own icon in the remote machine's tray. Its menu follows the same
@@ -185,6 +208,7 @@ that needs a keyboard attached:
 | **Pause** | Stop sending this machine's active window. Reads **Resume** while paused. |
 | **Updates** | **Check for host update…** updates PolyKybdHost on this machine. There is no firmware or font entry: those are only on the machine the keyboard is connected to. |
 | **Pair with the Keyboard Computer…** | Enter the code from the keyboard machine, so this forwarder connects without a key file. Needs PolyKybdHost 1.22.4. |
+| **Switch to Keyboard Mode…** | Only for a forwarder that started from the **Start as a forwarder** setting: turns the setting off and restarts as the normal app. Needs PolyKybdHost 1.28.44. |
 | **Integrations…** | The same [Integrations](/software/usage/#integrations) window as on the keyboard machine, for this machine: **AI agents** writes the [agent hooks](/using/ai-agents/#set-up-the-hooks) here, so its agents show on the keyboard's number row. **Terminals** sets up bash, zsh and PowerShell for the [terminal program overlays](/using/overlays/mode-aware-apps/#terminal-programs), because the forwarder reports this machine's window titles. **Editors** installs the [Vim, Neovim and Emacs plugins](/using/overlays/mode-aware-apps/#vim-emacs-and-nano-overlays-that-follow-the-mode) and the GDB script. **Browser** copies the [browser extension](/using/website-detection/#installing-the-browser-extension) for the browsers on this machine. Needs PolyKybdHost 1.25.0 on this machine. |
 | **Settings** | The few settings that apply here: the light/dark theme, the [interface language](/software/usage/#interface-language), the [browser-URL](/using/website-detection/) options and, from 1.28.31, [finding the keyboard machine from the connection](#let-the-forwarder-find-the-keyboard-machines-address-nomachine-and-remote-desktop-polykybdhost-12831). Each machine follows its own system language, so the forwarder can run in a different language from the keyboard machine. |
 | **Help & About** | About, the log viewer, **Open config folder**, **Report a Problem…** and **Collect logs…** — the same set, for *this* machine's logs. |
