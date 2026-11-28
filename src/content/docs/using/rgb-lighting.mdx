@@ -77,7 +77,8 @@ update they cannot show it: **whether it is safe to keep typing.**
 | What you see | What is happening | Can you type? |
 |---|---|---|
 | Breathing **cyan** | A font pack or a firmware image is being written to the keyboard | **Yes** — the keyboard is still running normally |
-| Breathing **orange** | A staged firmware image is being applied | **No** — a reboot is imminent |
+| Breathing **orange** | An unsigned firmware image waits for you to [accept or reject it](/beyond-qmk/signing/) | **No** — only **A** and **R** work |
+| Solid **orange** | A staged firmware image is being applied | **No** — a reboot is imminent |
 
 When the update finishes, your normal lighting comes back exactly as it was — including staying
 **off** if you had it off. The keyboard turns the matrix on only for the duration of the signal.
