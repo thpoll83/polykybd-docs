@@ -18,7 +18,8 @@ and modifier, the overlay takes priority and the hint stays hidden.
 **App shortcuts are not hints.** `Ctrl+S`, `Ctrl+C` or `Alt+F` do what the focused
 program defines, and some programs have no save at all. Those keys are handled by the
 program's [app overlay](/using/overlays/), which draws them per program. On macOS the same
-holds for `Cmd` plus a letter or digit.
+holds for `Cmd` plus a letter or digit. The macOS screenshot and log-out shortcuts
+(`Cmd+Shift+3`, `4`, `5` and `Cmd+Shift+Q`) are system shortcuts and show a hint.
 </Aside>
 
 ## Which shortcuts show a hint
@@ -98,6 +99,24 @@ The Windows-only shortcuts (Win+V, Win+S, Win+E and the rest) show nothing on Li
 | Option+Left / Option+Right | Word left / right |
 | Ctrl+Cmd+Q | Lock |
 | Ctrl+Cmd+F | Full screen |
+| Ctrl+Cmd+Space | Emoji and symbols |
+| Ctrl+Left / Ctrl+Right | Previous / next Space |
+| Ctrl+Up | Mission Control |
+| Ctrl+Down | App Exposé |
+| Option+Cmd+H | Hide other apps |
+| Option+Cmd+M | Minimize all windows of the app |
+| Option+Cmd+D | Show / hide the Dock |
+| Option+Cmd+Esc | Force Quit |
+| Cmd+F5 | VoiceOver |
+| Option+Cmd+F5 | Accessibility shortcuts |
+| Cmd+Shift+3 | Screenshot of the whole screen |
+| Cmd+Shift+4 | Screenshot of a selected area |
+| Cmd+Shift+5 | Screenshot and screen recording toolbar |
+| Ctrl+Cmd+Shift+3 / Ctrl+Cmd+Shift+4 | Screenshot of the screen / an area to the clipboard |
+| Cmd+Shift+Q | Log out |
+
+The rows from Ctrl+Cmd+Space down need **firmware 1.13.42 and PolyKybdHost 1.28.54** or
+later. That host version ships the `symbol` font pack with their icons.
 
 ## How the keyboard knows your OS
 
